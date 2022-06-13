@@ -80,6 +80,7 @@ func ServeData(ctx *context.Context, name string, size int64, reader io.Reader) 
 			mappedMimeType = "text/plain"
 		}
 		ctx.Resp.Header().Set("Content-Type", mappedMimeType+"; charset="+strings.ToLower(cs))
+		ctx.Resp.Header().Set("X-Content-Type-Options", "nosniff")
 	} else {
 		ctx.Resp.Header().Set("Access-Control-Expose-Headers", "Content-Disposition")
 		if mappedMimeType != "" {
