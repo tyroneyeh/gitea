@@ -204,14 +204,15 @@
 		{{if .IsProjectsEnabled}}
 			<div class="ui divider"></div>
 
-			<div class="ui {{if or (not .HasIssuesOrPullsWritePermission) .Repository.IsArchived}}disabled{{end}} floating jump select-project dropdown">
+			<input id="project_id" name="project_id" type="hidden" value="{{.project_id}}">
+			<div class="ui {{if or (not .HasIssuesOrPullsWritePermission) .Repository.IsArchived}}disabled{{end}} floating jump select-projects dropdown">
 				<a class="text df ac muted">
 					<strong>{{.i18n.Tr "repo.issues.new.projects"}}</strong>
 					{{if and .HasIssuesOrPullsWritePermission (not .Repository.IsArchived)}}
 						{{svg "octicon-gear" 16 "ml-2"}}
 					{{end}}
 				</a>
-				<div class="menu" data-action="update" data-issue-id="{{$.Issue.ID}}" data-update-url="{{$.RepoLink}}/issues/projects">
+				<div class="filter menu" data-action="update" data-issue-id="{{$.Issue.ID}}" data-update-url="{{$.RepoLink}}/issues/projects">
 					<div class="no-select item">{{.i18n.Tr "repo.issues.new.clear_projects"}}</div>
 					{{if .OpenProjects}}
 						<div class="divider"></div>
@@ -219,9 +220,20 @@
 							{{.i18n.Tr "repo.issues.new.open_projects"}}
 						</div>
 						{{range .OpenProjects}}
-							<a class="item muted sidebar-item-link" data-id="{{.ID}}" data-href="{{$.RepoLink}}/projects/{{.ID}}">
+
+							{{$ProjectID := .ID}}
+							<a class="item{{range $.Issue.Projects}}{{if eq .ID $ProjectID}} checked{{end}}{{end}}" href="#" data-id="{{.ID}}" data-id-selector="#projects_{{.ID}}">
+							{{$checked := false}}
+							{{range $.Issue.Projects}}
+								{{if eq .ID $ProjectID}}
+									{{$checked = true}}
+								{{end}}
+							{{end}}
+							<span class="octicon-check {{if not $checked}}invisible{{end}}">{{svg "octicon-check"}}</span>
+							<span class="text">
 								{{svg "octicon-project" 18 "mr-3"}}
 								{{.Title}}
+							</span>
 							</a>
 						{{end}}
 					{{end}}
@@ -239,14 +251,18 @@
 					{{end}}
 				</div>
 			</div>
-			<div class="ui select-project list">
+			<div class="ui projects list">
 				<span class="no-select item {{if .Issue.ProjectID}}hide{{end}}">{{.i18n.Tr "repo.issues.new.no_projects"}}</span>
 				<div class="selected">
 					{{if .Issue.ProjectID}}
-						<a class="item muted sidebar-item-link" href="{{.RepoLink}}/projects/{{.Issue.ProjectID}}">
+					{{range .Issue.Projects}}
+					<div class="item">
+						<a class="item muted sidebar-item-link" href="{{$.RepoLink}}/projects/{{.ID}}">
 							{{svg "octicon-project" 18 "mr-3"}}
-							{{.Issue.Project.Title}}
+							{{.Title}}
 						</a>
+					</div>
+					{{end}}
 					{{end}}
 				</div>
 			</div>

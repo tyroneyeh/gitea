@@ -44,15 +44,21 @@ func (i *Issue) LoadProject() (err error) {
 }
 
 func (i *Issue) loadProject(e db.Engine) (err error) {
-	if i.Project == nil {
-		var p Project
-		if _, err = e.Table("project").
+	if i.Projects == nil {
+		// var p Project
+		i.Projects = []*Project{}
+
+		err = e.Table("project").
 			Join("INNER", "project_issue", "project.id=project_issue.project_id").
 			Where("project_issue.issue_id = ?", i.ID).
-			Get(&p); err != nil {
+			Find(&i.Projects)
+			// Get(&p); err != nil {
+			// return err
+		// }
+		if err != nil {
 			return err
 		}
-		i.Project = &p
+		// i.Project = &p
 	}
 	return
 }
@@ -132,26 +138,35 @@ func (p *Project) NumOpenIssues() int {
 }
 
 // ChangeProjectAssign changes the project associated with an issue
-func ChangeProjectAssign(issue *Issue, doer *user_model.User, newProjectID int64) error {
+func ChangeProjectAssign(issue *Issue, doer *user_model.User, newProjectID int64, action string) error {
 	ctx, committer, err := db.TxContext()
 	if err != nil {
 		return err
 	}
 	defer committer.Close()
 
-	if err := addUpdateIssueProject(ctx, issue, doer, newProjectID); err != nil {
+	if err := addUpdateIssueProject(ctx, issue, doer, newProjectID, action); err != nil {
 		return err
 	}
 
 	return committer.Commit()
 }
 
-func addUpdateIssueProject(ctx context.Context, issue *Issue, doer *user_model.User, newProjectID int64) error {
+func addUpdateIssueProject(ctx context.Context, issue *Issue, doer *user_model.User, newProjectID int64, action string) error {
 	e := db.GetEngine(ctx)
-	oldProjectID := issue.projectID(e)
+	oldProjectID := int64(0)
 
-	if _, err := e.Where("project_issue.issue_id=?", issue.ID).Delete(&ProjectIssue{}); err != nil {
-		return err
+	if action != "attach" {
+		if action == "clear" {
+			if _, err := e.Where("project_issue.issue_id=?", issue.ID).Delete(&ProjectIssue{}); err != nil {
+				return err
+			}
+		} else {
+			oldProjectID = issue.projectID(e)
+			if _, err := e.Where("project_issue.issue_id=? AND project_issue.project_id=?", issue.ID, oldProjectID).Delete(&ProjectIssue{}); err != nil {
+				return err
+			}
+		}
 	}
 
 	if err := issue.loadRepo(ctx); err != nil {
@@ -171,6 +186,10 @@ func addUpdateIssueProject(ctx context.Context, issue *Issue, doer *user_model.U
 		}
 	}
 
+	if action != "attach" {
+		return nil
+	}
+
 	_, err := e.Insert(&ProjectIssue{
 		IssueID:   issue.ID,
 		ProjectID: newProjectID,
@@ -186,7 +205,7 @@ func addUpdateIssueProject(ctx context.Context, issue *Issue, doer *user_model.U
 //               |__/
 
 // MoveIssuesOnProjectBoard moves or keeps issues in a column and sorts them inside that column
-func MoveIssuesOnProjectBoard(board *ProjectBoard, sortedIssueIDs map[int64]int64) error {
+func MoveIssuesOnProjectBoard(board *ProjectBoard, sortedIssueIDs map[int64]int64, projectID int64) error {
 	return db.WithTx(func(ctx context.Context) error {
 		sess := db.GetEngine(ctx)
 
@@ -203,7 +222,7 @@ func MoveIssuesOnProjectBoard(board *ProjectBoard, sortedIssueIDs map[int64]int6
 		}
 
 		for sorting, issueID := range sortedIssueIDs {
-			_, err = sess.Exec("UPDATE `project_issue` SET project_board_id=?, sorting=? WHERE issue_id=?", board.ID, sorting, issueID)
+			_, err = sess.Exec("UPDATE `project_issue` SET project_board_id=?, sorting=? WHERE issue_id=? AND project_id=?", board.ID, sorting, issueID, projectID)
 			if err != nil {
 				return err
 			}

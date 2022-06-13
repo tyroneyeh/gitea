@@ -348,13 +348,15 @@ func UpdateIssueProject(ctx *context.Context) {
 	}
 
 	projectID := ctx.FormInt64("id")
-	for _, issue := range issues {
-		oldProjectID := issue.ProjectID()
-		if oldProjectID == projectID {
-			continue
-		}
+	action := ctx.FormString("action")
 
-		if err := models.ChangeProjectAssign(issue, ctx.User, projectID); err != nil {
+	for _, issue := range issues {
+		// oldProjectID := issue.ProjectID()
+		// if oldProjectID == projectID {
+		// 	continue
+		// }
+
+		if err := models.ChangeProjectAssign(issue, ctx.User, projectID, action); err != nil {
 			ctx.ServerError("ChangeProjectAssign", err)
 			return
 		}
@@ -635,7 +637,7 @@ func MoveIssues(ctx *context.Context) {
 		return
 	}
 
-	if err = models.MoveIssuesOnProjectBoard(board, sortedIssueIDs); err != nil {
+	if err = models.MoveIssuesOnProjectBoard(board, sortedIssueIDs, project.ID); err != nil {
 		ctx.ServerError("MoveIssuesOnProjectBoard", err)
 		return
 	}

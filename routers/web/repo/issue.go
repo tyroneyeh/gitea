@@ -982,6 +982,8 @@ func NewIssuePost(ctx *context.Context) {
 		return
 	}
 
+	action := ctx.FormString("action")
+
 	if setting.Attachment.Enabled {
 		attachments = form.Files
 	}
@@ -1017,7 +1019,7 @@ func NewIssuePost(ctx *context.Context) {
 	}
 
 	if projectID > 0 {
-		if err := models.ChangeProjectAssign(issue, ctx.User, projectID); err != nil {
+		if err := models.ChangeProjectAssign(issue, ctx.User, projectID, action); err != nil {
 			ctx.ServerError("ChangeProjectAssign", err)
 			return
 		}
