@@ -172,7 +172,7 @@ func Profile(ctx *context.Context) {
 		ctx.Data["RenderedDescription"] = content
 	}
 
-	showPrivate := ctx.IsSigned && (ctx.User.IsAdmin || ctx.User.ID == ctxUser.ID)
+	showPrivate := ctx.IsSigned && (ctx.User.IsAdmin || ctx.User.ID == ctxUser.ID || ctx.User.Visibility.String() == "public")
 
 	orgs, err := models.FindOrgs(models.FindOrgOptions{
 		UserID:         ctxUser.ID,
