@@ -8,10 +8,13 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 
 	gitea_bleve "code.gitea.io/gitea/modules/indexer/bleve"
 	"code.gitea.io/gitea/modules/log"
 	"code.gitea.io/gitea/modules/util"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 
 	"github.com/blevesearch/bleve/v2"
 	"github.com/blevesearch/bleve/v2/analysis/analyzer/custom"
@@ -243,11 +246,42 @@ func (b *BleveIndexer) Search(keyword string, repoIDs []int64, limit, start int)
 
 	indexerQuery := bleve.NewConjunctionQuery(
 		bleve.NewDisjunctionQuery(repoQueries...),
-		bleve.NewDisjunctionQuery(
-			newMatchPhraseQuery(keyword, "Title", issueIndexerAnalyzer),
-			newMatchPhraseQuery(keyword, "Content", issueIndexerAnalyzer),
-			newMatchPhraseQuery(keyword, "Comments", issueIndexerAnalyzer),
-		))
+		// bleve.NewDisjunctionQuery(
+		// 	newMatchPhraseQuery(keyword, "Title", issueIndexerAnalyzer),
+		// 	newMatchPhraseQuery(keyword, "Content", issueIndexerAnalyzer),
+		// 	newMatchPhraseQuery(keyword, "Comments", issueIndexerAnalyzer),
+		// )
+	)
+
+	field := "Title"
+	if strings.Contains(keyword, ":") {
+		keyfields := strings.Split(keyword, ":")
+		field = cases.Title(language.English).String(strings.Trim(keyfields[0], " "))
+		keyword = strings.Trim(keyfields[1], " ")
+	}
+	var keywordQueries []query.Query
+	if strings.Contains(keyword, "*") || strings.Contains(keyword, "\\") || strings.Contains(keyword, "[") {
+		keyword = strings.ReplaceAll(keyword, ".*", ".∗")
+		keyword = strings.ReplaceAll(keyword, "*", ".*")
+		keyword = strings.ReplaceAll(keyword, ".∗", ".*")
+		newQuery := bleve.NewRegexpQuery(keyword)
+		keywordQueries = append(keywordQueries, newQuery)
+	} else if strings.Contains(keyword, "|") {
+		keyword = strings.ReplaceAll(keyword, "|", " ")
+		newQuery := bleve.NewQueryStringQuery(keyword)
+		keywordQueries = append(keywordQueries, newQuery)
+	} else {
+		keywords := strings.Split(keyword, " ")
+		for _, v := range keywords {
+			if v := strings.Trim(v, " "); v != "" {
+				keywordQueries = append(keywordQueries, newMatchPhraseQuery(v, field, issueIndexerAnalyzer))
+			}
+		}
+	}
+	if keywordQueries != nil {
+		indexerQuery.AddQuery(keywordQueries...)
+	}
+
 	search := bleve.NewSearchRequestOptions(indexerQuery, limit, start, false)
 	search.SortBy([]string{"-_score"})
 
