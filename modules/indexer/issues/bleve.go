@@ -7,6 +7,7 @@ package issues
 import (
 	"fmt"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -261,9 +262,9 @@ func (b *BleveIndexer) Search(keyword string, repoIDs []int64, limit, start int)
 	}
 	var keywordQueries []query.Query
 	if strings.Contains(keyword, "*") || strings.Contains(keyword, "\\") || strings.Contains(keyword, "[") {
-		keyword = strings.ReplaceAll(keyword, ".*", ".∗")
-		keyword = strings.ReplaceAll(keyword, "*", ".*")
-		keyword = strings.ReplaceAll(keyword, ".∗", ".*")
+		gforgeid, _ := regexp.Compile(`[GT]\d{1,5}`)
+		keyword = gforgeid.ReplaceAllStringFunc(keyword, func(s string) string { return strings.ToLower(s) })
+		keyword = strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(keyword, ".*", ".∗"), "*", ".*"), ".∗", ".*")
 		newQuery := bleve.NewRegexpQuery(keyword)
 		keywordQueries = append(keywordQueries, newQuery)
 	} else if strings.Contains(keyword, "|") {
