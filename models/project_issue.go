@@ -186,7 +186,7 @@ func addUpdateIssueProject(ctx context.Context, issue *Issue, doer *user_model.U
 		}
 	}
 
-	if action != "attach" {
+	if action == "detach" {
 		return nil
 	}
 
