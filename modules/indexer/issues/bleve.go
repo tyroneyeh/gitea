@@ -254,33 +254,31 @@ func (b *BleveIndexer) Search(keyword string, repoIDs []int64, limit, start int)
 		// )
 	)
 
-	field := "Title"
-	if strings.Contains(keyword, ":") {
-		keyfields := strings.Split(keyword, ":")
-		field = cases.Title(language.English).String(strings.Trim(keyfields[0], " "))
-		keyword = strings.Trim(keyfields[1], " ")
-	}
-	var keywordQueries []query.Query
-	if strings.Contains(keyword, "*") || strings.Contains(keyword, "\\") || strings.Contains(keyword, "[") {
+	// regexKeywords := []string{"\\", "[", "]", "(", ")", "/"}
+	isregexpstring, _ := regexp.MatchString(`[\[\]\(\)\/\\]`, keyword)
+	if strings.Contains(keyword, ".*") || isregexpstring && strings.Count(keyword, "[") == strings.Count(keyword, "]") &&	strings.Count(keyword, "(") == strings.Count(keyword, ")") {
 		gforgeid, _ := regexp.Compile(`[GT]\d{1,5}`)
-		keyword = gforgeid.ReplaceAllStringFunc(keyword, func(s string) string { return strings.ToLower(s) })
-		keyword = strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(keyword, ".*", ".∗"), "*", ".*"), ".∗", ".*")
-		newQuery := bleve.NewRegexpQuery(keyword)
-		keywordQueries = append(keywordQueries, newQuery)
-	} else if strings.Contains(keyword, "|") {
+		keyword = strings.ReplaceAll(gforgeid.ReplaceAllStringFunc(keyword, func(s string) string { return strings.ToLower(s) }), "/", "")
+		indexerQuery.AddQuery(bleve.NewRegexpQuery(keyword))
+	} else if strings.Contains(keyword, "|") || strings.Contains(keyword, "*") {
 		keyword = strings.ReplaceAll(keyword, "|", " ")
-		newQuery := bleve.NewQueryStringQuery(keyword)
-		keywordQueries = append(keywordQueries, newQuery)
+		indexerQuery.AddQuery(bleve.NewQueryStringQuery(keyword))
 	} else {
-		keywords := strings.Split(keyword, " ")
-		for _, v := range keywords {
-			if v := strings.Trim(v, " "); v != "" {
-				keywordQueries = append(keywordQueries, newMatchPhraseQuery(v, field, issueIndexerAnalyzer))
+		field := "Title"
+		if strings.Contains(keyword, ":") {
+			keyfields := strings.Split(keyword, ":")
+			field = cases.Title(language.English).String(strings.Trim(keyfields[0], " "))
+			keyword = strings.Trim(keyfields[1], " ")
+			if !strings.Contains("Content,Comments", field) {
+				field = "Title"
 			}
 		}
-	}
-	if keywordQueries != nil {
-		indexerQuery.AddQuery(keywordQueries...)
+		keywords := strings.Split(keyword, " ")
+		for _, v := range keywords {
+			if v = strings.Trim(v, " "); v != "" {
+				indexerQuery.AddQuery(newMatchPhraseQuery(v, field, issueIndexerAnalyzer))
+			}
+		}
 	}
 
 	search := bleve.NewSearchRequestOptions(indexerQuery, limit, start, false)
