@@ -1304,7 +1304,7 @@ func (opts *IssuesOptions) setupSessionNoLimit(sess *xorm.Session) {
 		if opts.ProjectBoardID > 0 {
 			sess.In("issue.id", builder.Select("issue_id").From("project_issue").Where(builder.Eq{"project_board_id": opts.ProjectBoardID}))
 		} else {
-			sess.In("issue.id", builder.Select("issue_id").From("project_issue").Where(builder.Eq{"project_board_id": 0}))
+			sess.In("issue.id", builder.Select("issue_id").From("project_issue").Where(builder.And(builder.Eq{"project_board_id": 0}, builder.Eq{"project_id": opts.ProjectID})))
 		}
 	}
 
