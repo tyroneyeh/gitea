@@ -1326,7 +1326,7 @@ func (opts *IssuesOptions) setupSessionNoLimit(sess *xorm.Session) {
 			if labelID > 0 {
 				sess.Join("INNER", fmt.Sprintf("issue_label il%d", i),
 					fmt.Sprintf("issue.id = il%[1]d.issue_id AND il%[1]d.label_id = %[2]d", i, labelID))
-			} else {
+			} else if labelID < 0 {
 				// sess.Where("issue.id not in (select issue_id from issue_label where label_id = ?)", -labelID)
 				noLabelsIDs = append(noLabelsIDs, -labelID)
 			}
@@ -1402,8 +1402,10 @@ func applyAssigneeCondition(sess *xorm.Session, assigneeIDs []int64) *xorm.Sessi
 		}
 	}
 	if len(noAssigneeIds) > 0 {
-		return sess.Join("INNER", "issue_assignees", "issue.id = issue_assignees.issue_id").
-			NotIn("issue_assignees.assignee_id", noAssigneeIds)
+		return sess.NotIn("issue.id",
+			builder.Select("issue_id").
+				From("issue_assignees").
+				Where(builder.In("assignee_id", noAssigneeIds)))
 	}
 	if hasAssignee {
 		return sess.Join("INNER", "issue_assignees", "issue.id = issue_assignees.issue_id").
