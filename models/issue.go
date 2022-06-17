@@ -1167,7 +1167,7 @@ type IssuesOptions struct {
 	db.ListOptions
 	RepoID             int64 // overwrites RepoCond if not 0
 	RepoCond           builder.Cond
-	AssigneeID         int64
+	AssigneeIDs        []int64
 	PosterID           int64
 	MentionedID        int64
 	ReviewRequestedID  int64
@@ -1268,8 +1268,8 @@ func (opts *IssuesOptions) setupSessionNoLimit(sess *xorm.Session) {
 		sess.And("issue.is_closed=?", opts.IsClosed.IsTrue())
 	}
 
-	if opts.AssigneeID > 0 {
-		applyAssigneeCondition(sess, opts.AssigneeID)
+	if len(opts.AssigneeIDs) > 0 {
+		applyAssigneeCondition(sess, opts.AssigneeIDs)
 	}
 
 	if opts.PosterID > 0 {
@@ -1320,13 +1320,22 @@ func (opts *IssuesOptions) setupSessionNoLimit(sess *xorm.Session) {
 	}
 
 	if opts.LabelIDs != nil {
+		var noLabelsIDs []int64
+
 		for i, labelID := range opts.LabelIDs {
 			if labelID > 0 {
 				sess.Join("INNER", fmt.Sprintf("issue_label il%d", i),
 					fmt.Sprintf("issue.id = il%[1]d.issue_id AND il%[1]d.label_id = %[2]d", i, labelID))
 			} else {
-				sess.Where("issue.id not in (select issue_id from issue_label where label_id = ?)", -labelID)
+				// sess.Where("issue.id not in (select issue_id from issue_label where label_id = ?)", -labelID)
+				noLabelsIDs = append(noLabelsIDs, -labelID)
 			}
+		}
+		if len(noLabelsIDs) > 0 {
+			sess.NotIn("issue.id",
+				builder.Select("issue_id").
+					From("issue_label").
+					Where(builder.In("label_id", noLabelsIDs)))
 		}
 	}
 
@@ -1382,9 +1391,25 @@ func issuePullAccessibleRepoCond(repoIDstr string, userID int64, org *Organizati
 	return cond
 }
 
-func applyAssigneeCondition(sess *xorm.Session, assigneeID int64) *xorm.Session {
-	return sess.Join("INNER", "issue_assignees", "issue.id = issue_assignees.issue_id").
-		And("issue_assignees.assignee_id = ?", assigneeID)
+func applyAssigneeCondition(sess *xorm.Session, assigneeIDs []int64) *xorm.Session {
+	var noAssigneeIds []int64
+	hasAssignee := false
+	for _, assigneeID := range assigneeIDs {
+		if assigneeID < 0 {
+			noAssigneeIds = append(noAssigneeIds, -assigneeID)
+		} else if assigneeID > 0 {
+			hasAssignee = true
+		}
+	}
+	if len(noAssigneeIds) > 0 {
+		return sess.Join("INNER", "issue_assignees", "issue.id = issue_assignees.issue_id").
+			NotIn("issue_assignees.assignee_id", noAssigneeIds)
+	}
+	if hasAssignee {
+		return sess.Join("INNER", "issue_assignees", "issue.id = issue_assignees.issue_id").
+			In("issue_assignees.assignee_id", assigneeIDs)
+	}
+	return nil
 }
 
 func applyPosterCondition(sess *xorm.Session, posterID int64) *xorm.Session {
@@ -1565,7 +1590,7 @@ type IssueStatsOptions struct {
 	RepoID            int64
 	Labels            string
 	MilestoneID       int64
-	AssigneeID        int64
+	AssigneeID        string
 	MentionedID       int64
 	PosterID          int64
 	ReviewRequestedID int64
@@ -1622,8 +1647,8 @@ func getIssueStatsChunk(opts *IssueStatsOptions, issueIDs []int64) (*IssueStats,
 			sess.In("issue.id", issueIDs)
 		}
 
-		if len(opts.Labels) > 0 && opts.Labels != "0" {
-			labelIDs, err := base.StringsToInt64s(strings.Split(opts.Labels, ","))
+		labelIDs, err := base.StringsToInt64s(strings.Split(opts.Labels, ","))
+		if len(labelIDs) > 0 {
 			if err != nil {
 				log.Warn("Malformed Labels argument: %s", opts.Labels)
 			} else {
@@ -1631,7 +1656,7 @@ func getIssueStatsChunk(opts *IssueStatsOptions, issueIDs []int64) (*IssueStats,
 					if labelID > 0 {
 						sess.Join("INNER", fmt.Sprintf("issue_label il%d", i),
 							fmt.Sprintf("issue.id = il%[1]d.issue_id AND il%[1]d.label_id = %[2]d", i, labelID))
-					} else {
+					} else if labelID < 0 {
 						sess.Where("issue.id NOT IN (SELECT issue_id FROM issue_label WHERE label_id = ?)", -labelID)
 					}
 				}
@@ -1642,8 +1667,9 @@ func getIssueStatsChunk(opts *IssueStatsOptions, issueIDs []int64) (*IssueStats,
 			sess.And("issue.milestone_id = ?", opts.MilestoneID)
 		}
 
-		if opts.AssigneeID > 0 {
-			applyAssigneeCondition(sess, opts.AssigneeID)
+		assigneeIDs, _ := base.StringsToInt64s(strings.Split(opts.AssigneeID, ","))
+		if len(assigneeIDs) > 0 {
+			applyAssigneeCondition(sess, assigneeIDs)
 		}
 
 		if opts.PosterID > 0 {
@@ -1747,13 +1773,13 @@ func GetUserIssueStats(opts UserIssueStatsOptions) (*IssueStats, error) {
 			return nil, err
 		}
 	case FilterModeAssign:
-		stats.OpenCount, err = applyAssigneeCondition(sess(cond), opts.UserID).
+		stats.OpenCount, err = applyAssigneeCondition(sess(cond), []int64{opts.UserID}).
 			And("issue.is_closed = ?", false).
 			Count(new(Issue))
 		if err != nil {
 			return nil, err
 		}
-		stats.ClosedCount, err = applyAssigneeCondition(sess(cond), opts.UserID).
+		stats.ClosedCount, err = applyAssigneeCondition(sess(cond), []int64{opts.UserID}).
 			And("issue.is_closed = ?", true).
 			Count(new(Issue))
 		if err != nil {
@@ -1801,7 +1827,7 @@ func GetUserIssueStats(opts UserIssueStatsOptions) (*IssueStats, error) {
 	}
 
 	cond = cond.And(builder.Eq{"issue.is_closed": opts.IsClosed})
-	stats.AssignCount, err = applyAssigneeCondition(sess(cond), opts.UserID).Count(new(Issue))
+	stats.AssignCount, err = applyAssigneeCondition(sess(cond), []int64{opts.UserID}).Count(new(Issue))
 	if err != nil {
 		return nil, err
 	}
@@ -1845,8 +1871,8 @@ func GetRepoIssueStats(repoID, uid int64, filterMode int, isPull bool) (numOpen,
 
 	switch filterMode {
 	case FilterModeAssign:
-		applyAssigneeCondition(openCountSession, uid)
-		applyAssigneeCondition(closedCountSession, uid)
+		applyAssigneeCondition(openCountSession, []int64{uid})
+		applyAssigneeCondition(closedCountSession, []int64{uid})
 	case FilterModeCreate:
 		applyPosterCondition(openCountSession, uid)
 		applyPosterCondition(closedCountSession, uid)

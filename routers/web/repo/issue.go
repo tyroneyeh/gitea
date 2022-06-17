@@ -124,7 +124,7 @@ func issues(ctx *context.Context, milestoneID, projectID int64, isPullOption uti
 	}
 
 	var (
-		assigneeID        = ctx.FormInt64("assignee")
+		assigneeID        = ctx.FormString("assignee")
 		posterID          int64
 		mentionedID       int64
 		reviewRequestedID int64
@@ -138,7 +138,7 @@ func issues(ctx *context.Context, milestoneID, projectID int64, isPullOption uti
 		case "mentioned":
 			mentionedID = ctx.User.ID
 		case "assigned":
-			assigneeID = ctx.User.ID
+			assigneeID = strconv.Itoa(int(ctx.User.ID))
 		case "review_requested":
 			reviewRequestedID = ctx.User.ID
 		}
@@ -217,6 +217,8 @@ func issues(ctx *context.Context, milestoneID, projectID int64, isPullOption uti
 		mileIDs = []int64{milestoneID}
 	}
 
+	assigneeIDs, _ := base.StringsToInt64s(strings.Split(assigneeID, ","))
+
 	var issues []*models.Issue
 	if forceEmpty {
 		issues = []*models.Issue{}
@@ -227,7 +229,7 @@ func issues(ctx *context.Context, milestoneID, projectID int64, isPullOption uti
 				PageSize: setting.UI.IssuePagingNum,
 			},
 			RepoID:            repo.ID,
-			AssigneeID:        assigneeID,
+			AssigneeIDs:       assigneeIDs,
 			PosterID:          posterID,
 			MentionedID:       mentionedID,
 			ReviewRequestedID: reviewRequestedID,
@@ -307,8 +309,8 @@ func issues(ctx *context.Context, milestoneID, projectID int64, isPullOption uti
 	ctx.Data["Labels"] = labels
 	ctx.Data["NumLabels"] = len(labels)
 
-	if ctx.FormInt64("assignee") == 0 {
-		assigneeID = 0 // Reset ID to prevent unexpected selection of assignee.
+	if ctx.FormString("assignee") == "0" {
+		assigneeID = "0" // Reset ID to prevent unexpected selection of assignee.
 	}
 
 	ctx.Data["IssueRefEndNames"], ctx.Data["IssueRefURLs"] =
@@ -352,7 +354,7 @@ func issues(ctx *context.Context, milestoneID, projectID int64, isPullOption uti
 	ctx.Data["ViewType"] = viewType
 	ctx.Data["SortType"] = sortType
 	ctx.Data["MilestoneID"] = milestoneID
-	ctx.Data["AssigneeID"] = assigneeID
+	ctx.Data["AssigneeID"] = assigneeIDs[0]
 	ctx.Data["IsShowClosed"] = isShowClosed
 	ctx.Data["Keyword"] = keyword
 	if isShowClosed {
