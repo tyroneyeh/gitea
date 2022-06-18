@@ -354,7 +354,8 @@ func issues(ctx *context.Context, milestoneID, projectID int64, isPullOption uti
 	ctx.Data["ViewType"] = viewType
 	ctx.Data["SortType"] = sortType
 	ctx.Data["MilestoneID"] = milestoneID
-	ctx.Data["AssigneeID"] = assigneeIDs
+	ctx.Data["AssigneeIDs"] = assigneeIDs
+	ctx.Data["AssigneeID"] = assigneeID
 	ctx.Data["IsShowClosed"] = isShowClosed
 	ctx.Data["Keyword"] = keyword
 	if isShowClosed {

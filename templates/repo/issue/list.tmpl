@@ -70,7 +70,7 @@
 						<div class="menu assignee-filter">
 							<a class="item" href="{{$.Link}}?q={{$.Keyword}}&type={{$.ViewType}}&sort={{$.SortType}}&state={{$.State}}&labels={{.SelectLabels}}&milestone={{$.MilestoneID}}">{{.i18n.Tr "repo.issues.filter_assginee_no_select"}}</a>
 							{{range .Assignees}}
-								<a class="{{if contain $.AssigneeID .ID}}active selected{{end}} item assignee-filter-item" href="{{$.Link}}?type={{$.ViewType}}&sort={{$.SortType}}&state={{$.State}}&labels={{$.SelectLabels}}&milestone={{$.MilestoneID}}&assignee={{.ID}}" data-assignee-id="{{.ID}}">
+								<a class="{{if contain $.AssigneeIDs .ID}}active selected{{end}} item assignee-filter-item" href="{{$.Link}}?type={{$.ViewType}}&sort={{$.SortType}}&state={{$.State}}&labels={{$.SelectLabels}}&milestone={{$.MilestoneID}}&assignee={{.ID}}" data-assignee-id="{{.ID}}">
 									{{avatar .}} {{.GetDisplayName}}
 								</a>
 							{{end}}
