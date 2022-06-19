@@ -148,6 +148,42 @@ export function initRepoIssueList() {
       }
     }
   });
+
+  $('.menu a.nolabels').on('click', function() {
+    const nolabelids = '-'+ $(".label-filter-item").map(function(_, i) { return i.getAttribute("data-label-id")}).get().join(',-');
+    let labelurl = "labels=", labelpos;
+    if ((labelpos = location.search.indexOf(labelurl)) > 0) {
+      labelurl = location.search.slice(labelpos);
+      if ((labelpos = labelurl.indexOf("&")) > 0)
+        return location.search = location.search.replace(labelurl.slice(0, labelpos), "labels="+ nolabelids);
+      return location.search = location.search.replace(labelurl, "labels="+ nolabelids);
+    }
+    return location.search += (location.search.indexOf("?") == -1 ? "?" : "&") + labelurl + nolabelids;
+  });
+
+  $('.menu a.nomilestones').on('click', function() {
+    const milestoneids = '-'+ $(".milestone-filter-item").map(function(_, i) { return i.getAttribute("data-milestone-id")}).get().join(',-');
+    let milestoneurl = "milestone=", milestonepos;
+    if ((milestonepos = location.search.indexOf(milestoneurl)) > 0) {
+      milestoneurl = location.search.slice(milestonepos);
+      if ((milestonepos = milestoneurl.indexOf("&")) > 0)
+        return location.search = location.search.replace(milestoneurl.slice(0, milestonepos), "milestone="+ milestoneids);
+      return location.search = location.search.replace(milestoneurl, "milestone="+ milestoneids);
+    }
+    return location.search += (location.search.indexOf("?") == -1 ? "?" : "&") + milestoneurl + milestoneids;
+  });
+
+  $('.menu a.noassignees').on('click', function() {
+    const assigneeids = '-'+ $(".assignee-filter-item").map(function(_, i) { return i.getAttribute("data-assignee-id")}).get().join(',-');
+    let assigneeurl = "assignee=", assigneepos;
+    if ((assigneepos = location.search.indexOf(assigneeurl)) > 0) {
+      assigneeurl = location.search.slice(assigneepos);
+      if ((assigneepos = assigneeurl.indexOf("&")) > 0)
+        return location.search = location.search.replace(assigneeurl.slice(0, assigneepos), "assignee="+ assigneeids);
+      return location.search = location.search.replace(assigneeurl, "assignee="+ assigneeids);
+    }
+    return location.search += (location.search.indexOf("?") == -1 ? "?" : "&") + assigneeurl + assigneeids;
+  });
 }
 
 export function initRepoIssueCommentDelete() {

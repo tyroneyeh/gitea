@@ -41,6 +41,7 @@
 						<div class="menu">
 							<span class="info">{{.i18n.Tr "repo.issues.filter_label_exclude" | Safe}}</span>
 							<a class="item" href="{{$.Link}}?q={{$.Keyword}}&type={{$.ViewType}}&sort={{$.SortType}}&state={{$.State}}&milestone={{$.MilestoneID}}&assignee={{$.AssigneeID}}">{{.i18n.Tr "repo.issues.filter_label_no_select"}}</a>
+							<a class="item nolabels">{{.i18n.Tr "repo.issues.filter_nolabels"}}</a>
 							{{range .Labels}}
 								<a class="item label-filter-item" href="{{$.Link}}?q={{$.Keyword}}&type={{$.ViewType}}&sort={{$.SortType}}&state={{$.State}}&labels={{.QueryString}}&milestone={{$.MilestoneID}}&assignee={{$.AssigneeID}}" data-label-id="{{.ID}}">{{if .IsExcluded}}{{svg "octicon-circle-slash"}}{{else if .IsSelected}}{{svg "octicon-check"}}{{end}}<span class="label color" style="background-color: {{.Color}}"></span> {{.Name | RenderEmoji}}</a>
 							{{end}}
@@ -55,8 +56,9 @@
 						</span>
 						<div class="menu milestone-filter">
 							<a class="item" href="{{$.Link}}?q={{$.Keyword}}&type={{$.ViewType}}&sort={{$.SortType}}&state={{$.State}}&labels={{.SelectLabels}}&assignee={{$.AssigneeID}}">{{.i18n.Tr "repo.issues.filter_milestone_no_select"}}</a>
+							<a class="item nomilestones">{{.i18n.Tr "repo.issues.filter_nomilestones"}}</a></a>
 							{{range .Milestones}}
-								<a class="{{if $.MilestoneID}}{{if eq $.MilestoneID .ID}}active selected{{end}}{{end}} item milestone-filter-item" href="{{$.Link}}?type={{$.ViewType}}&sort={{$.SortType}}&state={{$.State}}&labels={{$.SelectLabels}}&milestone={{.ID}}&assignee={{$.AssigneeID}}" data-milestone-id="{{.ID}}">{{.Name}}</a>
+								<a class="{{if contain $.mileIDs .ID}}active selected{{end}} item milestone-filter-item" href="{{$.Link}}?type={{$.ViewType}}&sort={{$.SortType}}&state={{$.State}}&labels={{$.SelectLabels}}&milestone={{.ID}}&assignee={{$.AssigneeID}}" data-milestone-id="{{.ID}}">{{.Name}}</a>
 							{{end}}
 						</div>
 					</div>
@@ -69,6 +71,7 @@
 						</span>
 						<div class="menu assignee-filter">
 							<a class="item" href="{{$.Link}}?q={{$.Keyword}}&type={{$.ViewType}}&sort={{$.SortType}}&state={{$.State}}&labels={{.SelectLabels}}&milestone={{$.MilestoneID}}">{{.i18n.Tr "repo.issues.filter_assginee_no_select"}}</a>
+							<a class="item noassignees">{{.i18n.Tr "repo.issues.filter_noassginees"}}</a>
 							{{range .Assignees}}
 								<a class="{{if contain $.AssigneeIDs .ID}}active selected{{end}} item assignee-filter-item" href="{{$.Link}}?type={{$.ViewType}}&sort={{$.SortType}}&state={{$.State}}&labels={{$.SelectLabels}}&milestone={{$.MilestoneID}}&assignee={{.ID}}" data-assignee-id="{{.ID}}">
 									{{avatar .}} {{.GetDisplayName}}

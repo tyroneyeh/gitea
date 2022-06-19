@@ -114,7 +114,7 @@ func MustAllowPulls(ctx *context.Context) {
 	}
 }
 
-func issues(ctx *context.Context, milestoneID, projectID int64, isPullOption util.OptionalBool) {
+func issues(ctx *context.Context, milestoneID string, projectID int64, isPullOption util.OptionalBool) {
 	var err error
 	viewType := ctx.FormString("type")
 	sortType := ctx.FormString("sort")
@@ -212,10 +212,11 @@ func issues(ctx *context.Context, milestoneID, projectID int64, isPullOption uti
 	}
 	pager := context.NewPagination(total, setting.UI.IssuePagingNum, page, 5)
 
-	var mileIDs []int64
-	if milestoneID > 0 {
-		mileIDs = []int64{milestoneID}
-	}
+	// var mileIDs []int64
+	// if milestoneID > 0 {
+	// 	mileIDs = []int64{milestoneID}
+	// }
+	mileIDs, _ := base.StringsToInt64s(strings.Split(milestoneID, ","))
 
 	assigneeIDs, _ := base.StringsToInt64s(strings.Split(assigneeID, ","))
 
@@ -354,6 +355,7 @@ func issues(ctx *context.Context, milestoneID, projectID int64, isPullOption uti
 	ctx.Data["ViewType"] = viewType
 	ctx.Data["SortType"] = sortType
 	ctx.Data["MilestoneID"] = milestoneID
+	ctx.Data["mileIDs"] = mileIDs
 	ctx.Data["AssigneeIDs"] = assigneeIDs
 	ctx.Data["AssigneeID"] = assigneeID
 	ctx.Data["IsShowClosed"] = isShowClosed
@@ -394,7 +396,7 @@ func Issues(ctx *context.Context) {
 		ctx.Data["NewIssueChooseTemplate"] = len(ctx.IssueTemplatesFromDefaultBranch()) > 0
 	}
 
-	issues(ctx, ctx.FormInt64("milestone"), ctx.FormInt64("project"), util.OptionalBoolOf(isPullList))
+	issues(ctx, ctx.FormString("milestone"), ctx.FormInt64("project"), util.OptionalBoolOf(isPullList))
 	if ctx.Written() {
 		return
 	}

@@ -1284,8 +1284,19 @@ func (opts *IssuesOptions) setupSessionNoLimit(sess *xorm.Session) {
 		applyReviewRequestedCondition(sess, opts.ReviewRequestedID)
 	}
 
-	if len(opts.MilestoneIDs) > 0 {
-		sess.In("issue.milestone_id", opts.MilestoneIDs)
+	var mileIDs, noMileIDs []int64
+	for _, milestoneID := range opts.MilestoneIDs {
+		if milestoneID > 0 {
+			mileIDs = append(mileIDs, milestoneID)
+		} else if milestoneID < 0 {
+			noMileIDs = append(noMileIDs, -milestoneID)
+		}
+	}
+	if len(mileIDs) > 0 {
+		sess.In("issue.milestone_id", mileIDs)
+	}
+	if len(noMileIDs) > 0 {
+		sess.NotIn("issue.milestone_id", noMileIDs)
 	}
 
 	if opts.UpdatedAfterUnix != 0 {
@@ -1591,7 +1602,7 @@ func parseCountResult(results []map[string][]byte) int64 {
 type IssueStatsOptions struct {
 	RepoID            int64
 	Labels            string
-	MilestoneID       int64
+	MilestoneID       string
 	AssigneeID        string
 	MentionedID       int64
 	PosterID          int64
@@ -1665,8 +1676,20 @@ func getIssueStatsChunk(opts *IssueStatsOptions, issueIDs []int64) (*IssueStats,
 			}
 		}
 
-		if opts.MilestoneID > 0 {
-			sess.And("issue.milestone_id = ?", opts.MilestoneID)
+		var mileIDs, noMileIDs []int64
+		milestoneIDs, _ := base.StringsToInt64s(strings.Split(opts.MilestoneID, ","))
+		for _, milestoneID := range milestoneIDs {
+			if milestoneID > 0 {
+				mileIDs = append(mileIDs, milestoneID)
+			} else if milestoneID < 0 {
+				noMileIDs = append(noMileIDs, -milestoneID)
+			}
+		}
+		if len(mileIDs) > 0 {
+			sess.In("issue.milestone_id", mileIDs)
+		}
+		if len(noMileIDs) > 0 {
+			sess.NotIn("issue.milestone_id", noMileIDs)
 		}
 
 		assigneeIDs, _ := base.StringsToInt64s(strings.Split(opts.AssigneeID, ","))
