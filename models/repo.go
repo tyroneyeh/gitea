@@ -190,12 +190,15 @@ func getRepoAssignees(ctx context.Context, repo *repo_model.Repository) (_ []*us
 		i++
 	}
 	userIDs = userIDs[:i]
-
+	orderBy := "name"
+	if setting.UI.DefaultShowFullName {
+		orderBy = "full_name"
+	}
 	// Leave a seat for owner itself to append later, but if owner is an organization
 	// and just waste 1 unit is cheaper than re-allocate memory once.
 	users := make([]*user_model.User, 0, len(userIDs)+1)
 	if len(userIDs) > 0 {
-		if err = e.In("id", userIDs).Find(&users); err != nil {
+		if err = e.In("id", userIDs).OrderBy(orderBy).Find(&users); err != nil {
 			return nil, err
 		}
 	}
@@ -221,14 +224,23 @@ func getReviewers(ctx context.Context, repo *repo_model.Repository, doerID, post
 	var users []*user_model.User
 	e := db.GetEngine(ctx)
 
+	orderBy := "name"
+	if setting.UI.DefaultShowFullName {
+		orderBy = "full_name"
+	}
 	if repo.IsPrivate || repo.Owner.Visibility == api.VisibleTypePrivate {
 		// This a private repository:
 		// Anyone who can read the repository is a requestable reviewer
+		// if err := e.
+		// 	SQL("SELECT * FROM `user` WHERE id in (SELECT user_id FROM `access` WHERE repo_id = ? AND mode >= ? AND user_id NOT IN ( ?, ?)) ORDER BY name",
+		// 		repo.ID, perm.AccessModeRead,
+		// 		doerID, posterID).
+		// 	Find(&users); err != nil {
+		// 	return nil, err
+		// }
+
 		if err := e.
-			SQL("SELECT * FROM `user` WHERE id in (SELECT user_id FROM `access` WHERE repo_id = ? AND mode >= ? AND user_id NOT IN ( ?, ?)) ORDER BY name",
-				repo.ID, perm.AccessModeRead,
-				doerID, posterID).
-			Find(&users); err != nil {
+			Table("user").In("id", builder.Select("user_id").From("access").Where(builder.Eq{"repo_id": repo.ID}).And(builder.Gte{"mode": perm.AccessModeRead}).And(builder.NotIn("user_id", []int64{doerID, posterID}))).OrderBy(orderBy).Find(&users); err != nil {
 			return nil, err
 		}
 
@@ -236,19 +248,29 @@ func getReviewers(ctx context.Context, repo *repo_model.Repository, doerID, post
 	}
 
 	// This is a "public" repository:
-	// Any user that has read access, is a watcher or organization member can be requested to review
+	// // Any user that has read access, is a watcher or organization member can be requested to review
+	// if err := e.
+	// 	SQL("SELECT * FROM `user` WHERE id IN ( "+
+	// 		"SELECT user_id FROM `access` WHERE repo_id = ? AND mode >= ? "+
+	// 		"UNION "+
+	// 		"SELECT user_id FROM `watch` WHERE repo_id = ? AND mode IN (?, ?) "+
+	// 		"UNION "+
+	// 		"SELECT uid AS user_id FROM `org_user` WHERE org_id = ? "+
+	// 		") AND id NOT IN (?, ?) ORDER BY name",
+	// 		repo.ID, perm.AccessModeRead,
+	// 		repo.ID, repo_model.WatchModeNormal, repo_model.WatchModeAuto,
+	// 		repo.OwnerID,
+	// 		doerID, posterID).
+	// 	Find(&users); err != nil {
+	// 	return nil, err
+	// }
+
 	if err := e.
-		SQL("SELECT * FROM `user` WHERE id IN ( "+
-			"SELECT user_id FROM `access` WHERE repo_id = ? AND mode >= ? "+
-			"UNION "+
-			"SELECT user_id FROM `watch` WHERE repo_id = ? AND mode IN (?, ?) "+
-			"UNION "+
-			"SELECT uid AS user_id FROM `org_user` WHERE org_id = ? "+
-			") AND id NOT IN (?, ?) ORDER BY name",
-			repo.ID, perm.AccessModeRead,
-			repo.ID, repo_model.WatchModeNormal, repo_model.WatchModeAuto,
-			repo.OwnerID,
-			doerID, posterID).
+		Table("user").In("id",
+		builder.Select("user_id").From("access").Where(builder.Eq{"repo_id": repo.ID}).And(builder.Gte{"mode": perm.AccessModeRead}).
+			Union("", builder.Select("user_id").From("watch").Where(builder.Eq{"repo_id": repo.ID}).And(builder.In("mode", []int{int(repo_model.WatchModeNormal), int(repo_model.WatchModeAuto)}))).
+			Union("", builder.Select("uid").From("org_user").Where(builder.Eq{"org_id": repo.OwnerID}))).And(builder.NotIn("id", []int64{doerID, posterID})).
+		OrderBy(orderBy).
 		Find(&users); err != nil {
 		return nil, err
 	}

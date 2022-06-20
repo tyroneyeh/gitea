@@ -1156,6 +1156,7 @@ func GetTeamsWithAccessToRepo(orgID, repoID int64, mode perm.AccessMode) ([]*Tea
 		Join("INNER", "team_repo", "team_repo.team_id = team.id").
 		And("team_repo.org_id = ?", orgID).
 		And("team_repo.repo_id = ?", repoID).
+		OrderBy("name").
 		Find(&teams)
 }
 

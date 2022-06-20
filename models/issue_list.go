@@ -10,6 +10,7 @@ import (
 	"code.gitea.io/gitea/models/db"
 	repo_model "code.gitea.io/gitea/models/repo"
 	user_model "code.gitea.io/gitea/models/user"
+	"code.gitea.io/gitea/modules/setting"
 
 	"xorm.io/builder"
 )
@@ -233,6 +234,10 @@ func (issues IssueList) loadAssignees(e db.Engine) error {
 
 	assignees := make(map[int64][]*user_model.User, len(issues))
 	issueIDs := issues.getIssueIDs()
+	orderBy := "name"
+	if setting.UI.DefaultShowFullName {
+		orderBy = "full_name"
+	}
 	left := len(issueIDs)
 	for left > 0 {
 		limit := defaultMaxInSize
@@ -241,7 +246,7 @@ func (issues IssueList) loadAssignees(e db.Engine) error {
 		}
 		rows, err := e.Table("issue_assignees").
 			Join("INNER", "`user`", "`user`.id = `issue_assignees`.assignee_id").
-			In("`issue_assignees`.issue_id", issueIDs[:limit]).
+			In("`issue_assignees`.issue_id", issueIDs[:limit]).OrderBy(orderBy).
 			Rows(new(AssigneeIssue))
 		if err != nil {
 			return err
