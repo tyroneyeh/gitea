@@ -216,6 +216,7 @@ func issues(ctx *context.Context, milestoneID, projectID int64, isPullOption uti
 	// if milestoneID > 0 {
 	// 	mileIDs = []int64{milestoneID}
 	// }
+	mileIDs := []int64{milestoneID}
 
 	var issues []*models.Issue
 	if forceEmpty {
@@ -231,7 +232,7 @@ func issues(ctx *context.Context, milestoneID, projectID int64, isPullOption uti
 			PosterID:          posterID,
 			MentionedID:       mentionedID,
 			ReviewRequestedID: reviewRequestedID,
-			MilestoneIDs:      []int64{milestoneID},
+			MilestoneIDs:      mileIDs,
 			ProjectID:         projectID,
 			IsClosed:          util.OptionalBoolOf(isShowClosed),
 			IsPull:            isPullOption,
