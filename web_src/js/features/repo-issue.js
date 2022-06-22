@@ -184,7 +184,7 @@ export function initRepoIssueList() {
       }
       return window.location.search = window.location.search.replace(assigneeurl, `assignee=-1`);
     }
-    assigneepos = (!window.location.search.includes('?') ? '?' : '&')
+    assigneepos = (!window.location.search.includes('?') ? '?' : '&');
     return window.location.search += `${assigneepos}${assigneeurl}-1`;
   });
 }
