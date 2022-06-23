@@ -31,7 +31,7 @@ import (
 const (
 	issueIndexerAnalyzer      = "issueIndexer"
 	issueIndexerDocType       = "issueIndexerDocType"
-	issueIndexerLatestVersion = 1
+	issueIndexerLatestVersion = 2
 )
 
 // indexerID a bleve-compatible unique identifier for an integer id
@@ -128,9 +128,11 @@ func createIssueIndexer(path string, latestVersion int) (bleve.Index, error) {
 	textFieldMapping := bleve.NewTextFieldMapping()
 	textFieldMapping.Store = false
 	textFieldMapping.IncludeInAll = false
+	docMapping.AddFieldMappingsAt("Index", numericFieldMapping)
 	docMapping.AddFieldMappingsAt("Title", textFieldMapping)
 	docMapping.AddFieldMappingsAt("Content", textFieldMapping)
 	docMapping.AddFieldMappingsAt("Comments", textFieldMapping)
+	docMapping.AddFieldMappingsAt("Poster", textFieldMapping)
 
 	if err := addUnicodeNormalizeTokenFilter(mapping); err != nil {
 		return nil, err
@@ -206,15 +208,19 @@ func (b *BleveIndexer) Index(issues []*IndexerData) error {
 	batch := gitea_bleve.NewFlushingBatch(b.indexer, maxBatchSize)
 	for _, issue := range issues {
 		if err := batch.Index(indexerID(issue.ID), struct {
+			Index    int64
 			RepoID   int64
 			Title    string
 			Content  string
 			Comments []string
+			Poster   string
 		}{
+			Index:    issue.Index,
 			RepoID:   issue.RepoID,
 			Title:    issue.Title,
 			Content:  issue.Content,
 			Comments: issue.Comments,
+			Poster:   issue.Poster,
 		}); err != nil {
 			return err
 		}
@@ -268,15 +274,31 @@ func (b *BleveIndexer) Search(keyword string, repoIDs []int64, limit, start int)
 		if strings.Contains(keyword, ":") {
 			keyfields := strings.Split(keyword, ":")
 			field = cases.Title(language.English).String(strings.Trim(keyfields[0], " "))
-			keyword = strings.Trim(keyfields[1], " ")
-			if !strings.Contains("Content,Comments", field) {
+			keyword = keyfields[1]
+			if strings.Contains("Creator,Poster", field) {
+				field = "Poster"
+			} else if !strings.Contains("Index,Content,Comments", field) {
 				field = "Title"
 			}
+		} else if strings.Contains(keyword, "#") {
+			field = "Index"
+			keyword = keyword[1:]
 		}
+
 		keywords := strings.Split(keyword, " ")
-		for _, v := range keywords {
+		for i, v := range keywords {
 			if v = strings.Trim(v, " "); v != "" {
-				indexerQuery.AddQuery(newMatchPhraseQuery(v, field, issueIndexerAnalyzer))
+				if field == "Index" {
+					index, err := strconv.ParseInt(keyword, 10, 64)
+					if err == nil && index > 0 {
+						indexerQuery.AddQuery(numericEqualityQuery(index, field))
+					}
+				} else {
+					if i == 2 {
+						field = "Title"
+					}
+					indexerQuery.AddQuery(newMatchPhraseQuery(v, field, issueIndexerAnalyzer))
+				}
 			}
 		}
 	}

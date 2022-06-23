@@ -32,6 +32,7 @@ func TestBleveIndexAndSearch(t *testing.T) {
 	err = indexer.Index([]*IndexerData{
 		{
 			ID:      1,
+			Index:   1,
 			RepoID:  2,
 			Title:   "Issue search should support Chinese",
 			Content: "As title",
@@ -42,6 +43,7 @@ func TestBleveIndexAndSearch(t *testing.T) {
 		},
 		{
 			ID:      2,
+			Index:   14,
 			RepoID:  2,
 			Title:   "CJK support could be optional",
 			Content: "Chinese Korean and Japanese should be supported but I would like it's not enabled by default",
@@ -81,6 +83,10 @@ func TestBleveIndexAndSearch(t *testing.T) {
 			{
 				Keyword: "help",
 				IDs:     []int64{},
+			},
+			{
+				Keyword: "14",
+				IDs:     []int64{2},
 			},
 		}
 	)

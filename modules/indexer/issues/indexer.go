@@ -24,12 +24,14 @@ import (
 // IndexerData data stored in the issue indexer
 type IndexerData struct {
 	ID       int64    `json:"id"`
+	Index    int64    `json:"index"`
 	RepoID   int64    `json:"repo_id"`
 	Title    string   `json:"title"`
 	Content  string   `json:"content"`
 	Comments []string `json:"comments"`
 	IsDelete bool     `json:"is_delete"`
 	IDs      []int64  `json:"ids"`
+	Poster   string   `json:"poster"`
 }
 
 // Match represents on search result
@@ -299,10 +301,12 @@ func UpdateIssueIndexer(issue *models.Issue) {
 	}
 	indexerData := &IndexerData{
 		ID:       issue.ID,
+		Index:    issue.Index,
 		RepoID:   issue.RepoID,
 		Title:    issue.Title,
 		Content:  issue.Content,
 		Comments: comments,
+		Poster:   issue.Poster.FullName,
 	}
 	log.Debug("Adding to channel: %v", indexerData)
 	if err := issueIndexerQueue.Push(indexerData); err != nil {
