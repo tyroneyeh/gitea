@@ -299,6 +299,12 @@ func UpdateIssueIndexer(issue *models.Issue) {
 			comments = append(comments, comment.Content)
 		}
 	}
+
+	poster := ""
+	if issue.Poster != nil {
+		poster = issue.Poster.FullName
+	}
+
 	indexerData := &IndexerData{
 		ID:       issue.ID,
 		Index:    issue.Index,
@@ -306,7 +312,7 @@ func UpdateIssueIndexer(issue *models.Issue) {
 		Title:    issue.Title,
 		Content:  issue.Content,
 		Comments: comments,
-		Poster:   issue.Poster.FullName,
+		Poster:   poster,
 	}
 	log.Debug("Adding to channel: %v", indexerData)
 	if err := issueIndexerQueue.Push(indexerData); err != nil {
