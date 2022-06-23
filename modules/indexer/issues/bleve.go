@@ -274,7 +274,7 @@ func (b *BleveIndexer) Search(keyword string, repoIDs []int64, limit, start int)
 		if strings.Contains(keyword, ":") {
 			keyfields := strings.Split(keyword, ":")
 			field = cases.Title(language.English).String(strings.Trim(keyfields[0], " "))
-			keyword = keyfields[1]
+			keyword = strings.Trim(keyfields[1], " ")
 			if strings.Contains("Creator,Poster", field) {
 				field = "Poster"
 			} else if !strings.Contains("Index,Content,Comments", field) {
@@ -294,7 +294,7 @@ func (b *BleveIndexer) Search(keyword string, repoIDs []int64, limit, start int)
 						indexerQuery.AddQuery(numericEqualityQuery(index, field))
 					}
 				} else {
-					if i == 2 {
+					if i == 1 {
 						field = "Title"
 					}
 					indexerQuery.AddQuery(newMatchPhraseQuery(v, field, issueIndexerAnalyzer))
