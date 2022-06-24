@@ -302,12 +302,27 @@ async function onEditContent(event) {
             fileUuidDict[file.uuid] = {submitted: false};
             const input = $(`<input id="${data.uuid}" name="files" type="hidden">`).val(data.uuid);
             $dropzone.find('.files').append(input);
+            let editor = $('.CodeMirror:visible');
+            if (editor && (editor = editor[0].CodeMirror.getTextArea())) {
+              const startText = editor.value.substring(0, editor.selectionStart), endText = editor.value.substring(editor.selectionEnd);
+              editor._data_easyMDE.codemirror.setValue(`${startText}[${file.name}](/attachments/${data.uuid})${endText}\n`);
+            }
           });
           this.on('removedfile', (file) => {
-            $(`#${file.uuid}`).remove();
-            if ($dropzone.data('remove-url') && !fileUuidDict[file.uuid].submitted) {
+            let data = file;
+            if (file.xhr && file.xhr.response) {
+              data = JSON.parse(file.xhr.response);
+            }
+            $(`#${data.uuid}`).remove();
+            let editor = $('.CodeMirror:visible');
+            if (editor && (editor = editor[0].CodeMirror.getTextArea())) {
+              editor._data_easyMDE.codemirror.setValue(editor.value.replace(`![${file.name.slice(0, file.name.indexOf('.'))}](/attachments/${data.uuid})`, ''));
+              editor._data_easyMDE.codemirror.setValue(editor.value.replace(`[${file.name.slice(0, file.name.indexOf('.'))}](/attachments/${data.uuid})`, ''));
+              editor._data_easyMDE.codemirror.setValue(editor.value.replace(`[${file.name}](/attachments/${data.uuid})`, ''));
+            }
+            if ($dropzone.data('remove-url') && fileUuidDict[data.uuid].submitted) {
               $.post($dropzone.data('remove-url'), {
-                file: file.uuid,
+                file: data.uuid,
                 _csrf: csrfToken,
               });
             }

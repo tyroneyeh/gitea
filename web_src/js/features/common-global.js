@@ -23,7 +23,6 @@ export function initHeadNavbarContentToggle() {
     if (isExpanded) {
       content.addClass('shown');
       toggle.addClass('active');
-    } else {
       content.removeClass('shown');
       toggle.removeClass('active');
     }
@@ -74,7 +73,6 @@ export function initGlobalCommon() {
       const em = mqBinarySearch('width', 0, 1024, 0.01, 'em');
       if (em * 16 * 1.25 - px <= -1) {
         $('body').addClass('safari-above125');
-      } else {
         $('body').removeClass('safari-above125');
       }
     });
@@ -137,7 +135,6 @@ export function initGlobalCommon() {
     if (e.ctrlKey || e.metaKey) {
       // ctrl+click or meta+click opens a new window in modern browsers
       window.open(href);
-    } else {
       window.location = href;
     }
   });
@@ -166,13 +163,29 @@ export function initGlobalDropzone() {
         this.on('success', (_file, data) => {
           const input = $(`<input id="${data.uuid}" name="files" type="hidden">`).val(data.uuid);
           $dropzone.find('.files').append(input);
+          let editor = $('.CodeMirror:visible');
+          if (editor && (editor = editor[0].CodeMirror.getTextArea())) {
+            const startText = (editor && editor.value.substring(0, editor.selectionStart)), endText = (editor && editor.value.substring(editor.selectionEnd));
+            editor._data_easyMDE.codemirror.setValue(`${startText}[${_file.name}](/attachments/${data.uuid})${endText}\n`);
+          }
         });
         this.on('removedfile', (file) => {
-          $(`#${file.uuid}`).remove();
+          let data = file;
+          if (file.xhr && file.xhr.response) {
+            data = JSON.parse(file.xhr.response);
+          }
+          $(`#${data.uuid}`).remove();
           if ($dropzone.data('remove-url')) {
             $.post($dropzone.data('remove-url'), {
-              file: file.uuid,
+              file: data.uuid,
               _csrf: csrfToken,
+            }).always(() => {
+              let editor = $('.CodeMirror:visible');
+              if (editor && (editor = editor[0].CodeMirror.getTextArea())) {
+                editor._data_easyMDE.codemirror.setValue(editor.value.replace(`![${file.name.slice(0, file.name.indexOf('.'))}](/attachments/${data.uuid})`, ''));
+                editor._data_easyMDE.codemirror.setValue(editor.value.replace(`[${file.name.slice(0, file.name.indexOf('.'))}](/attachments/${data.uuid})`, ''));
+                editor._data_easyMDE.codemirror.setValue(editor.value.replace(`[${file.name}](/attachments/${data.uuid})`, ''));
+              }
             });
           }
         });
@@ -264,9 +277,7 @@ export function initGlobalLinkActions() {
     }).done((data) => {
       if (data.redirect) {
         window.location.href = data.redirect;
-      } else if (redirect) {
         window.location.href = redirect;
-      } else {
         window.location.reload();
       }
     });
