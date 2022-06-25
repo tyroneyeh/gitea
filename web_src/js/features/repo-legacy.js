@@ -299,30 +299,27 @@ async function onEditContent(event) {
         thumbnailHeight: 480,
         init() {
           this.on('success', (file, data) => {
+            file.uuid = data.uuid;
             fileUuidDict[file.uuid] = {submitted: false};
             const input = $(`<input id="${data.uuid}" name="files" type="hidden">`).val(data.uuid);
             $dropzone.find('.files').append(input);
             let editor = $('.CodeMirror:visible');
-            if (editor && (editor = editor[0].CodeMirror.getTextArea())) {
+            if (editor.length && (editor = editor[0].CodeMirror.getTextArea())) {
               const startText = editor.value.substring(0, editor.selectionStart), endText = editor.value.substring(editor.selectionEnd);
               editor._data_easyMDE.codemirror.setValue(`${startText}[${file.name}](/attachments/${data.uuid})${endText}\n`);
             }
           });
           this.on('removedfile', (file) => {
-            let data = file;
-            if (file.xhr && file.xhr.response) {
-              data = JSON.parse(file.xhr.response);
-            }
-            $(`#${data.uuid}`).remove();
+            $(`#${file.uuid}`).remove();
             let editor = $('.CodeMirror:visible');
-            if (editor && (editor = editor[0].CodeMirror.getTextArea())) {
-              editor._data_easyMDE.codemirror.setValue(editor.value.replace(`![${file.name.slice(0, file.name.indexOf('.'))}](/attachments/${data.uuid})`, ''));
-              editor._data_easyMDE.codemirror.setValue(editor.value.replace(`[${file.name.slice(0, file.name.indexOf('.'))}](/attachments/${data.uuid})`, ''));
-              editor._data_easyMDE.codemirror.setValue(editor.value.replace(`[${file.name}](/attachments/${data.uuid})`, ''));
+            if (editor.length && (editor = editor[0].CodeMirror.getTextArea())) {
+              editor._data_easyMDE.codemirror.setValue(editor.value.replace(`![${file.name.slice(0, file.name.indexOf('.'))}](/attachments/${file.uuid})`, ''));
+              editor._data_easyMDE.codemirror.setValue(editor.value.replace(`[${file.name.slice(0, file.name.indexOf('.'))}](/attachments/${file.uuid})`, ''));
+              editor._data_easyMDE.codemirror.setValue(editor.value.replace(`[${file.name}](/attachments/${file.uuid})`, ''));
             }
-            if ($dropzone.data('remove-url') && fileUuidDict[data.uuid].submitted) {
+            if ($dropzone.data('remove-url') && fileUuidDict[file.uuid].submitted) {
               $.post($dropzone.data('remove-url'), {
-                file: data.uuid,
+                file: file.uuid,
                 _csrf: csrfToken,
               });
             }
@@ -567,9 +564,9 @@ function initRepoIssueCommentEdit() {
   // Quote reply
   $(document).on('click', '.quote-reply', function (event) {
     $(this).closest('.dropdown').find('.menu').toggle('visible');
-    const target = $(this).data('target');
-    const quote = $(`#comment-${target}`).text().replace(/\n/g, '\n> ');
-    const content = `> ${quote}\n\n`;
+    const target = $(this).data('target'), commenttarget = $(`#comment-${target}`), author = commenttarget.parent().parent().find(".author").text().trim();
+    const quote = commenttarget.text().replace(/\n/g, '\n>');
+    const content = `> @${author}:\n${quote}\n\n`;
     let easyMDE;
     if ($(this).hasClass('quote-reply-diff')) {
       const $parent = $(this).closest('.comment-code-cloud');

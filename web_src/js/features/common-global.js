@@ -160,31 +160,28 @@ export function initGlobalDropzone() {
       thumbnailWidth: 480,
       thumbnailHeight: 480,
       init() {
-        this.on('success', (_file, data) => {
+        this.on('success', (file, data) => {
+          file.uuid = data.uuid;
           const input = $(`<input id="${data.uuid}" name="files" type="hidden">`).val(data.uuid);
           $dropzone.find('.files').append(input);
           let editor = $('.CodeMirror:visible');
-          if (editor && (editor = editor[0].CodeMirror.getTextArea())) {
+          if (editor.length && (editor = editor[0].CodeMirror.getTextArea())) {
             const startText = (editor && editor.value.substring(0, editor.selectionStart)), endText = (editor && editor.value.substring(editor.selectionEnd));
-            editor._data_easyMDE.codemirror.setValue(`${startText}[${_file.name}](/attachments/${data.uuid})${endText}\n`);
+            editor._data_easyMDE.codemirror.setValue(`${startText}[${file.name}](/attachments/${data.uuid})${endText}\n`);
           }
         });
         this.on('removedfile', (file) => {
-          let data = file;
-          if (file.xhr && file.xhr.response) {
-            data = JSON.parse(file.xhr.response);
-          }
-          $(`#${data.uuid}`).remove();
+          $(`#${file.uuid}`).remove();
           if ($dropzone.data('remove-url')) {
             $.post($dropzone.data('remove-url'), {
-              file: data.uuid,
+              file: file.uuid,
               _csrf: csrfToken,
             }).always(() => {
               let editor = $('.CodeMirror:visible');
-              if (editor && (editor = editor[0].CodeMirror.getTextArea())) {
-                editor._data_easyMDE.codemirror.setValue(editor.value.replace(`![${file.name.slice(0, file.name.indexOf('.'))}](/attachments/${data.uuid})`, ''));
-                editor._data_easyMDE.codemirror.setValue(editor.value.replace(`[${file.name.slice(0, file.name.indexOf('.'))}](/attachments/${data.uuid})`, ''));
-                editor._data_easyMDE.codemirror.setValue(editor.value.replace(`[${file.name}](/attachments/${data.uuid})`, ''));
+              if (editor.length && (editor = editor[0].CodeMirror.getTextArea())) {
+                editor._data_easyMDE.codemirror.setValue(editor.value.replace(`![${file.name.slice(0, file.name.indexOf('.'))}](/attachments/${file.uuid})`, ''));
+                editor._data_easyMDE.codemirror.setValue(editor.value.replace(`[${file.name.slice(0, file.name.indexOf('.'))}](/attachments/${file.uuid})`, ''));
+                editor._data_easyMDE.codemirror.setValue(editor.value.replace(`[${file.name}](/attachments/${file.uuid})`, ''));
               }
             });
           }
