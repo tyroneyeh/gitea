@@ -564,7 +564,7 @@ function initRepoIssueCommentEdit() {
   // Quote reply
   $(document).on('click', '.quote-reply', function (event) {
     $(this).closest('.dropdown').find('.menu').toggle('visible');
-    const target = $(this).data('target'), commenttarget = $(`#comment-${target}`), author = commenttarget.parent().parent().find(".author").attr("href").slice(1);
+    const target = $(this).data('target'), commenttarget = $(`#comment-${target}`), author = commenttarget.parent().parent().find('.author').attr('href').slice(1);
     const quote = commenttarget.text().replace(/\n/g, '\n>');
     const content = `> @${author}:\n${quote}\n\n`;
     let easyMDE;

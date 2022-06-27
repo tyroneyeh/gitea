@@ -68,6 +68,11 @@ export function initCompImagePaste($target) {
     replaceAndKeepCursor(this.CodeMirror, `![${name}]()`, `![${name}](/attachments/${data.uuid})`);
     const input = $(`<input id="${data.uuid}" name="files" type="hidden">`).val(data.uuid);
     dropzoneFiles.appendChild(input[0]);
+    const upfile = {name: img[0].name, size: img[0].size, uuid: data.uuid};
+    dropzone.dropzone.emit('addedfile', upfile);
+    dropzone.dropzone.emit('thumbnail', upfile, `/attachments/${data.uuid}`);
+    dropzone.dropzone.emit('complete', upfile);
+    dropzone.dropzone.files.push(upfile);
   });
 }
 

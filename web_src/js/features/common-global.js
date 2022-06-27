@@ -162,12 +162,12 @@ export function initGlobalDropzone() {
       init() {
         this.on('success', (file, data) => {
           file.uuid = data.uuid;
-          const input = $(`<input id="${data.uuid}" name="files" type="hidden">`).val(data.uuid);
+          const input = $(`<input id="${file.uuid}" name="files" type="hidden">`).val(data.uuid);
           $dropzone.find('.files').append(input);
           let editor = $('.CodeMirror:visible');
           if (editor.length && (editor = editor[0].CodeMirror.getTextArea())) {
             const startText = (editor && editor.value.substring(0, editor.selectionStart)), endText = (editor && editor.value.substring(editor.selectionEnd));
-            editor._data_easyMDE.codemirror.setValue(`${startText}[${file.name}](/attachments/${data.uuid})${endText}\n`);
+            editor._data_easyMDE.codemirror.setValue(`${startText}[${file.name}](/attachments/${file.uuid})${endText}\n`);
           }
         });
         this.on('removedfile', (file) => {
