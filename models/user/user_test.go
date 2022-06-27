@@ -152,6 +152,9 @@ func TestEmailNotificationPreferences(t *testing.T) {
 
 		assert.NoError(t, SetEmailNotifications(user, EmailNotificationsDisabled))
 		assert.Equal(t, EmailNotificationsDisabled, user.EmailNotifications())
+
+		assert.NoError(t, SetEmailNotifications(user, EmailNotificationsAndYourOwn))
+		assert.Equal(t, EmailNotificationsAndYourOwn, user.EmailNotifications())
 	}
 }
 
