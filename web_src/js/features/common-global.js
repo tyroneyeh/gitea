@@ -182,12 +182,10 @@ export function initGlobalDropzone() {
               file: file.uuid,
               _csrf: csrfToken,
             }).always(() => {
-              let $editor = $('.CodeMirror:visible'), extpos;
+              let $editor = $('.CodeMirror:visible');
               if ($editor.length && ($editor = $editor[0].CodeMirror.getTextArea())) {
-                if (-1 == (extpos = file.name.indexOf('.'))) extpos = undefined;
-                $editor._data_easyMDE.value($editor.value.replace(`![${file.name.slice(0, extpos)}](/attachments/${file.uuid})`, ''));
-                $editor._data_easyMDE.value($editor.value.replace(`[${file.name.slice(0, extpos)}](/attachments/${file.uuid})`, ''));
-                $editor._data_easyMDE.value($editor.value.replace(`[${file.name}](/attachments/${file.uuid})`, ''));
+                const re = new RegExp(`!\\[[^\\]]*]\\(/attachments/${file.uuid}\\)|\\[[^\\]]*]\\(/attachments/${file.uuid}\\)`);
+                $editor._data_easyMDE.value($editor.value.replace(re, ''));
               }
             });
           }

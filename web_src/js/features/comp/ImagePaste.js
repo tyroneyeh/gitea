@@ -1,6 +1,6 @@
 const {csrfToken} = window.config;
 
-async function uploadFile(file, uploadUrl) {
+async function uploadFile(file, uploadUrl, dropzone) {
   const formData = new FormData();
   formData.append('file', file, file.name);
 
@@ -9,7 +9,13 @@ async function uploadFile(file, uploadUrl) {
     headers: {'X-Csrf-Token': csrfToken},
     body: formData,
   });
-  return await res.json();
+  const data = await res.json();
+  const upfile = {name: file.name, size: file.size, uuid: data.uuid};
+  dropzone.dropzone.emit('addedfile', upfile);
+  dropzone.dropzone.emit('thumbnail', upfile, `/attachments/${data.uuid}`);
+  dropzone.dropzone.emit('complete', upfile);
+  dropzone.dropzone.files.push(upfile);
+  return data;
 }
 
 function clipboardPastedImages(e) {
@@ -56,19 +62,16 @@ export function initCompImagePaste($target) {
   const uploadUrl = dropzone.getAttribute('data-upload-url');
   const dropzoneFiles = dropzone.querySelector('.files');
   $(document).on('paste', '.CodeMirror', async function(e) {
-    const img = clipboardPastedImages(e.originalEvent);
-    const name = img[0].name.substring(0, img[0].name.lastIndexOf('.'));
     const $editor = this.CodeMirror.getTextArea();
-    insertAtCursor($editor, `![${name}]()`);
-    const data = await uploadFile(img[0], uploadUrl);
-    replaceAndKeepCursor($editor, `![${name}]()`, `![${name}](/attachments/${data.uuid})`);
-    const input = $(`<input id="${data.uuid}" name="files" type="hidden">`).val(data.uuid);
-    dropzoneFiles.appendChild(input[0]);
-    const upfile = {name: img[0].name, size: img[0].size, uuid: data.uuid};
-    dropzone.dropzone.emit('addedfile', upfile);
-    dropzone.dropzone.emit('thumbnail', upfile, `/attachments/${data.uuid}`);
-    dropzone.dropzone.emit('complete', upfile);
-    dropzone.dropzone.files.push(upfile);
+    // const img = clipboardPastedImages(e.originalEvent);
+    for (const img of clipboardPastedImages(e.originalEvent)) {
+      const name = img.name.substring(0, img.name.lastIndexOf('.'));
+      insertAtCursor($editor, `![${name}]()`);
+      const data = await uploadFile(img, uploadUrl, dropzone);
+      replaceAndKeepCursor($editor, `![${name}]()`, `![${name}](/attachments/${data.uuid})\n`);
+      const input = $(`<input id="${data.uuid}" name="files" type="hidden">`).val(data.uuid);
+      dropzoneFiles.appendChild(input[0]);
+    }
   });
 }
 
@@ -77,16 +80,11 @@ export function initEasyMDEImagePaste(easyMDE, dropzone, files) {
   easyMDE.codemirror.on('paste', async (_, e) => {
     for (const img of clipboardPastedImages(e)) {
       const name = img.name.substr(0, img.name.lastIndexOf('.'));
-      const data = await uploadFile(img, uploadUrl);
+      const data = await uploadFile(img, uploadUrl, dropzone);
       const pos = easyMDE.codemirror.getCursor();
       easyMDE.codemirror.replaceRange(`![${name}](/attachments/${data.uuid})`, pos);
       const input = $(`<input id="${data.uuid}" name="files" type="hidden">`).val(data.uuid);
       files.append(input);
-      const upfile = {name: img.name, size: img.size, uuid: data.uuid};
-      dropzone.dropzone.emit('addedfile', upfile);
-      dropzone.dropzone.emit('thumbnail', upfile, `/attachments/${data.uuid}`);
-      dropzone.dropzone.emit('complete', upfile);
-      dropzone.dropzone.files.push(upfile);
     }
   });
 }
