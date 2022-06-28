@@ -303,31 +303,36 @@ async function onEditContent(event) {
             fileUuidDict[file.uuid] = {submitted: false};
             const input = $(`<input id="${data.uuid}" name="files" type="hidden">`).val(data.uuid);
             $dropzone.find('.files').append(input);
-            let editor = $('.CodeMirror:visible');
-            if (editor.length && (editor = editor[0].CodeMirror.getTextArea())) {
-              const startText = editor.value.substring(0, editor.selectionStart), endText = editor.value.substring(editor.selectionEnd);
-              editor._data_easyMDE.codemirror.setValue(`${startText}[${file.name}](/attachments/${data.uuid})${endText}\n`);
+            let $editor = $('.CodeMirror:visible');
+            if ($editor.length && ($editor = $editor[0].CodeMirror.getTextArea())) {
+              const startPos = $editor._data_easyMDE.codemirror.getCursor();
+              if (startPos) {
+                $editor._data_easyMDE.codemirror.setSelection(startPos, startPos);
+                $editor._data_easyMDE.codemirror.replaceSelection(`[${file.name}](/attachments/${data.uuid})\n`);
+              } else {
+                $editor._data_easyMDE.value(`${$editor.value}\n[${file.name}](/attachments/${data.uuid})\n`);
+              }
             }
           });
           this.on('removedfile', (file) => {
             $(`#${file.uuid}`).remove();
-            let editor = $('.CodeMirror:visible');
-            if (editor.length && (editor = editor[0].CodeMirror.getTextArea())) {
-              editor._data_easyMDE.value(editor.value.replace(`![${file.name.slice(0, file.name.indexOf('.'))}](/attachments/${file.uuid})`, ''));
-              editor._data_easyMDE.value(editor.value.replace(`[${file.name.slice(0, file.name.indexOf('.'))}](/attachments/${file.uuid})`, ''));
-              editor._data_easyMDE.value(editor.value.replace(`[${file.name}](/attachments/${file.uuid})`, ''));
+            let $editor = $('.CodeMirror:visible');
+            if ($editor.length && ($editor = $editor[0].CodeMirror.getTextArea())) {
+              $editor._data_easyMDE.value($editor.value.replace(`![${file.name.slice(0, file.name.indexOf('.'))}](/attachments/${file.uuid})`, ''));
+              $editor._data_easyMDE.value($editor.value.replace(`[${file.name.slice(0, file.name.indexOf('.'))}](/attachments/${file.uuid})`, ''));
+              $editor._data_easyMDE.value($editor.value.replace(`[${file.name}](/attachments/${file.uuid})`, ''));
             }
             if ($dropzone.data('remove-url') && fileUuidDict[file.uuid] && fileUuidDict[file.uuid].submitted) {
               $.post($dropzone.data('remove-url'), {
                 file: file.uuid,
                 _csrf: csrfToken,
               }).always(() => {
-                let editor = $('.CodeMirror:visible'), extpos;
-                if (editor.length && (editor = editor[0].CodeMirror.getTextArea())) {
+                let $editor = $('.CodeMirror:visible'), extpos;
+                if ($editor.length && ($editor = $editor[0].CodeMirror.getTextArea())) {
                   if (-1 == (extpos = file.name.indexOf('.'))) extpos = undefined;
-                  editor._data_easyMDE.value(editor.value.replace(`![${file.name.slice(0, extpos)}](/attachments/${file.uuid})`, ''));
-                  editor._data_easyMDE.value(editor.value.replace(`[${file.name.slice(0, extpos)}](/attachments/${file.uuid})`, ''));
-                  editor._data_easyMDE.value(editor.value.replace(`[${file.name}](/attachments/${file.uuid})`, ''));
+                  $editor._data_easyMDE.value($editor.value.replace(`![${file.name.slice(0, extpos)}](/attachments/${file.uuid})`, ''));
+                  $editor._data_easyMDE.value($editor.value.replace(`[${file.name.slice(0, extpos)}](/attachments/${file.uuid})`, ''));
+                  $editor._data_easyMDE.value($editor.value.replace(`[${file.name}](/attachments/${file.uuid})`, ''));
                 }
               });
             }

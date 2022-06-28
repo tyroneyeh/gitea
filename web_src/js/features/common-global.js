@@ -164,10 +164,15 @@ export function initGlobalDropzone() {
           file.uuid = data.uuid;
           const input = $(`<input id="${file.uuid}" name="files" type="hidden">`).val(data.uuid);
           $dropzone.find('.files').append(input);
-          let editor = $('.CodeMirror:visible');
-          if (editor.length && (editor = editor[0].CodeMirror.getTextArea())) {
-            const startText = (editor && editor.value.substring(0, editor.selectionStart)), endText = (editor && editor.value.substring(editor.selectionEnd));
-            editor._data_easyMDE.value(`${startText}[${file.name}](/attachments/${file.uuid})${endText}\n`);
+          let $editor = $('.CodeMirror:visible');
+          if ($editor.length && ($editor = $editor[0].CodeMirror.getTextArea())) {
+            const startPos = $editor._data_easyMDE.codemirror.getCursor();
+            if (startPos) {
+              $editor._data_easyMDE.codemirror.setSelection(startPos, startPos);
+              $editor._data_easyMDE.codemirror.replaceSelection(`[${file.name}](/attachments/${data.uuid})\n`);
+            } else {
+              $editor._data_easyMDE.value(`${$editor.value}\n[${file.name}](/attachments/${data.uuid})\n`);
+            }
           }
         });
         this.on('removedfile', (file) => {
@@ -177,12 +182,12 @@ export function initGlobalDropzone() {
               file: file.uuid,
               _csrf: csrfToken,
             }).always(() => {
-              let editor = $('.CodeMirror:visible'), extpos;
-              if (editor.length && (editor = editor[0].CodeMirror.getTextArea())) {
+              let $editor = $('.CodeMirror:visible'), extpos;
+              if ($editor.length && ($editor = $editor[0].CodeMirror.getTextArea())) {
                 if (-1 == (extpos = file.name.indexOf('.'))) extpos = undefined;
-                editor._data_easyMDE.value(editor.value.replace(`![${file.name.slice(0, extpos)}](/attachments/${file.uuid})`, ''));
-                editor._data_easyMDE.value(editor.value.replace(`[${file.name.slice(0, extpos)}](/attachments/${file.uuid})`, ''));
-                editor._data_easyMDE.value(editor.value.replace(`[${file.name}](/attachments/${file.uuid})`, ''));
+                $editor._data_easyMDE.value($editor.value.replace(`![${file.name.slice(0, extpos)}](/attachments/${file.uuid})`, ''));
+                $editor._data_easyMDE.value($editor.value.replace(`[${file.name.slice(0, extpos)}](/attachments/${file.uuid})`, ''));
+                $editor._data_easyMDE.value($editor.value.replace(`[${file.name}](/attachments/${file.uuid})`, ''));
               }
             });
           }

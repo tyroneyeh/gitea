@@ -30,26 +30,21 @@ function clipboardPastedImages(e) {
 
 
 function insertAtCursor(field, value) {
-  if (field.getTextArea().selectionStart || field.getTextArea().selectionStart === 0) {
-    const startPos = field.getTextArea().selectionStart;
-    const endPos = field.getTextArea().selectionEnd;
-    field.setValue(field.getValue().substring(0, startPos) + value + field.getValue().substring(endPos, field.getValue().length));
-    field.getTextArea().electionStart = startPos + value.length;
-    field.getTextArea().selectionEnd = startPos + value.length;
+  const startPos = field._data_easyMDE.codemirror.getCursor();
+  if (startPos) {
+    field._data_easyMDE.codemirror.setSelection(startPos, startPos);
+    field._data_easyMDE.codemirror.replaceSelection(value);
   } else {
-    field.setValue(field.getValue() + value);
+    field._data_easyMDE.value(field.value + value);
   }
 }
 
 function replaceAndKeepCursor(field, oldval, newval) {
-  if (field.getTextArea().selectionStart || field.getTextArea().selectionStart === 0) {
-    const startPos = field.getTextArea().selectionStart;
-    const endPos = field.getTextArea().selectionEnd;
-    field.setValue(field.getValue().replace(oldval, newval));
-    field.getTextArea().selectionStart = startPos + newval.length - oldval.length;
-    field.getTextArea().selectionEnd = endPos + newval.length - oldval.length;
-  } else {
-    field.setValue(field.getValue().replace(oldval, newval));
+  const startPos = field._data_easyMDE.codemirror.getCursor();
+  field._data_easyMDE.value(field.value.replace(oldval, newval));
+  if (startPos) {
+    startPos.line += 1;
+    field._data_easyMDE.codemirror.setCursor(startPos);
   }
 }
 
@@ -63,9 +58,10 @@ export function initCompImagePaste($target) {
   $(document).on('paste', '.CodeMirror', async function(e) {
     const img = clipboardPastedImages(e.originalEvent);
     const name = img[0].name.substring(0, img[0].name.lastIndexOf('.'));
-    insertAtCursor(this.CodeMirror, `![${name}]()`);
+    const $editor = this.CodeMirror.getTextArea();
+    insertAtCursor($editor, `![${name}]()`);
     const data = await uploadFile(img[0], uploadUrl);
-    replaceAndKeepCursor(this.CodeMirror, `![${name}]()`, `![${name}](/attachments/${data.uuid})`);
+    replaceAndKeepCursor($editor, `![${name}]()`, `![${name}](/attachments/${data.uuid})`);
     const input = $(`<input id="${data.uuid}" name="files" type="hidden">`).val(data.uuid);
     dropzoneFiles.appendChild(input[0]);
     const upfile = {name: img[0].name, size: img[0].size, uuid: data.uuid};
