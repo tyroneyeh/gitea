@@ -167,7 +167,7 @@ export function initGlobalDropzone() {
           let editor = $('.CodeMirror:visible');
           if (editor.length && (editor = editor[0].CodeMirror.getTextArea())) {
             const startText = (editor && editor.value.substring(0, editor.selectionStart)), endText = (editor && editor.value.substring(editor.selectionEnd));
-            editor._data_easyMDE.codemirror.setValue(`${startText}[${file.name}](/attachments/${file.uuid})${endText}\n`);
+            editor._data_easyMDE.value(`${startText}[${file.name}](/attachments/${file.uuid})${endText}\n`);
           }
         });
         this.on('removedfile', (file) => {
@@ -177,11 +177,12 @@ export function initGlobalDropzone() {
               file: file.uuid,
               _csrf: csrfToken,
             }).always(() => {
-              let editor = $('.CodeMirror:visible');
+              let editor = $('.CodeMirror:visible'), extpos;
               if (editor.length && (editor = editor[0].CodeMirror.getTextArea())) {
-                editor._data_easyMDE.codemirror.setValue(editor.value.replace(`![${file.name.slice(0, file.name.indexOf('.'))}](/attachments/${file.uuid})`, ''));
-                editor._data_easyMDE.codemirror.setValue(editor.value.replace(`[${file.name.slice(0, file.name.indexOf('.'))}](/attachments/${file.uuid})`, ''));
-                editor._data_easyMDE.codemirror.setValue(editor.value.replace(`[${file.name}](/attachments/${file.uuid})`, ''));
+                if (-1 == (extpos = file.name.indexOf('.'))) extpos = undefined;
+                editor._data_easyMDE.value(editor.value.replace(`![${file.name.slice(0, extpos)}](/attachments/${file.uuid})`, ''));
+                editor._data_easyMDE.value(editor.value.replace(`[${file.name.slice(0, extpos)}](/attachments/${file.uuid})`, ''));
+                editor._data_easyMDE.value(editor.value.replace(`[${file.name}](/attachments/${file.uuid})`, ''));
               }
             });
           }
