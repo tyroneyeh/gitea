@@ -2,6 +2,18 @@
 {{with .Page.Paginater}}
 	{{if gt .TotalPages 1}}
 		<div class="center page buttons">
+			<div class="ui dropdown type jump item">
+				<span class="text">
+					Number
+					{{svg "octicon-triangle-down" 14 "dropdown icon"}}
+				</span>
+				<div class="menu">
+					<a class="{{if eq $.limit 10}}active {{end}}item" href="{{$.Link}}?page={{.Previous}}&limit=10{{if $paginationLink}}&{{$paginationLink}}{{end}}">10</a>
+					<a class="{{if eq $.limit 25}}active {{end}}item" href="{{$.Link}}?page={{.Previous}}&limit=25{{if $paginationLink}}&{{$paginationLink}}{{end}}">25</a>
+					<a class="{{if eq $.limit 50}}active {{end}}item" href="{{$.Link}}?page={{.Previous}}&limit=50{{if $paginationLink}}&{{$paginationLink}}{{end}}">50</a>
+					<a class="{{if eq $.limit 100}}active {{end}}item" href="{{$.Link}}?page={{.Previous}}&limit=100{{if $paginationLink}}&{{$paginationLink}}{{end}}">100</a>
+				</div>
+			</div>
 			<div class="ui borderless pagination menu">
 				<a class="{{if .IsFirst}}disabled{{end}} item navigation" {{if not .IsFirst}}href="{{$.Link}}{{if $paginationLink}}?{{$paginationLink}}{{end}}"{{end}}>
 					{{svg "gitea-double-chevron-left" 16 "mr-2"}}

@@ -186,6 +186,7 @@ func Milestones(ctx *context.Context) {
 		isShowClosed = ctx.FormString("state") == "closed"
 		sortType     = ctx.FormString("sort")
 		page         = ctx.FormInt("page")
+		limit        = ctx.FormInt("limit")
 		keyword      = ctx.FormTrim("q")
 	)
 
@@ -310,7 +311,7 @@ func Milestones(ctx *context.Context) {
 	}
 	ctx.Data["IsShowClosed"] = isShowClosed
 
-	pager := context.NewPagination(pagerCount, setting.UI.IssuePagingNum, page, 5)
+	pager := context.NewPagination(pagerCount, limit, page, 5)
 	pager.AddParam(ctx, "q", "Keyword")
 	pager.AddParam(ctx, "repos", "RepoIDs")
 	pager.AddParam(ctx, "sort", "SortType")
@@ -501,7 +502,12 @@ func buildIssueOverview(ctx *context.Context, unitType unit.Type) {
 		page = 1
 	}
 	opts.Page = page
-	opts.PageSize = setting.UI.IssuePagingNum
+
+	limit := ctx.FormInt("limit")
+	if limit <= setting.UI.IssuePagingNum {
+		limit = setting.UI.IssuePagingNum
+	}
+	opts.PageSize = limit
 
 	// Get IDs for labels (a filter option for issues/pulls).
 	// Required for IssuesOptions.
@@ -645,6 +651,7 @@ func buildIssueOverview(ctx *context.Context, unitType unit.Type) {
 	ctx.Data["RepoIDs"] = repoIDs
 	ctx.Data["IsShowClosed"] = isShowClosed
 	ctx.Data["SelectLabels"] = selectedLabels
+	ctx.Data["Limit"] = limit
 
 	if isShowClosed {
 		ctx.Data["State"] = "closed"
@@ -657,7 +664,7 @@ func buildIssueOverview(ctx *context.Context, unitType unit.Type) {
 
 	ctx.Data["ReposParam"] = string(reposParam)
 
-	pager := context.NewPagination(shownIssues, setting.UI.IssuePagingNum, page, 5)
+	pager := context.NewPagination(shownIssues, limit, page, 5)
 	pager.AddParam(ctx, "q", "Keyword")
 	pager.AddParam(ctx, "type", "ViewType")
 	pager.AddParam(ctx, "repos", "ReposParam")
@@ -666,6 +673,7 @@ func buildIssueOverview(ctx *context.Context, unitType unit.Type) {
 	pager.AddParam(ctx, "labels", "SelectLabels")
 	pager.AddParam(ctx, "milestone", "MilestoneID")
 	pager.AddParam(ctx, "assignee", "AssigneeID")
+	pager.AddParam(ctx, "limit", "Limit")
 	ctx.Data["Page"] = pager
 
 	ctx.HTML(http.StatusOK, tplIssues)

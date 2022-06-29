@@ -204,13 +204,18 @@ func issues(ctx *context.Context, milestoneID, projectID int64, isPullOption uti
 		page = 1
 	}
 
+	limit := ctx.FormInt("limit")
+	if limit <= setting.UI.IssuePagingNum {
+		limit = setting.UI.IssuePagingNum
+	}
+
 	var total int
 	if !isShowClosed {
 		total = int(issueStats.OpenCount)
 	} else {
 		total = int(issueStats.ClosedCount)
 	}
-	pager := context.NewPagination(total, setting.UI.IssuePagingNum, page, 5)
+	pager := context.NewPagination(total, limit, page, 5)
 
 	var mileIDs []int64
 	// if milestoneID > 0 {
@@ -227,7 +232,7 @@ func issues(ctx *context.Context, milestoneID, projectID int64, isPullOption uti
 		issues, err = models.Issues(&models.IssuesOptions{
 			ListOptions: db.ListOptions{
 				Page:     pager.Paginater.Current(),
-				PageSize: setting.UI.IssuePagingNum,
+				PageSize: limit,
 			},
 			RepoID:            repo.ID,
 			AssigneeID:        assigneeID,
@@ -358,6 +363,7 @@ func issues(ctx *context.Context, milestoneID, projectID int64, isPullOption uti
 	ctx.Data["AssigneeID"] = assigneeID
 	ctx.Data["IsShowClosed"] = isShowClosed
 	ctx.Data["Keyword"] = keyword
+	ctx.Data["Limit"] = limit
 	if isShowClosed {
 		ctx.Data["State"] = "closed"
 	} else {
@@ -371,6 +377,7 @@ func issues(ctx *context.Context, milestoneID, projectID int64, isPullOption uti
 	pager.AddParam(ctx, "labels", "SelectLabels")
 	pager.AddParam(ctx, "milestone", "MilestoneID")
 	pager.AddParam(ctx, "assignee", "AssigneeID")
+	pager.AddParam(ctx, "limit", "Limit")
 	ctx.Data["Page"] = pager
 }
 
