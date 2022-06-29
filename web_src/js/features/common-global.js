@@ -167,12 +167,12 @@ export function initGlobalDropzone() {
           $dropzone.find('.files').append(input);
           let $editor = $('.CodeMirror:visible');
           if ($editor.length && ($editor = $editor[0].CodeMirror.getTextArea())) {
-            const startPos = $editor._data_easyMDE.codemirror.getCursor();
+            const startPos = $editor._data_easyMDE.codemirror.getCursor(), isimage = file.type.startsWith('image/') ? '!' : '', fileName = file.name.replace(/\.[^/.]+$/, '');
             if (startPos) {
               $editor._data_easyMDE.codemirror.setSelection(startPos, startPos);
-              $editor._data_easyMDE.codemirror.replaceSelection(`[${file.name}](/attachments/${data.uuid})\n`);
+              $editor._data_easyMDE.codemirror.replaceSelection(`${isimage}[${fileName}](/attachments/${data.uuid})\n`);
             } else {
-              $editor._data_easyMDE.value(`${$editor.value}\n[${file.name}](/attachments/${data.uuid})\n`);
+              $editor._data_easyMDE.value(`${$editor.value}\n${isimage}[${fileName}](/attachments/${data.uuid})\n`);
             }
           }
         });
