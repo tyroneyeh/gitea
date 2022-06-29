@@ -23,6 +23,7 @@ export function initHeadNavbarContentToggle() {
     if (isExpanded) {
       content.addClass('shown');
       toggle.addClass('active');
+    } else {
       content.removeClass('shown');
       toggle.removeClass('active');
     }
