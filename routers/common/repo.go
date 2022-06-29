@@ -93,7 +93,7 @@ func ServeData(ctx *context.Context, name string, size int64, reader io.Reader) 
 				ctx.Resp.Header().Set("X-Content-Type-Options", "nosniff")
 				if st.IsSvgImage() {
 					ctx.Resp.Header().Set("Content-Type", typesniffer.SvgMimeType)
-				} else {
+				} else if mappedMimeType == "" {
 					ctx.Resp.Header().Set("Content-Type", typesniffer.ApplicationOctetStream)
 				}
 			}
