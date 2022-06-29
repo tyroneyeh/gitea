@@ -1,6 +1,6 @@
 import {createCommentEasyMDE, getAttachedEasyMDE} from './comp/EasyMDE.js';
 import {initCompMarkupContentPreviewTab} from './comp/MarkupContentPreview.js';
-import {initCompImagePaste, initEasyMDEImagePaste} from './comp/ImagePaste.js';
+import {initEasyMDEImagePaste} from './comp/ImagePaste.js';
 import {
   initRepoIssueBranchSelect, initRepoIssueCodeCommentCancel,
   initRepoIssueCommentDelete,
@@ -31,7 +31,8 @@ import {initRepoSettingBranches} from './repo-settings.js';
 const {csrfToken} = window.config;
 
 export function initRepoCommentForm() {
-  if ($('.comment.form').length === 0) {
+  const $commentForm = $('.comment.form');
+  if ($commentForm.length === 0) {
     return;
   }
 
@@ -65,8 +66,9 @@ export function initRepoCommentForm() {
   }
 
   (async () => {
-    await createCommentEasyMDE($('.comment.form textarea:not(.review-textarea)'));
-    initCompImagePaste($('.comment.form'));
+    const $textarea = $commentForm.find('textarea:not(.review-textarea)');
+    const easyMDE = await createCommentEasyMDE($textarea);
+    initEasyMDEImagePaste(easyMDE, $commentForm.find('.dropzone'));
   })();
 
   initBranchSelector();
@@ -316,6 +318,7 @@ async function onEditContent(event) {
           });
           this.on('removedfile', (file) => {
             $(`#${file.uuid}`).remove();
+            if (file.submitted) fileUuidDict[file.uuid] = {submitted: file.submitted};
             if ($dropzone.data('remove-url') && fileUuidDict[file.uuid]?.submitted) {
               $.post($dropzone.data('remove-url'), {
                 file: file.uuid,
@@ -323,7 +326,7 @@ async function onEditContent(event) {
               }).always(() => {
                 let $editor = $('.CodeMirror:visible');
                 if ($editor.length && ($editor = $editor[0].CodeMirror.getTextArea())) {
-                  const re = new RegExp(`!\\[[^\\]]*]\\(/attachments/${file.uuid}\\)|\\[[^\\]]*]\\(/attachments/${file.uuid}\\)`);
+                  const re = new RegExp(`\\!\\[[^\\]]*]\\(/attachments/${file.uuid}\\)|\\[[^\\]]*]\\(/attachments/${file.uuid}\\)`);
                   $editor._data_easyMDE.value($editor.value.replace(re, ''));
                 }
               });
@@ -367,9 +370,7 @@ async function onEditContent(event) {
     easyMDE = await createCommentEasyMDE($textarea);
 
     initCompMarkupContentPreviewTab($editContentForm);
-    if ($dropzone.length === 1) {
-      initEasyMDEImagePaste(easyMDE, $dropzone[0], $dropzone.find('.files'));
-    }
+    initEasyMDEImagePaste(easyMDE, $dropzone);
 
     $editContentZone.find('.cancel.button').on('click', () => {
       $renderContent.show();

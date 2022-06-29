@@ -22,10 +22,10 @@ export function initRepoReleaseEditor() {
   (async () => {
     const $textarea = $editor.find('textarea');
     await attachTribute($textarea.get(), {mentions: false, emoji: true});
-    const $files = $editor.parent().find('.files');
+    // const $files = $editor.parent().find('.files');
     const easyMDE = await createCommentEasyMDE($textarea);
     initCompMarkupContentPreviewTab($editor);
-    const dropzone = $editor.parent().find('.dropzone')[0];
-    initEasyMDEImagePaste(easyMDE, dropzone, $files);
+    const $dropzone = $editor.parent().find('.dropzone')[0];
+    initEasyMDEImagePaste(easyMDE, $dropzone);
   })();
 }

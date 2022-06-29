@@ -184,7 +184,7 @@ export function initGlobalDropzone() {
             }).always(() => {
               let $editor = $('.CodeMirror:visible');
               if ($editor.length && ($editor = $editor[0].CodeMirror.getTextArea())) {
-                const re = new RegExp(`!\\[[^\\]]*]\\(/attachments/${file.uuid}\\)|\\[[^\\]]*]\\(/attachments/${file.uuid}\\)`);
+                const re = new RegExp(`\\!\\[[^\\]]*]\\(/attachments/${file.uuid}\\)|\\[[^\\]]*]\\(/attachments/${file.uuid}\\)`);
                 $editor._data_easyMDE.value($editor.value.replace(re, ''));
               }
             });
