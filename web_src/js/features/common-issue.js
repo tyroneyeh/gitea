@@ -12,6 +12,21 @@ export function initCommonIssue() {
     }
   });
 
+  $('.issue-checkbox-all').on('click', () => {
+    const allcheckbox = $('.issue-checkbox-all input');
+    if (allcheckbox[0].checked) {
+      $('.issue-checkbox input').prop("checked", 1);
+      $('#issue-filters').addClass('hide');
+      $('#issue-actions').removeClass('hide');
+      allcheckbox[1].checked = 1;
+      allcheckbox[0].checked = 0;
+    } else {
+      $('.issue-checkbox input').prop("checked", 0);
+      $('#issue-filters').removeClass('hide');
+      $('#issue-actions').addClass('hide');
+    }
+  });
+
   $('.issue-action').on('click', async function () {
     let action = this.getAttribute('data-action');
     let elementId = this.getAttribute('data-element-id');
