@@ -4,14 +4,14 @@
 		<div class="center page buttons">
 			<div class="ui dropdown type jump item">
 				<span class="text">
-					Number
+					{{$.Limit}}
 					{{svg "octicon-triangle-down" 14 "dropdown icon"}}
 				</span>
 				<div class="menu">
-					<a class="{{if eq $.limit 10}}active {{end}}item" href="{{$.Link}}?page={{.Previous}}&limit=10{{if $paginationLink}}&{{$paginationLink}}{{end}}">10</a>
-					<a class="{{if eq $.limit 25}}active {{end}}item" href="{{$.Link}}?page={{.Previous}}&limit=25{{if $paginationLink}}&{{$paginationLink}}{{end}}">25</a>
-					<a class="{{if eq $.limit 50}}active {{end}}item" href="{{$.Link}}?page={{.Previous}}&limit=50{{if $paginationLink}}&{{$paginationLink}}{{end}}">50</a>
-					<a class="{{if eq $.limit 100}}active {{end}}item" href="{{$.Link}}?page={{.Previous}}&limit=100{{if $paginationLink}}&{{$paginationLink}}{{end}}">100</a>
+					<a class="{{if eq $.Limit 10}}active {{end}}item" href="{{$.Link}}?page={{.Previous}}&limit=10{{if $paginationLink}}&{{$paginationLink}}{{end}}">10</a>
+					<a class="{{if eq $.Limit 25}}active {{end}}item" href="{{$.Link}}?page={{.Previous}}&limit=25{{if $paginationLink}}&{{$paginationLink}}{{end}}">25</a>
+					<a class="{{if eq $.Limit 50}}active {{end}}item" href="{{$.Link}}?page={{.Previous}}&limit=50{{if $paginationLink}}&{{$paginationLink}}{{end}}">50</a>
+					<a class="{{if eq $.Limit 100}}active {{end}}item" href="{{$.Link}}?page={{.Previous}}&limit=100{{if $paginationLink}}&{{$paginationLink}}{{end}}">100</a>
 				</div>
 			</div>
 			<div class="ui borderless pagination menu">
