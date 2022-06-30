@@ -6,24 +6,28 @@ export function initCommonIssue() {
     if (numChecked > 0) {
       $('#issue-filters').addClass('hide');
       $('#issue-actions').removeClass('hide');
+      $('#issue-actions .six').prepend($(".issue-checkbox-all"))
     } else {
       $('#issue-filters').removeClass('hide');
       $('#issue-actions').addClass('hide');
+      $('#issue-filters .six').prepend($(".issue-checkbox-all"))
     }
   });
 
   $('.issue-checkbox-all').on('click', () => {
     const allcheckbox = $('.issue-checkbox-all input');
-    if (allcheckbox[0].checked) {
-      $('.issue-checkbox input').prop("checked", 1);
+    if (allcheckbox.prop('checked')) {
+      const selected = $('.issue-checkbox input:checked');
+      $('.issue-checkbox input:not(:checked)').prop("checked", 1);
+      selected.prop("checked", 0);
       $('#issue-filters').addClass('hide');
       $('#issue-actions').removeClass('hide');
-      allcheckbox[1].checked = 1;
-      allcheckbox[0].checked = 0;
+      $('#issue-actions .six').prepend($(".issue-checkbox-all"))
     } else {
-      $('.issue-checkbox input').prop("checked", 0);
+      $('.issue-checkbox input:checked').prop("checked", 0);
       $('#issue-filters').removeClass('hide');
       $('#issue-actions').addClass('hide');
+      $('#issue-filters .six').prepend($(".issue-checkbox-all"))
     }
   });
 
