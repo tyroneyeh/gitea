@@ -1,9 +1,17 @@
 import {updateIssuesMeta} from './repo-issue.js';
 
 export function initCommonIssue() {
-  $('.issue-checkbox').on('click', () => {
-    const numChecked = $('.issue-checkbox').children('input:checked').length;
-    if (numChecked > 0) {
+  $('.issue-checkbox').on('click', (e) => {
+    const issuecheckbox = $('.issue-checkbox input');
+    if (e.shiftKey && config.checkboxfirst !== undefined) {
+      for (let i = config.checkboxfirst + 1, j = issuecheckbox.index($(e.currentTarget).find("input")); i < j; i++) {
+        issuecheckbox[i].checked = 1;
+      }
+      delete config.checkboxfirst;
+    } else {
+      config.checkboxfirst = issuecheckbox.index($(e.currentTarget).find("input"));
+    }
+    if (issuecheckbox.is(':checked')) {
       $('#issue-filters').addClass('hide');
       $('#issue-actions').removeClass('hide');
       $('#issue-actions .six').prepend($(".issue-checkbox-all"))
