@@ -24,12 +24,12 @@ function clipboardPastedImages(e) {
   const files = [];
   if (e.clipboardData) {
     for (const item of e.clipboardData.items || []) {
+      const file = item.getAsFile();
       // if (!item.type || !item.type.startsWith('image/')) continue;
-      if (!item.type || item.getAsFile() === null) continue;
+      if (file === null || !item.type) continue;
       files.push(item.getAsFile());
     }
-  }
-  if (e.dataTransfer) {
+  } else if (e.dataTransfer) {
     for (const item of e.dataTransfer.files || []) {
       if (!item.type) continue;
       files.push(item);

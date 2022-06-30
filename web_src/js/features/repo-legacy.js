@@ -305,16 +305,17 @@ async function onEditContent(event) {
             fileUuidDict[file.uuid] = {submitted: false};
             const input = $(`<input id="${data.uuid}" name="files" type="hidden">`).val(data.uuid);
             $dropzone.find('.files').append(input);
-            let $editor = $('.CodeMirror:visible');
-            if ($editor.length && ($editor = $editor[0].CodeMirror.getTextArea())) {
-              const startPos = $editor._data_easyMDE.codemirror.getCursor(), isimage = file.type.startsWith('image/') ? '!' : '', fileName = file.name.replace(/\.[^/.]+$/, '');
-              if (startPos) {
-                $editor._data_easyMDE.codemirror.setSelection(startPos, startPos);
-                $editor._data_easyMDE.codemirror.replaceSelection(`${isimage}[${fileName}](/attachments/${data.uuid})\n`);
-              } else {
-                $editor._data_easyMDE.value(`${$editor.value}\n${isimage}[${fileName}](/attachments/${data.uuid})\n`);
+            $('.CodeMirror:visible').each((_, i) => {
+              if (i.CodeMirror) {
+                const startPos = i.CodeMirror.getCursor('start'), endPos = i.CodeMirror.getCursor('end'), isimage = file.type.startsWith('image/') ? '!' : '', fileName = file.name.replace(/\.[^/.]+$/, '');
+                if (startPos) {
+                  i.CodeMirror.setSelection(startPos, endPos);
+                  i.CodeMirror.replaceSelection(`${isimage}[${fileName}](/attachments/${data.uuid})\n`);
+                } else {
+                  i.CodeMirror.setValue(`${i.CodeMirror.getValue()}\n${isimage}[${fileName}](/attachments/${data.uuid})\n`);
+                }
               }
-            }
+            });
           });
           this.on('removedfile', (file) => {
             $(`#${file.uuid}`).remove();
@@ -324,11 +325,12 @@ async function onEditContent(event) {
                 file: file.uuid,
                 _csrf: csrfToken,
               }).always(() => {
-                let $editor = $('.CodeMirror:visible');
-                if ($editor.length && ($editor = $editor[0].CodeMirror.getTextArea())) {
-                  const re = new RegExp(`\\!\\[[^\\]]*]\\(/attachments/${file.uuid}\\)|\\[[^\\]]*]\\(/attachments/${file.uuid}\\)`);
-                  $editor._data_easyMDE.value($editor.value.replace(re, ''));
-                }
+                $('.CodeMirror').each((_, i) => {
+                  if (i.CodeMirror) {
+                    const re = new RegExp(`\\!\\[[^\\]]*]\\(/attachments/${file.uuid}\\)|\\[[^\\]]*]\\(/attachments/${file.uuid}\\)`);
+                    i.CodeMirror.setValue(i.CodeMirror.getValue().replace(re, ''));
+                  }
+                });
               });
             }
           });
