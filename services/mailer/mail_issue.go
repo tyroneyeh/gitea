@@ -90,7 +90,7 @@ func mailIssueCommentToParticipants(ctx *mailCommentContext, mentions []*user_mo
 	visited := make(map[int64]bool, len(unfiltered)+len(mentions)+1)
 
 	// Avoid mailing the doer
-	if ctx.Doer.EmailNotificationsPreference == user_model.EmailNotificationsEnabled || ctx.Doer.EmailNotificationsPreference == user_model.EmailNotificationsOnMention {
+	if ctx.Doer.EmailNotificationsPreference != user_model.EmailNotificationsAndYourOwn {
 		visited[ctx.Doer.ID] = true
 	}
 
