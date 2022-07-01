@@ -89,7 +89,7 @@
 								{{svg "octicon-triangle-down" 14 "dropdown icon"}}
 							</span>
 							<div class="menu">
-								{{range .Labels}}
+								{{range .LabelsFilter}}
 								<a class="{{if eq $.SelectLabels .}}active {{end}}item" href="{{$.Link}}?type={{$.ViewType}}&repos=[{{range $.RepoIDs}}{{.}}%2C{{end}}]&state={{$.State}}&labels={{.}}&q={{$.Keyword}}">{{.}}</a>
 								{{end}}
 							</div>

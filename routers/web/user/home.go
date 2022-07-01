@@ -682,8 +682,7 @@ func buildIssueOverview(ctx *context.Context, unitType unit.Type) {
 		var labels []string
 		e := db.GetEngine(db.DefaultContext)
 		e.Distinct("name").Table("label").OrderBy("name").Find(&labels)
-		ctx.Data["Labels"] = labels
-
+		ctx.Data["LabelsFilter"] = labels
 	}
 
 	ctx.HTML(http.StatusOK, tplIssues)

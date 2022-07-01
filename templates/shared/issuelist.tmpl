@@ -39,7 +39,7 @@
 					{{end}}
 					<span class="labels-list ml-2">
 						{{range .Labels}}
-							<a class="ui label" href="{{$.Link}}?q={{$.Keyword}}&type={{$.ViewType}}&state={{$.State}}&labels={{.Name}}{{if ne $.listType "milestone"}}&milestone={{$.MilestoneID}}{{end}}&assignee={{$.AssigneeID}}" style="color: {{.ForegroundColor}}; background-color: {{.Color}}" title="{{.Description | RenderEmojiPlain}}">{{.Name | RenderEmoji}}</a>
+							<a class="ui label" href="{{$.Link}}?q={{$.Keyword}}&type={{$.ViewType}}&state={{$.State}}&labels={{if $.LabelsFilter}}{{.Name}}{{else}}{{.ID}}{{end}}{{if ne $.listType "milestone"}}&milestone={{$.MilestoneID}}{{end}}&assignee={{$.AssigneeID}}" style="color: {{.ForegroundColor}}; background-color: {{.Color}}" title="{{.Description | RenderEmojiPlain}}">{{.Name | RenderEmoji}}</a>
 						{{end}}
 					</span>
 				</div>
