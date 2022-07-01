@@ -516,8 +516,10 @@ func buildIssueOverview(ctx *context.Context, unitType unit.Type) {
 	if len(selectedLabels) > 0 && selectedLabels != "0" {
 		labelIDs, err = base.StringsToInt64s(strings.Split(selectedLabels, ","))
 		if err != nil {
-			ctx.ServerError("StringsToInt64s", err)
-			return
+			// ctx.ServerError("StringsToInt64s", err)
+			// return
+			e := db.GetEngine(db.DefaultContext)
+			e.Select("id").Table("label").Where("`name` IN (?)", selectedLabels).Find(&labelIDs)
 		}
 	}
 	opts.LabelIDs = labelIDs
@@ -675,6 +677,14 @@ func buildIssueOverview(ctx *context.Context, unitType unit.Type) {
 	pager.AddParam(ctx, "assignee", "AssigneeID")
 	pager.AddParam(ctx, "limit", "Limit")
 	ctx.Data["Page"] = pager
+
+	if opts.RepoID == 0 {
+		var labels []string
+		e := db.GetEngine(db.DefaultContext)
+		e.Distinct("name").Table("label").OrderBy("name").Find(&labels)
+		ctx.Data["Labels"] = labels
+
+	}
 
 	ctx.HTML(http.StatusOK, tplIssues)
 }

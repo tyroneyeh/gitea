@@ -1328,22 +1328,26 @@ func (opts *IssuesOptions) setupSessionNoLimit(sess *xorm.Session) {
 
 	if len(opts.LabelIDs) > 0 {
 		var noLabelsIDs []int64
-		hasNoLabel := false
-		for i, labelID := range opts.LabelIDs {
-			if labelID > 0 {
-				sess.Join("INNER", fmt.Sprintf("issue_label il%d", i),
-					fmt.Sprintf("issue.id = il%[1]d.issue_id AND il%[1]d.label_id = %[2]d", i, labelID))
-			} else if labelID < 0 {
-				// sess.Where("issue.id not in (select issue_id from issue_label where label_id = ?)", -labelID)
-				noLabelsIDs = append(noLabelsIDs, -labelID)
-				hasNoLabel = true
+		if opts.RepoID == 0 {
+			sess.In("issue.id", builder.Select("issue_id").From("issue_label").Where(builder.In("label_id", opts.LabelIDs)))
+		} else {
+			hasNoLabel := false
+			for i, labelID := range opts.LabelIDs {
+				if labelID > 0 {
+					sess.Join("INNER", fmt.Sprintf("issue_label il%d", i),
+						fmt.Sprintf("issue.id = il%[1]d.issue_id AND il%[1]d.label_id = %[2]d", i, labelID))
+				} else if labelID < 0 {
+					// sess.Where("issue.id not in (select issue_id from issue_label where label_id = ?)", -labelID)
+					noLabelsIDs = append(noLabelsIDs, -labelID)
+					hasNoLabel = true
+				}
 			}
-		}
-		if hasNoLabel {
-			sess.NotIn("issue.id",
-				builder.Select("issue_id").
-					From("issue_label").
-					Where(builder.In("label_id", noLabelsIDs)))
+			if hasNoLabel {
+				sess.NotIn("issue.id",
+					builder.Select("issue_id").
+						From("issue_label").
+						Where(builder.In("label_id", noLabelsIDs)))
+			}
 		}
 	}
 

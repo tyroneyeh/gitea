@@ -5,30 +5,30 @@
 		<div class="ui stackable grid">
 			<div class="four wide column">
 				<div class="ui secondary vertical filter menu">
-					<a class="{{if eq .ViewType "your_repositories"}}ui basic blue button{{end}} item" href="{{.Link}}?type=your_repositories&repos=[{{range $.RepoIDs}}{{.}}%2C{{end}}]&sort={{$.SortType}}&state={{.State}}">
+					<a class="{{if eq .ViewType "your_repositories"}}ui basic blue button{{end}} item" href="{{.Link}}?type=your_repositories&repos=[{{range $.RepoIDs}}{{.}}%2C{{end}}]&sort={{$.SortType}}&state={{.State}}&labels={{$.SelectLabels}}">
 						{{.i18n.Tr "home.issues.in_your_repos"}}
 						<strong class="ui right">{{CountFmt .IssueStats.YourRepositoriesCount}}</strong>
 					</a>
-					<a class="{{if eq .ViewType "assigned"}}ui basic blue button{{end}} item" href="{{.Link}}?type=assigned&repos=[{{range $.RepoIDs}}{{.}}%2C{{end}}]&sort={{$.SortType}}&state={{.State}}">
+					<a class="{{if eq .ViewType "assigned"}}ui basic blue button{{end}} item" href="{{.Link}}?type=assigned&repos=[{{range $.RepoIDs}}{{.}}%2C{{end}}]&sort={{$.SortType}}&state={{.State}}&labels={{$.SelectLabels}}">
 						{{.i18n.Tr "repo.issues.filter_type.assigned_to_you"}}
 						<strong class="ui right">{{CountFmt .IssueStats.AssignCount}}</strong>
 					</a>
-					<a class="{{if eq .ViewType "created_by"}}ui basic blue button{{end}} item" href="{{.Link}}?type=created_by&repos=[{{range $.RepoIDs}}{{.}}%2C{{end}}]&sort={{$.SortType}}&state={{.State}}">
+					<a class="{{if eq .ViewType "created_by"}}ui basic blue button{{end}} item" href="{{.Link}}?type=created_by&repos=[{{range $.RepoIDs}}{{.}}%2C{{end}}]&sort={{$.SortType}}&state={{.State}}&labels={{$.SelectLabels}}">
 						{{.i18n.Tr "repo.issues.filter_type.created_by_you"}}
 						<strong class="ui right">{{CountFmt .IssueStats.CreateCount}}</strong>
 					</a>
-					<a class="{{if eq .ViewType "mentioned"}}ui basic blue button{{end}} item" href="{{.Link}}?type=mentioned&repos=[{{range $.RepoIDs}}{{.}}%2C{{end}}]&sort={{$.SortType}}&state={{.State}}">
+					<a class="{{if eq .ViewType "mentioned"}}ui basic blue button{{end}} item" href="{{.Link}}?type=mentioned&repos=[{{range $.RepoIDs}}{{.}}%2C{{end}}]&sort={{$.SortType}}&state={{.State}}&labels={{$.SelectLabels}}">
 						{{.i18n.Tr "repo.issues.filter_type.mentioning_you"}}
 						<strong class="ui right">{{CountFmt .IssueStats.MentionCount}}</strong>
 					</a>
 					{{if .PageIsPulls}}
-						<a class="{{if eq .ViewType "review_requested"}}ui basic blue button{{end}} item" href="{{.Link}}?type=review_requested&repos=[{{range $.RepoIDs}}{{.}}%2C{{end}}]&sort={{$.SortType}}&state={{.State}}">
+						<a class="{{if eq .ViewType "review_requested"}}ui basic blue button{{end}} item" href="{{.Link}}?type=review_requested&repos=[{{range $.RepoIDs}}{{.}}%2C{{end}}]&sort={{$.SortType}}&state={{.State}}&labels={{$.SelectLabels}}">
 							{{.i18n.Tr "repo.issues.filter_type.review_requested"}}
 							<strong class="ui right">{{CountFmt .IssueStats.ReviewRequestedCount}}</strong>
 						</a>
 					{{end}}
 					<div class="ui divider"></div>
-					<a class="{{if not $.RepoIDs}}ui basic blue button{{end}} repo name item" href="{{$.Link}}?type={{$.ViewType}}&sort={{$.SortType}}&state={{$.State}}&q={{$.Keyword}}">
+					<a class="{{if not $.RepoIDs}}ui basic blue button{{end}} repo name item" href="{{$.Link}}?type={{$.ViewType}}&sort={{$.SortType}}&state={{$.State}}&labels={{$.SelectLabels}}&q={{$.Keyword}}">
 						<span class="text truncate">All</span>
 						<div class="ui {{if $.IsShowClosed}}red{{else}}green{{end}} label">{{CountFmt .TotalIssueCount}}</div>
 					</a>
@@ -47,7 +47,7 @@
 											{{$Repo.ID}}%2C
 										{{- end -}}
 									{{- end -}}
-									]&sort={{$.SortType}}&state={{$.State}}&q={{$.Keyword}}" title="{{.FullName}}">
+									]&sort={{$.SortType}}&state={{$.State}}&labels={{$.SelectLabels}}&q={{$.Keyword}}" title="{{.FullName}}">
 								<span class="text truncate">{{$Repo.FullName}}</span>
 								<div class="ui {{if $.IsShowClosed}}red{{else}}green{{end}} label">{{CountFmt (index $.Counts $Repo.ID)}}</div>
 							</a>
@@ -55,15 +55,15 @@
 					{{end}}
 				</div>
 			</div>
-			<div class="twelve wide column content">
+			<div class="twelve wide column content repository">
 				<div class="ui three column stackable grid">
 					<div class="column">
 						<div class="ui compact tiny menu">
-							<a class="item{{if not .IsShowClosed}} active{{end}}" href="{{.Link}}?type={{$.ViewType}}&repos=[{{range $.RepoIDs}}{{.}}%2C{{end}}]&sort={{$.SortType}}&state=open&q={{$.Keyword}}">
+							<a class="item{{if not .IsShowClosed}} active{{end}}" href="{{.Link}}?type={{$.ViewType}}&repos=[{{range $.RepoIDs}}{{.}}%2C{{end}}]&sort={{$.SortType}}&state=open&labels={{$.SelectLabels}}&q={{$.Keyword}}">
 								{{svg "octicon-issue-opened" 16 "mr-3"}}
 								{{.i18n.Tr "repo.issues.open_tab" .IssueStats.OpenCount}}
 							</a>
-							<a class="item{{if .IsShowClosed}} active{{end}}" href="{{.Link}}?type={{$.ViewType}}&repos=[{{range $.RepoIDs}}{{.}}%2C{{end}}]&sort={{$.SortType}}&state=closed&q={{$.Keyword}}">
+							<a class="item{{if .IsShowClosed}} active{{end}}" href="{{.Link}}?type={{$.ViewType}}&repos=[{{range $.RepoIDs}}{{.}}%2C{{end}}]&sort={{$.SortType}}&state=closed&labels={{$.SelectLabels}}&q={{$.Keyword}}">
 								{{svg "octicon-issue-closed" 16 "mr-3"}}
 								{{.i18n.Tr "repo.issues.close_tab" .IssueStats.ClosedCount}}
 							</a>
@@ -81,7 +81,19 @@
 							</div>
 						</form>
 					</div>
-					<div class="column right aligned df ac je">
+					<div class="column right aligned filter menu df ac je">
+						<!-- Label -->
+						<div class="ui dropdown type jump item">
+							<span class="text">
+								{{.i18n.Tr "repo.issues.filter_label"}}
+								{{svg "octicon-triangle-down" 14 "dropdown icon"}}
+							</span>
+							<div class="menu">
+								{{range .Labels}}
+								<a class="{{if eq $.SelectLabels .}}active {{end}}item" href="{{$.Link}}?type={{$.ViewType}}&repos=[{{range $.RepoIDs}}{{.}}%2C{{end}}]&state={{$.State}}&labels={{.}}&q={{$.Keyword}}">{{.}}</a>
+								{{end}}
+							</div>
+						</div>
 						<!-- Sort -->
 						<div class="ui dropdown type jump item">
 							<span class="text">
@@ -89,14 +101,14 @@
 								{{svg "octicon-triangle-down" 14 "dropdown icon"}}
 							</span>
 							<div class="menu">
-								<a class="{{if or (eq .SortType "latest") (not .SortType)}}active{{end}} item" href="{{$.Link}}?type={{$.ViewType}}&repos=[{{range $.RepoIDs}}{{.}}%2C{{end}}]&sort=latest&state={{$.State}}&q={{$.Keyword}}">{{.i18n.Tr "repo.issues.filter_sort.latest"}}</a>
-								<a class="{{if eq .SortType "oldest"}}active{{end}} item" href="{{$.Link}}?type={{$.ViewType}}&repos=[{{range $.RepoIDs}}{{.}}%2C{{end}}]&sort=oldest&state={{$.State}}&q={{$.Keyword}}">{{.i18n.Tr "repo.issues.filter_sort.oldest"}}</a>
-								<a class="{{if eq .SortType "recentupdate"}}active{{end}} item" href="{{$.Link}}?type={{$.ViewType}}&repos=[{{range $.RepoIDs}}{{.}}%2C{{end}}]&sort=recentupdate&state={{$.State}}&q={{$.Keyword}}">{{.i18n.Tr "repo.issues.filter_sort.recentupdate"}}</a>
-								<a class="{{if eq .SortType "leastupdate"}}active{{end}} item" href="{{$.Link}}?type={{$.ViewType}}&repos=[{{range $.RepoIDs}}{{.}}%2C{{end}}]&sort=leastupdate&state={{$.State}}&q={{$.Keyword}}">{{.i18n.Tr "repo.issues.filter_sort.leastupdate"}}</a>
-								<a class="{{if eq .SortType "mostcomment"}}active{{end}} item" href="{{$.Link}}?type={{$.ViewType}}&repos=[{{range $.RepoIDs}}{{.}}%2C{{end}}]&sort=mostcomment&state={{$.State}}&q={{$.Keyword}}">{{.i18n.Tr "repo.issues.filter_sort.mostcomment"}}</a>
-								<a class="{{if eq .SortType "leastcomment"}}active{{end}} item" href="{{$.Link}}?type={{$.ViewType}}&repos=[{{range $.RepoIDs}}{{.}}%2C{{end}}]&sort=leastcomment&state={{$.State}}&q={{$.Keyword}}">{{.i18n.Tr "repo.issues.filter_sort.leastcomment"}}</a>
-								<a class="{{if eq .SortType "nearduedate"}}active{{end}} item" href="{{$.Link}}?type={{$.ViewType}}&repos=[{{range $.RepoIDs}}{{.}}%2C{{end}}]&sort=nearduedate&state={{$.State}}&q={{$.Keyword}}">{{.i18n.Tr "repo.issues.filter_sort.nearduedate"}}</a>
-								<a class="{{if eq .SortType "farduedate"}}active{{end}} item" href="{{$.Link}}?type={{$.ViewType}}&repos=[{{range $.RepoIDs}}{{.}}%2C{{end}}]&sort=farduedate&state={{$.State}}&q={{$.Keyword}}">{{.i18n.Tr "repo.issues.filter_sort.farduedate"}}</a>
+								<a class="{{if or (eq .SortType "latest") (not .SortType)}}active{{end}} item" href="{{$.Link}}?type={{$.ViewType}}&repos=[{{range $.RepoIDs}}{{.}}%2C{{end}}]&sort=latest&state={{$.State}}&labels={{$.SelectLabels}}&q={{$.Keyword}}">{{.i18n.Tr "repo.issues.filter_sort.latest"}}</a>
+								<a class="{{if eq .SortType "oldest"}}active{{end}} item" href="{{$.Link}}?type={{$.ViewType}}&repos=[{{range $.RepoIDs}}{{.}}%2C{{end}}]&sort=oldest&state={{$.State}}&labels={{$.SelectLabels}}&q={{$.Keyword}}">{{.i18n.Tr "repo.issues.filter_sort.oldest"}}</a>
+								<a class="{{if eq .SortType "recentupdate"}}active{{end}} item" href="{{$.Link}}?type={{$.ViewType}}&repos=[{{range $.RepoIDs}}{{.}}%2C{{end}}]&sort=recentupdate&state={{$.State}}&labels={{$.SelectLabels}}&q={{$.Keyword}}">{{.i18n.Tr "repo.issues.filter_sort.recentupdate"}}</a>
+								<a class="{{if eq .SortType "leastupdate"}}active{{end}} item" href="{{$.Link}}?type={{$.ViewType}}&repos=[{{range $.RepoIDs}}{{.}}%2C{{end}}]&sort=leastupdate&state={{$.State}}&labels={{$.SelectLabels}}&q={{$.Keyword}}">{{.i18n.Tr "repo.issues.filter_sort.leastupdate"}}</a>
+								<a class="{{if eq .SortType "mostcomment"}}active{{end}} item" href="{{$.Link}}?type={{$.ViewType}}&repos=[{{range $.RepoIDs}}{{.}}%2C{{end}}]&sort=mostcomment&state={{$.State}}&labels={{$.SelectLabels}}&q={{$.Keyword}}">{{.i18n.Tr "repo.issues.filter_sort.mostcomment"}}</a>
+								<a class="{{if eq .SortType "leastcomment"}}active{{end}} item" href="{{$.Link}}?type={{$.ViewType}}&repos=[{{range $.RepoIDs}}{{.}}%2C{{end}}]&sort=leastcomment&state={{$.State}}&labels={{$.SelectLabels}}&q={{$.Keyword}}">{{.i18n.Tr "repo.issues.filter_sort.leastcomment"}}</a>
+								<a class="{{if eq .SortType "nearduedate"}}active{{end}} item" href="{{$.Link}}?type={{$.ViewType}}&repos=[{{range $.RepoIDs}}{{.}}%2C{{end}}]&sort=nearduedate&state={{$.State}}&labels={{$.SelectLabels}}&q={{$.Keyword}}">{{.i18n.Tr "repo.issues.filter_sort.nearduedate"}}</a>
+								<a class="{{if eq .SortType "farduedate"}}active{{end}} item" href="{{$.Link}}?type={{$.ViewType}}&repos=[{{range $.RepoIDs}}{{.}}%2C{{end}}]&sort=farduedate&state={{$.State}}&labels={{$.SelectLabels}}&q={{$.Keyword}}">{{.i18n.Tr "repo.issues.filter_sort.farduedate"}}</a>
 							</div>
 						</div>
 					</div>
