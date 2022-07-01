@@ -112,6 +112,10 @@ func GetAttachment(ctx *context.Context) {
 			return
 		}
 		if !perm.CanRead(unitType) {
+			if !ctx.IsSigned {
+				ctx.Redirect(setting.AppSubURL + "/user/login?redirect_to=/attachments/" + attach.UUID)
+				return
+			}
 			ctx.Error(http.StatusNotFound)
 			return
 		}
