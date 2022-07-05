@@ -4,21 +4,17 @@ export function initCommonIssue() {
   $('.issue-checkbox,.issue-checkbox-all').on('click', (e) => {
     const issuecheckbox = $('.issue-checkbox input');
     if (e.currentTarget.className.includes('issue-checkbox-all')) {
-      if ($('.issue-checkbox-all input').prop('checked')) {
-        const selected = $('.issue-checkbox input:checked');
-        $('.issue-checkbox input:not(:checked)').prop('checked', 1);
-        selected.prop('checked', 0);
-      } else {
-        $('.issue-checkbox input:checked').prop('checked', 0);
-      }
+      const selected = $('.issue-checkbox input:checked');
+      $('.issue-checkbox input:not(:checked)').prop('checked', 1);
+      selected.prop('checked', 0);
     }
-    if (e.shiftKey && window.config.checkboxfirst !== undefined) {
-      for (let i = window.config.checkboxfirst + 1, j = issuecheckbox.index($(e.currentTarget).find('input')); i < j; i++) {
+    if (e.shiftKey && window.checkboxfirst !== undefined) {
+      for (let i = window.checkboxfirst + 1, j = issuecheckbox.index($(e.currentTarget).find('input')); i < j; i++) {
         issuecheckbox[i].checked = 1;
       }
-      delete window.config.checkboxfirst;
+      delete window.checkboxfirst;
     } else {
-      window.config.checkboxfirst = issuecheckbox.index($(e.currentTarget).find('input'));
+      window.checkboxfirst = issuecheckbox.index($(e.currentTarget).find('input'));
     }
     if (issuecheckbox.is(':checked')) {
       $('#issue-filters').addClass('hide');
