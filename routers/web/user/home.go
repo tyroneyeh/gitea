@@ -519,7 +519,10 @@ func buildIssueOverview(ctx *context.Context, unitType unit.Type) {
 			// ctx.ServerError("StringsToInt64s", err)
 			// return
 			e := db.GetEngine(db.DefaultContext)
-			e.Select("id").Table("label").Where("`name` IN (?)", selectedLabels).Find(&labelIDs)
+			err = e.Select("id").Table("label").Where("`name` IN (?)", selectedLabels).Find(&labelIDs)
+			if err != nil {
+				return
+			}
 		}
 	}
 	opts.LabelIDs = labelIDs
@@ -681,7 +684,10 @@ func buildIssueOverview(ctx *context.Context, unitType unit.Type) {
 	if opts.RepoID == 0 {
 		var labels []string
 		e := db.GetEngine(db.DefaultContext)
-		e.Distinct("name").Table("label").OrderBy("name").Find(&labels)
+		err = e.Distinct("name").Table("label").OrderBy("name").Find(&labels)
+		if err != nil {
+			return
+		}
 		ctx.Data["LabelsFilter"] = labels
 	}
 
