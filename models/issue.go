@@ -1296,10 +1296,18 @@ func (opts *IssuesOptions) setupSessionNoLimit(sess *xorm.Session) {
 	}
 
 	if opts.UpdatedAfterUnix != 0 {
-		sess.And(builder.Gte{"issue.updated_unix": opts.UpdatedAfterUnix})
+		if opts.PosterID > 0 {
+			sess.And(builder.Gte{"issue.created_unix": opts.UpdatedAfterUnix})
+		} else {
+			sess.And(builder.Gte{"issue.updated_unix": opts.UpdatedAfterUnix})
+		}
 	}
 	if opts.UpdatedBeforeUnix != 0 {
-		sess.And(builder.Lte{"issue.updated_unix": opts.UpdatedBeforeUnix})
+		if opts.PosterID > 0 {
+			sess.And(builder.Lte{"issue.created_unix": opts.UpdatedBeforeUnix})
+		} else {
+			sess.And(builder.Lte{"issue.updated_unix": opts.UpdatedBeforeUnix})
+		}
 	}
 
 	if opts.ProjectID > 0 {
