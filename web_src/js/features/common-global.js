@@ -273,6 +273,10 @@ export function initGlobalLinkActions() {
         window.location.href = data.redirect;
         window.location.href = redirect;
         window.location.reload();
+      } else {
+        document.body.innerHTML = data;
+        initGlobalCommon();
+        initGlobalLinkActions();
       }
     });
   }
