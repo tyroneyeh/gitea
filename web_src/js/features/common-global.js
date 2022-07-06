@@ -1,6 +1,7 @@
 import {mqBinarySearch} from '../utils.js';
 import createDropzone from './dropzone.js';
 import {initCompColorPicker} from './comp/ColorPicker.js';
+import {addUploadedFileToEditor, removeUploadedFileFromEditor} from './comp/ImagePaste.js';
 
 import 'jquery.are-you-sure';
 
@@ -165,17 +166,7 @@ export function initGlobalDropzone() {
           file.uuid = data.uuid;
           const input = $(`<input id="${file.uuid}" name="files" type="hidden">`).val(data.uuid);
           $dropzone.find('.files').append(input);
-          $('.CodeMirror:visible').each((_, i) => {
-            if (i.CodeMirror) {
-              const startPos = i.CodeMirror.getCursor('start'), endPos = i.CodeMirror.getCursor('end'), isimage = file.type.startsWith('image/') ? '!' : '', fileName = file.name.replace(/\.[^/.]+$/, '');
-              if (startPos) {
-                i.CodeMirror.setSelection(startPos, endPos);
-                i.CodeMirror.replaceSelection(`${isimage}[${fileName}](/attachments/${data.uuid})\n`);
-              } else {
-                i.CodeMirror.setValue(`${i.CodeMirror.getValue()}\n${isimage}[${fileName}](/attachments/${data.uuid})\n`);
-              }
-            }
-          });
+          addUploadedFileToEditor(file.editor, file);
         });
         this.on('removedfile', (file) => {
           $(`#${file.uuid}`).remove();
@@ -184,12 +175,7 @@ export function initGlobalDropzone() {
               file: file.uuid,
               _csrf: csrfToken,
             }).always(() => {
-              $('.CodeMirror').each((_, i) => {
-                if (i.CodeMirror) {
-                  const re = new RegExp(`\\!\\[[^\\]]*]\\(/attachments/${file.uuid}\\)|\\[[^\\]]*]\\(/attachments/${file.uuid}\\)`);
-                  i.CodeMirror.setValue(i.CodeMirror.getValue().replace(re, ''));
-                }
-              });
+              removeUploadedFileFromEditor(file.editor, file.uuid);
             });
           }
         });

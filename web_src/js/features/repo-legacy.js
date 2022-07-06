@@ -1,6 +1,6 @@
 import {createCommentEasyMDE, getAttachedEasyMDE} from './comp/EasyMDE.js';
 import {initCompMarkupContentPreviewTab} from './comp/MarkupContentPreview.js';
-import {initEasyMDEImagePaste} from './comp/ImagePaste.js';
+import {initEasyMDEImagePaste, addUploadedFileToEditor, removeUploadedFileFromEditor} from './comp/ImagePaste.js';
 import {
   initRepoIssueBranchSelect, initRepoIssueCodeCommentCancel,
   initRepoIssueCommentDelete,
@@ -302,36 +302,21 @@ async function onEditContent(event) {
         init() {
           this.on('success', (file, data) => {
             file.uuid = data.uuid;
-            fileUuidDict[file.uuid] = {submitted: false};
-            const input = $(`<input id="${data.uuid}" name="files" type="hidden">`).val(data.uuid);
+            const input = $(`<input id="${file.uuid}" name="files" type="hidden">`).val(data.uuid);
             $dropzone.find('.files').append(input);
-            $('.CodeMirror:visible').each((_, i) => {
-              if (i.CodeMirror) {
-                const startPos = i.CodeMirror.getCursor('start'), endPos = i.CodeMirror.getCursor('end'), isimage = file.type.startsWith('image/') ? '!' : '', fileName = file.name.replace(/\.[^/.]+$/, '');
-                if (startPos) {
-                  i.CodeMirror.setSelection(startPos, endPos);
-                  i.CodeMirror.replaceSelection(`${isimage}[${fileName}](/attachments/${data.uuid})\n`);
-                } else {
-                  i.CodeMirror.setValue(`${i.CodeMirror.getValue()}\n${isimage}[${fileName}](/attachments/${data.uuid})\n`);
-                }
-              }
-            });
+            addUploadedFileToEditor(file.editor, file);
           });
           this.on('removedfile', (file) => {
             $(`#${file.uuid}`).remove();
-            if (file.submitted) fileUuidDict[file.uuid] = {submitted: file.submitted};
             if ($dropzone.data('remove-url') && fileUuidDict[file.uuid]?.submitted) {
               $.post($dropzone.data('remove-url'), {
                 file: file.uuid,
                 _csrf: csrfToken,
               }).always(() => {
-                $('.CodeMirror').each((_, i) => {
-                  if (i.CodeMirror) {
-                    const re = new RegExp(`\\!\\[[^\\]]*]\\(/attachments/${file.uuid}\\)|\\[[^\\]]*]\\(/attachments/${file.uuid}\\)`);
-                    i.CodeMirror.setValue(i.CodeMirror.getValue().replace(re, ''));
-                  }
-                });
+                removeUploadedFileFromEditor(file.editor, file.uuid);
               });
+            } else {
+              removeUploadedFileFromEditor(file.editor, file.uuid);
             }
           });
           this.on('submit', () => {
