@@ -6,7 +6,7 @@ import $ from 'jquery';
  * @param {*} file
  */
 export function addUploadedFileToEditor(editor, file) {
-  const startPos = editor.selectionStart || editor.getCursor && editor.getCursor('start'), endPos = editor.selectionEnd || editor.getCursor && editor.getCursor('end'), isimage = file.type.startsWith('image/') ? '!' : '', fileName = file.name.replace(/\.[^/.]+$/, '');
+  const startPos = editor.selectionStart || editor.getCursor && editor.getCursor('start'), endPos = editor.selectionEnd || editor.getCursor && editor.getCursor('end'), isimage = file.type.startsWith('image/') ? '!' : '', fileName = (isimage ? file.name.replace(/\.[^/.]+$/, '') : file.name);
   if (startPos) {
     if (editor.setSelection) {
       editor.setSelection(startPos, endPos);
