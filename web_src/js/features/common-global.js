@@ -2,6 +2,7 @@ import {mqBinarySearch} from '../utils.js';
 import createDropzone from './dropzone.js';
 import {initCompColorPicker} from './comp/ColorPicker.js';
 import {addUploadedFileToEditor, removeUploadedFileFromEditor} from './comp/ImagePaste.js';
+import {getAttachedEasyMDE} from './comp/EasyMDE.js';
 
 import 'jquery.are-you-sure';
 
@@ -170,6 +171,9 @@ export function initGlobalDropzone() {
         });
         this.on('removedfile', (file) => {
           $(`#${file.uuid}`).remove();
+          if (!file.editor && (file.editor = getAttachedEasyMDE(this.element.parentElement.parentElement.querySelector('textarea')))) {
+            file.editor = file.editor.codemirror;
+          }
           if ($dropzone.data('remove-url')) {
             $.post($dropzone.data('remove-url'), {
               file: file.uuid,

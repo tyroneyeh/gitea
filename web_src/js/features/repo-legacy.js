@@ -308,6 +308,9 @@ async function onEditContent(event) {
           });
           this.on('removedfile', (file) => {
             $(`#${file.uuid}`).remove();
+            if (!file.editor && (file.editor = getAttachedEasyMDE(this.element.parentElement.parentElement.querySelector('textarea')))) {
+              file.editor = file.editor.codemirror;
+            }
             if ($dropzone.data('remove-url') && fileUuidDict[file.uuid]?.submitted) {
               $.post($dropzone.data('remove-url'), {
                 file: file.uuid,

@@ -1,4 +1,5 @@
 import $ from 'jquery';
+import {getAttachedEasyMDE} from './EasyMDE.js';
 
 /**
  *
@@ -6,6 +7,9 @@ import $ from 'jquery';
  * @param {*} file
  */
 export function addUploadedFileToEditor(editor, file) {
+  if (!editor && file.previewElement && (editor = getAttachedEasyMDE(file.previewElement.parentElement.parentElement.parentElement.querySelector('textarea')))) {
+    editor = editor.codemirror;
+  }
   const startPos = editor.selectionStart || editor.getCursor && editor.getCursor('start'), endPos = editor.selectionEnd || editor.getCursor && editor.getCursor('end'), isimage = file.type.startsWith('image/') ? '!' : '', fileName = (isimage ? file.name.replace(/\.[^/.]+$/, '') : file.name);
   if (startPos) {
     if (editor.setSelection) {
@@ -28,42 +32,29 @@ export function addUploadedFileToEditor(editor, file) {
 export function removeUploadedFileFromEditor(editor, fileUuid) {
   // the raw regexp is: /!\[[^\]]*]\(\/attachments\/{uuid}\)/
   const re = new RegExp(`(!|)\\[[^\\]]*]\\(/attachments/${fileUuid}\\)`);
-  if (editor) {
-    if (editor.setValue) {
-      editor.setValue(editor.getValue().replace(re, '')); // at the moment, we assume the editor is an EasyMDE
-    } else {
-      editor.value = editor.value.replace(re, '');
-    }
+  if (editor.setValue) {
+    editor.setValue(editor.getValue().replace(re, '')); // at the moment, we assume the editor is an EasyMDE
   } else {
-    $('.CodeMirror').each((_, i) => {
-      if (i.CodeMirror) {
-        i.CodeMirror.setValue(i.CodeMirror.getValue().replace(re, ''));
-      }
-    });
+    editor.value = editor.value.replace(re, '');
   }
 }
 
 function clipboardPastedImages(e) {
-  if (!e.clipboardData && !e.dataTransfer) return [];
+  const data = e.clipboardData || e.dataTransfer;
+  if (!data) return [];
 
-  const files = [];
-  if (e.clipboardData) {
-    for (const item of e.clipboardData.items || []) {
-      const file = item.getAsFile();
-      // if (!item.type || !item.type.startsWith('image/')) continue;
-      if (file === null || !item.type) continue;
-      files.push(item.getAsFile());
-    }
-  } else if (e.dataTransfer) {
-    for (const item of e.dataTransfer.files || []) {
-      if (!item.type) continue;
-      files.push(item);
-    }
+  const files = [], datafiles = e.clipboardData && e.clipboardData.items || e.dataTransfer && e.dataTransfer.files;
+  for (const item of datafiles || []) {
+    const file = (e.clipboardData ? item.getAsFile() : item);
+    if (file === null || !item.type) continue;
+    files.push(file);
   }
   return files;
 }
 
 export function initEasyMDEImagePaste(easyMDE, $dropzone) {
+  if ($dropzone.length !== 1) throw new Error('invalid dropzone binding for editor');
+
   const uploadUrl = $dropzone.attr('data-upload-url');
   const $files = $dropzone.find('.files');
 
