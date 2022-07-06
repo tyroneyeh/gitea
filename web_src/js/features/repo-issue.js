@@ -582,6 +582,7 @@ export function initRepoIssueReferenceIssue() {
     const poster = $this.data('poster-username');
     const reference = $this.data('reference');
     const $modal = $($this.data('modal'));
+    $modal.find('input[name=title]').val(document.querySelector("#issue-title").innerText);
     $modal.find('textarea[name="content"]').val(`${content}\n\n_Originally posted by @${poster} in ${reference}_`);
     $modal.modal('show');
 
