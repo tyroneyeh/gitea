@@ -31,7 +31,7 @@ import {initRepoSettingBranches} from './repo-settings.js';
 const {csrfToken} = window.config;
 
 export function initRepoCommentForm() {
-  const $commentForm = $('.comment.form');
+  const $commentForm = $('#comment-form, #new-issue');
   if ($commentForm.length === 0) {
     return;
   }
@@ -66,8 +66,7 @@ export function initRepoCommentForm() {
   }
 
   (async () => {
-    const $textarea = $commentForm.find('textarea:not(.review-textarea)');
-    const easyMDE = await createCommentEasyMDE($textarea);
+    const easyMDE = await createCommentEasyMDE($commentForm.find('textarea:not(.review-textarea)'));
     initEasyMDEImagePaste(easyMDE, $commentForm.find('.dropzone'));
   })();
 
