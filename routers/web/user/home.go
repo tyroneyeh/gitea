@@ -688,7 +688,24 @@ func buildIssueOverview(ctx *context.Context, unitType unit.Type) {
 	if opts.RepoID == 0 {
 		var labels []string
 		e := db.GetEngine(db.DefaultContext)
-		err = e.Distinct("name").Table("label").OrderBy("name").Find(&labels)
+		if len(repoIDs) > 0 {
+			var ownerIDs []int64
+			for _, j := range repoIDs {
+				for _, i := range showRepos {
+					if i.ID == j {
+						ownerIDs = append(ownerIDs, i.OwnerID)
+						break
+					}
+				}
+			}
+			if len(ownerIDs) > 0 {
+				err = e.Distinct("name").Table("label").In("repo_id", repoIDs).Or(builder.In("org_id", ownerIDs)).OrderBy("name").Find(&labels)
+			} else {
+				err = e.Distinct("name").Table("label").In("repo_id", repoIDs).OrderBy("name").Find(&labels)
+			}
+		} else {
+			err = e.Distinct("name").Table("label").OrderBy("name").Find(&labels)
+		}
 		if err != nil {
 			return
 		}
