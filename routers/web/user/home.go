@@ -687,9 +687,10 @@ func buildIssueOverview(ctx *context.Context, unitType unit.Type) {
 
 	if opts.RepoID == 0 {
 		var labels []string
+		var ownerIDs []int64
+		ownerIDMap := make(map[int64]bool)
 		e := db.GetEngine(db.DefaultContext)
 		if len(repoIDs) > 0 {
-			var ownerIDs []int64
 			for _, j := range repoIDs {
 				for _, i := range showRepos {
 					if i.ID == j {
@@ -698,18 +699,26 @@ func buildIssueOverview(ctx *context.Context, unitType unit.Type) {
 					}
 				}
 			}
-			if len(ownerIDs) > 0 {
-				err = e.Distinct("name").Table("label").In("repo_id", repoIDs).Or(builder.In("org_id", ownerIDs)).OrderBy("name").Find(&labels)
-			} else {
-				err = e.Distinct("name").Table("label").In("repo_id", repoIDs).OrderBy("name").Find(&labels)
+		} else {
+			for _, i := range showRepos {
+				repoIDs = append(repoIDs, i.ID)
+				if !ownerIDMap[i.OwnerID] {
+					ownerIDs = append(ownerIDs, i.OwnerID)
+					ownerIDMap[i.OwnerID] = true
+				}
 			}
+		}
+
+		if len(ownerIDs) > 0 {
+			err = e.Distinct("name").Table("label").In("repo_id", repoIDs).Or(builder.In("org_id", ownerIDs)).OrderBy("name").Find(&labels)
+		} else if len(repoIDs) > 0 {
+			err = e.Distinct("name").Table("label").In("repo_id", repoIDs).OrderBy("name").Find(&labels)
 		} else {
 			err = e.Distinct("name").Table("label").OrderBy("name").Find(&labels)
 		}
-		if err != nil {
-			return
+		if err == nil {
+			ctx.Data["LabelsFilter"] = labels
 		}
-		ctx.Data["LabelsFilter"] = labels
 	}
 
 	ctx.HTML(http.StatusOK, tplIssues)
