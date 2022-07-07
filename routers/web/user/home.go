@@ -509,6 +509,13 @@ func buildIssueOverview(ctx *context.Context, unitType unit.Type) {
 	}
 	opts.PageSize = limit
 
+	// Parse ctx.FormString("repos") and remember matched repo IDs for later.
+	// Gets set when clicking filters on the issues overview page.
+	repoIDs := getRepoIDs(ctx.FormString("repos"))
+	if len(repoIDs) > 0 {
+		opts.RepoCond = builder.In("issue.repo_id", repoIDs)
+	}
+
 	// Get IDs for labels (a filter option for issues/pulls).
 	// Required for IssuesOptions.
 	var labelIDs []int64
@@ -519,20 +526,17 @@ func buildIssueOverview(ctx *context.Context, unitType unit.Type) {
 			// ctx.ServerError("StringsToInt64s", err)
 			// return
 			e := db.GetEngine(db.DefaultContext)
-			err = e.Select("id").Table("label").Where("`name` IN (?)", selectedLabels).Find(&labelIDs)
+			if len(repoIDs) > 0 {
+				err = e.Select("id").Table("label").Where("`name` IN (?)", selectedLabels).In("repo_id", repoIDs).Find(&labelIDs)
+			} else {
+				err = e.Select("id").Table("label").Where("`name` IN (?)", selectedLabels).Find(&labelIDs)
+			}
 			if err != nil {
 				return
 			}
 		}
 	}
 	opts.LabelIDs = labelIDs
-
-	// Parse ctx.FormString("repos") and remember matched repo IDs for later.
-	// Gets set when clicking filters on the issues overview page.
-	repoIDs := getRepoIDs(ctx.FormString("repos"))
-	if len(repoIDs) > 0 {
-		opts.RepoCond = builder.In("issue.repo_id", repoIDs)
-	}
 
 	// ------------------------------
 	// Get issues as defined by opts.
