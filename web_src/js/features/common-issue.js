@@ -2,15 +2,12 @@ import {updateIssuesMeta} from './repo-issue.js';
 
 export function initCommonIssue() {
   let checkboxfirst;
-  $('.issue-checkbox,.issue-checkbox-all').on('click', (e) => {
+  const checkboxOperate = (e) => {
     const issuecheckbox = $('.issue-checkbox input');
-    if (e.currentTarget.className.includes('issue-checkbox-all')) {
-      const selected = $('.issue-checkbox input:checked');
-      $('.issue-checkbox input:not(:checked)').prop('checked', 1);
-      selected.prop('checked', 0);
-    }
     if (e.shiftKey && checkboxfirst !== undefined) {
-      for (let i = checkboxfirst + 1, j = issuecheckbox.index($(e.currentTarget).find('input')); i < j; i++) {
+      let i = checkboxfirst, j = issuecheckbox.index($(e.currentTarget).find('input'));
+      if (i > j) [i, j] = [j, i];
+      for (++i; i < j; i++) {
         issuecheckbox[i].checked = 1;
       }
     } else {
@@ -25,6 +22,15 @@ export function initCommonIssue() {
       $('#issue-actions').addClass('hide');
       $('#issue-filters .six').prepend($('.issue-checkbox-all'));
     }
+  };
+
+  $('.issue-checkbox').on('click', checkboxOperate);
+
+  $('.issue-checkbox-all').on('click', (e) => {
+    const selected = $('.issue-checkbox input:checked');
+    $('.issue-checkbox input:not(:checked)').prop('checked', 1);
+    selected.prop('checked', 0);
+    checkboxOperate(e);
   });
 
   $('.issue-action').on('click', async function () {
