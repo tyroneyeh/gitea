@@ -25,7 +25,7 @@ export function initRepoReleaseEditor() {
     // const $files = $editor.parent().find('.files');
     const easyMDE = await createCommentEasyMDE($textarea);
     initCompMarkupContentPreviewTab($editor);
-    const $dropzone = $editor.parent().find('.dropzone')[0];
+    const $dropzone = $editor.parent().find('.dropzone');
     initEasyMDEImagePaste(easyMDE, $dropzone);
   })();
 }
