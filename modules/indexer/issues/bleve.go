@@ -260,7 +260,6 @@ func (b *BleveIndexer) Search(keyword string, repoIDs []int64, limit, start int)
 		// )
 	)
 
-	// regexKeywords := []string{"\\", "[", "]", "(", ")", "/"}
 	isregexpstring, _ := regexp.MatchString(`[\[\]\(\)\/\\]`, keyword)
 	if strings.Contains(keyword, ".*") || isregexpstring && strings.Count(keyword, "[") == strings.Count(keyword, "]") && strings.Count(keyword, "(") == strings.Count(keyword, ")") {
 		gforgeid, _ := regexp.Compile(`[GT]\d{1,5}`)
@@ -303,7 +302,7 @@ func (b *BleveIndexer) Search(keyword string, repoIDs []int64, limit, start int)
 		}
 	}
 
-	search := bleve.NewSearchRequestOptions(indexerQuery, limit, start, false)
+	search := bleve.NewSearchRequestOptions(indexerQuery, 1000, start, false)
 	search.SortBy([]string{"-_score"})
 
 	result, err := b.indexer.Search(search)
