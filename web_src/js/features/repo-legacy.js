@@ -359,7 +359,9 @@ async function onEditContent(event) {
     easyMDE = await createCommentEasyMDE($textarea);
 
     initCompMarkupContentPreviewTab($editContentForm);
-    initEasyMDEImagePaste(easyMDE, $dropzone);
+    if ($dropzone.length) {
+      initEasyMDEImagePaste(easyMDE, $dropzone);
+    }
 
     $editContentZone.find('.cancel.button').on('click', () => {
       $renderContent.show();
