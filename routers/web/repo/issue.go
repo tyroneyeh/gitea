@@ -802,6 +802,8 @@ func NewIssue(ctx *context.Context) {
 	body := ctx.FormString("body")
 	ctx.Data["BodyQuery"] = body
 
+	ctx.Data["Signature"] = ctx.User.Description
+
 	isProjectsEnabled := ctx.Repo.CanRead(unit.TypeProjects)
 	ctx.Data["IsProjectsEnabled"] = isProjectsEnabled
 	ctx.Data["IsAttachmentEnabled"] = setting.Attachment.Enabled
@@ -1674,6 +1676,9 @@ func ViewIssue(ctx *context.Context) {
 	ctx.Data["IsRepoAdmin"] = ctx.IsSigned && (ctx.Repo.IsAdmin() || ctx.User.IsAdmin)
 	ctx.Data["LockReasons"] = setting.Repository.Issue.LockReasons
 	ctx.Data["RefEndName"] = git.RefEndName(issue.Ref)
+
+	ctx.Data["Signature"] = ctx.User.Description
+
 	ctx.HTML(http.StatusOK, tplIssueView)
 }
 
