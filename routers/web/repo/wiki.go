@@ -25,6 +25,7 @@ import (
 	"code.gitea.io/gitea/modules/markup/markdown"
 	"code.gitea.io/gitea/modules/setting"
 	"code.gitea.io/gitea/modules/timeutil"
+	"code.gitea.io/gitea/modules/upload"
 	"code.gitea.io/gitea/modules/util"
 	"code.gitea.io/gitea/modules/web"
 	"code.gitea.io/gitea/routers/common"
@@ -652,6 +653,8 @@ func NewWiki(ctx *context.Context) {
 	if ctx.FormString("title") != "" {
 		ctx.Data["title"] = ctx.FormString("title")
 	}
+	ctx.Data["IsAttachmentEnabled"] = setting.Attachment.Enabled
+	upload.AddUploadContext(ctx, "comment")
 
 	ctx.HTML(http.StatusOK, tplWikiNew)
 }
@@ -703,6 +706,8 @@ func EditWiki(ctx *context.Context) {
 		ctx.Redirect(ctx.Repo.RepoLink + "/wiki")
 		return
 	}
+	ctx.Data["IsAttachmentEnabled"] = setting.Attachment.Enabled
+	upload.AddUploadContext(ctx, "comment")
 
 	renderEditPage(ctx)
 	if ctx.Written() {

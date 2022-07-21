@@ -1,6 +1,7 @@
 import {initMarkupContent} from '../markup/content.js';
 import {attachEasyMDEToElements, importEasyMDE, validateTextareaNonEmpty} from './comp/EasyMDE.js';
 import {initCompMarkupContentPreviewTab} from './comp/MarkupContentPreview.js';
+import {initEasyMDEImagePaste} from './comp/ImagePaste.js';
 
 const {csrfToken} = window.config;
 
@@ -67,7 +68,7 @@ async function initRepoWikiFormEditor() {
     tabSize: 4,
     spellChecker: false,
     inputStyle: 'contenteditable',
-    nativeSpellcheck: true,
+    nativeSpellcheck: false,
     toolbar: ['bold', 'italic', 'strikethrough', '|',
       'heading-1', 'heading-2', 'heading-3', 'heading-bigger', 'heading-smaller', '|',
       {
@@ -120,10 +121,20 @@ async function initRepoWikiFormEditor() {
         className: 'fa fa-file',
         title: 'Revert to simple textarea',
       },
+      {
+        name: 'spell-check',
+        action(e) {
+          const cm = e.codemirror.getTextArea().parentElement.querySelector('.CodeMirror-code');
+          cm.spellcheck = cm.spellcheck ? false : true;
+        },
+        className: 'fa fa-check',
+        title: 'Spell Check'
+      }
     ]
   });
 
   attachEasyMDEToElements(easyMDE);
+  initEasyMDEImagePaste(easyMDE, $form.find('.dropzone'));
 
   const $mdeInputField = $(easyMDE.codemirror.getInputField());
   $mdeInputField.addClass('js-quick-submit');

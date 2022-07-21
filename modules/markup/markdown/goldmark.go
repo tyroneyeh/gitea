@@ -93,9 +93,9 @@ func (g *ASTTransformer) Transform(node *ast.Document, reader text.Reader, pc pa
 			link := v.Destination
 			if len(link) > 0 && !markup.IsLink(link) {
 				prefix := pc.Get(urlPrefixKey).(string)
-				if pc.Get(isWikiKey).(bool) {
-					prefix = giteautil.URLJoin(prefix, "wiki", "raw")
-				}
+				// if pc.Get(isWikiKey).(bool) {
+				// 	prefix = giteautil.URLJoin(prefix, "wiki", "raw")
+				// }
 				prefix = strings.Replace(prefix, "/src/", "/media/", 1)
 
 				lnk := strings.TrimLeft(string(link), "/")
