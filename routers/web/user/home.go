@@ -602,7 +602,7 @@ func buildIssueOverview(ctx *context.Context, unitType unit.Type) {
 			LabelIDs:   opts.LabelIDs,
 			Org:        org,
 			Team:       team,
-			RepoIDs:    repoIDs,
+			RepoCond:   opts.RepoCond,
 		}
 		issueStats, err = models.GetUserIssueStats(statsOpts)
 		if err != nil {
