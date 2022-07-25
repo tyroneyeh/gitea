@@ -23,15 +23,17 @@ import (
 
 // IndexerData data stored in the issue indexer
 type IndexerData struct {
-	ID       int64    `json:"id"`
-	Index    int64    `json:"index"`
-	RepoID   int64    `json:"repo_id"`
-	Title    string   `json:"title"`
-	Content  string   `json:"content"`
-	Comments []string `json:"comments"`
-	IsDelete bool     `json:"is_delete"`
-	IDs      []int64  `json:"ids"`
-	Poster   string   `json:"poster"`
+	ID        int64     `json:"id"`
+	Index     int64     `json:"index"`
+	RepoID    int64     `json:"repo_id"`
+	Title     string    `json:"title"`
+	Content   string    `json:"content"`
+	Comments  []string  `json:"comments"`
+	IsDelete  bool      `json:"is_delete"`
+	IDs       []int64   `json:"ids"`
+	Poster    string    `json:"poster"`
+	Assignees []string  `json:"assignee"`
+	Created   time.Time `json:"created"`
 }
 
 // Match represents on search result
@@ -305,14 +307,21 @@ func UpdateIssueIndexer(issue *models.Issue) {
 		poster = issue.Poster.FullName
 	}
 
+	var assignees []string
+	for _, assignee := range issue.Assignees {
+		assignees = append(assignees, assignee.FullName)
+	}
+
 	indexerData := &IndexerData{
-		ID:       issue.ID,
-		Index:    issue.Index,
-		RepoID:   issue.RepoID,
-		Title:    issue.Title,
-		Content:  issue.Content,
-		Comments: comments,
-		Poster:   poster,
+		ID:        issue.ID,
+		Index:     issue.Index,
+		RepoID:    issue.RepoID,
+		Title:     issue.Title,
+		Content:   issue.Content,
+		Comments:  comments,
+		Poster:    poster,
+		Assignees: assignees,
+		Created:   time.Unix(int64(issue.CreatedUnix), 0),
 	}
 	log.Debug("Adding to channel: %v", indexerData)
 	if err := issueIndexerQueue.Push(indexerData); err != nil {

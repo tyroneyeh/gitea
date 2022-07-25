@@ -10,6 +10,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 
 	gitea_bleve "code.gitea.io/gitea/modules/indexer/bleve"
 	"code.gitea.io/gitea/modules/log"
@@ -128,11 +129,17 @@ func createIssueIndexer(path string, latestVersion int) (bleve.Index, error) {
 	textFieldMapping := bleve.NewTextFieldMapping()
 	textFieldMapping.Store = false
 	textFieldMapping.IncludeInAll = false
+
+	dateTimeFieldMapping := bleve.NewDateTimeFieldMapping()
+	dateTimeFieldMapping.IncludeInAll = false
+
 	docMapping.AddFieldMappingsAt("Index", numericFieldMapping)
 	docMapping.AddFieldMappingsAt("Title", textFieldMapping)
 	docMapping.AddFieldMappingsAt("Content", textFieldMapping)
 	docMapping.AddFieldMappingsAt("Comments", textFieldMapping)
 	docMapping.AddFieldMappingsAt("Poster", textFieldMapping)
+	docMapping.AddFieldMappingsAt("Assignees", textFieldMapping)
+	docMapping.AddFieldMappingsAt("Created", dateTimeFieldMapping)
 
 	if err := addUnicodeNormalizeTokenFilter(mapping); err != nil {
 		return nil, err
@@ -208,19 +215,23 @@ func (b *BleveIndexer) Index(issues []*IndexerData) error {
 	batch := gitea_bleve.NewFlushingBatch(b.indexer, maxBatchSize)
 	for _, issue := range issues {
 		if err := batch.Index(indexerID(issue.ID), struct {
-			Index    int64
-			RepoID   int64
-			Title    string
-			Content  string
-			Comments []string
-			Poster   string
+			Index     int64
+			RepoID    int64
+			Title     string
+			Content   string
+			Comments  []string
+			Poster    string
+			Assignees []string
+			Created   time.Time
 		}{
-			Index:    issue.Index,
-			RepoID:   issue.RepoID,
-			Title:    issue.Title,
-			Content:  issue.Content,
-			Comments: issue.Comments,
-			Poster:   issue.Poster,
+			Index:     issue.Index,
+			RepoID:    issue.RepoID,
+			Title:     issue.Title,
+			Content:   issue.Content,
+			Comments:  issue.Comments,
+			Poster:    issue.Poster,
+			Assignees: issue.Assignees,
+			Created:   issue.Created,
 		}); err != nil {
 			return err
 		}
@@ -265,8 +276,9 @@ func (b *BleveIndexer) Search(keyword string, repoIDs []int64, limit, start int)
 		gforgeid, _ := regexp.Compile(`[GT]\d{1,5}`)
 		keyword = strings.ReplaceAll(gforgeid.ReplaceAllStringFunc(keyword, func(s string) string { return strings.ToLower(s) }), "/", "")
 		indexerQuery.AddQuery(bleve.NewRegexpQuery(keyword))
-	} else if strings.Contains(keyword, "|") || strings.Contains(keyword, "*") {
+	} else if strings.Contains(keyword, "Created:") || strings.Contains(keyword, "created:") || strings.Contains(keyword, "|") || strings.Contains(keyword, "*") {
 		keyword = strings.ReplaceAll(keyword, "|", " ")
+		keyword = strings.ReplaceAll(keyword, "created:", "Created:")
 		indexerQuery.AddQuery(bleve.NewQueryStringQuery(keyword))
 	} else {
 		field := "Title"
@@ -274,9 +286,11 @@ func (b *BleveIndexer) Search(keyword string, repoIDs []int64, limit, start int)
 			keyfields := strings.Split(keyword, ":")
 			field = cases.Title(language.English).String(strings.Trim(keyfields[0], " "))
 			keyword = strings.Trim(keyfields[1], " ")
-			if strings.Contains("Creator,Poster", field) {
+			if strings.Contains("Creator", field) {
 				field = "Poster"
-			} else if !strings.Contains("Index,Content,Comments", field) {
+			} else if strings.Contains("Assignee", field) {
+				field = "Assignees"
+			} else if !strings.Contains("Index,Content,Comments,Poster", field) {
 				field = "Title"
 			}
 		} else if strings.Contains(keyword, "#") {
