@@ -271,8 +271,8 @@ func (b *BleveIndexer) Search(keyword string, repoIDs []int64, limit, start int)
 		// )
 	)
 
-	isregexpstring, _ := regexp.MatchString(`[\[\]\(\)\/\\]`, keyword)
-	if strings.Contains(keyword, ".*") || isregexpstring && strings.Count(keyword, "[") == strings.Count(keyword, "]") && strings.Count(keyword, "(") == strings.Count(keyword, ")") {
+	isregexpstring, _ := regexp.MatchString(`^/|/$`, keyword)
+	if isregexpstring && strings.Count(keyword, "[") == strings.Count(keyword, "]") && strings.Count(keyword, "(") == strings.Count(keyword, ")") {
 		gforgeid, _ := regexp.Compile(`[GT]\d{1,5}`)
 		keyword = strings.ReplaceAll(gforgeid.ReplaceAllStringFunc(keyword, func(s string) string { return strings.ToLower(s) }), "/", "")
 		indexerQuery.AddQuery(bleve.NewRegexpQuery(keyword))
