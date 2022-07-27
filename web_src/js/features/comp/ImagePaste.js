@@ -90,3 +90,22 @@ export function initEasyMDEImagePaste(easyMDE, $dropzone) {
     return uploadClipboardImage(easyMDE.element, e.originalEvent);
   });
 }
+
+export function AutoJSZip(file) {
+  if (file.done || !/.(bak|cfg|htm|html|log|pcap|pcapng|sql)$/.test(file.name)) {
+    return;
+  }
+  const dz = this;
+  dz.removeFile(file);
+  const z = new JSZip();
+  z.file(file.name, file);
+  z.generateAsync({
+    type: 'blob',
+    compression: 'DEFLATE',
+    compressionOptions: {level: 9}
+  }).then((content) => {
+    const f = new File([content], `${file.name}.zip`);
+    f.done = true;
+    dz.addFile(f);
+  });
+}
