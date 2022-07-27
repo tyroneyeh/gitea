@@ -92,7 +92,7 @@ export function initEasyMDEImagePaste(easyMDE, $dropzone) {
 }
 
 export function AutoJSZip(file) {
-  if (file.done || (!/.(bak|cfg|htm|html|log|pcap|pcapng|sql|tar)$/.test(file.name) && (/.(json|txt|xml)$/.test(file.name) && file.size < 1024000))) {
+  if (file.done || (!/.(bak|cfg|htm|html|json|log|pcap|pcapng|sql|tar|txt|xml)$/.test(file.name) || (/.(json|txt|xml)$/.test(file.name) && file.size < 1000000))) {
     return;
   }
   document.body.style.cursor = 'wait';
