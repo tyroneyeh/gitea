@@ -23,8 +23,9 @@ export function addUploadedFileToEditor(editor, file) {
         const val = editor.getValue();
         editor.setValue(`${val}\n${isimage}[${fileName}](/attachments/${file.uuid})`);
       }
+    } else if (startPos) {
+      editor.value = `${editor.value.substring(0, startPos)}\n${isimage}[${fileName}](/attachments/${file.uuid})\n${editor.value.substring(endPos)}`;
     } else {
-      // editor.value = `${editor.value.substring(0, startPos)}\n${isimage}[${fileName}](/attachments/${file.uuid})\n${editor.value.substring(endPos)}`;
       editor.value += `\n${isimage}[${fileName}](/attachments/${file.uuid})`;
     }
   } else if (editor.setSelection) {
