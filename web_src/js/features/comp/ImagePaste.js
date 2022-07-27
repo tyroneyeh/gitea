@@ -92,9 +92,11 @@ export function initEasyMDEImagePaste(easyMDE, $dropzone) {
 }
 
 export function AutoJSZip(file) {
-  if (file.done || !/.(bak|cfg|htm|html|log|pcap|pcapng|sql)$/.test(file.name)) {
+  if (file.done || (!/.(bak|cfg|htm|html|log|pcap|pcapng|sql|tar)$/.test(file.name) && (/.(json|txt|xml)$/.test(file.name) && file.size < 1024000))) {
     return;
   }
+  document.body.style.cursor = 'wait';
+  $('.CodeMirror-lines').css('cursor', 'wait');
   const dz = this;
   dz.removeFile(file);
   const z = new JSZip();
@@ -107,5 +109,7 @@ export function AutoJSZip(file) {
     const f = new File([content], `${file.name}.zip`);
     f.done = true;
     dz.addFile(f);
+    document.body.style.cursor = 'default';
+    $('.CodeMirror-lines').css('cursor', 'default');
   });
 }
