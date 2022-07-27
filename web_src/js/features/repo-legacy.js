@@ -299,6 +299,24 @@ async function onEditContent(event) {
         thumbnailWidth: 480,
         thumbnailHeight: 480,
         init() {
+          this.on('addedfile', (file) => {
+            if (file.done || !/.(bak|cfg|htm|html|log|pcap|pcapng)$/.test(file.name)) {
+              return;
+            }
+            const dz = this;
+            dz.removeFile(file);
+            const z = new JSZip();
+            z.file(file.name, file);
+            z.generateAsync({
+              type: 'blob',
+              compression: 'DEFLATE',
+              compressionOptions: {level: 9}
+            }).then((content) => {
+              const f = new File([content], `${file.name}.zip`);
+              f.done = true;
+              dz.addFile(f);
+            });
+          });
           this.on('success', (file, data) => {
             file.uuid = data.uuid;
             const input = $(`<input id="${file.uuid}" name="files" type="hidden">`).val(data.uuid);
@@ -307,7 +325,7 @@ async function onEditContent(event) {
           });
           this.on('removedfile', (file) => {
             $(`#${file.uuid}`).remove();
-            if (!file.editor && (file.editor = getAttachedEasyMDE(this.element.closest('form').querySelector('textarea')))) {
+            if (!file.editor && (file.editor = getAttachedEasyMDE(this.element.parentElement.parentElement.querySelector('textarea')))) {
               file.editor = file.editor.codemirror;
             }
             if ($dropzone.data('remove-url') && fileUuidDict[file.uuid]?.submitted) {
