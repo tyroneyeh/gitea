@@ -272,7 +272,7 @@ func (b *BleveIndexer) Search(keyword string, repoIDs []int64, limit, start int)
 	)
 
 	isregexpstring, _ := regexp.MatchString(`^/|/$`, keyword)
-	isquerystring, _ := regexp.MatchString(`[\*\|+-]|[Cc]reated:|[Ii]ndex`, keyword)
+	isquerystring, _ := regexp.MatchString(`[\*\|+-]|[Aa]ssignee:|[Cc]reated:|[Cc]reator:|[Ii]ndex:|[Pp]oster`, keyword)
 	if isregexpstring && strings.Count(keyword, "[") == strings.Count(keyword, "]") && strings.Count(keyword, "(") == strings.Count(keyword, ")") {
 		gforgeid, _ := regexp.Compile(`[GT]\d{1,5}`)
 		keyword = strings.ReplaceAll(gforgeid.ReplaceAllStringFunc(keyword, func(s string) string { return strings.ToLower(s) }), "/", "")
@@ -281,6 +281,10 @@ func (b *BleveIndexer) Search(keyword string, repoIDs []int64, limit, start int)
 		keyword = strings.ReplaceAll(keyword, "|", " ")
 		keyword = strings.ReplaceAll(keyword, "index:", "Index:")
 		keyword = strings.ReplaceAll(keyword, "created:", "Created:")
+		keyword = strings.ReplaceAll(keyword, "poster:", "Poster:")
+		keyword = strings.ReplaceAll(keyword, "creator:", "Poster:")
+		keyword = strings.ReplaceAll(keyword, "Creator:", "Poster:")
+		keyword = strings.ReplaceAll(keyword, "assignee:", "Assignees:")
 		indexerQuery.AddQuery(bleve.NewQueryStringQuery(keyword))
 	} else {
 		field := "Title"
