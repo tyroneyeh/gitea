@@ -3,17 +3,17 @@ import {updateIssuesMeta} from './repo-issue.js';
 export function initCommonIssue() {
   let checkboxfirst;
   const checkboxOperate = (e) => {
-    const issuecheckbox = $('.issue-checkbox input');
+    const $issuecheckbox = $('.issue-checkbox input');
     if (e.shiftKey && checkboxfirst !== undefined) {
-      let i = checkboxfirst, j = issuecheckbox.index($(e.currentTarget).find('input'));
+      let i = checkboxfirst, j = $issuecheckbox.index($(e.currentTarget).find('input'));
       if (i > j) [i, j] = [j, i];
       for (++i; i < j; i++) {
-        issuecheckbox[i].checked = 1;
+        $issuecheckbox[i].checked = 1;
       }
     } else {
-      checkboxfirst = issuecheckbox.index($(e.currentTarget).find('input'));
+      checkboxfirst = $issuecheckbox.index($(e.currentTarget).find('input'));
     }
-    if (issuecheckbox.is(':checked')) {
+    if ($issuecheckbox.is(':checked')) {
       $('#issue-filters').addClass('hide');
       $('#issue-actions').removeClass('hide');
       $('#issue-actions .six').prepend($('.issue-checkbox-all'));
@@ -24,12 +24,11 @@ export function initCommonIssue() {
     }
   };
 
-  const checkboxpart = $('.issue-checkbox');
-  checkboxpart.on('click', checkboxOperate);
+  const $checkboxpart = $('.issue-checkbox');
+  $checkboxpart.on('click', checkboxOperate);
 
-  const checkboxall = $('.issue-checkbox-all');
-  checkboxall.on('click', (e) => {
-    checkboxpart.find('input').prop('checked', checkboxall.find('input').prop('checked'));
+  $('.issue-checkbox-all').on('click', (e) => {
+    $('.issue-checkbox input').prop('checked', $('.issue-checkbox-all input').prop('checked'));
     checkboxOperate(e);
   });
 
