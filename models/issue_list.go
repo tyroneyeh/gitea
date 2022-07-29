@@ -151,7 +151,7 @@ func (issues IssueList) loadLabels(e db.Engine) error {
 		rows, err := e.Table("label").
 			Join("LEFT", "issue_label", "issue_label.label_id = label.id").
 			In("issue_label.issue_id", issueIDs[:limit]).
-			Asc("label.name").
+			Asc("issue_label.id").
 			Rows(new(LabelIssue))
 		if err != nil {
 			return err
