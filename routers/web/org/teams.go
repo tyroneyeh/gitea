@@ -467,6 +467,9 @@ func EditTeamPost(ctx *context.Context) {
 		}
 		return
 	}
+
+	admin_model.CreatePermissionNotice("%s adjust team %s/%s permissions %v", ctx.Doer.GetDisplayName(), ctx.Org.Organization.Name, ctx.Org.Team.Name, unitPerms)
+
 	ctx.Redirect(ctx.Org.OrgLink + "/teams/" + url.PathEscape(t.LowerName))
 }
 
