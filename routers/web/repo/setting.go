@@ -14,6 +14,8 @@ import (
 	"strings"
 	"time"
 
+	admin_model "code.gitea.io/gitea/models/system"
+
 	"code.gitea.io/gitea/models"
 	asymkey_model "code.gitea.io/gitea/models/asymkey"
 	"code.gitea.io/gitea/models/db"
@@ -940,6 +942,11 @@ func CollaborationPost(ctx *context.Context) {
 	}
 
 	ctx.Flash.Success(ctx.Tr("repo.settings.add_collaborator_success"))
+
+	if doer := ctx.Doer; doer != nil {
+		admin_model.CreatePermissionNotice(ctx.Tr("admin.notices.addusertorepo"), doer.GetDisplayName(), name, ctx.Repo.Owner.Name, ctx.Repo.Repository.Name)
+	}
+
 	ctx.Redirect(setting.AppSubURL + ctx.Req.URL.EscapedPath())
 }
 
@@ -961,6 +968,10 @@ func DeleteCollaboration(ctx *context.Context) {
 		ctx.Flash.Success(ctx.Tr("repo.settings.remove_collaborator_success"))
 	}
 
+	u, _ := user_model.GetUserByID(ctx.FormInt64("id"))
+	if doer := ctx.Doer; doer != nil {
+		admin_model.CreatePermissionNotice(ctx.Tr("admin.notices.removeuserfromrepo"), doer.GetDisplayName(), u.Name, ctx.Repo.Owner.Name, ctx.Repo.Repository.Name)
+	}
 	ctx.JSON(http.StatusOK, map[string]interface{}{
 		"redirect": ctx.Repo.RepoLink + "/settings/collaboration",
 	})
@@ -1009,6 +1020,10 @@ func AddTeamPost(ctx *context.Context) {
 	}
 
 	ctx.Flash.Success(ctx.Tr("repo.settings.add_team_success"))
+
+	if doer := ctx.Doer; doer != nil {
+		admin_model.CreatePermissionNotice(ctx.Tr("admin.notices.addteamtorepo"), doer.GetDisplayName(), name, ctx.Repo.Owner.Name, ctx.Repo.Repository.Name)
+	}
 	ctx.Redirect(ctx.Repo.RepoLink + "/settings/collaboration")
 }
 
@@ -1032,6 +1047,11 @@ func DeleteTeam(ctx *context.Context) {
 	}
 
 	ctx.Flash.Success(ctx.Tr("repo.settings.remove_team_success"))
+
+	if doer := ctx.Doer; doer != nil {
+		admin_model.CreatePermissionNotice(ctx.Tr("admin.notices.removeteamfromrepo"), doer.GetDisplayName(), team.Name, ctx.Repo.Owner.Name, ctx.Repo.Repository.Name)
+	}
+
 	ctx.JSON(http.StatusOK, map[string]interface{}{
 		"redirect": ctx.Repo.RepoLink + "/settings/collaboration",
 	})

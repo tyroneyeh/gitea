@@ -24,6 +24,8 @@ const (
 	NoticeRepository NoticeType = iota + 1
 	// NoticeTask type
 	NoticeTask
+	// Permission type
+	NoticePermission
 )
 
 // Notice represents a system notice for admin.
@@ -53,6 +55,13 @@ func CreateNotice(ctx context.Context, tp NoticeType, desc string, args ...inter
 		Description: desc,
 	}
 	return db.Insert(ctx, n)
+}
+
+// CreatePermissionNotice creates new notice with type NoticePermission.
+func CreatePermissionNotice(desc string, args ...interface{}) {
+	if err := CreateNotice(db.DefaultContext, NoticePermission, desc, args...); err != nil {
+		log.Error("CreatePermissionNotice: %v", err)
+	}
 }
 
 // CreateRepositoryNotice creates new system notice with type NoticeRepository.
