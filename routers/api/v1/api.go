@@ -218,8 +218,10 @@ func reqToken() func(ctx *context.APIContext) {
 			return
 		}
 		if ctx.IsSigned {
+			ctx.RequireCSRF()
 			return
 		}
+
 		ctx.Error(http.StatusUnauthorized, "reqToken", "token is required")
 	}
 }
@@ -593,6 +595,7 @@ func buildAuthGroup() *auth.Group {
 		&auth.OAuth2{},
 		&auth.HTTPSign{},
 		&auth.Basic{}, // FIXME: this should be removed once we don't allow basic auth in API
+		&auth.Session{},
 	)
 	specialAdd(group)
 
@@ -600,10 +603,12 @@ func buildAuthGroup() *auth.Group {
 }
 
 // Routes registers all v1 APIs routes to web application.
-func Routes(ctx gocontext.Context) *web.Route {
+func Routes(ctx gocontext.Context, sessioner func(http.Handler) http.Handler) *web.Route {
 	m := web.NewRoute()
 
 	m.Use(securityHeaders())
+	m.Use(sessioner)
+
 	if setting.CORSConfig.Enabled {
 		m.Use(cors.Handler(cors.Options{
 			// Scheme:           setting.CORSConfig.Scheme, // FIXME: the cors middleware needs scheme option
