@@ -394,9 +394,9 @@ async function onEditContent(event) {
     $editContentZone.find('.cancel.button').on('click', () => {
       $renderContent.show();
       $editContentZone.hide();
-      if (dz) {
-        dz.emit('reload');
-      }
+      // if (dz) {
+      //   dz.emit('reload');
+      // }
     });
 
     $saveButton.on('click', () => {
