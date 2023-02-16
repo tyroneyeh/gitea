@@ -811,6 +811,8 @@ func NewIssue(ctx *context.Context) {
 	body := ctx.FormString("body")
 	ctx.Data["BodyQuery"] = body
 
+	ctx.Data["Signature"] = ctx.Doer.Description
+
 	isProjectsEnabled := ctx.Repo.CanRead(unit.TypeProjects)
 	ctx.Data["IsProjectsEnabled"] = isProjectsEnabled
 	ctx.Data["IsAttachmentEnabled"] = setting.Attachment.Enabled
@@ -1800,6 +1802,7 @@ func ViewIssue(ctx *context.Context) {
 		return hiddenCommentTypes == nil || hiddenCommentTypes.Bit(int(commentType)) == 0
 	}
 
+	ctx.Data["Signature"] = ctx.Doer.Description
 	ctx.HTML(http.StatusOK, tplIssueView)
 }
 
