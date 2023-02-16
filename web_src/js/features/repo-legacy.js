@@ -333,7 +333,7 @@ async function onEditContent(event) {
             if (!file.editor && this.element.closest('div.comment') && (file.editor = getAttachedEasyMDE(this.element.closest('div.comment').querySelector('textarea')))) {
               file.editor = file.editor.codemirror;
             }
-            if ($dropzone.data('remove-url') && fileUuidDict[file.uuid]?.submitted) {
+            if ($dropzone.data('remove-url') && !fileUuidDict[file.uuid]?.submitted) {
               $.post($dropzone.data('remove-url'), {
                 file: file.uuid,
                 _csrf: csrfToken,
@@ -394,9 +394,9 @@ async function onEditContent(event) {
     $editContentZone.find('.cancel.button').on('click', () => {
       $renderContent.show();
       $editContentZone.hide();
-      // if (dz) {
-      //   dz.emit('reload');
-      // }
+      if (dz) {
+        dz.emit('reload');
+      }
     });
 
     $saveButton.on('click', () => {
