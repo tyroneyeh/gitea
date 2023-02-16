@@ -2,6 +2,7 @@ import $ from 'jquery';
 import {initMarkupContent} from '../markup/content.js';
 import {attachEasyMDEToElements, codeMirrorQuickSubmit, importEasyMDE, validateTextareaNonEmpty} from './comp/EasyMDE.js';
 import {initCompMarkupContentPreviewTab} from './comp/MarkupContentPreview.js';
+import {initEasyMDEFilePaste} from './comp/FilePaste.js';
 
 const {csrfToken} = window.config;
 
@@ -121,6 +122,15 @@ async function initRepoWikiFormEditor() {
         className: 'fa fa-file',
         title: 'Revert to simple textarea',
       },
+      {
+        name: 'spell-check',
+        action(e) {
+          const cm = e.codemirror.getTextArea().parentElement.querySelector('.CodeMirror-code');
+          cm.spellcheck = cm.spellcheck ? false : true;
+        },
+        className: 'fa fa-check',
+        title: 'Spell Check'
+      }
     ]
   });
 
@@ -130,6 +140,7 @@ async function initRepoWikiFormEditor() {
   });
 
   attachEasyMDEToElements(easyMDE);
+  initEasyMDEFilePaste(easyMDE, $form.find('.dropzone'));
 
   $form.on('submit', () => {
     if (!validateTextareaNonEmpty($editArea)) {

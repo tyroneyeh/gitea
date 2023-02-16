@@ -1,7 +1,7 @@
 import $ from 'jquery';
 import {createCommentEasyMDE, getAttachedEasyMDE} from './comp/EasyMDE.js';
 import {initCompMarkupContentPreviewTab} from './comp/MarkupContentPreview.js';
-import {initEasyMDEImagePaste} from './comp/ImagePaste.js';
+import {initEasyMDEFilePaste, addUploadedFileToEditor, removeUploadedFileFromEditor} from './comp/FilePaste.js';
 import {
   initRepoIssueBranchSelect, initRepoIssueCodeCommentCancel,
   initRepoIssueCommentDelete,
@@ -74,7 +74,7 @@ export function initRepoCommentForm() {
         continue;
       }
       const easyMDE = await createCommentEasyMDE(textarea);
-      initEasyMDEImagePaste(easyMDE, $commentForm.find('.dropzone'));
+      initEasyMDEFilePaste(easyMDE, $commentForm.find('.dropzone'));
     }
   })();
 
@@ -92,6 +92,16 @@ export function initRepoCommentForm() {
     $(`.${selector}`).dropdown('setting', 'onHide', () => {
       hasUpdateAction = $listMenu.data('action') === 'update'; // Update the var
       if (hasUpdateAction) {
+        if (window.event.key === 'Enter') {
+          $listMenu.find('a.selected').each((_, item) => {
+            items[item.getAttribute('data-id')] = {
+              'update-url': $listMenu.data('update-url'),
+              action: item.classList.contains('checked') ? 'detach' : 'attach',
+              'issue-id': $listMenu.data('issue-id'),
+            };
+          });
+        }
+
         // TODO: Add batch functionality and make this 1 network request.
         (async function() {
           for (const [elementId, item] of Object.entries(items)) {
@@ -197,6 +207,7 @@ export function initRepoCommentForm() {
 
   // Init labels and assignees
   initListSubmits('select-label', 'labels');
+  initListSubmits('select-projects', 'projects');
   initListSubmits('select-assignees', 'assignees');
   initListSubmits('select-assignees-modify', 'assignees');
   initListSubmits('select-reviewers-modify', 'assignees');
@@ -306,19 +317,31 @@ async function onEditContent(event) {
         thumbnailWidth: 480,
         thumbnailHeight: 480,
         init() {
+          this.on('addedfile', (file) => {addUploadedFileToEditor($dropzone, file)});
           this.on('success', (file, data) => {
             file.uuid = data.uuid;
-            fileUuidDict[file.uuid] = {submitted: false};
-            const input = $(`<input id="${data.uuid}" name="files" type="hidden">`).val(data.uuid);
+            const input = $(`<input id="${file.uuid}" name="files" type="hidden">`).val(data.uuid);
             $dropzone.find('.files').append(input);
+            const name = file.name.slice(0, file.name.lastIndexOf('.'));
+            const isImage = file.type.includes('image') ? '!' : '';
+            if (file.editor) {
+              file.editor.insertPlaceholder(`\n${isImage}[${name}](/attachments/${data.uuid})`);
+            }
           });
           this.on('removedfile', (file) => {
             $(`#${file.uuid}`).remove();
-            if ($dropzone.data('remove-url') && !fileUuidDict[file.uuid].submitted) {
+            if (!file.editor && this.element.closest('div.comment') && (file.editor = getAttachedEasyMDE(this.element.closest('div.comment').querySelector('textarea')))) {
+              file.editor = file.editor.codemirror;
+            }
+            if ($dropzone.data('remove-url') && fileUuidDict[file.uuid]?.submitted) {
               $.post($dropzone.data('remove-url'), {
                 file: file.uuid,
                 _csrf: csrfToken,
+              }).always(() => {
+                removeUploadedFileFromEditor(file.editor, file.uuid);
               });
+            } else {
+              removeUploadedFileFromEditor(file.editor, file.uuid);
             }
           });
           this.on('submit', () => {
@@ -359,7 +382,9 @@ async function onEditContent(event) {
     easyMDE = await createCommentEasyMDE($textarea);
 
     initCompMarkupContentPreviewTab($editContentForm);
-    initEasyMDEImagePaste(easyMDE, $dropzone);
+    if ($dropzone.length) {
+      initEasyMDEFilePaste(easyMDE, $dropzone);
+    }
 
     const $saveButton = $editContentZone.find('.save.button');
     $textarea.on('ce-quick-submit', () => {
@@ -406,7 +431,7 @@ async function onEditContent(event) {
         }
         if (dz) {
           dz.emit('submit');
-          dz.emit('reload');
+          // dz.emit('reload');
         }
         initMarkupContent();
         initCommentContent();
@@ -540,13 +565,9 @@ export function initRepository() {
       $(this).parent().hide();
 
       const $form = $repoComparePull.find('.pullrequest-form');
+      const easyMDE = getAttachedEasyMDE($form.find('textarea.edit_area'));
       $form.show();
-      $form.find('textarea.edit_area').each(function() {
-        const easyMDE = getAttachedEasyMDE($(this));
-        if (easyMDE) {
-          easyMDE.codemirror.refresh();
-        }
-      });
+      easyMDE.codemirror.refresh();
     });
   }
 
@@ -563,9 +584,12 @@ function initRepoIssueCommentEdit() {
   // Quote reply
   $(document).on('click', '.quote-reply', function (event) {
     $(this).closest('.dropdown').find('.menu').toggle('visible');
-    const target = $(this).data('target');
-    const quote = $(`#comment-${target}`).text().replace(/\n/g, '\n> ');
-    const content = `> ${quote}\n\n`;
+    const target = $(this).data('target'), commenttarget = $(`#comment-${target}`);
+    const commentheader = commenttarget.parent().parent();
+    const author = commentheader.find('.author').attr('href').slice(1);
+    const quotedate = new Date(commentheader.find('.time-since').attr('data-content')).toISOString().slice(0, 19).replace('T', ' ');
+    const quote = commenttarget.text().replace(/\n/g, '\n>');
+    const content = `> @${author} ${quotedate}:\n${quote}\n\n`;
     let easyMDE;
     if ($(this).hasClass('quote-reply-diff')) {
       const $parent = $(this).closest('.comment-code-cloud');
@@ -577,7 +601,7 @@ function initRepoIssueCommentEdit() {
     }
     if (easyMDE) {
       if (easyMDE.value() !== '') {
-        easyMDE.value(`${easyMDE.value()}\n\n${content}`);
+        easyMDE.value(`${content}\n\n${easyMDE.value()}`);
       } else {
         easyMDE.value(`${content}`);
       }

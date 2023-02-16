@@ -73,6 +73,7 @@ export async function createCommentEasyMDE(textarea, easyMDEOptions = {}) {
         className: 'fa fa-file',
         title: 'Revert to simple textarea',
       },
+      'fullscreen',
     ], ...easyMDEOptions});
 
   const inputField = easyMDE.codemirror.getInputField();

@@ -5,6 +5,7 @@ import createDropzone from './dropzone.js';
 import {initCompColorPicker} from './comp/ColorPicker.js';
 import {showGlobalErrorMessage} from '../bootstrap.js';
 import {attachDropdownAria} from './aria.js';
+import {addUploadedFileToEditor, removeUploadedFileFromEditor} from './comp/FilePaste.js';
 import {handleGlobalEnterQuickSubmit} from './comp/QuickSubmit.js';
 import {initTooltip} from '../modules/tippy.js';
 
@@ -163,17 +164,28 @@ export function initGlobalDropzone() {
       thumbnailWidth: 480,
       thumbnailHeight: 480,
       init() {
+        this.on('addedfile', (file) => {addUploadedFileToEditor($dropzone, file)});
         this.on('success', (file, data) => {
           file.uuid = data.uuid;
           const input = $(`<input id="${data.uuid}" name="files" type="hidden">`).val(data.uuid);
           $dropzone.find('.files').append(input);
+          const name = file.name.slice(0, file.name.lastIndexOf('.'));
+          const isImage = file.type.includes('image') ? '!' : '';
+          if (file.editor) {
+            file.editor.insertPlaceholder(`\n${isImage}[${name}](/attachments/${data.uuid})`);
+          }
         });
         this.on('removedfile', (file) => {
           $(`#${file.uuid}`).remove();
+          if (!file.editor && this.element.closest('div.comment') && (file.editor = getAttachedEasyMDE(this.element.closest('div.comment').querySelector('textarea')))) {
+            file.editor = file.editor.codemirror;
+          }
           if ($dropzone.data('remove-url')) {
             $.post($dropzone.data('remove-url'), {
               file: file.uuid,
               _csrf: csrfToken,
+            }).always(() => {
+              removeUploadedFileFromEditor(file.editor, file.uuid);
             });
           }
         });

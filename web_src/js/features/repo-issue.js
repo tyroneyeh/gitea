@@ -2,7 +2,7 @@ import $ from 'jquery';
 import {htmlEscape} from 'escape-goat';
 import attachTribute from './tribute.js';
 import {createCommentEasyMDE, getAttachedEasyMDE} from './comp/EasyMDE.js';
-import {initEasyMDEImagePaste} from './comp/ImagePaste.js';
+import {initEasyMDEFilePaste} from './comp/FilePaste.js';
 import {initCompMarkupContentPreviewTab} from './comp/MarkupContentPreview.js';
 import {initTooltip, showTemporaryTooltip} from '../modules/tippy.js';
 
@@ -149,6 +149,45 @@ export function initRepoIssueList() {
         excludeLabel($(selectedItems[0]));
       }
     }
+  });
+
+  $('.menu a.nolabels').on('click', () => {
+    let labelurl = 'labels=', labelpos = [...document.querySelectorAll('.label-filter-item')].map((i) => { return i.getAttribute('data-label-id') }).join(',-');
+    const nolabelids = `-${labelpos}`;
+    if ((labelpos = window.location.search.indexOf(labelurl)) !== -1) {
+      labelurl = window.location.search.slice(labelpos);
+      if ((labelpos = labelurl.indexOf('&')) !== -1) {
+        return window.location.search = window.location.search.replace(labelurl.slice(0, labelpos), `labels=${nolabelids}`);
+      }
+      return window.location.search = window.location.search.replace(labelurl, `labels=${nolabelids}`);
+    }
+    return window.location.search += (!window.location.search.includes('?') ? '?' : '&') + labelurl + nolabelids;
+  });
+
+  $('.menu a.nomilestones').on('click', () => {
+    let milestoneurl = 'milestone=', milestonepos;
+    if ((milestonepos = window.location.search.indexOf(milestoneurl)) !== -1) {
+      milestoneurl = window.location.search.slice(milestonepos);
+      if ((milestonepos = milestoneurl.indexOf('&')) !== -1) {
+        return window.location.search = window.location.search.replace(milestoneurl.slice(0, milestonepos), 'milestone=-1');
+      }
+      return window.location.search = window.location.search.replace(milestoneurl, 'milestone=-1');
+    }
+    milestonepos = (!window.location.search.includes('?') ? '?' : '&');
+    return window.location.search += `${milestonepos}${milestoneurl}-1`;
+  });
+
+  $('.menu a.noassignees').on('click', () => {
+    let assigneeurl = 'assignee=', assigneepos;
+    if ((assigneepos = window.location.search.indexOf(assigneeurl)) !== -1) {
+      assigneeurl = window.location.search.slice(assigneepos);
+      if ((assigneepos = assigneeurl.indexOf('&')) !== -1) {
+        return window.location.search = window.location.search.replace(assigneeurl.slice(0, assigneepos), `assignee=-1`);
+      }
+      return window.location.search = window.location.search.replace(assigneeurl, `assignee=-1`);
+    }
+    assigneepos = (!window.location.search.includes('?') ? '?' : '&');
+    return window.location.search += `${assigneepos}${assigneeurl}-1`;
   });
 }
 
@@ -477,7 +516,7 @@ export function initRepoPullRequestReview() {
       // EasyMDE's options can not handle minHeight & maxHeight together correctly, we have to set max-height for .CodeMirror-scroll in CSS.
       const $reviewTextarea = $reviewBox.find('textarea');
       const easyMDE = await createCommentEasyMDE($reviewTextarea, {minHeight: '80px'});
-      initEasyMDEImagePaste(easyMDE, $reviewBox.find('.dropzone'));
+      initEasyMDEFilePaste(easyMDE, $reviewBox.find('.dropzone'));
     })();
   }
 
@@ -557,6 +596,7 @@ export function initRepoIssueReferenceIssue() {
     const poster = $this.data('poster-username');
     const reference = $this.data('reference');
     const $modal = $($this.data('modal'));
+    $modal.find('input[name=title]').val(document.querySelector('#issue-title').innerText);
     $modal.find('textarea[name="content"]').val(`${content}\n\n_Originally posted by @${poster} in ${reference}_`);
     $modal.modal('show');
 
