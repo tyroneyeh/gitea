@@ -19,15 +19,16 @@ func (issue *Issue) LoadProject() (err error) {
 }
 
 func (issue *Issue) loadProject(ctx context.Context) (err error) {
-	if issue.Project == nil {
-		var p project_model.Project
-		if _, err = db.GetEngine(ctx).Table("project").
+	if issue.Projects == nil {
+		// var p project_model.Project
+		err = db.GetEngine(ctx).Table("project").
 			Join("INNER", "project_issue", "project.id=project_issue.project_id").
 			Where("project_issue.issue_id = ?", issue.ID).
-			Get(&p); err != nil {
+			Find(&issue.Projects)
+		if err != nil {
 			return err
 		}
-		issue.Project = &p
+		// issue.Project = &p
 	}
 	return err
 }
@@ -109,22 +110,24 @@ func LoadIssuesFromBoardList(bs project_model.BoardList) (map[int64]IssueList, e
 }
 
 // ChangeProjectAssign changes the project associated with an issue
-func ChangeProjectAssign(issue *Issue, doer *user_model.User, newProjectID int64) error {
+func ChangeProjectAssign(issue *Issue, doer *user_model.User, newProjectID int64, action string) error {
 	ctx, committer, err := db.TxContext()
 	if err != nil {
 		return err
 	}
 	defer committer.Close()
 
-	if err := addUpdateIssueProject(ctx, issue, doer, newProjectID); err != nil {
+	if err := addUpdateIssueProject(ctx, issue, doer, newProjectID, action); err != nil {
 		return err
 	}
 
 	return committer.Commit()
 }
 
-func addUpdateIssueProject(ctx context.Context, issue *Issue, doer *user_model.User, newProjectID int64) error {
+func addUpdateIssueProject(ctx context.Context, issue *Issue, doer *user_model.User, newProjectID int64, action string) error {
+
 	oldProjectID := issue.projectID(ctx)
+	var ret error
 
 	// Only check if we add a new project and not remove it.
 	if newProjectID > 0 {
@@ -137,8 +140,28 @@ func addUpdateIssueProject(ctx context.Context, issue *Issue, doer *user_model.U
 		}
 	}
 
-	if _, err := db.GetEngine(ctx).Where("project_issue.issue_id=?", issue.ID).Delete(&project_model.ProjectIssue{}); err != nil {
-		return err
+	if action == "attach" || (action == "" && oldProjectID != newProjectID) {
+		ret = db.Insert(ctx, &project_model.ProjectIssue{
+			IssueID:   issue.ID,
+			ProjectID: newProjectID,
+		})
+	} else if action != "attach" {
+		if action == "clear" || (oldProjectID == 0 && newProjectID == 0) {
+			if _, err := db.GetEngine(ctx).Where("project_issue.issue_id=?", issue.ID).Delete(&project_model.ProjectIssue{}); err != nil {
+				return err
+			}
+		} else if oldProjectID > 0 && oldProjectID == newProjectID {
+			if _, err := db.GetEngine(ctx).Where("project_issue.issue_id=? AND project_issue.project_id=?", issue.ID, oldProjectID).Delete(&project_model.ProjectIssue{}); err != nil {
+				return err
+			}
+		} else if newProjectID > 0 {
+			if _, err := db.GetEngine(ctx).Where("project_issue.issue_id=? AND project_issue.project_id=?", issue.ID, newProjectID).Delete(&project_model.ProjectIssue{}); err != nil {
+				return err
+			}
+		}
+		if oldProjectID == newProjectID || action != "attach" {
+			newProjectID = 0
+		}
 	}
 
 	if err := issue.LoadRepo(ctx); err != nil {
@@ -158,10 +181,7 @@ func addUpdateIssueProject(ctx context.Context, issue *Issue, doer *user_model.U
 		}
 	}
 
-	return db.Insert(ctx, &project_model.ProjectIssue{
-		IssueID:   issue.ID,
-		ProjectID: newProjectID,
-	})
+	return ret
 }
 
 // MoveIssueAcrossProjectBoards move a card from one board to another

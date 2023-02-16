@@ -251,7 +251,10 @@ func (issues IssueList) loadProjects(ctx context.Context) error {
 	}
 
 	for _, issue := range issues {
-		issue.Project = projectMaps[issue.ProjectID()]
+		projectID := issue.ProjectID()
+		if projectMaps[projectID] != nil {
+			issue.Projects = append(issue.Projects, projectMaps[projectID])
+		}
 	}
 	return nil
 }
