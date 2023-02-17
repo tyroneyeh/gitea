@@ -1132,6 +1132,7 @@ func RegisterRoutes(m *web.Route) {
 
 		m.Group("/wiki", func() {
 			m.Get("/raw/*", repo.WikiRaw)
+			m.Get("/raw/attachments/{uuid}", repo.GetAttachment)
 		}, repo.MustEnableWiki)
 
 		m.Group("/activity", func() {

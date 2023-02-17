@@ -102,7 +102,7 @@ func GetAttachment(ctx *context.Context) {
 	}
 
 	if repository == nil { // If not linked
-		if !(ctx.IsSigned && attach.UploaderID == ctx.Doer.ID) { // We block if not the uploader
+		if !(ctx.IsSigned) { // We block if not the uploader  && attach.UploaderID == ctx.Doer.ID
 			ctx.Error(http.StatusNotFound)
 			return
 		}
