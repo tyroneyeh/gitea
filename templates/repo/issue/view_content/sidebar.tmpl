@@ -189,22 +189,22 @@
 				{{end}}
 			</div>
 		</div>
-		<div class="ui select-milestone list">
+		<div class="ui milestone list">
 			<span class="no-select item {{if .Issue.Milestone}}hide{{end}}">{{.locale.Tr "repo.issues.new.no_milestone"}}</span>
+			{{if .Issue.Milestone}}
 			<div class="selected">
-				{{if .Issue.Milestone}}
-					<a class="item muted sidebar-item-link" href="{{.RepoLink}}/milestone/{{.Issue.Milestone.ID}}">
-						{{svg "octicon-milestone" 18 "mr-3"}}
-						{{.Issue.Milestone.Name}}
-					</a>
-				{{end}}
+				<a class="item muted sidebar-item-link" href="{{.RepoLink}}/milestone/{{.Issue.Milestone.ID}}">
+					{{svg "octicon-milestone" 18 "mr-3"}}
+					{{.Issue.Milestone.Name}}
+				</a>
 			</div>
+			{{end}}
 		</div>
 
 		{{if .IsProjectsEnabled}}
 			<div class="ui divider"></div>
 
-			<div class="ui {{if or (not .HasIssuesOrPullsWritePermission) .Repository.IsArchived}}disabled{{end}} floating jump select-project dropdown">
+			<div class="ui {{if or (not .HasIssuesOrPullsWritePermission) .Repository.IsArchived}}disabled{{end}} floating jump select-projects dropdown">
 				<a class="text df ac muted">
 					<strong>{{.locale.Tr "repo.issues.new.projects"}}</strong>
 					{{if and .HasIssuesOrPullsWritePermission (not .Repository.IsArchived)}}
@@ -212,6 +212,10 @@
 					{{end}}
 				</a>
 				<div class="menu" data-action="update" data-issue-id="{{$.Issue.ID}}" data-update-url="{{$.RepoLink}}/issues/projects">
+					<div class="ui icon search input">
+						<i class="icon df ac jc">{{svg "octicon-search" 16}}</i>
+						<input type="text" placeholder="{{.locale.Tr "repo.issues.filter_projects"}}">
+					</div>
 					<div class="no-select item">{{.locale.Tr "repo.issues.new.clear_projects"}}</div>
 					{{if .OpenProjects}}
 						<div class="divider"></div>
@@ -219,9 +223,19 @@
 							{{.locale.Tr "repo.issues.new.open_projects"}}
 						</div>
 						{{range .OpenProjects}}
-							<a class="item muted sidebar-item-link" data-id="{{.ID}}" data-href="{{$.RepoLink}}/projects/{{.ID}}">
+							{{$ProjectID := .ID}}
+							{{$checked := false}}
+							{{range $.Issue.Projects}}
+								{{if eq .ID $ProjectID}}
+									{{$checked = true}}
+								{{end}}
+							{{end}}
+							<a class="item muted sidebar-item-link{{if $checked}} checked{{end}}" href="#" data-id="{{.ID}}" data-href="{{$.RepoLink}}/projects/{{.ID}}">
+								<span class="octicon-check {{if not $checked}}invisible{{end}}">{{svg "octicon-check"}}</span>
+								<span class="text">
 								{{svg "octicon-project" 18 "mr-3"}}
 								{{.Title}}
+								</span>
 							</a>
 						{{end}}
 					{{end}}
@@ -231,22 +245,36 @@
 							{{.locale.Tr "repo.issues.new.closed_projects"}}
 						</div>
 						{{range .ClosedProjects}}
-							<a class="item muted sidebar-item-link" data-id="{{.ID}}" data-href="{{$.RepoLink}}/projects/{{.ID}}">
+							{{$ProjectID := .ID}}
+							{{$checked := false}}
+							{{range $.Issue.Projects}}
+								{{if eq .ID $ProjectID}}
+									{{$checked = true}}
+								{{end}}
+							{{end}}
+							<a class="item muted sidebar-item-link{{if $checked}} checked{{end}}" href="#" data-id="{{.ID}}" data-href="{{$.RepoLink}}/projects/{{.ID}}">
+								<span class="octicon-check {{if not $checked}}invisible{{end}}">{{svg "octicon-check"}}</span>
+								<span class="text">
 								{{svg "octicon-project" 18 "mr-3"}}
 								{{.Title}}
+								</span>
 							</a>
 						{{end}}
 					{{end}}
 				</div>
 			</div>
-			<div class="ui select-project list">
+			<div class="ui projects list">
 				<span class="no-select item {{if .Issue.ProjectID}}hide{{end}}">{{.locale.Tr "repo.issues.new.no_projects"}}</span>
 				<div class="selected">
 					{{if .Issue.ProjectID}}
-						<a class="item muted sidebar-item-link" href="{{.RepoLink}}/projects/{{.Issue.ProjectID}}">
+					{{range .Issue.Projects}}
+					<div class="item">
+						<a class="item muted sidebar-item-link" href="{{$.RepoLink}}/projects/{{.ID}}">
 							{{svg "octicon-project" 18 "mr-3"}}
-							{{.Issue.Project.Title}}
+							{{.Title}}
 						</a>
+					</div>
+					{{end}}
 					{{end}}
 				</div>
 			</div>
@@ -272,13 +300,13 @@
 				{{range .Assignees}}
 
 					{{$AssigneeID := .ID}}
-					<a class="item{{range $.Issue.Assignees}}{{if eq .ID $AssigneeID}} checked{{end}}{{end}}" href="#" data-id="{{.ID}}" data-id-selector="#assignee_{{.ID}}">
-						{{$checked := false}}
-						{{range $.Issue.Assignees}}
-							{{if eq .ID $AssigneeID}}
-								{{$checked = true}}
-							{{end}}
+					{{$checked := false}}
+					{{range $.Issue.Assignees}}
+						{{if eq .ID $AssigneeID}}
+							{{$checked = true}}
 						{{end}}
+					{{end}}
+					<a class="item{{if $checked}} checked{{end}}" href="#" data-id="{{.ID}}" data-id-selector="#assignee_{{.ID}}">
 						<span class="octicon-check {{if not $checked}}invisible{{end}}">{{svg "octicon-check"}}</span>
 						<span class="text">
 							{{avatar . 28 "mr-3"}}
