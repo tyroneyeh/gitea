@@ -115,7 +115,8 @@ function initVueComponents(app) {
           collaborative: {
             searchMode: 'collaborative',
           },
-        }
+        },
+        activeIndex: -1,
       };
     },
 
@@ -352,6 +353,43 @@ function initVueComponents(app) {
           return 'octicon-repo';
         }
         return 'octicon-repo';
+      },
+
+      reposFilterKeyControl(e) {
+        switch (e.key) {
+          case 'Enter':
+            document.querySelector('.repo-owner-name-list li.active a')?.click();
+            break;
+          case 'ArrowUp':
+            if (this.activeIndex > 0) {
+              this.activeIndex--;
+            } else if (this.page > 1) {
+              this.changePage(this.page - 1);
+              this.activeIndex = this.searchLimit - 1;
+            }
+            break;
+          case 'ArrowDown':
+            if (this.activeIndex < this.repos.length - 1) {
+              this.activeIndex++;
+            } else if (this.page < this.finalPage) {
+              this.activeIndex = 0;
+              this.changePage(this.page + 1);
+            }
+            break;
+          case 'ArrowRight':
+            if (this.page < this.finalPage) {
+              this.changePage(this.page + 1);
+            }
+            break;
+          case 'ArrowLeft':
+            if (this.page > 1) {
+              this.changePage(this.page - 1);
+            }
+            break;
+        }
+        if (this.activeIndex === -1 || this.activeIndex > this.repos.length - 1) {
+          this.activeIndex = 0;
+        }
       }
     },
 

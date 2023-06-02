@@ -41,7 +41,7 @@
 			</h4>
 			<div class="ui attached segment repos-search">
 				<div class="ui fluid right action left icon input" :class="{loading: isLoading}">
-					<input @input="changeReposFilter(reposFilter)" v-model="searchQuery" ref="search" placeholder="{{.locale.Tr "home.search_repos"}}">
+					<input @input="changeReposFilter(reposFilter)" v-model="searchQuery" ref="search" @keydown="reposFilterKeyControl" placeholder="{{.locale.Tr "home.search_repos"}}">
 					<i class="icon df ac jc">{{svg "octicon-search" 16}}</i>
 					<div class="ui dropdown icon button" title="{{.locale.Tr "home.filter"}}">
 						<i class="icon df ac jc m-0">{{svg "octicon-filter" 16}}</i>
@@ -126,7 +126,7 @@
 			</div>
 			<div v-if="repos.length" class="ui attached table segment rounded-bottom">
 				<ul class="repo-owner-name-list">
-					<li v-for="repo in repos" :class="{'private': repo.private || repo.internal}">
+					<li v-for="repo, index in repos" :class="{'private': repo.private || repo.internal, 'active': index === activeIndex}">
 						<a class="repo-list-link df ac sb" :href="repo.html_url">
 							<div class="item-name df ac f1 mr-2">
 								<component v-bind:is="repoIcon(repo)" size="16" class="mr-2"></component>
