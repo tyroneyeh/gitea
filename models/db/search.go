@@ -26,6 +26,7 @@ const (
 	SearchOrderByStarsReverse          SearchOrderBy = "num_stars DESC"
 	SearchOrderByForks                 SearchOrderBy = "num_forks ASC"
 	SearchOrderByForksReverse          SearchOrderBy = "num_forks DESC"
+	SearchOrderByTitle                 SearchOrderBy = "title ASC"
 )
 
 const (

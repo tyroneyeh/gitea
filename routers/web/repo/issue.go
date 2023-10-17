@@ -1193,7 +1193,7 @@ func NewIssuePost(ctx *context.Context) {
 			ctx.Error(http.StatusBadRequest, "user hasn't permissions to read projects")
 			return
 		}
-		if err := issues_model.ChangeProjectAssign(issue, ctx.Doer, projectID); err != nil {
+		if err := issues_model.ChangeProjectAssign(issue, ctx.Doer, projectID, "attach"); err != nil {
 			ctx.ServerError("ChangeProjectAssign", err)
 			return
 		}
