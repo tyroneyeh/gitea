@@ -255,17 +255,19 @@ func (issues IssueList) LoadProjects(ctx context.Context) error {
 		if err != nil {
 			return err
 		}
+
 		for _, project := range projects {
-			projectMaps[project.IssueID] = project.Project
+			projectMaps[project.ID] = project.Project
 		}
 		left -= limit
 		issueIDs = issueIDs[limit:]
 	}
 
 	for _, issue := range issues {
-		projectIDs := issue.projectIDs(ctx)
-		for _, i := range projectIDs {
-			issue.Projects = append(issue.Projects, projectMaps[i])
+		for _, i := range issue.projectIDs(ctx) {
+			if projectMaps[i] != nil {
+				issue.Projects = append(issue.Projects, projectMaps[i])
+			}
 		}
 	}
 	return nil
