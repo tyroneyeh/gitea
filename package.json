@@ -30,6 +30,7 @@
     "fast-glob": "3.2.12",
     "jquery": "3.7.0",
     "jquery.are-you-sure": "1.9.0",
+    "jszip": "3.10.1",
     "katex": "0.16.7",
     "license-checker-webpack-plugin": "0.2.1",
     "mermaid": "10.2.3",

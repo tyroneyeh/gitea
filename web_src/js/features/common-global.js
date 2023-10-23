@@ -160,6 +160,10 @@ export function initGlobalDropzone() {
             showTemporaryTooltip(e.target, success ? i18n.copy_success : i18n.copy_error);
           });
           file.previewTemplate.append(copyLinkElement);
+          const imgSymbol = file.type.includes('image') ? '!' : '';
+          const name = file.name.slice(0, file.name.lastIndexOf('.'));
+          const placeholder = `${imgSymbol}[${name}](uploading ...)`;
+          file.editor.replacePlaceholder(placeholder, `${imgSymbol}[${name}](/attachments/${data.uuid})\n`);
         });
         this.on('removedfile', (file) => {
           $(`#${file.uuid}`).remove();
@@ -168,6 +172,10 @@ export function initGlobalDropzone() {
               file: file.uuid,
               _csrf: csrfToken,
             });
+            const imgSymbol = file.type.includes('image') ? '!' : '';
+            const name = file.name.slice(0, file.name.lastIndexOf('.'));
+            const placeholder = `${imgSymbol}[${name}](/attachments/${file.uuid})`;
+            file.editor.replacePlaceholder(placeholder, '');
           }
         });
       },

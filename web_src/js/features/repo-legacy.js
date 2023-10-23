@@ -338,6 +338,10 @@ async function onEditContent(event) {
           fileUuidDict[file.uuid] = {submitted: false};
           const input = $(`<input id="${data.uuid}" name="files" type="hidden">`).val(data.uuid);
           $dropzone.find('.files').append(input);
+          const imgSymbol = file.type.includes('image') ? '!' : '';
+          const name = file.name.slice(0, file.name.lastIndexOf('.'));
+          const placeholder = `${imgSymbol}[${name}](uploading ...)`;
+          file.editor.replacePlaceholder(placeholder, `${imgSymbol}[${name}](/attachments/${data.uuid})\n`);
         });
         this.on('removedfile', (file) => {
           if (disableRemovedfileEvent) return;
@@ -347,6 +351,10 @@ async function onEditContent(event) {
               file: file.uuid,
               _csrf: csrfToken,
             });
+            const imgSymbol = file.type.includes('image') ? '!' : '';
+            const name = file.name.slice(0, file.name.lastIndexOf('.'));
+            const placeholder = `${imgSymbol}[${name}](/attachments/${file.uuid})`;
+            file.editor.replacePlaceholder(placeholder, '');
           }
         });
         this.on('submit', () => {
