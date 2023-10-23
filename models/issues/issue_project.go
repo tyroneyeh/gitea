@@ -111,7 +111,6 @@ func ChangeProjectAssign(issue *Issue, doer *user_model.User, newProjectID int64
 }
 
 func addUpdateIssueProject(ctx context.Context, issue *Issue, doer *user_model.User, newProjectID int64, action string) error {
-
 	if err := issue.LoadRepo(ctx); err != nil {
 		return err
 	}
@@ -141,7 +140,9 @@ func addUpdateIssueProject(ctx context.Context, issue *Issue, doer *user_model.U
 		oldProjectIDs = append(oldProjectIDs, newProjectID)
 		newProjectID = 0
 	} else if action == "clear" {
-		db.GetEngine(ctx).Table("project_issue").Select("project_id").Where("issue_id=?", issue.ID).Find(&oldProjectIDs)
+		if err = db.GetEngine(ctx).Table("project_issue").Select("project_id").Where("issue_id=?", issue.ID).Find(&oldProjectIDs); err != nil {
+			return err
+		}
 		_, err = db.GetEngine(ctx).Where("project_issue.issue_id=?", issue.ID).Delete(&project_model.ProjectIssue{})
 		newProjectID = 0
 	}
