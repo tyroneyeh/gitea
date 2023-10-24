@@ -6,8 +6,8 @@
     bottom:45px;
     width:30px;
     height:30px;
-    color:#fff;
-    background:#33b5e5;
+    color:var(--color-primary-contrast);
+    background:var(--color-primary-light-3);
     line-height:30px;
     border-radius:50%;
     transition:all 0.5s;

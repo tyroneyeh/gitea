@@ -13,13 +13,23 @@ export function initGotoBottom() {
   }
 
   $('#goup').on('click', () => {
-    if (++window.commentIndex >= 0) {
-      commentContainer[window.commentIndex]?.scrollIntoView({behavior: "smooth", block: "start"});
+    if (--window.commentIndex >= 0) {
+      commentContainer[window.commentIndex].scrollIntoView({behavior: 'smooth', block: 'start'});
+      if (window.commentIndex <= commentContainer.length - 1) {
+        $('#godown').removeClass('gt-hidden');
+      }
+    } else {
+      window.commentIndex = 1;
     }
   });
   $('#godown').on('click', () => {
     if (++window.commentIndex < commentContainer.length) {
-      commentContainer[window.commentIndex].scrollIntoView({behavior: "smooth", block: "start"});
+      commentContainer[window.commentIndex].scrollIntoView({behavior: 'smooth', block: 'start'});
+    } else {
+      window.commentIndex = commentContainer.length - 1;
+    }
+    if (window.commentIndex >= commentContainer.length - 1) {
+      $('#godown').addClass('gt-hidden');
     }
   });
 
@@ -49,13 +59,10 @@ export function initGotoBottom() {
       }
       if (document.body.scrollHeight - $(window).height() - window.scrollY > 10) {
         $('#gobottom').removeClass('gt-hidden');
-        if (commentContainer.length) {
-          $('#godown').removeClass('gt-hidden');
-        }
       } else {
         $('#gobottom').addClass('gt-hidden');
         if (commentContainer.length) {
-          window.commentIndex = commentContainer.length - 1;
+          window.commentIndex = commentContainer.length;
           $('#godown').addClass('gt-hidden');
         }
       }
