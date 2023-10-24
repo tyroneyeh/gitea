@@ -24,6 +24,7 @@ import {initRepoPullRequestMergeForm} from './repo-issue-pr-form.js';
 import {hideElem, showElem} from '../utils/dom.js';
 import {getComboMarkdownEditor, initComboMarkdownEditor} from './comp/ComboMarkdownEditor.js';
 import {attachRefIssueContextPopup} from './contextpopup.js';
+import {addUploadedFileToEditor} from './comp/ImagePaste.js';
 
 const {csrfToken} = window.config;
 
@@ -333,6 +334,7 @@ async function onEditContent(event) {
       thumbnailWidth: 480,
       thumbnailHeight: 480,
       init() {
+        this.on('addedfile', (file) => {addUploadedFileToEditor($dropzone, file)});
         this.on('success', (file, data) => {
           file.uuid = data.uuid;
           fileUuidDict[file.uuid] = {submitted: false};
@@ -345,16 +347,18 @@ async function onEditContent(event) {
         });
         this.on('removedfile', (file) => {
           if (disableRemovedfileEvent) return;
-          $(`#${file.uuid}`).remove();
-          if ($dropzone.attr('data-remove-url') && !fileUuidDict[file.uuid].submitted) {
-            $.post($dropzone.attr('data-remove-url'), {
-              file: file.uuid,
-              _csrf: csrfToken,
-            });
-            const imgSymbol = file.type.includes('image') ? '!' : '';
-            const name = file.name.slice(0, file.name.lastIndexOf('.'));
-            const placeholder = `${imgSymbol}[${name}](/attachments/${file.uuid})`;
-            file.editor.replacePlaceholder(placeholder, '');
+          if (file.uuid) {
+            $(`#${file.uuid}`).remove();
+            if ($dropzone.attr('data-remove-url') && !fileUuidDict[file.uuid].submitted) {
+              $.post($dropzone.attr('data-remove-url'), {
+                file: file.uuid,
+                _csrf: csrfToken,
+              });
+              const imgSymbol = file.type.includes('image') ? '!' : '';
+              const name = file.name.slice(0, file.name.lastIndexOf('.'));
+              const placeholder = `${imgSymbol}[${name}](/attachments/${file.uuid})`;
+              file.editor.replacePlaceholder(placeholder, '');
+            }
           }
         });
         this.on('submit', () => {

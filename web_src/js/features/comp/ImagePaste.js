@@ -150,7 +150,7 @@ async function importJSZip() {
   return JSZip;
 }
 
-async function addUploadedFileToEditor($dropzone, file) {
+export async function addUploadedFileToEditor($dropzone, file) {
   if (!file.editor) {
     const form = $dropzone.closest('div.comment,form.form')[0];
     if (form) {
@@ -164,8 +164,18 @@ async function addUploadedFileToEditor($dropzone, file) {
       }
     }
   }
-  if (file.done || (file.type.includes('application') || (file.type.includes('text') && file.size < 1000000))) {
-    $dropzone[0].dropzone.addFile(file);
+  const imgSymbol = file.type.includes('image') ? '!' : '';
+  const fileName = file.name.slice(0, file.name.lastIndexOf('.'));
+  const placeholder = `${imgSymbol}[${fileName}](uploading ...)`;
+  const acceptedFiles = $dropzone[0].dropzone.options.acceptedFiles.includes(file.name.slice(file.name.lastIndexOf('.')));
+
+  if (file.done || !acceptedFiles || file.type.includes('image') || file.type.includes('application') || (file.type.includes('text') && file.size < 1e6)) {
+    if (!file.done && file.status !== 'added') {
+      $dropzone[0].dropzone.addFile(file);
+      if (!acceptedFiles) {
+        file.editor.replacePlaceholder(placeholder, '');
+      }
+    }
     return true;
   }
 
@@ -179,11 +189,12 @@ async function addUploadedFileToEditor($dropzone, file) {
     compression: 'DEFLATE',
     compressionOptions: {level: 9}
   }).then((content) => {
-    const fileName = file.name.slice(0, file.name.lastIndexOf('.'));
     const f = new File([content], `${fileName}.zip`);
     f.editor = file.editor;
+    if (file.uuid) {
+      $dropzone[0].dropzone.removeFile(file);
+    }
     f.done = true;
-    // $dropzone[0].dropzone.removeFile(file);
     $dropzone[0].dropzone.addFile(f);
     document.body.style.cursor = 'default';
     $('.markdown-text-editor').css('cursor', 'default');

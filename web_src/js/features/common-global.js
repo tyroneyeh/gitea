@@ -9,6 +9,7 @@ import {svg} from '../svg.js';
 import {hideElem, showElem, toggleElem} from '../utils/dom.js';
 import {htmlEscape} from 'escape-goat';
 import {showTemporaryTooltip} from '../modules/tippy.js';
+import {addUploadedFileToEditor} from './comp/ImagePaste.js';
 
 const {appUrl, csrfToken, i18n} = window.config;
 
@@ -138,6 +139,7 @@ export function initGlobalDropzone() {
       thumbnailWidth: 480,
       thumbnailHeight: 480,
       init() {
+        this.on('addedfile', (file) => {addUploadedFileToEditor($dropzone, file)});
         this.on('success', (file, data) => {
           file.uuid = data.uuid;
           const input = $(`<input id="${data.uuid}" name="files" type="hidden">`).val(data.uuid);
@@ -166,16 +168,18 @@ export function initGlobalDropzone() {
           file.editor.replacePlaceholder(placeholder, `${imgSymbol}[${name}](/attachments/${data.uuid})\n`);
         });
         this.on('removedfile', (file) => {
-          $(`#${file.uuid}`).remove();
-          if ($dropzone.data('remove-url')) {
-            $.post($dropzone.data('remove-url'), {
-              file: file.uuid,
-              _csrf: csrfToken,
-            });
-            const imgSymbol = file.type.includes('image') ? '!' : '';
-            const name = file.name.slice(0, file.name.lastIndexOf('.'));
-            const placeholder = `${imgSymbol}[${name}](/attachments/${file.uuid})`;
-            file.editor.replacePlaceholder(placeholder, '');
+          if (file.uuid) {
+            $(`#${file.uuid}`).remove();
+            if ($dropzone.data('remove-url')) {
+              $.post($dropzone.data('remove-url'), {
+                file: file.uuid,
+                _csrf: csrfToken,
+              });
+              const imgSymbol = file.type.includes('image') ? '!' : '';
+              const name = file.name.slice(0, file.name.lastIndexOf('.'));
+              const placeholder = `${imgSymbol}[${name}](/attachments/${file.uuid})`;
+              file.editor.replacePlaceholder(placeholder, '');
+            }
           }
         });
       },
