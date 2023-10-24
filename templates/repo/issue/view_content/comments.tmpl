@@ -1,4 +1,5 @@
 {{template "base/alert"}}
+{{$index := 1}}
 {{range .Issue.Comments}}
 	{{if call $.ShouldShowCommentType .Type}}
 		{{$createdStr:= TimeSinceUnix .CreatedUnix $.locale}}
@@ -25,7 +26,7 @@
 			{{end}}
 				<div class="content comment-container">
 					<div class="ui top attached header comment-header gt-df gt-ac gt-sb" role="heading" aria-level="3">
-						<div class="comment-header-left gt-df gt-ac">
+						<div class="comment-header-left gt-df gt-ac">#{{$index}}{{$index = Eval $index "+" 1}}
 							{{if .OriginalAuthor}}
 								<span class="text black gt-font-semibold gt-mr-2">
 									{{svg (MigrationIcon $.Repository.GetOriginalURLHostname)}}

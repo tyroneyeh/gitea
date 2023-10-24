@@ -16,11 +16,15 @@
     font-family:initial;
 }
 
+#goup {
+    bottom:155px;
+}
+#godown {
+    bottom:120px;
+}
 #gotop {
     bottom:75px;
-    display:none;
 }
 #gobottom {
     bottom:40px;
-    display:none;
 }
