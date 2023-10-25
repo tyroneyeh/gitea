@@ -130,7 +130,10 @@ const uploadClipboardImage = async (editor, dropzone, e) => {
 
 export function initEasyMDEImagePaste(easyMDE, dropzone) {
   if (!dropzone) return;
-  easyMDE.codemirror.on('paste drop', async (_, e) => {
+  easyMDE.codemirror.on('paste', async (_, e) => {
+    return uploadClipboardImage(new CodeMirrorEditor(easyMDE.codemirror), dropzone, e);
+  });
+  easyMDE.codemirror.on('drop', async (_, e) => {
     return uploadClipboardImage(new CodeMirrorEditor(easyMDE.codemirror), dropzone, e);
   });
 }
