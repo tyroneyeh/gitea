@@ -13,20 +13,18 @@ export function initGotoBottom() {
   }
 
   $('#goup').on('click', () => {
-    if (--window.commentIndex >= 0) {
-      commentContainer[window.commentIndex].scrollIntoView({behavior: 'smooth', block: 'start'});
-      if (window.commentIndex <= commentContainer.length - 1) {
-        $('#godown').removeClass('gt-hidden');
-      }
-    } else {
-      window.commentIndex = 1;
+    if (window.commentIndex > 0) {
+      commentContainer[--window.commentIndex].scrollIntoView({behavior: 'smooth', block: 'start'});
+      $('#godown').removeClass('gt-hidden');
+    }
+    if (window.commentIndex <= 0) {
+      $('#goup').addClass('gt-hidden');
     }
   });
   $('#godown').on('click', () => {
-    if (++window.commentIndex < commentContainer.length) {
-      commentContainer[window.commentIndex].scrollIntoView({behavior: 'smooth', block: 'start'});
-    } else {
-      window.commentIndex = commentContainer.length - 1;
+    if (window.commentIndex <= commentContainer.length) {
+      commentContainer[++window.commentIndex].scrollIntoView({behavior: 'smooth', block: 'start'});
+      $('#goup').removeClass('gt-hidden');
     }
     if (window.commentIndex >= commentContainer.length - 1) {
       $('#godown').addClass('gt-hidden');
@@ -47,24 +45,13 @@ export function initGotoBottom() {
     $(window).on('scroll', () => {
       if ($(window).scrollTop() > $(window).height() / 2) {
         $('#gotop').removeClass('gt-hidden');
-        if (commentContainer.length) {
-          $('#goup').removeClass('gt-hidden');
-        }
       } else {
         $('#gotop').addClass('gt-hidden');
-        if (commentContainer.length) {
-          window.commentIndex = 0;
-          $('#goup').addClass('gt-hidden');
-        }
       }
       if (document.body.scrollHeight - $(window).height() - window.scrollY > 10) {
         $('#gobottom').removeClass('gt-hidden');
       } else {
         $('#gobottom').addClass('gt-hidden');
-        if (commentContainer.length) {
-          window.commentIndex = commentContainer.length;
-          $('#godown').addClass('gt-hidden');
-        }
       }
     });
   }));
