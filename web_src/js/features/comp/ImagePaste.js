@@ -183,7 +183,7 @@ export async function addUploadedFileToEditor($dropzone, file) {
   }
 
   document.body.style.cursor = 'wait';
-  $('.markdown-text-editor').css('cursor', 'wait');
+  $('.markdown-text-editor, .CodeMirror-scroll, .CodeMirror-line').css('cursor', 'wait');
   const JSZip = await importJSZip();
   const z = new JSZip();
   z.file(file.name, file);
@@ -200,7 +200,7 @@ export async function addUploadedFileToEditor($dropzone, file) {
     f.done = true;
     $dropzone[0].dropzone.addFile(f);
     document.body.style.cursor = 'default';
-    $('.markdown-text-editor').css('cursor', 'default');
+    $('.markdown-text-editor, .CodeMirror-scroll, .CodeMirror-line').css('cursor', 'default');
   });
 }
 
