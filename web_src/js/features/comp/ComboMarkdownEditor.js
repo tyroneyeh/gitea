@@ -174,10 +174,10 @@ class ComboMarkdownEditor {
   }
 
   async switchToUserPreference() {
-    if (this.userPreferredEditor === 'easymde') {
-      await this.switchToEasyMDE();
-    } else {
+    if (this.userPreferredEditor === 'textarea') {
       this.switchToTextarea();
+    } else {
+      await this.switchToEasyMDE();
     }
   }
 
@@ -201,9 +201,13 @@ class ComboMarkdownEditor {
       renderingConfig: {singleLineBreaks: false},
       indentWithTabs: false,
       tabSize: 4,
-      spellChecker: false,
+      spellChecker: true,
       inputStyle: 'contenteditable', // nativeSpellcheck requires contenteditable
       nativeSpellcheck: true,
+      autosave: {
+        enabled: true,
+        uniqueId: location.pathname
+      },
       ...this.options.easyMDEOptions,
     };
     easyMDEOpt.toolbar = this.parseEasyMDEToolbar(EasyMDE, easyMDEOpt.toolbar ?? this.easyMDEToolbarDefault);
