@@ -3,7 +3,7 @@ import $ from 'jquery';
 export function initGotoBottom() {
   const commentContainer = document.querySelectorAll('.comment-container');
 
-  if (commentContainer.length) {
+  if (commentContainer.length > 1) {
     window.commentIndex = 0;
     $('#goup').removeClass('gt-hidden');
     $('#godown').removeClass('gt-hidden');
