@@ -296,11 +296,6 @@ class ComboMarkdownEditor {
   }
 }
 
-export function getComboMarkdownEditor(el) {
-  if (el instanceof $) el = el[0];
-  return el?._giteaComboMarkdownEditor;
-}
-
 export async function initComboMarkdownEditor(container, options = {}) {
   if (container instanceof $) {
     if (container.length !== 1) {

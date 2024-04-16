@@ -1,5 +1,4 @@
 import {debounce} from 'throttle-debounce';
-import { getComboMarkdownEditor } from '../features/comp/ComboMarkdownEditor.js';
 
 function elementsCall(el, func, ...args) {
   if (typeof el === 'string' || el instanceof String) {
@@ -257,6 +256,11 @@ export function isElemVisible(element) {
   if (!element) return false;
 
   return Boolean(element.offsetWidth || element.offsetHeight || element.getClientRects().length);
+}
+
+export function getComboMarkdownEditor(el) {
+  if (el.jquery) el = el[0];
+  return el?._giteaComboMarkdownEditor;
 }
 
 // extract text and images from "paste" event

@@ -1,9 +1,9 @@
 import $ from 'jquery';
 import {handleReply} from './repo-issue.js';
-import {getComboMarkdownEditor, initComboMarkdownEditor, removeLinksInTextarea} from './comp/ComboMarkdownEditor.js';
+import {initComboMarkdownEditor, removeLinksInTextarea} from './comp/ComboMarkdownEditor.js';
 import {createDropzone} from './dropzone.js';
 import {GET, POST} from '../modules/fetch.js';
-import {hideElem, showElem} from '../utils/dom.js';
+import {hideElem, showElem, getComboMarkdownEditor} from '../utils/dom.js';
 import {attachRefIssueContextPopup} from './contextpopup.js';
 import {initCommentContent, initMarkupContent} from '../markup/content.js';
 
