@@ -315,3 +315,9 @@ export async function initComboMarkdownEditor(container, options = {}) {
   await editor.init();
   return editor;
 }
+
+export function removeLinksInTextarea(editor, file) {
+  const fileName = file.name.slice(0, file.name.lastIndexOf('.'));
+  const fileText = `\\[${fileName}\\]\\(/attachments/${file.uuid}\\)`;
+  editor.value(editor.value().replace(new RegExp(`<img [\\s\\w"=]+ alt="${fileName}" src="/attachments/${file.uuid}">`, 'g'), '').replace(new RegExp(`\\!${fileText}`, 'g'), '').replace(new RegExp(fileText, 'g'), ''));
+}

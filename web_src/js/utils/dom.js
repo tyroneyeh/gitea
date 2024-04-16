@@ -1,4 +1,5 @@
 import {debounce} from 'throttle-debounce';
+import { getComboMarkdownEditor } from '../features/comp/ComboMarkdownEditor.js';
 
 function elementsCall(el, func, ...args) {
   if (typeof el === 'string' || el instanceof String) {
@@ -260,14 +261,20 @@ export function isElemVisible(element) {
 
 // extract text and images from "paste" event
 export function getPastedContent(e) {
-  const images = [];
-  for (const item of e.clipboardData?.items ?? []) {
-    if (item.type?.startsWith('image/')) {
-      images.push(item.getAsFile());
+  const acceptedFiles = getComboMarkdownEditor(e.currentTarget).dropzone.getAttribute('data-accepts');
+  const files = [];
+  const data = e.clipboardData?.items || e.dataTransfer?.items;
+  for (const item of data ?? []) {
+    if (!item.type?.startsWith('text/')) {
+      const file = item.getAsFile();
+      const extName = file.name.slice(file.name.lastIndexOf('.'), file.name.length);
+      if (acceptedFiles.includes(extName)) {
+        files.push(file);
+      }
     }
   }
   const text = e.clipboardData?.getData?.('text') ?? '';
-  return {text, images};
+  return {text, files};
 }
 
 // replace selected text in a textarea while preserving editor history, e.g. CTRL-Z works after this
