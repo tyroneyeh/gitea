@@ -184,7 +184,7 @@
 							{{end}}
 						{{end}}
 						<a class="item muted sidebar-item-link{{if $checked}} checked{{end}}" data-id="{{.ID}}" data-href="{{.Link ctx}}">
-							<span class="octicon-check {{if not $checked}}tw-invisible{{end}}">{{svg "octicon-check"}}</span>
+							<span class="octicon-check{{if not $checked}} tw-invisible{{end}}">{{svg "octicon-check"}}</span>
 							<span class="text">
 							{{svg .IconName 18 "tw-mr-2"}}{{.Title}}
 							</span>
@@ -203,10 +203,10 @@
 							{{if eq .IssueID $ProjectID}}
 								{{$checked = true}}
 								{{break}}
-								{{end}}
+							{{end}}
 						{{end}}
 						<a class="item muted sidebar-item-link{{if $checked}} checked{{end}}" data-id="{{.ID}}" data-href="{{.Link ctx}}">
-							<span class="octicon-check {{if not $checked}}tw-invisible{{end}}">{{svg "octicon-check"}}</span>
+							<span class="octicon-check{{if not $checked}} tw-invisible{{end}}">{{svg "octicon-check"}}</span>
 							<span class="text">
 							{{svg .IconName 18 "tw-mr-2"}}{{.Title}}
 							</span>
@@ -220,7 +220,7 @@
 			<div class="selected">
 				{{range .Issue.Projects}}
 					<div class="item">
-						<a class="item muted sidebar-item-link" href="{{.Link ctx}}">
+						<a class="muted sidebar-item-link" href="{{.Link ctx}}">
 							{{svg .IconName 18 "tw-mr-2"}}{{.Title}}
 						</a>
 					</div>

@@ -13,7 +13,7 @@ import (
 )
 
 // LoadProject load the project the issue was assigned to
-func (issue *Issue) LoadProject(ctx context.Context) (err error) {
+func (issue *Issue) LoadProjects(ctx context.Context) (err error) {
 	if issue.Projects == nil {
 		err = db.GetEngine(ctx).Table("project").
 			Join("INNER", "project_issue", "project.id=project_issue.project_id").
