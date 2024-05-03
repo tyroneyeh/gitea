@@ -30,7 +30,7 @@ EDITORCONFIG_CHECKER_PACKAGE ?= github.com/editorconfig-checker/editorconfig-che
 GOFUMPT_PACKAGE ?= mvdan.cc/gofumpt@v0.6.0
 GOLANGCI_LINT_PACKAGE ?= github.com/golangci/golangci-lint/cmd/golangci-lint@v1.57.2
 GXZ_PACKAGE ?= github.com/ulikunitz/xz/cmd/gxz@v0.5.11
-MISSPELL_PACKAGE ?= github.com/golangci/misspell/cmd/misspell@v0.4.1
+MISSPELL_PACKAGE ?= github.com/golangci/misspell/cmd/misspell@v0.5.1
 SWAGGER_PACKAGE ?= github.com/go-swagger/go-swagger/cmd/swagger@db51e79a0e37c572d8b59ae0c58bf2bbbbe53285
 XGO_PACKAGE ?= src.techknowlogick.com/xgo@latest
 GO_LICENSES_PACKAGE ?= github.com/google/go-licenses@v1
@@ -110,7 +110,6 @@ LDFLAGS := $(LDFLAGS) -X "main.MakeVersion=$(MAKE_VERSION)" -X "main.Version=$(G
 
 LINUX_ARCHS ?= linux/amd64,linux/386,linux/arm-5,linux/arm-6,linux/arm64
 
-GO_PACKAGES ?= $(filter-out code.gitea.io/gitea/tests/integration/migration-test code.gitea.io/gitea/tests code.gitea.io/gitea/tests/integration code.gitea.io/gitea/tests/e2e,$(shell $(GO) list ./... | grep -v /vendor/))
 GO_TEST_PACKAGES ?= $(filter-out $(shell $(GO) list code.gitea.io/gitea/models/migrations/...) code.gitea.io/gitea/tests/integration/migration-test code.gitea.io/gitea/tests code.gitea.io/gitea/tests/integration code.gitea.io/gitea/tests/e2e,$(shell $(GO) list ./... | grep -v /vendor/))
 MIGRATE_TEST_PACKAGES ?= $(shell $(GO) list code.gitea.io/gitea/models/migrations/...)
 
@@ -144,9 +143,9 @@ TAR_EXCLUDES := .git data indexers queues log node_modules $(EXECUTABLE) $(FOMAN
 GO_DIRS := build cmd models modules routers services tests
 WEB_DIRS := web_src/js web_src/css
 
-ESLINT_FILES := web_src/js tools *.config.js tests/e2e
+ESLINT_FILES := web_src/js tools *.js tests/e2e
 STYLELINT_FILES := web_src/css web_src/js/components/*.vue
-SPELLCHECK_FILES := $(GO_DIRS) $(WEB_DIRS) docs/content templates options/locale/locale_en-US.ini .github
+SPELLCHECK_FILES := $(GO_DIRS) $(WEB_DIRS) docs/content templates options/locale/locale_en-US.ini .github $(filter-out CHANGELOG.md, $(wildcard *.go *.js *.md *.yml *.yaml *.toml))
 EDITORCONFIG_FILES := templates .github/workflows options/locale/locale_en-US.ini
 
 GO_SOURCES := $(wildcard *.go)
@@ -398,11 +397,11 @@ lint-md: node_modules
 
 .PHONY: lint-spell
 lint-spell:
-	@go run $(MISSPELL_PACKAGE) -error $(SPELLCHECK_FILES)
+	@go run $(MISSPELL_PACKAGE) -dict tools/misspellings.csv -error $(SPELLCHECK_FILES)
 
 .PHONY: lint-spell-fix
 lint-spell-fix:
-	@go run $(MISSPELL_PACKAGE) -w $(SPELLCHECK_FILES)
+	@go run $(MISSPELL_PACKAGE) -dict tools/misspellings.csv -w $(SPELLCHECK_FILES)
 
 .PHONY: lint-go
 lint-go:
@@ -423,7 +422,7 @@ lint-go-windows:
 lint-go-vet:
 	@echo "Running go vet..."
 	@GOOS= GOARCH= $(GO) build code.gitea.io/gitea-vet
-	@$(GO) vet -vettool=gitea-vet $(GO_PACKAGES)
+	@$(GO) vet -vettool=gitea-vet ./...
 
 .PHONY: lint-editorconfig
 lint-editorconfig:
@@ -779,7 +778,7 @@ generate-backend: $(TAGS_PREREQ) generate-go
 .PHONY: generate-go
 generate-go: $(TAGS_PREREQ)
 	@echo "Running go generate..."
-	@CC= GOOS= GOARCH= $(GO) generate -tags '$(TAGS)' $(GO_PACKAGES)
+	@CC= GOOS= GOARCH= CGO_ENABLED=0 $(GO) generate -tags '$(TAGS)' ./...
 
 .PHONY: security-check
 security-check:
@@ -909,8 +908,9 @@ webpack: $(WEBPACK_DEST)
 
 $(WEBPACK_DEST): $(WEBPACK_SOURCES) $(WEBPACK_CONFIGS) package-lock.json
 	@$(MAKE) -s node-check node_modules
-	rm -rf $(WEBPACK_DEST_ENTRIES)
-	npx webpack
+	@rm -rf $(WEBPACK_DEST_ENTRIES)
+	@echo "Running webpack..."
+	@BROWSERSLIST_IGNORE_OLD_DATA=true npx webpack
 	@touch $(WEBPACK_DEST)
 
 .PHONY: svg
