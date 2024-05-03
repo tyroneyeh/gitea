@@ -1,4 +1,5 @@
 import {debounce} from 'throttle-debounce';
+import {extname} from '../utils.js';
 
 function elementsCall(el, func, ...args) {
   if (typeof el === 'string' || el instanceof String) {
@@ -259,7 +260,6 @@ export function isElemVisible(element) {
 }
 
 export function getComboMarkdownEditor(el) {
-  if (el?.jquery) el = el[0];
   return el?._giteaComboMarkdownEditor;
 }
 
@@ -271,8 +271,7 @@ export function getPastedContent(e) {
   for (const item of data ?? []) {
     if (item?.kind === 'file') {
       const file = item.getAsFile();
-      const extName = file.name.slice(file.name.lastIndexOf('.'), file.name.length);
-      if (acceptedFiles.includes(extName)) {
+      if (acceptedFiles.includes(extname(file.name))) {
         files.push(file);
       }
     }
