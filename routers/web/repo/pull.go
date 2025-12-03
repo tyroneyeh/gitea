@@ -1324,7 +1324,7 @@ func CompareAndPullRequestPost(ctx *context.Context) {
 		return
 	}
 
-	labelIDs, assigneeIDs, milestoneID, projectID := validateRet.LabelIDs, validateRet.AssigneeIDs, validateRet.MilestoneID, validateRet.ProjectID
+	labelIDs, assigneeIDs, milestoneID, projectIDs := validateRet.LabelIDs, validateRet.AssigneeIDs, validateRet.MilestoneID, validateRet.ProjectIDs
 
 	if setting.Attachment.Enabled {
 		attachments = form.Files
@@ -1430,8 +1430,8 @@ func CompareAndPullRequestPost(ctx *context.Context) {
 		return
 	}
 
-	if projectID > 0 && ctx.Repo.CanWrite(unit.TypeProjects) {
-		if err := issues_model.IssueAssignOrRemoveProject(ctx, pullIssue, ctx.Doer, projectID, 0); err != nil {
+	if len(projectIDs) > 0 && ctx.Repo.CanWrite(unit.TypeProjects) {
+		if err := issues_model.IssueAssignOrRemoveProject(ctx, pullIssue, ctx.Doer, projectIDs, 0); err != nil {
 			if !errors.Is(err, util.ErrPermissionDenied) {
 				ctx.ServerError("IssueAssignOrRemoveProject", err)
 				return
