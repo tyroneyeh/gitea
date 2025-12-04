@@ -5,7 +5,7 @@ import {showTemporaryTooltip} from '../modules/tippy.ts';
 import {GET, POST} from '../modules/fetch.ts';
 import {showErrorToast} from '../modules/toast.ts';
 import {createElementFromHTML, createElementFromAttrs} from '../utils/dom.ts';
-import {isImageFile, isVideoFile} from '../utils.ts';
+import {isImageFile, isVideoFile, isCompressedFile, compressFileToZip} from '../utils.ts';
 import type {DropzoneFile, DropzoneOptions} from 'dropzone/index.js';
 
 const {csrfToken, i18n} = window.config;
@@ -92,6 +92,15 @@ export async function initDropzone(dropzoneEl: HTMLElement) {
   // "http://localhost:3000/owner/repo/issues/[object%20Event]"
   // the reason is that the preview "callback(dataURL)" is assign to "img.onerror" then "thumbnail" uses the error object as the dataURL and generates '<img src="[object Event]">'
   const dzInst = await createDropzone(dropzoneEl, opts);
+  dzInst.on('addedfile', async (file: CustomDropzoneFile) => {
+    if (!isCompressedFile(file) && file.size > 10240) {
+      const fileZiped = await compressFileToZip(file) as CustomDropzoneFile;
+      if (fileZiped) {
+        dzInst.removeFile(file);
+        dzInst.addFile(fileZiped);
+      }
+    }
+  });
   dzInst.on('success', (file: CustomDropzoneFile, resp: any) => {
     file.uuid = resp.uuid;
     fileUuidDict[file.uuid] = {submitted: false};

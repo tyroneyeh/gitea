@@ -9,6 +9,7 @@ import {subscribe} from '@github/paste-markdown';
 import type CodeMirror from 'codemirror';
 import type EasyMDE from 'easymde';
 import type {DropzoneFile} from 'dropzone';
+import { isCompressedFile, compressFileToZip } from '../../utils.ts';
 
 let uploadIdCounter = 0;
 
@@ -100,10 +101,15 @@ class CodeMirrorEditor {
 
 async function handleUploadFiles(editor: CodeMirrorEditor | TextareaEditor, dropzoneEl: HTMLElement, files: Array<File> | FileList, e: Event) {
   e.preventDefault();
-  for (const file of files) {
+  for (const fileOrig of files) {
+    let file = fileOrig;
     const name = file.name.slice(0, file.name.lastIndexOf('.'));
     const {width, dppx} = await imageInfo(file);
     const placeholder = `[${name}](uploading ...)`;
+
+    if (!isCompressedFile(file) && file.size > 10240) {
+      file = await compressFileToZip(file);
+    }
 
     editor.insertPlaceholder(placeholder);
     await uploadFile(dropzoneEl, file); // the "file" will get its "uuid" during the upload

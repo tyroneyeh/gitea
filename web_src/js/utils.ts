@@ -191,6 +191,37 @@ export function isVideoFile({name, type}: {name?: string, type?: string}): boole
   return Boolean(/\.(mpe?g|mp4|mkv|webm)$/i.test(name || '') || type?.startsWith('video/'));
 }
 
+export function isCompressedFile({name, type}: {name?: string, type?: string}): boolean {
+  return Boolean(/\.(zip|rar|7z|gz|bz2)$/i.test(name || '') || [
+    'application/zip',
+    'application/x-7z-compressed',
+    'application/x-rar-compressed',
+    'application/gzip',
+    'application/x-bzip2',
+  ].includes(type || ''));
+}
+
+export async function compressFileToZip(file: File) {
+  let zip: any;
+
+  if (typeof window !== "undefined") {
+    zip = await import("@zip.js/zip.js");
+  }
+  const writer = new zip.ZipWriter(new zip.BlobWriter('application/zip'));
+  await writer.add(file.name, new zip.BlobReader(file), {
+    level: 9,
+  });
+
+  const blob = await writer.close();
+  const fileName = file.name.slice(0, file.name.lastIndexOf('.') > 0 ? file.name.lastIndexOf('.') : file.name.length);
+  const zipFile = new File(
+    [blob],
+    `${fileName}.zip`,
+    {type: 'application/zip'},
+  );
+  return zipFile;
+}
+
 export function toggleFullScreen(fullscreenElementsSelector: string, isFullScreen: boolean, sourceParentSelector?: string): void {
   // hide other elements
   const headerEl = document.querySelector('#navbar')!;
