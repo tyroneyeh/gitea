@@ -154,6 +154,8 @@ func NewIssue(ctx *context.Context) {
 		return
 	}
 
+	ctx.Data["Signature"] = ctx.Doer.Description
+
 	ctx.HTML(http.StatusOK, tplIssueNew)
 }
 
