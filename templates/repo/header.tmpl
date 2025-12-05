@@ -69,7 +69,7 @@
 					{{end}}
 					{{if and (not .IsEmpty) ($.Permission.CanRead ctx.Consts.RepoUnitTypeCode)}}
 						<div class="ui labeled button
-							{{if or (not $.IsSigned) (and (not $.CanSignedUserFork) (not $.UserAndOrgForks))}}
+							{{if or true (or (not $.IsSigned) (and (not $.CanSignedUserFork) (not $.UserAndOrgForks)))}}
 								disabled
 							{{end}}"
 							{{if not $.IsSigned}}
