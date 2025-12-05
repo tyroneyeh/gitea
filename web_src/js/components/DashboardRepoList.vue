@@ -427,7 +427,7 @@ export default defineComponent({
       <div v-if="repos.length" class="ui attached table segment tw-rounded-b">
         <ul class="repo-owner-name-list">
           <li class="tw-flex tw-items-center tw-py-2" v-for="(repo, index) in repos" :class="{'active': index === activeIndex}" :key="repo.id">
-            <a class="repo-list-link muted" :href="repo.link">
+            <a class="repo-list-link muted" :href="repo.link +'/issues'">
               <svg-icon :name="repoIcon(repo)" :size="16" class="repo-list-icon"/>
               <div class="text truncate">{{ repo.full_name }}</div>
               <div v-if="repo.archived">
