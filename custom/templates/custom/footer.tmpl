@@ -1,0 +1,19 @@
+{{if .SignedUser}}
+<style>
+.gotocontrol {
+    position: fixed;
+    background-color: #33b5e5;
+    color: white;
+    border-radius: 50%;
+    text-align: center;
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+}
+</style>
+
+<a hx-on:click="goTo('top')" class="gotocontrol" style="right:30px;bottom:70px">▲</a>
+<a hx-on:click="goTo('bottom')" class="gotocontrol" style="right:30px;bottom:30px">▼</a>
+
+<script src="{{AppSubUrl}}/assets/js/custom.min.js"></script>
+{{end}}
