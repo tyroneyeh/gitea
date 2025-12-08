@@ -12,8 +12,8 @@
 }
 </style>
 
-<a hx-on:click="goTo('top')" class="gotocontrol" style="right:30px;bottom:70px">▲</a>
-<a hx-on:click="goTo('bottom')" class="gotocontrol" style="right:30px;bottom:30px">▼</a>
+<a onclick="goTo('top')" class="gotocontrol up tw-hidden" style="right:30px;bottom:70px">▲</a>
+<a onclick="goTo('bottom')" class="gotocontrol down tw-hidden" style="right:30px;bottom:30px">▼</a>
 
 <script src="{{AppSubUrl}}/assets/js/custom.min.js"></script>
 {{end}}
