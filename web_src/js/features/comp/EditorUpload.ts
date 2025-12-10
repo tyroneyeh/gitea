@@ -9,7 +9,7 @@ import {subscribe} from '@github/paste-markdown';
 import type CodeMirror from 'codemirror';
 import type EasyMDE from 'easymde';
 import type {DropzoneFile} from 'dropzone';
-import { isCompressedFile, compressFileToZip } from '../../utils.ts';
+import {isImageFile, isVideoFile, isCompressedFile, compressFileToZip} from '../../utils.ts';
 
 let uploadIdCounter = 0;
 
@@ -107,7 +107,7 @@ async function handleUploadFiles(editor: CodeMirrorEditor | TextareaEditor, drop
     const {width, dppx} = await imageInfo(file);
     const placeholder = `[${name}](uploading ...)`;
 
-    if (!isCompressedFile(file) && file.size > 10240) {
+    if (file.size > 10240 && !isImageFile(file) && !isVideoFile(file) && !isCompressedFile(file)) {
       file = await compressFileToZip(file);
     }
 
