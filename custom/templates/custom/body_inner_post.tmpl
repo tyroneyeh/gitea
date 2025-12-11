@@ -18,35 +18,29 @@ input.gridjs-input {
 <br>
 <div id="report" class="ui container fluid tw-hidden">
     <div class="ui input tiny">
-        <input type="search" class="ui small" v-model="orig" name="orig" autocomplete="on" title="Organization" placeholder="Organization" style="width:100px">
+        <input type="search" class="ui small" v-model="orig" title="Organization" placeholder="Organization" style="width:100px">
         <input placeholder="yyyy-mm-dd" type="date" v-model="startDate" title="Start Date">
         <input placeholder="yyyy-mm-dd" type="date" v-model="endDate" title="End Date">
         <select v-model="by" class="ui small"><option value="created_by">created_by</option><option value="assigned_by" selected>assigned_by</option><option value="mentioned_by" class="tw-hidden">mentioned_by</option></select>
         <select v-model="type" class="ui small" title="Type"><option value="all">All</option><option value="issue">Issue</option><option value="pr">PR</option></select>
         <select v-model="state" class="ui small" title="State"><option value="all">All</option><option value="open" selected>open</option><option value="closed">closed</option></select>
         <select v-model="onlyself" class="ui small tw-hidden" title="Self or follow"><option value="all">All</option><option value="self" selected>Self</option><option value="follow">Follow</option></select>
-        <input type="search" class="ui small" v-model="labels" name="labels" autocomplete="on" title="Labels" placeholder="Labels" style="width:100px">
-        <input type="search" v-model="q" name="q" autocomplete="on" class="ui button small" placeholder="Query" style="width:100px">
+        <input type="search" class="ui small" v-model="labels" title="Labels" placeholder="Labels" style="width:100px">
+        <input type="search" v-model="q" class="ui button small" placeholder="Query" style="width:100px">
 
-        <div class="ui floating jump select-assignees dropdown" tabindex="0">
-            <span class="text">
-                <strong></strong>
-            </span>
+        <div class="ui floating jump dropdown" tabindex="0">
             <div class="filter menu transition" tabindex="-1">
                 <div class="ui icon search input">
                     <i class="icon df ac jc"><svg viewBox="0 0 16 16" class="svg octicon-search" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M11.5 7a4.499 4.499 0 1 1-8.998 0A4.499 4.499 0 0 1 11.5 7zm-.82 4.74a6 6 0 1 1 1.06-1.06l3.04 3.04a.75.75 0 1 1-1.06 1.06l-3.04-3.04z"></path></svg></i>
                     <input type="text" placeholder="Filter Assignee" tabindex="0">
                 </div>
                 <div class="scrolling menu">
-                    <a class="item muted tw-hidden" tabindex="-1">
-                        <span class="octicon-check invisible"><svg viewBox="0 0 16 16" class="svg octicon-check" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.75.75 0 0 1 1.06-1.06L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0z"></path></svg></span>
-                        <span class="text">
-                            <img class="ui avatar image mr-3" width="28" height="28">
-                        </span>
+                    <a class="item muted" tabindex="-1" v-for="assignee in assignees" @click="selectAssignee(assignee.username)">
+                        <img class="ui avatar image mr-3" width="28" height="28" :src="assignee.avatar_url"><span class="gt-ellipsis">[[assignee.username]]</span>
                     </a>
                 </div>
             </div>
-            <input type="search" v-model="username" class="ui button small" placeholder="username" style="width:100px">
+            <input type="search" v-model="username" class="combo-value ui button small" placeholder="username" style="width:100px">
         </div>
 
         <input type="button" class="ui small" @click="queryReport" value="OK">
