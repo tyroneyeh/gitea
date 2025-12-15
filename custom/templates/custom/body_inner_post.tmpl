@@ -19,8 +19,8 @@ input.gridjs-input {
 <div id="report" class="ui container fluid tw-hidden">
     <div class="ui input tiny">
         <input type="search" class="ui small" v-model="orig" title="Organization" placeholder="Organization" style="width:100px">
-        <input placeholder="yyyy-mm-dd" type="date" v-model="startDate" title="Start Date">
-        <input placeholder="yyyy-mm-dd" type="date" v-model="endDate" title="End Date">
+        <input placeholder="yyyy-mm-dd" type="date" v-model="startDate" :max="endDateMax" title="Start Date">
+        <input placeholder="yyyy-mm-dd" type="date" v-model="endDate" :max="endDateMax" title="End Date">
         <select v-model="by" class="ui small"><option value="created_by">created_by</option><option value="assigned_by" selected>assigned_by</option><option value="mentioned_by" class="tw-hidden">mentioned_by</option></select>
         <select v-model="type" class="ui small" title="Type"><option value="all">All</option><option value="issue">Issue</option><option value="pr">PR</option></select>
         <select v-model="state" class="ui small" title="State"><option value="all">All</option><option value="open" selected>open</option><option value="closed">closed</option></select>
