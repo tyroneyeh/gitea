@@ -24,6 +24,7 @@ import (
 	"code.gitea.io/gitea/modules/util"
 	"code.gitea.io/gitea/modules/web"
 	web_types "code.gitea.io/gitea/modules/web/types"
+	"gitea.com/go-chi/session"
 )
 
 // APIContext is a specific context for API service
@@ -45,6 +46,7 @@ type APIContext struct {
 	Org        *APIOrganization
 	Package    *Package
 	PublicOnly bool // Whether the request is for a public endpoint
+	Session    session.Store
 }
 
 func init() {
@@ -219,10 +221,11 @@ func APIContexter() func(http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 			base := NewBaseContext(w, req)
 			ctx := &APIContext{
-				Base:  base,
-				Cache: cache.GetCache(),
-				Repo:  &Repository{PullRequest: &PullRequest{}},
-				Org:   &APIOrganization{},
+				Base:    base,
+				Cache:   cache.GetCache(),
+				Repo:    &Repository{PullRequest: &PullRequest{}},
+				Org:     &APIOrganization{},
+				Session: session.GetSession(req),
 			}
 
 			ctx.SetContextValue(apiContextKey, ctx)

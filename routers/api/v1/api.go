@@ -759,6 +759,7 @@ func buildAuthGroup() *auth.Group {
 		&auth.OAuth2{},
 		&auth.HTTPSign{},
 		&auth.Basic{}, // FIXME: this should be removed once we don't allow basic auth in API
+		&auth.Session{},
 	)
 	if setting.Service.EnableReverseProxyAuthAPI {
 		group.Add(&auth.ReverseProxy{})
@@ -773,7 +774,7 @@ func buildAuthGroup() *auth.Group {
 
 func apiAuth(authMethod auth.Method) func(*context.APIContext) {
 	return func(ctx *context.APIContext) {
-		ar, err := common.AuthShared(ctx.Base, nil, authMethod)
+		ar, err := common.AuthShared(ctx.Base, ctx.Session, authMethod)
 		if err != nil {
 			msg, ok := auth.ErrAsUserAuthMessage(err)
 			msg = util.Iif(ok, msg, "invalid username, password or token")
@@ -887,6 +888,7 @@ func Routes() *web.Router {
 			MaxAge:           int(setting.CORSConfig.MaxAge.Seconds()),
 		}))
 	}
+	m.Use(common.MustInitSessioner())
 	m.Use(context.APIContexter())
 
 	m.Use(checkDeprecatedAuthMethods)
