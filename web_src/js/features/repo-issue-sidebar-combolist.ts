@@ -3,24 +3,24 @@ import {POST} from '../modules/fetch.ts';
 import {addDelegatedEventListener, queryElemChildren, queryElems, toggleElem} from '../utils/dom.ts';
 
 // if there are draft comments, confirm before reloading, to avoid losing comments
-function issueSidebarReloadConfirmDraftComment() {
-  const commentTextareas = [
-    document.querySelector<HTMLTextAreaElement>('.edit-content-zone:not(.tw-hidden) textarea'),
-    document.querySelector<HTMLTextAreaElement>('#comment-form textarea'),
-  ];
-  for (const textarea of commentTextareas) {
-    // Most users won't feel too sad if they lose a comment with 10 chars, they can re-type these in seconds.
-    // But if they have typed more (like 50) chars and the comment is lost, they will be very unhappy.
-    if (textarea && textarea.value.trim().length > 10) {
-      textarea.parentElement!.scrollIntoView();
-      if (!window.confirm('Page will be reloaded, but there are draft comments. Continuing to reload will discard the comments. Continue?')) {
-        return;
-      }
-      break;
-    }
-  }
-  window.location.reload();
-}
+// function issueSidebarReloadConfirmDraftComment() {
+//   const commentTextareas = [
+//     document.querySelector<HTMLTextAreaElement>('.edit-content-zone:not(.tw-hidden) textarea'),
+//     document.querySelector<HTMLTextAreaElement>('#comment-form textarea'),
+//   ];
+//   for (const textarea of commentTextareas) {
+//     // Most users won't feel too sad if they lose a comment with 10 chars, they can re-type these in seconds.
+//     // But if they have typed more (like 50) chars and the comment is lost, they will be very unhappy.
+//     if (textarea && textarea.value.trim().length > 10) {
+//       textarea.parentElement!.scrollIntoView();
+//       if (!window.confirm('Page will be reloaded, but there are draft comments. Continuing to reload will discard the comments. Continue?')) {
+//         return;
+//       }
+//       break;
+//     }
+//   }
+//   window.location.reload();
+// }
 
 export class IssueSidebarComboList {
   updateUrl: string;
