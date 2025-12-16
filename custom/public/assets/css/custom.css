@@ -1,0 +1,17 @@
+.ui.container {
+    width: 100%;
+}
+.gridjs-wrapper {
+    border-color: var(--color-input-border) !important;
+}
+.gridjs-th, .gridjs-td {
+    color: var(--color-text) !important;
+    border-color: var(--color-input-border) !important;
+    background-color: var(--color-input-background) !important;
+    padding: 5px 10px !important;
+    width: auto;
+}
+input.gridjs-input {
+    color: var(--color-text);
+    background-color: var(--color-input-background);
+}
