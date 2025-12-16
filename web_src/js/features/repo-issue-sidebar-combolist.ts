@@ -77,7 +77,7 @@ export class IssueSidebarComboList {
     } else {
       await POST(this.updateUrl, {data: new URLSearchParams({id: changedValues.join(',')})});
     }
-    issueSidebarReloadConfirmDraftComment();
+    // issueSidebarReloadConfirmDraftComment();
   }
 
   async doUpdate() {
