@@ -15,3 +15,17 @@ input.gridjs-input {
     color: var(--color-text);
     background-color: var(--color-input-background);
 }
+
+.timeline-reverse {
+    display: flex !important;
+    flex-direction: column-reverse !important;
+}
+.timeline-item {
+    order: 1;
+}
+.timeline-item.form {
+    order: 0;
+}
+.timeline-item.first {
+    order: 2;
+}
