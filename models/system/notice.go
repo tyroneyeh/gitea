@@ -24,6 +24,7 @@ const (
 	NoticeRepository NoticeType = iota + 1
 	// NoticeTask type
 	NoticeTask
+	NoticePermission
 )
 
 // Notice represents a system notice for admin.

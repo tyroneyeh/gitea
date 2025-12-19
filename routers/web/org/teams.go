@@ -17,6 +17,7 @@ import (
 	org_model "code.gitea.io/gitea/models/organization"
 	"code.gitea.io/gitea/models/perm"
 	repo_model "code.gitea.io/gitea/models/repo"
+	system_model "code.gitea.io/gitea/models/system"
 	unit_model "code.gitea.io/gitea/models/unit"
 	user_model "code.gitea.io/gitea/models/user"
 	"code.gitea.io/gitea/modules/log"
@@ -118,6 +119,8 @@ func TeamsAction(ctx *context.Context) {
 			}
 		}
 		checkIsOrgMemberAndRedirect(ctx, ctx.Org.OrgLink+"/teams/"+url.PathEscape(ctx.Org.Team.LowerName))
+
+		system_model.CreateNotice(ctx, system_model.NoticePermission, "%s removed user %s from %s/%s team", ctx.Doer.GetDisplayName(), user.GetDisplayName(), ctx.Org.Organization.Name, ctx.Org.Team.Name)
 		return
 	case "add":
 		if !ctx.Org.IsOwner {
@@ -163,6 +166,8 @@ func TeamsAction(ctx *context.Context) {
 		}
 
 		page = "team"
+
+		system_model.CreateNotice(ctx, system_model.NoticePermission, "%s added user %s to %s/%s team", ctx.Doer.GetDisplayName(), u.GetDisplayName(), ctx.Org.Organization.Name, ctx.Org.Team.Name)
 	case "remove_invite":
 		if !ctx.Org.IsOwner {
 			ctx.HTTPError(http.StatusNotFound)
@@ -247,12 +252,16 @@ func TeamsRepoAction(ctx *context.Context) {
 			return
 		}
 		err = repo_service.TeamAddRepository(ctx, ctx.Org.Team, repo)
+		system_model.CreateNotice(ctx, system_model.NoticePermission, "%s added team %s to %s", ctx.Doer.GetDisplayName(), ctx.Org.Team.Name, ctx.Org.Organization.Name)
 	case "remove":
 		err = repo_service.RemoveRepositoryFromTeam(ctx, ctx.Org.Team, ctx.FormInt64("repoid"))
+		system_model.CreateNotice(ctx, system_model.NoticePermission, "%s added team %s to %s", ctx.Doer.GetDisplayName(), ctx.Org.Team.Name, ctx.Org.Organization.Name)
 	case "addall":
 		err = repo_service.AddAllRepositoriesToTeam(ctx, ctx.Org.Team)
+		system_model.CreateNotice(ctx, system_model.NoticePermission, "%s added all repositories to %s/%s", ctx.Doer.GetDisplayName(), ctx.Org.Organization.Name, ctx.Org.Team.Name)
 	case "removeall":
 		err = repo_service.RemoveAllRepositoriesFromTeam(ctx, ctx.Org.Team)
+		system_model.CreateNotice(ctx, system_model.NoticePermission, "%s removed all repositories from %s/%s", ctx.Doer.GetDisplayName(), ctx.Org.Organization.Name, ctx.Org.Team.Name)
 	}
 
 	if err != nil {
@@ -550,6 +559,9 @@ func EditTeamPost(ctx *context.Context) {
 		}
 		return
 	}
+
+	system_model.CreateNotice(ctx, system_model.NoticePermission, "%s adjust team %s/%s permissions %v", ctx.Doer.GetDisplayName(), ctx.Org.Organization.Name, ctx.Org.Team.Name, unitPerms)
+
 	ctx.Redirect(ctx.Org.OrgLink + "/teams/" + url.PathEscape(t.LowerName))
 }
 

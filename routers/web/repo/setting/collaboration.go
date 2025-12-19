@@ -11,6 +11,7 @@ import (
 	"code.gitea.io/gitea/models/organization"
 	"code.gitea.io/gitea/models/perm"
 	repo_model "code.gitea.io/gitea/models/repo"
+	system_model "code.gitea.io/gitea/models/system"
 	unit_model "code.gitea.io/gitea/models/unit"
 	user_model "code.gitea.io/gitea/models/user"
 	"code.gitea.io/gitea/modules/log"
@@ -113,6 +114,11 @@ func CollaborationPost(ctx *context.Context) {
 	}
 
 	ctx.Flash.Success(ctx.Tr("repo.settings.add_collaborator_success"))
+
+	if doer := ctx.Doer; doer != nil {
+		system_model.CreateNotice(ctx, system_model.NoticePermission, "%s added user %s to %s/%s", doer.GetDisplayName(), name, ctx.Repo.Owner.Name, ctx.Repo.Repository.Name)
+	}
+
 	ctx.Redirect(setting.AppSubURL + ctx.Req.URL.EscapedPath())
 }
 
@@ -141,6 +147,9 @@ func DeleteCollaboration(ctx *context.Context) {
 			ctx.Flash.Error("DeleteCollaboration: " + err.Error())
 		} else {
 			ctx.Flash.Success(ctx.Tr("repo.settings.remove_collaborator_success"))
+		}
+		if doer := ctx.Doer; doer != nil {
+			system_model.CreateNotice(ctx, system_model.NoticePermission, "%s removed user %s from %s/%s", doer.GetDisplayName(), collaborator.Name, ctx.Repo.Owner.Name, ctx.Repo.Repository.Name)
 		}
 	}
 
@@ -190,6 +199,11 @@ func AddTeamPost(ctx *context.Context) {
 	}
 
 	ctx.Flash.Success(ctx.Tr("repo.settings.add_team_success"))
+
+	if doer := ctx.Doer; doer != nil {
+		system_model.CreateNotice(ctx, system_model.NoticePermission, "%s added team %s to %s/%s", doer.GetDisplayName(), name, ctx.Repo.Owner.Name, ctx.Repo.Repository.Name)
+	}
+
 	ctx.Redirect(ctx.Repo.RepoLink + "/settings/collaboration")
 }
 
@@ -213,5 +227,10 @@ func DeleteTeam(ctx *context.Context) {
 	}
 
 	ctx.Flash.Success(ctx.Tr("repo.settings.remove_team_success"))
+
+	if doer := ctx.Doer; doer != nil {
+		system_model.CreateNotice(ctx, system_model.NoticePermission, "%s removed team %s from %s/%s", doer.GetDisplayName(), team.Name, ctx.Repo.Owner.Name, ctx.Repo.Repository.Name)
+	}
+
 	ctx.JSONRedirect(ctx.Repo.RepoLink + "/settings/collaboration")
 }
