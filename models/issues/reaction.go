@@ -350,7 +350,11 @@ func (list ReactionList) GetFirstUsers() string {
 		if buffer.Len() > 0 {
 			buffer.WriteString(", ")
 		}
-		buffer.WriteString(reaction.User.Name)
+		name := reaction.User.Name
+		if setting.UI.DefaultShowFullName {
+			name = reaction.User.DisplayName()
+		}
+		buffer.WriteString(name)
 		if rem--; rem == 0 {
 			break
 		}
