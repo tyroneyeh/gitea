@@ -23,9 +23,6 @@ input.gridjs-input {
 .timeline-item {
     order: 1;
 }
-.timeline-item.form {
-    order: 0;
-}
 .timeline-item.first {
     order: 2;
 }
