@@ -26,3 +26,8 @@ input.gridjs-input {
 .timeline-item.first {
     order: 2;
 }
+.close-btn::before {
+  content: '×';
+  position: absolute;
+  margin-top: -15px;
+}
