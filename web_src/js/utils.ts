@@ -203,9 +203,13 @@ export function isCompressedFile({name, type}: {name?: string, type?: string}): 
 
 export async function compressFileToZip(file: File) {
   let zip: any;
+  document.body.style.cursor = 'wait';
+  for (const el of document.querySelectorAll('textarea')) {
+    el.style.cursor = 'wait';
+  }
 
-  if (typeof window !== "undefined") {
-    zip = await import("@zip.js/zip.js");
+  if (typeof window !== 'undefined') {
+    zip = await import('@zip.js/zip.js');
   }
   const writer = new zip.ZipWriter(new zip.BlobWriter('application/zip'));
   await writer.add(file.name, new zip.BlobReader(file), {
@@ -219,6 +223,11 @@ export async function compressFileToZip(file: File) {
     `${fileName}.zip`,
     {type: 'application/zip'},
   );
+
+  document.body.style.cursor = '';
+  for (const el of document.querySelectorAll('textarea')) {
+    el.style.cursor = '';
+  }
   return zipFile;
 }
 
