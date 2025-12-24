@@ -1,6 +1,12 @@
 .ui.container {
     width: 100%;
 }
+.sticky {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    border-right: 1px solid #ccc;
+}
 .gridjs-wrapper {
     border-color: var(--color-input-border) !important;
 }
