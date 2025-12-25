@@ -102,7 +102,7 @@ func registerSyncExternalUsers() {
 }
 
 func registerDeletedBranchesCleanup() {
-	RegisterTaskFatal("deleted_branches_cleanup", &OlderThanConfig{
+	RegisterTaskFatal("Clean up deleted branches", &OlderThanConfig{
 		BaseConfig: BaseConfig{
 			Enabled:    true,
 			RunAtStart: true,
@@ -117,7 +117,7 @@ func registerDeletedBranchesCleanup() {
 }
 
 func registerUpdateMigrationPosterID() {
-	RegisterTaskFatal("update_migration_poster_id", &BaseConfig{
+	RegisterTaskFatal("Update migration poster IDs", &BaseConfig{
 		Enabled:    true,
 		RunAtStart: true,
 		Schedule:   "@midnight",
@@ -127,7 +127,7 @@ func registerUpdateMigrationPosterID() {
 }
 
 func registerCleanupHookTaskTable() {
-	RegisterTaskFatal("cleanup_hook_task_table", &CleanupHookTaskConfig{
+	RegisterTaskFatal("Clean up hook_task table", &CleanupHookTaskConfig{
 		BaseConfig: BaseConfig{
 			Enabled:    true,
 			RunAtStart: false,
@@ -143,7 +143,7 @@ func registerCleanupHookTaskTable() {
 }
 
 func registerCleanupPackages() {
-	RegisterTaskFatal("cleanup_packages", &OlderThanConfig{
+	RegisterTaskFatal("Clean up expired packages", &OlderThanConfig{
 		BaseConfig: BaseConfig{
 			Enabled:    true,
 			RunAtStart: true,
@@ -157,7 +157,7 @@ func registerCleanupPackages() {
 }
 
 func registerSyncRepoLicenses() {
-	RegisterTaskFatal("sync_repo_licenses", &BaseConfig{
+	RegisterTaskFatal("Sync repo licenses", &BaseConfig{
 		Enabled:    false,
 		RunAtStart: false,
 		Schedule:   "@annually",
