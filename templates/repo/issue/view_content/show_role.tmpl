@@ -4,7 +4,7 @@
 	</div>
 {{end}}
 {{if .ShowRole.RoleInRepo}}
-	<div class="ui basic label role-label" data-tooltip-content="{{.ShowRole.RoleInRepo.LocaleHelper ctx.Locale}}">
-		{{.ShowRole.RoleInRepo.LocaleString ctx.Locale}}
+	<div class="ui basic label role-label" data-tooltip-content="{{.ShowRole.RoleInRepoHelper}}">
+		{{.ShowRole.RoleInRepo}}
 	</div>
 {{end}}

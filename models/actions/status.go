@@ -43,7 +43,7 @@ func (s Status) String() string {
 
 // LocaleString returns the locale string name of the Status
 func (s Status) LocaleString(lang translation.Locale) string {
-	return lang.TrString("actions.status." + s.String())
+	return lang.TrString(s.String())
 }
 
 // IsDone returns whether the Status is final

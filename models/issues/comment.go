@@ -210,8 +210,9 @@ type RoleInRepo string
 
 // RoleDescriptor defines comment "role" tags
 type RoleDescriptor struct {
-	IsPoster   bool
-	RoleInRepo RoleInRepo
+	IsPoster         bool
+	RoleInRepo       string
+	RoleInRepoHelper string
 }
 
 // Enumerate all the role tags.

@@ -70,7 +70,8 @@ func roleDescriptor(ctx *context.Context, repo *repo_model.Repository, poster *u
 	if perm.IsOwner() {
 		// If the poster isn't a site admin, then is must be the repo's owner
 		if !poster.IsAdmin {
-			roleDesc.RoleInRepo = issues_model.RoleRepoOwner
+			roleDesc.RoleInRepo = ctx.Locale.TrString("Owner")
+			roleDesc.RoleInRepoHelper = ctx.Locale.TrString("This user is the owner of this repository.")
 			return roleDesc, nil
 		}
 		// Otherwise (poster is site admin), check if poster is the real repo admin.
@@ -79,7 +80,8 @@ func roleDescriptor(ctx *context.Context, repo *repo_model.Repository, poster *u
 			return roleDesc, err
 		}
 		if isRealRepoAdmin {
-			roleDesc.RoleInRepo = issues_model.RoleRepoOwner
+			roleDesc.RoleInRepo = ctx.Locale.TrString("Owner")
+			roleDesc.RoleInRepoHelper = ctx.Locale.TrString("This user is the owner of this repository.")
 			return roleDesc, nil
 		}
 	}
@@ -92,7 +94,8 @@ func roleDescriptor(ctx *context.Context, repo *repo_model.Repository, poster *u
 		if isMember, err := organization.IsOrganizationMember(ctx, repo.Owner.ID, poster.ID); err != nil {
 			return roleDesc, err
 		} else if isMember {
-			roleDesc.RoleInRepo = issues_model.RoleRepoMember
+			roleDesc.RoleInRepo = ctx.Locale.TrString("Member")
+			roleDesc.RoleInRepoHelper = ctx.Locale.TrString("This user is a member of the organization owning this repository.")
 			return roleDesc, nil
 		}
 	}
@@ -101,7 +104,8 @@ func roleDescriptor(ctx *context.Context, repo *repo_model.Repository, poster *u
 	if isCollaborator, err := repo_model.IsCollaborator(ctx, repo.ID, poster.ID); err != nil {
 		return roleDesc, err
 	} else if isCollaborator {
-		roleDesc.RoleInRepo = issues_model.RoleRepoCollaborator
+		roleDesc.RoleInRepo = ctx.Locale.TrString("Collaborator")
+		roleDesc.RoleInRepoHelper = ctx.Locale.TrString("This user has been invited to collaborate on the repository.")
 		return roleDesc, nil
 	}
 
@@ -109,10 +113,12 @@ func roleDescriptor(ctx *context.Context, repo *repo_model.Repository, poster *u
 	if err != nil {
 		return roleDesc, err
 	} else if hasMergedPR {
-		roleDesc.RoleInRepo = issues_model.RoleRepoContributor
+		roleDesc.RoleInRepo = ctx.Locale.TrString("Contributor")
+		roleDesc.RoleInRepoHelper = ctx.Locale.TrString("This user has previously committed to the repository.")
 	} else if issue.IsPull {
 		// only display first time contributor in the first opening pull request
-		roleDesc.RoleInRepo = issues_model.RoleRepoFirstTimeContributor
+		roleDesc.RoleInRepo = ctx.Locale.TrString("First-time contributor")
+		roleDesc.RoleInRepoHelper = ctx.Locale.TrString("This is the first contribution of this user to the repository.")
 	}
 
 	return roleDesc, nil

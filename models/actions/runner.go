@@ -115,7 +115,7 @@ func (r *ActionRunner) StatusName() string {
 }
 
 func (r *ActionRunner) StatusLocaleName(lang translation.Locale) string {
-	return lang.TrString("actions.runners.status." + r.StatusName())
+	return lang.TrString(r.StatusName())
 }
 
 func (r *ActionRunner) IsOnline() bool {

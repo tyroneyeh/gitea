@@ -210,7 +210,7 @@ func (status *CommitStatus) APIURL(ctx context.Context) string {
 
 // LocaleString returns the locale string name of the Status
 func (status *CommitStatus) LocaleString(lang translation.Locale) string {
-	return lang.TrString("repo.commitstatus." + status.State.String())
+	return lang.TrString(status.State.String())
 }
 
 // HideActionsURL set `TargetURL` to an empty string if the status comes from Gitea Actions
