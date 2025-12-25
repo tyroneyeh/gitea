@@ -431,7 +431,9 @@ func ViewIssue(ctx *context.Context) {
 		ctx.Data["PullMergeBoxReloadingInterval"] = 1 // in dev env, force using the reloading logic to make sure it won't break
 	}
 
-	ctx.Data["Signature"] = ctx.Doer.Description
+	if ctx.Doer != nil {
+		ctx.Data["Signature"] = ctx.Doer.Description
+	}
 
 	ctx.HTML(http.StatusOK, tplIssueView)
 }
