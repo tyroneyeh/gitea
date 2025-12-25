@@ -6,7 +6,7 @@
 			<span data-tooltip-content="{{ctx.Locale.Tr "This commit will be signed with key \"%s\"." .CommitFormOptions.SigningKeyFormDisplay}}">{{svg "octicon-lock" 24}}</span>
 			{{ctx.Locale.Tr "Commit Signed Changes"}}
 		{{- else}}
-			<span title="{{ctx.Locale.Tr (printf "repo.signing.wont_sign.%s" .CommitFormOptions.WontSignReason)}}">{{svg "octicon-unlock" 24}}</span>
+			<span title="{{.CommitFormOptions.WontSignReason}}">{{svg "octicon-unlock" 24}}</span>
 			{{ctx.Locale.Tr "Commit Changes"}}
 		{{- end}}
 		</h3>

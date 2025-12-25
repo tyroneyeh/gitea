@@ -437,7 +437,9 @@ func ViewIssue(ctx *context.Context) {
 		ctx.Data["PullMergeBoxReloadingInterval"] = 1 // in dev env, force using the reloading logic to make sure it won't break
 	}
 
-	ctx.Data["Signature"] = ctx.Doer.Description
+	if ctx.Doer != nil {
+		ctx.Data["Signature"] = ctx.Doer.Description
+	}
 
 	ctx.HTML(http.StatusOK, tplIssueView)
 }
@@ -507,9 +509,28 @@ func preparePullViewSigning(ctx *context.Context, issue *issues_model.Issue) {
 		ctx.Data["WillSign"] = sign
 		ctx.Data["SigningKeyMergeDisplay"] = asymkey_model.GetDisplaySigningKey(key)
 		if err != nil {
-			if asymkey_service.IsErrWontSign(err) {
-				ctx.Data["WontSignReason"] = err.(*asymkey_service.ErrWontSign).Reason
-			} else {
+			switch err.(*asymkey_service.ErrWontSign).Reason {
+			case "never":
+				ctx.Data["WontSignReason"] = ctx.Locale.TrString("Commits are never signed.")
+			case "always":
+				ctx.Data["WontSignReason"] = ctx.Locale.TrString("Commits are always signed.")
+			case "pubkey":
+				ctx.Data["WontSignReason"] = ctx.Locale.TrString("The commit will not be signed because you do not have a public key associated with your account.")
+			case "twofa":
+				ctx.Data["WontSignReason"] = ctx.Locale.TrString("You must have two-factor authentication enabled to have commits signed.")
+			case "parentsigned":
+				ctx.Data["WontSignReason"] = ctx.Locale.TrString("The commit will not be signed as the parent commit is not signed.")
+			case "basesigned":
+				ctx.Data["WontSignReason"] = ctx.Locale.TrString("The merge will not be signed as the base commit is not signed.")
+			case "headsigned":
+				ctx.Data["WontSignReason"] = ctx.Locale.TrString("The merge will not be signed as the head commit is not signed.")
+			case "commitssigned":
+				ctx.Data["WontSignReason"] = ctx.Locale.TrString("The merge will not be signed as all the associated commits are not signed.")
+			case "approved":
+				ctx.Data["WontSignReason"] = ctx.Locale.TrString("The merge will not be signed as the PR is not approved.")
+			case "nokey":
+				ctx.Data["WontSignReason"] = ctx.Locale.TrString("There is no key available to sign this commit.")
+			default:
 				ctx.Data["WontSignReason"] = "error"
 				log.Error("Error whilst checking if could sign pr %d in repo %s. Error: %v", pull.ID, pull.BaseRepo.FullName(), err)
 			}
