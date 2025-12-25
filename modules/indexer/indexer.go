@@ -22,13 +22,13 @@ func SearchModesExactWords() []SearchMode {
 	return []SearchMode{
 		{
 			ModeValue:    SearchModeExact,
-			TooltipTrKey: "search.exact_tooltip",
-			TitleTrKey:   "search.exact",
+			TooltipTrKey: "Include only results that match the exact search term",
+			TitleTrKey:   "Exact",
 		},
 		{
 			ModeValue:    SearchModeWords,
-			TooltipTrKey: "search.words_tooltip",
-			TitleTrKey:   "search.words",
+			TooltipTrKey: "Include only results that match the search term words",
+			TitleTrKey:   "Words",
 		},
 	}
 }
@@ -37,8 +37,8 @@ func SearchModesExactWordsFuzzy() []SearchMode {
 	return append(SearchModesExactWords(), []SearchMode{
 		{
 			ModeValue:    SearchModeFuzzy,
-			TooltipTrKey: "search.fuzzy_tooltip",
-			TitleTrKey:   "search.fuzzy",
+			TooltipTrKey: "Include results that closely match the search term",
+			TitleTrKey:   "Fuzzy",
 		},
 	}...)
 }
@@ -47,8 +47,8 @@ func GitGrepSupportedSearchModes() []SearchMode {
 	return append(SearchModesExactWords(), []SearchMode{
 		{
 			ModeValue:    SearchModeRegexp,
-			TooltipTrKey: "search.regexp_tooltip",
-			TitleTrKey:   "search.regexp",
+			TooltipTrKey: "Include only results that match the regexp search term",
+			TitleTrKey:   "Regexp",
 		},
 	}...)
 }
