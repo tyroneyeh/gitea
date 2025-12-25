@@ -191,14 +191,17 @@ export function isVideoFile({name, type}: {name?: string, type?: string}): boole
   return Boolean(/\.(mpe?g|mp4|mkv|webm)$/i.test(name || '') || type?.startsWith('video/'));
 }
 
+const COMPRESSED_MIME_TYPES = new Set([
+  'application/zip',
+  'application/x-7z-compressed',
+  'application/x-rar-compressed',
+  'application/gzip',
+  'application/x-bzip2',
+]);
+
 export function isCompressedFile({name, type}: {name?: string, type?: string}): boolean {
-  return Boolean(/\.(zip|rar|7z|gz|bz2)$/i.test(name || '') || [
-    'application/zip',
-    'application/x-7z-compressed',
-    'application/x-rar-compressed',
-    'application/gzip',
-    'application/x-bzip2',
-  ].includes(type || ''));
+  return /\.(zip|rar|7z|gz|bz2)$/i.test(name ?? '') ||
+         COMPRESSED_MIME_TYPES.has(type ?? '');
 }
 
 export async function compressFileToZip(file: File) {
