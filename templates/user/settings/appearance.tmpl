@@ -3,19 +3,19 @@
 
 		<!-- Theme -->
 		<h4 class="ui top attached header">
-			{{ctx.Locale.Tr "settings.manage_themes"}}
+			{{ctx.Locale.Tr "Select default theme"}}
 		</h4>
 		<div class="ui attached segment">
 			<form class="ui form" action="{{.Link}}/theme" method="post">
 				{{.CsrfTokenHtml}}
 				<div class="field">
-					{{ctx.Locale.Tr "settings.theme_desc"}}
-					<a class="muted" target="_blank" href="https://github.com/go-gitea/gitea/blob/main/web_src/css/themes/" data-tooltip-content="{{ctx.Locale.Tr "settings.theme_colorblindness_prompt"}}">
-						{{svg "octicon-question"}} {{ctx.Locale.Tr "settings.theme_colorblindness_help"}}
+					{{ctx.Locale.Tr "This will be your default theme across the site."}}
+					<a class="muted" target="_blank" href="https://github.com/go-gitea/gitea/blob/main/web_src/css/themes/" data-tooltip-content="{{ctx.Locale.Tr "Gitea only has a few themes with basic color blindness support, which only have a few colors defined. The work is still in progress. More improvements could be made by defining more colors in the theme CSS files."}}">
+						{{svg "octicon-question"}} {{ctx.Locale.Tr "Color blindness Theme Support"}}
 					</a>
 				</div>
 				<div class="field">
-					<label>{{ctx.Locale.Tr "settings.ui"}}</label>
+					<label>{{ctx.Locale.Tr "Theme"}}</label>
 					<div class="ui selection dropdown">
 						<input type="hidden" name="theme" value="{{$.SignedUser.Theme}}">
 						<div class="text"></div> {{svg "octicon-triangle-down" 14 "dropdown icon"}}
@@ -31,14 +31,14 @@
 					</div>
 				</div>
 				<div class="field">
-					<button class="ui primary button">{{ctx.Locale.Tr "settings.update_theme"}}</button>
+					<button class="ui primary button">{{ctx.Locale.Tr "Update Theme"}}</button>
 				</div>
 			</form>
 		</div>
 
 		<!-- Language -->
 		<h4 class="ui top attached header">
-			{{ctx.Locale.Tr "settings.language"}}
+			{{ctx.Locale.Tr "Language"}}
 		</h4>
 		<div class="ui attached segment">
 			<form class="ui form" action="{{.Link}}/language" method="post">
@@ -56,108 +56,108 @@
 					</div>
 				</div>
 				<div class="field">
-					<button class="ui primary button">{{ctx.Locale.Tr "settings.update_language"}}</button>
+					<button class="ui primary button">{{ctx.Locale.Tr "Update Language"}}</button>
 				</div>
 			</form>
 		</div>
 
 		<!-- Shown comment event types -->
 		<h4 class="ui top attached header">
-			{{ctx.Locale.Tr "settings.hidden_comment_types"}}
+			{{ctx.Locale.Tr "Hidden comment types"}}
 		</h4>
 		<div class="ui attached segment">
 			<p class="help">
-				{{ctx.Locale.Tr "settings.hidden_comment_types_description"}}
+				{{ctx.Locale.Tr "Comment types checked here will not be shown on issue pages. Checking \"Label\", for example, removes all \"{user} added/removed {label}\" comments."}}
 			</p>
 			<form class="ui form" action="{{.Link}}/hidden_comments" method="post">
 				{{.CsrfTokenHtml}}
 				<div class="inline field">
-					<div class="ui checkbox" data-tooltip-content="{{ctx.Locale.Tr "settings.hidden_comment_types.ref_tooltip"}}">
+					<div class="ui checkbox" data-tooltip-content="{{ctx.Locale.Tr "Comments where this issue was referenced from another issue/commit/…"}}">
 						<input name="reference" type="checkbox" {{if(call .IsCommentTypeGroupChecked "reference")}}checked{{end}}>
-						<label>{{ctx.Locale.Tr "settings.comment_type_group_reference"}}</label>
+						<label>{{ctx.Locale.Tr "Reference"}}</label>
 					</div>
 				</div>
 				<div class="inline field">
 					<div class="ui checkbox">
 						<input name="label" type="checkbox" {{if (call .IsCommentTypeGroupChecked "label")}}checked{{end}}>
-						<label>{{ctx.Locale.Tr "settings.comment_type_group_label"}}</label>
+						<label>{{ctx.Locale.Tr "Label"}}</label>
 					</div>
 				</div>
 				<div class="inline field">
 					<div class="ui checkbox">
 						<input name="milestone" type="checkbox" {{if (call .IsCommentTypeGroupChecked "milestone")}}checked{{end}}>
-						<label>{{ctx.Locale.Tr "settings.comment_type_group_milestone"}}</label>
+						<label>{{ctx.Locale.Tr "Milestone"}}</label>
 					</div>
 				</div>
 				<div class="inline field">
 					<div class="ui checkbox">
 						<input name="assignee" type="checkbox" {{if (call .IsCommentTypeGroupChecked "assignee")}}checked{{end}}>
-						<label>{{ctx.Locale.Tr "settings.comment_type_group_assignee"}}</label>
+						<label>{{ctx.Locale.Tr "Assignee"}}</label>
 					</div>
 				</div>
 				<div class="inline field">
 					<div class="ui checkbox">
 						<input name="title" type="checkbox" {{if (call .IsCommentTypeGroupChecked "title")}}checked{{end}}>
-						<label>{{ctx.Locale.Tr "settings.comment_type_group_title"}}</label>
+						<label>{{ctx.Locale.Tr "Title"}}</label>
 					</div>
 				</div>
 				<div class="inline field">
 					<div class="ui checkbox">
 						<input name="branch" type="checkbox" {{if (call .IsCommentTypeGroupChecked "branch")}}checked{{end}}>
-						<label>{{ctx.Locale.Tr "settings.comment_type_group_branch"}}</label>
+						<label>{{ctx.Locale.Tr "Branch"}}</label>
 					</div>
 				</div>
 				<div class="inline field">
 					<div class="ui checkbox">
 						<input name="time_tracking" type="checkbox" {{if (call .IsCommentTypeGroupChecked "time_tracking")}}checked{{end}}>
-						<label>{{ctx.Locale.Tr "settings.comment_type_group_time_tracking"}}</label>
+						<label>{{ctx.Locale.Tr "Time Tracking"}}</label>
 					</div>
 				</div>
 				<div class="inline field">
 					<div class="ui checkbox">
 						<input name="deadline" type="checkbox" {{if (call .IsCommentTypeGroupChecked "deadline")}}checked{{end}}>
-						<label>{{ctx.Locale.Tr "settings.comment_type_group_deadline"}}</label>
+						<label>{{ctx.Locale.Tr "Deadline"}}</label>
 					</div>
 				</div>
 				<div class="inline field">
 					<div class="ui checkbox">
 						<input name="dependency" type="checkbox" {{if (call .IsCommentTypeGroupChecked "dependency")}}checked{{end}}>
-						<label>{{ctx.Locale.Tr "settings.comment_type_group_dependency"}}</label>
+						<label>{{ctx.Locale.Tr "Dependency"}}</label>
 					</div>
 				</div>
 				<div class="inline field">
 					<div class="ui checkbox">
 						<input name="lock" type="checkbox" {{if (call .IsCommentTypeGroupChecked "lock")}}checked{{end}}>
-						<label>{{ctx.Locale.Tr "settings.comment_type_group_lock"}}</label>
+						<label>{{ctx.Locale.Tr "Lock Status"}}</label>
 					</div>
 				</div>
 				<div class="inline field">
 					<div class="ui checkbox">
 						<input name="review_request" type="checkbox" {{if (call .IsCommentTypeGroupChecked "review_request")}}checked{{end}}>
-						<label>{{ctx.Locale.Tr "settings.comment_type_group_review_request"}}</label>
+						<label>{{ctx.Locale.Tr "Review request"}}</label>
 					</div>
 				</div>
 
 				<div class="inline field">
 					<div class="ui checkbox">
 						<input name="pull_request_push" type="checkbox" {{if (call .IsCommentTypeGroupChecked "pull_request_push")}}checked{{end}}>
-						<label>{{ctx.Locale.Tr "settings.comment_type_group_pull_request_push"}}</label>
+						<label>{{ctx.Locale.Tr "Added commits"}}</label>
 					</div>
 				</div>
 				<div class="inline field">
 					<div class="ui checkbox">
 						<input name="project" type="checkbox" {{if (call .IsCommentTypeGroupChecked "project")}}checked{{end}}>
-						<label>{{ctx.Locale.Tr "settings.comment_type_group_project"}}</label>
+						<label>{{ctx.Locale.Tr "Project"}}</label>
 					</div>
 				</div>
 				<div class="inline field">
-					<div class="ui checkbox" data-tooltip-content="{{ctx.Locale.Tr "settings.hidden_comment_types.issue_ref_tooltip"}}">
+					<div class="ui checkbox" data-tooltip-content="{{ctx.Locale.Tr "Comments where the user changes the branch/tag associated with the issue"}}">
 						<input name="issue_ref" type="checkbox" {{if (call .IsCommentTypeGroupChecked "issue_ref")}}checked{{end}}>
-						<label>{{ctx.Locale.Tr "settings.comment_type_group_issue_ref"}}</label>
+						<label>{{ctx.Locale.Tr "Issue reference"}}</label>
 					</div>
 				</div>
 				<div class="field">
-					<button class="ui primary button">{{ctx.Locale.Tr "save"}}</button>
+					<button class="ui primary button">{{ctx.Locale.Tr "Save"}}</button>
 				</div>
 			</form>
 		</div>

@@ -51,7 +51,7 @@ func checkOutdatedBranch(ctx *context.Context) {
 	}
 
 	if dbBranch.CommitID != commit.ID.String() {
-		ctx.Flash.Warning(ctx.Tr("repo.error.broken_git_hook", "https://docs.gitea.com/help/faq#push-hook--webhook--actions-arent-running"), true)
+		ctx.Flash.Warning(ctx.Tr("Git hooks of this repository seem to be broken. Please follow the <a target=\"_blank\" rel=\"noreferrer\" href=\"%s\">documentation</a> to fix them, then push some commits to refresh the status.", "https://docs.gitea.com/help/faq#push-hook--webhook--actions-arent-running"), true)
 	}
 }
 
@@ -145,7 +145,7 @@ func prepareToRenderDirectory(ctx *context.Context) {
 
 	if ctx.Repo.TreePath != "" {
 		ctx.Data["HideRepoInfo"] = true
-		ctx.Data["Title"] = ctx.Tr("repo.file.title", ctx.Repo.Repository.Name+"/"+ctx.Repo.TreePath, ctx.Repo.RefFullName.ShortName())
+		ctx.Data["Title"] = ctx.Tr("%s at %s", ctx.Repo.Repository.Name+"/"+ctx.Repo.TreePath, ctx.Repo.RefFullName.ShortName())
 	}
 
 	subfolder, readmeFile, err := findReadmeFileInEntries(ctx, ctx.Repo.TreePath, entries, true)
@@ -227,7 +227,7 @@ func handleRepoEmptyOrBroken(ctx *context.Context) {
 			showEmpty = true // the repo is broken
 			updateContextRepoEmptyAndStatus(ctx, true, repo_model.RepositoryBroken)
 			log.Error("GitRepo.IsEmpty: %v", err)
-			ctx.Flash.Error(ctx.Tr("error.occurred"), true)
+			ctx.Flash.Error(ctx.Tr("An error occurred"), true)
 		} else if reallyEmpty {
 			showEmpty = true // the repo is really empty
 			updateContextRepoEmptyAndStatus(ctx, true, repo_model.RepositoryReady)

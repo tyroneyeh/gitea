@@ -3,7 +3,7 @@
 	<div class="ui middle very relaxed page grid">
 		<div class="column tw-flex tw-flex-col tw-gap-4 tw-max-w-2xl tw-m-auto">
 			<a href="{{AppSubUrl}}/user/login" class="tw-mx-auto">
-				<img width="100" height="100" src="{{AssetUrlPrefix}}/img/logo.svg" alt="{{ctx.Locale.Tr "logo"}}">
+				<img width="100" height="100" src="{{AssetUrlPrefix}}/img/logo.svg" alt="{{ctx.Locale.Tr "Logo"}}">
 			</a>
 
 			<div class="ui container fluid">
@@ -16,7 +16,7 @@
 					<form class="ui form tw-m-auto" action="{{.Link}}" method="post">
 						{{.CsrfTokenHtml}}
 						<div class="inline field">
-							{{ctx.Locale.Tr "auth.openid_signin_desc"}}
+							{{ctx.Locale.Tr "Enter your OpenID URI. For example: alice.openid.example.org or https://openid.example.org/alice."}}
 						</div>
 						<div class="required field {{if .Err_OpenID}}error{{end}}">
 							<label for="openid">
@@ -27,12 +27,12 @@
 						</div>
 						<div class="inline field">
 							<div class="ui checkbox">
-								<label>{{ctx.Locale.Tr "auth.remember_me"}}</label>
+								<label>{{ctx.Locale.Tr "Remember This Device"}}</label>
 								<input name="remember" type="checkbox">
 							</div>
 						</div>
 						<div class="inline field">
-							<button class="ui primary button tw-w-full">{{ctx.Locale.Tr "sign_in"}}</button>
+							<button class="ui primary button tw-w-full">{{ctx.Locale.Tr "Sign In"}}</button>
 						</div>
 					</form>
 				</div>
@@ -42,7 +42,7 @@
 				{{template "user/auth/webauthn_error" .}}
 
 				<div class="ui attached segment header top tw-flex tw-flex-col tw-items-center">
-					<a href="{{AppSubUrl}}/user/login">{{ctx.Locale.Tr "auth.back_to_sign_in"}}</a>
+					<a href="{{AppSubUrl}}/user/login">{{ctx.Locale.Tr "Back to Sign In"}}</a>
 				</div>
 			</div>
 		</div>

@@ -1,42 +1,42 @@
 <div class="flex-container-nav">
 	<div class="ui fluid vertical menu">
-		<div class="header item">{{ctx.Locale.Tr "org.settings"}}</div>
+		<div class="header item">{{ctx.Locale.Tr "Settings"}}</div>
 		<a class="{{if .PageIsSettingsOptions}}active {{end}}item" href="{{.OrgLink}}/settings">
-			{{ctx.Locale.Tr "org.settings.options"}}
+			{{ctx.Locale.Tr "Organization"}}
 		</a>
 		{{if not DisableWebhooks}}
 		<a class="{{if .PageIsSettingsHooks}}active {{end}}item" href="{{.OrgLink}}/settings/hooks">
-			{{ctx.Locale.Tr "repo.settings.hooks"}}
+			{{ctx.Locale.Tr "Webhooks"}}
 		</a>
 		{{end}}
 		<a class="{{if .PageIsOrgSettingsLabels}}active {{end}}item" href="{{.OrgLink}}/settings/labels">
-			{{ctx.Locale.Tr "repo.labels"}}
+			{{ctx.Locale.Tr "Labels"}}
 		</a>
 		{{if .EnableOAuth2}}
 		<a class="{{if .PageIsSettingsApplications}}active {{end}}item" href="{{.OrgLink}}/settings/applications">
-			{{ctx.Locale.Tr "settings.applications"}}
+			{{ctx.Locale.Tr "Applications"}}
 		</a>
 		{{end}}
 		<a class="{{if .PageIsSettingsBlockedUsers}}active {{end}}item" href="{{.OrgLink}}/settings/blocked_users">
-			{{ctx.Locale.Tr "user.block.list"}}
+			{{ctx.Locale.Tr "Blocked users"}}
 		</a>
 		{{if .EnablePackages}}
 		<a class="{{if .PageIsSettingsPackages}}active {{end}}item" href="{{.OrgLink}}/settings/packages">
-			{{ctx.Locale.Tr "packages.title"}}
+			{{ctx.Locale.Tr "Packages"}}
 		</a>
 		{{end}}
 		{{if .EnableActions}}
 		<details class="item toggleable-item" {{if or .PageIsSharedSettingsRunners .PageIsSharedSettingsSecrets .PageIsSharedSettingsVariables}}open{{end}}>
-			<summary>{{ctx.Locale.Tr "actions.actions"}}</summary>
+			<summary>{{ctx.Locale.Tr "Actions"}}</summary>
 			<div class="menu">
 				<a class="{{if .PageIsSharedSettingsRunners}}active {{end}}item" href="{{.OrgLink}}/settings/actions/runners">
-					{{ctx.Locale.Tr "actions.runners"}}
+					{{ctx.Locale.Tr "Runners"}}
 				</a>
 				<a class="{{if .PageIsSharedSettingsSecrets}}active {{end}}item" href="{{.OrgLink}}/settings/actions/secrets">
-					{{ctx.Locale.Tr "secrets.secrets"}}
+					{{ctx.Locale.Tr "Secrets"}}
 				</a>
 				<a class="{{if .PageIsSharedSettingsVariables}}active {{end}}item" href="{{.OrgLink}}/settings/actions/variables">
-					{{ctx.Locale.Tr "actions.variables"}}
+					{{ctx.Locale.Tr "Variables"}}
 				</a>
 			</div>
 		</details>

@@ -7,7 +7,7 @@
 				{{/* using some tw helpers is the only way to align the checkbox */}}
 				<div class="flex-text-inline tw-mt-[2px]">
 					{{if $.CanWriteIssuesOrPulls}}
-						<input type="checkbox" autocomplete="off" class="issue-checkbox tw-mr-[14px]" data-issue-id={{.ID}} aria-label="{{ctx.Locale.Tr "repo.issues.action_check"}} &quot;{{.Title}}&quot;">
+						<input type="checkbox" autocomplete="off" class="issue-checkbox tw-mr-[14px]" data-issue-id={{.ID}} aria-label="{{ctx.Locale.Tr "Check/Uncheck"}} &quot;{{.Title}}&quot;">
 					{{end}}
 					{{template "shared/issueicon" .}}
 				</div>
@@ -97,7 +97,7 @@
 						</span>
 					{{end}}
 					{{if ne .DeadlineUnix 0}}
-						<span class="due-date flex-text-inline" data-tooltip-content="{{ctx.Locale.Tr "repo.issues.due_date"}}">
+						<span class="due-date flex-text-inline" data-tooltip-content="{{ctx.Locale.Tr "Due Date"}}">
 							<span{{if .IsOverdue}} class="text red"{{end}}>
 								{{svg "octicon-calendar" 14}}
 								{{DateUtils.AbsoluteShort .DeadlineUnix}}
@@ -111,25 +111,25 @@
 						{{if gt $approveOfficial 0}}
 							<span class="approvals green flex-text-inline">
 								{{svg "octicon-check" 14}}
-								{{ctx.Locale.TrN $approveOfficial "repo.pulls.approve_count_1" "repo.pulls.approve_count_n" $approveOfficial}}
+								{{ctx.Locale.TrN $approveOfficial "%d approval" "%d approvals" $approveOfficial}}
 							</span>
 						{{end}}
 						{{if gt $rejectOfficial 0}}
 							<span class="rejects red flex-text-inline">
 								{{svg "octicon-diff" 14}}
-								{{ctx.Locale.TrN $rejectOfficial "repo.pulls.reject_count_1" "repo.pulls.reject_count_n" $rejectOfficial}}
+								{{ctx.Locale.TrN $rejectOfficial "%d change request" "%d change requests" $rejectOfficial}}
 							</span>
 						{{end}}
 						{{if gt $waitingOfficial 0}}
 							<span class="waiting flex-text-inline">
 								{{svg "octicon-eye" 14}}
-								{{ctx.Locale.TrN $waitingOfficial "repo.pulls.waiting_count_1" "repo.pulls.waiting_count_n" $waitingOfficial}}
+								{{ctx.Locale.TrN $waitingOfficial "%d waiting review" "%d waiting reviews" $waitingOfficial}}
 							</span>
 						{{end}}
 						{{if and (not .PullRequest.HasMerged) .PullRequest.ConflictedFiles}}
 							<span class="conflicting flex-text-inline">
 								{{svg "octicon-x" 14}}
-								{{ctx.Locale.TrN (len .PullRequest.ConflictedFiles) "repo.pulls.num_conflicting_files_1" "repo.pulls.num_conflicting_files_n" (len .PullRequest.ConflictedFiles)}}
+								{{ctx.Locale.TrN (len .PullRequest.ConflictedFiles) "%d conflicting file" "%d conflicting files" (len .PullRequest.ConflictedFiles)}}
 							</span>
 						{{end}}
 					{{end}}
@@ -158,13 +158,13 @@
 		</div>
 	{{else}}
 		<div class="tw-text-center tw-p-8">
-			<h3 class="tw-my-4">{{ctx.Locale.Tr "repo.issues.filter_no_results"}}</h3>
-			<p class="tw-text-placeholder-text">{{ctx.Locale.Tr "repo.issues.filter_no_results_placeholder"}}</p>
+			<h3 class="tw-my-4">{{ctx.Locale.Tr "No results"}}</h3>
+			<p class="tw-text-placeholder-text">{{ctx.Locale.Tr "Try adjusting your search filters."}}</p>
 		</div>
 	{{end}}
 	{{if .IssueIndexerUnavailable}}
 		<div class="ui error message">
-			<p>{{ctx.Locale.Tr "search.keyword_search_unavailable"}}</p>
+			<p>{{ctx.Locale.Tr "Searching by keyword is currently not available. Please contact the site administrator."}}</p>
 		</div>
 	{{end}}
 </div>

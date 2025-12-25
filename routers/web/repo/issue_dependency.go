@@ -40,14 +40,14 @@ func AddDependency(ctx *context.Context) {
 	// Dependency
 	dep, err := issues_model.GetIssueByID(ctx, depID)
 	if err != nil {
-		ctx.Flash.Error(ctx.Tr("repo.issues.dependency.add_error_dep_issue_not_exist"))
+		ctx.Flash.Error(ctx.Tr("Dependent issue does not exist."))
 		return
 	}
 
 	// Check if both issues are in the same repo if cross repository dependencies is not enabled
 	if issue.RepoID != dep.RepoID {
 		if !setting.Service.AllowCrossRepositoryDependencies {
-			ctx.Flash.Error(ctx.Tr("repo.issues.dependency.add_error_dep_not_same_repo"))
+			ctx.Flash.Error(ctx.Tr("Both issues must be in the same repository."))
 			return
 		}
 		if err := dep.LoadRepo(ctx); err != nil {
@@ -68,17 +68,17 @@ func AddDependency(ctx *context.Context) {
 
 	// Check if issue and dependency is the same
 	if dep.ID == issue.ID {
-		ctx.Flash.Error(ctx.Tr("repo.issues.dependency.add_error_same_issue"))
+		ctx.Flash.Error(ctx.Tr("You cannot make an issue depend on itself."))
 		return
 	}
 
 	err = issues_model.CreateIssueDependency(ctx, ctx.Doer, issue, dep)
 	if err != nil {
 		if issues_model.IsErrDependencyExists(err) {
-			ctx.Flash.Error(ctx.Tr("repo.issues.dependency.add_error_dep_exists"))
+			ctx.Flash.Error(ctx.Tr("Dependency already exists."))
 			return
 		} else if issues_model.IsErrCircularDependency(err) {
-			ctx.Flash.Error(ctx.Tr("repo.issues.dependency.add_error_cannot_create_circular"))
+			ctx.Flash.Error(ctx.Tr("You cannot create a dependency with two issues that block each other."))
 			return
 		}
 		ctx.ServerError("CreateOrUpdateIssueDependency", err)
@@ -132,7 +132,7 @@ func RemoveDependency(ctx *context.Context) {
 
 	if err = issues_model.RemoveIssueDependency(ctx, ctx.Doer, issue, dep, depType); err != nil {
 		if issues_model.IsErrDependencyNotExists(err) {
-			ctx.Flash.Error(ctx.Tr("repo.issues.dependency.add_error_dep_not_exist"))
+			ctx.Flash.Error(ctx.Tr("Dependency does not exist."))
 			return
 		}
 		ctx.ServerError("RemoveIssueDependency", err)

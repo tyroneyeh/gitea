@@ -1,9 +1,9 @@
 {{if not .WorkflowDispatchConfig}}
 	<div class="ui error message tw-block">{{/* using "ui message" in "ui form" needs to force to display */}}
 		{{if not .CurWorkflowExists}}
-			{{ctx.Locale.Tr "actions.workflow.not_found" $.CurWorkflow}}
+			{{ctx.Locale.Tr "Workflow '%s' not found." $.CurWorkflow}}
 		{{else}}
-			{{ctx.Locale.Tr "actions.workflow.has_no_workflow_dispatch" $.CurWorkflow}}
+			{{ctx.Locale.Tr "Workflow '%s' has no workflow_dispatch event trigger." $.CurWorkflow}}
 		{{end}}
 	</div>
 {{else}}
@@ -34,7 +34,7 @@
 	{{end}}
 	<div class="ui field">
 		{{/* use autofocus here to prevent the "branch selection" dropdown from getting focus, otherwise it will auto popup */}}
-		<button class="ui tiny primary button" autofocus type="submit">{{ctx.Locale.Tr "actions.workflow.run"}}</button>
+		<button class="ui tiny primary button" autofocus type="submit">{{ctx.Locale.Tr "Run Workflow"}}</button>
 	</div>
 {{end}}
 {{range .workflows}}

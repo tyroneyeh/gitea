@@ -28,7 +28,7 @@ func registerUpdateMirrorTask() {
 		PushLimit int
 	}
 
-	RegisterTaskFatal("update_mirrors", &UpdateMirrorTaskConfig{
+	RegisterTaskFatal("Update Mirrors", &UpdateMirrorTaskConfig{
 		BaseConfig: BaseConfig{
 			Enabled:    true,
 			RunAtStart: false,
@@ -48,7 +48,7 @@ func registerRepoHealthCheck() {
 		Timeout time.Duration
 		Args    []string `delim:" "`
 	}
-	RegisterTaskFatal("repo_health_check", &RepoHealthCheckConfig{
+	RegisterTaskFatal("Health check all repositories", &RepoHealthCheckConfig{
 		BaseConfig: BaseConfig{
 			Enabled:    true,
 			RunAtStart: false,
@@ -64,7 +64,7 @@ func registerRepoHealthCheck() {
 }
 
 func registerCheckRepoStats() {
-	RegisterTaskFatal("check_repo_stats", &BaseConfig{
+	RegisterTaskFatal("Check all repository statistics", &BaseConfig{
 		Enabled:    true,
 		RunAtStart: true,
 		Schedule:   "@midnight",
@@ -74,7 +74,7 @@ func registerCheckRepoStats() {
 }
 
 func registerArchiveCleanup() {
-	RegisterTaskFatal("archive_cleanup", &OlderThanConfig{
+	RegisterTaskFatal("Delete old repository archives", &OlderThanConfig{
 		BaseConfig: BaseConfig{
 			Enabled:    true,
 			RunAtStart: true,
@@ -88,7 +88,7 @@ func registerArchiveCleanup() {
 }
 
 func registerSyncExternalUsers() {
-	RegisterTaskFatal("sync_external_users", &UpdateExistingConfig{
+	RegisterTaskFatal("Synchronize external user data", &UpdateExistingConfig{
 		BaseConfig: BaseConfig{
 			Enabled:    true,
 			RunAtStart: false,

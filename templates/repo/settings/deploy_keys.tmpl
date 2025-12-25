@@ -1,12 +1,12 @@
 {{template "repo/settings/layout_head" (dict "ctxData" . "pageClass" "repository settings")}}
 	<div class="repo-setting-content">
 		<h4 class="ui top attached header">
-			{{ctx.Locale.Tr "repo.settings.deploy_keys"}}
+			{{ctx.Locale.Tr "Deploy Keys"}}
 			<div class="ui right">
 			{{if not .DisableSSH}}
-				<button class="ui primary tiny show-panel toggle button" data-panel="#add-deploy-key-panel">{{ctx.Locale.Tr "repo.settings.add_deploy_key"}}</button>
+				<button class="ui primary tiny show-panel toggle button" data-panel="#add-deploy-key-panel">{{ctx.Locale.Tr "Add Deploy Key"}}</button>
 			{{else}}
-				<button class="ui primary tiny button disabled">{{ctx.Locale.Tr "settings.ssh_disabled"}}</button>
+				<button class="ui primary tiny button disabled">{{ctx.Locale.Tr "SSH Disabled"}}</button>
 			{{end}}
 			</div>
 		</h4>
@@ -15,30 +15,30 @@
 				<form class="ui form" action="{{.Link}}" method="post">
 					{{.CsrfTokenHtml}}
 					<div class="field">
-						{{ctx.Locale.Tr "repo.settings.deploy_key_desc"}}
+						{{ctx.Locale.Tr "Deploy keys have read-only pull access to the repository."}}
 					</div>
 					<div class="field {{if .Err_Title}}error{{end}}">
-						<label for="ssh-key-title">{{ctx.Locale.Tr "repo.settings.title"}}</label>
+						<label for="ssh-key-title">{{ctx.Locale.Tr "Title"}}</label>
 						<input id="ssh-key-title" name="title" value="{{.title}}" autofocus required>
 					</div>
 					<div class="field {{if .Err_Content}}error{{end}}">
-						<label for="ssh-key-content">{{ctx.Locale.Tr "repo.settings.deploy_key_content"}}</label>
-						<textarea id="ssh-key-content" name="content" placeholder="{{ctx.Locale.Tr "settings.key_content_ssh_placeholder"}}" required>{{.content}}</textarea>
+						<label for="ssh-key-content">{{ctx.Locale.Tr "Content"}}</label>
+						<textarea id="ssh-key-content" name="content" placeholder="{{ctx.Locale.Tr "Begins with 'ssh-ed25519', 'ssh-rsa', 'ecdsa-sha2-nistp256', 'ecdsa-sha2-nistp384', 'ecdsa-sha2-nistp521', 'sk-ecdsa-sha2-nistp256@openssh.com', or 'sk-ssh-ed25519@openssh.com'"}}" required>{{.content}}</textarea>
 					</div>
 					<div class="field">
 						<div class="ui checkbox {{if .Err_IsWritable}}error{{end}}">
 							<input id="ssh-key-is-writable" name="is_writable" type="checkbox" value="1">
 							<label for="ssh-key-is-writable">
-								{{ctx.Locale.Tr "repo.settings.is_writable"}}
+								{{ctx.Locale.Tr "Enable Write Access"}}
 							</label>
-							<small class="tw-pl-[26px]">{{ctx.Locale.Tr "repo.settings.is_writable_info"}}</small>
+							<small class="tw-pl-[26px]">{{ctx.Locale.Tr "Allow this deploy key to <strong>push</strong> to the repository."}}</small>
 						</div>
 					</div>
 					<button class="ui primary button">
-						{{ctx.Locale.Tr "repo.settings.add_deploy_key"}}
+						{{ctx.Locale.Tr "Add Deploy Key"}}
 					</button>
 					<button class="ui hide-panel button" data-panel="#add-deploy-key-panel">
-						{{ctx.Locale.Tr "cancel"}}
+						{{ctx.Locale.Tr "Cancel"}}
 					</button>
 				</form>
 			</div>
@@ -47,7 +47,7 @@
 					{{range .Deploykeys}}
 						<div class="flex-item">
 							<div class="flex-item-leading">
-								<span class="text {{if .HasRecentActivity}}green{{end}}" {{if .HasRecentActivity}}data-tooltip-content="{{ctx.Locale.Tr "settings.key_state_desc"}}"{{end}}>{{svg "octicon-key" 32}}</span>
+								<span class="text {{if .HasRecentActivity}}green{{end}}" {{if .HasRecentActivity}}data-tooltip-content="{{ctx.Locale.Tr "This key has been used in the last 7 days"}}"{{end}}>{{svg "octicon-key" 32}}</span>
 							</div>
 							<div class="flex-item-main">
 								<div class="flex-item-title">{{.Name}}</div>
@@ -55,26 +55,26 @@
 									{{.Fingerprint}}
 								</div>
 								<div class="flex-item-body">
-									<i>{{ctx.Locale.Tr "settings.added_on" (DateUtils.AbsoluteShort .CreatedUnix)}} —  {{svg "octicon-info"}} {{if .HasUsed}}{{ctx.Locale.Tr "settings.last_used"}} <span {{if .HasRecentActivity}}class="text green"{{end}}>{{DateUtils.AbsoluteShort .UpdatedUnix}}</span>{{else}}{{ctx.Locale.Tr "settings.no_activity"}}{{end}} - <span>{{ctx.Locale.Tr "settings.can_read_info"}}{{if not .IsReadOnly}} / {{ctx.Locale.Tr "settings.can_write_info"}} {{end}}</span></i>
+									<i>{{ctx.Locale.Tr "Added on %s" (DateUtils.AbsoluteShort .CreatedUnix)}} —  {{svg "octicon-info"}} {{if .HasUsed}}{{ctx.Locale.Tr "Last used on"}} <span {{if .HasRecentActivity}}class="text green"{{end}}>{{DateUtils.AbsoluteShort .UpdatedUnix}}</span>{{else}}{{ctx.Locale.Tr "No recent activity"}}{{end}} - <span>{{ctx.Locale.Tr "Read"}}{{if not .IsReadOnly}} / {{ctx.Locale.Tr "Write"}} {{end}}</span></i>
 								</div>
 							</div>
 							<div class="flex-item-trailing">
 								<button class="ui red tiny button link-action" data-modal-confirm="#repo-deploy-key-delete-modal" data-url="{{$.Link}}/delete?id={{.ID}}">
-									{{ctx.Locale.Tr "settings.delete_key"}}
+									{{ctx.Locale.Tr "Remove"}}
 								</button>
 							</div>
 						</div>
 					{{end}}
 				</div>
 			{{else}}
-				{{ctx.Locale.Tr "repo.settings.no_deploy_keys"}}
+				{{ctx.Locale.Tr "There are no deploy keys yet."}}
 			{{end}}
 		</div>
 	</div>
 
 <div class="ui small modal" id="repo-deploy-key-delete-modal">
-	<div class="header">{{svg "octicon-trash"}} {{ctx.Locale.Tr "repo.settings.deploy_key_deletion"}}</div>
-	<div class="content"><p>{{ctx.Locale.Tr "repo.settings.deploy_key_deletion_desc"}}</p></div>
+	<div class="header">{{svg "octicon-trash"}} {{ctx.Locale.Tr "Remove Deploy Key"}}</div>
+	<div class="content"><p>{{ctx.Locale.Tr "Removing a deploy key will revoke its access to this repository. Continue?"}}</p></div>
 	{{template "base/modal_actions_confirm" .}}
 </div>
 

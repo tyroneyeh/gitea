@@ -1,42 +1,42 @@
 {{if eq .PackageDescriptor.Package.Type "alpine"}}
-	<h4 class="ui top attached header">{{ctx.Locale.Tr "packages.installation"}}</h4>
+	<h4 class="ui top attached header">{{ctx.Locale.Tr "Installation"}}</h4>
 	<div class="ui attached segment">
 		<div class="ui form">
 			<div class="field">
-				<label>{{svg "octicon-code"}} {{ctx.Locale.Tr "packages.alpine.registry"}}</label>
+				<label>{{svg "octicon-code"}} {{ctx.Locale.Tr "Set up this registry by adding the URL in your <code>/etc/apk/repositories</code> file:"}}</label>
 				<div class="markup"><pre class="code-block"><code><origin-url data-url="{{AppSubUrl}}/api/packages/{{$.PackageDescriptor.Owner.Name}}/alpine"></origin-url>/$branch/$repository</code></pre></div>
-				<p>{{ctx.Locale.Tr "packages.alpine.registry.info"}}</p>
+				<p>{{ctx.Locale.Tr "Choose $branch and $repository from the list below."}}</p>
 			</div>
 			<div class="field">
-				<label>{{svg "octicon-terminal"}} {{ctx.Locale.Tr "packages.alpine.registry.key"}}</label>
+				<label>{{svg "octicon-terminal"}} {{ctx.Locale.Tr "Download the registry public RSA key into the <code>/etc/apk/keys/</code> folder to verify the index signature:"}}</label>
 				<div class="markup"><pre class="code-block"><code>curl -JO <origin-url data-url="{{AppSubUrl}}/api/packages/{{$.PackageDescriptor.Owner.Name}}/alpine/key"></origin-url></code></pre></div>
 			</div>
 			<div class="field">
-				<label>{{svg "octicon-terminal"}} {{ctx.Locale.Tr "packages.alpine.install"}}</label>
+				<label>{{svg "octicon-terminal"}} {{ctx.Locale.Tr "To install the package, run the following command:"}}</label>
 				<div class="markup">
 					<pre class="code-block"><code>sudo apk add {{$.PackageDescriptor.Package.Name}}={{$.PackageDescriptor.Version.Version}}</code></pre>
 				</div>
 			</div>
 			<div class="field">
-				<label>{{ctx.Locale.Tr "packages.registry.documentation" "Alpine" "https://docs.gitea.com/usage/packages/alpine/"}}</label>
+				<label>{{ctx.Locale.Tr "For more information on the %s registry, see <a target=\"_blank\" rel=\"noopener noreferrer\" href=\"%s\">the documentation</a>." "Alpine" "https://docs.gitea.com/usage/packages/alpine/"}}</label>
 			</div>
 		</div>
 	</div>
 
-	<h4 class="ui top attached header">{{ctx.Locale.Tr "packages.alpine.repository"}}</h4>
+	<h4 class="ui top attached header">{{ctx.Locale.Tr "Repository Info"}}</h4>
 	<div class="ui attached segment">
 		<table class="ui single line very basic table">
 			<tbody>
 				<tr>
-					<td class="collapsing"><h5>{{ctx.Locale.Tr "packages.alpine.repository.branches"}}</h5></td>
+					<td class="collapsing"><h5>{{ctx.Locale.Tr "Branches"}}</h5></td>
 					<td>{{StringUtils.Join .Branches ", "}}</td>
 				</tr>
 				<tr>
-					<td class="collapsing"><h5>{{ctx.Locale.Tr "packages.alpine.repository.repositories"}}</h5></td>
+					<td class="collapsing"><h5>{{ctx.Locale.Tr "Repositories"}}</h5></td>
 					<td>{{StringUtils.Join .Repositories ", "}}</td>
 				</tr>
 				<tr>
-					<td class="collapsing"><h5>{{ctx.Locale.Tr "packages.alpine.repository.architectures"}}</h5></td>
+					<td class="collapsing"><h5>{{ctx.Locale.Tr "Architectures"}}</h5></td>
 					<td>{{StringUtils.Join .Architectures ", "}}</td>
 				</tr>
 			</tbody>
@@ -44,7 +44,7 @@
 	</div>
 
 	{{if .PackageDescriptor.Metadata.Description}}
-		<h4 class="ui top attached header">{{ctx.Locale.Tr "packages.about"}}</h4>
+		<h4 class="ui top attached header">{{ctx.Locale.Tr "About this package"}}</h4>
 		<div class="ui attached segment">
 			{{.PackageDescriptor.Metadata.Description}}
 		</div>

@@ -19,8 +19,8 @@
 		<nav class="ui secondary menu">
 			<div class="ui container tw-flex">
 				<div class="item tw-flex-1">
-					<a href="{{AppSubUrl}}/" aria-label="{{ctx.Locale.Tr "home_title"}}">
-						<img width="30" height="30" src="{{AssetUrlPrefix}}/img/logo.svg" alt="{{ctx.Locale.Tr "logo"}}" aria-hidden="true">
+					<a href="{{AppSubUrl}}/" aria-label="{{ctx.Locale.Tr "Home"}}">
+						<img width="30" height="30" src="{{AssetUrlPrefix}}/img/logo.svg" alt="{{ctx.Locale.Tr "Logo"}}" aria-hidden="true">
 					</a>
 				</div>
 				<div class="item">
@@ -37,13 +37,13 @@
 					<div class="status-page-error-title">500 Internal Server Error</div>
 					{{if .ErrorMsg}}
 					<div class="tw-mt-8">
-						<p>{{ctx.Locale.Tr "error.occurred"}}:</p>
+						<p>{{ctx.Locale.Tr "An error occurred"}}:</p>
 						<pre class="tw-whitespace-pre-wrap tw-wrap-anywhere">{{.ErrorMsg}}</pre>
 					</div>
 					{{end}}
 					<div class="tw-mt-8 tw-text-center">
-						{{if or .SignedUser.IsAdmin .ShowFooterVersion}}<p>{{ctx.Locale.Tr "admin.config.app_ver"}}: {{AppVer}}</p>{{end}}
-						{{if .SignedUser.IsAdmin}}<p>{{ctx.Locale.Tr "error.report_message" "https://github.com/go-gitea/gitea/issues"}}</p>{{end}}
+						{{if or .SignedUser.IsAdmin .ShowFooterVersion}}<p>{{ctx.Locale.Tr "Gitea Version"}}: {{AppVer}}</p>{{end}}
+						{{if .SignedUser.IsAdmin}}<p>{{ctx.Locale.Tr "If you believe that this is a Gitea bug, please search for issues on <a href=\"%s\" target=\"_blank\">GitHub</a> or open a new issue if necessary." "https://github.com/go-gitea/gitea/issues"}}</p>{{end}}
 					</div>
 				</div>
 			</div>

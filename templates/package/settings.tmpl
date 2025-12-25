@@ -10,43 +10,43 @@
 			{{template "user/overview/header" .}}
 		{{end}}
 		{{template "base/alert" .}}
-		<p><a href="{{.PackageDescriptor.VersionWebLink}}">{{.PackageDescriptor.Package.Name}} ({{.PackageDescriptor.Version.Version}})</a> / <strong>{{ctx.Locale.Tr "repo.settings"}}</strong></p>
+		<p><a href="{{.PackageDescriptor.VersionWebLink}}">{{.PackageDescriptor.Package.Name}} ({{.PackageDescriptor.Version.Version}})</a> / <strong>{{ctx.Locale.Tr "Settings"}}</strong></p>
 		<h4 class="ui top attached header">
-			{{ctx.Locale.Tr "packages.settings.link"}}
+			{{ctx.Locale.Tr "Link this package to a repository"}}
 		</h4>
 		<div class="ui attached segment">
-			<p>{{ctx.Locale.Tr "packages.settings.link.description"}}</p>
+			<p>{{ctx.Locale.Tr "If you link a package with a repository, the package will appear in the repository's package list. Only repositories under the same owner can be linked. Leaving the field empty will remove the link."}}</p>
 			<form class="ui form form-fetch-action ignore-dirty flex-text-block" action="{{.Link}}" method="post">
 				{{.CsrfTokenHtml}}
 				<input type="hidden" name="action" value="link">
 				<div data-global-init="initSearchRepoBox" class="ui search" data-uid="{{.PackageDescriptor.Owner.ID}}">
 					<div class="ui input">
-						<input class="prompt" name="repo_name" value="{{.LinkedRepoName}}" placeholder="{{ctx.Locale.Tr "search.repo_kind"}}" autocomplete="off">
+						<input class="prompt" name="repo_name" value="{{.LinkedRepoName}}" placeholder="{{ctx.Locale.Tr "Search repos…"}}" autocomplete="off">
 					</div>
 				</div>
-				<button class="ui primary button">{{ctx.Locale.Tr "packages.settings.link.button"}}</button>
+				<button class="ui primary button">{{ctx.Locale.Tr "Update Repository Link"}}</button>
 			</form>
 		</div>
 		<h4 class="ui top attached error header">
-			{{ctx.Locale.Tr "repo.settings.danger_zone"}}
+			{{ctx.Locale.Tr "Danger Zone"}}
 		</h4>
 		<div class="ui attached error danger segment">
 			<div class="flex-list">
 				<div class="flex-item">
 					<div class="flex-item-main">
-						<div class="flex-item-title">{{ctx.Locale.Tr "packages.settings.delete"}}</div>
-						<div class="flex-item-body">{{ctx.Locale.Tr "packages.settings.delete.description"}}</div>
+						<div class="flex-item-title">{{ctx.Locale.Tr "Delete package"}}</div>
+						<div class="flex-item-body">{{ctx.Locale.Tr "Deleting a package is permanent and cannot be undone."}}</div>
 					</div>
 					<div class="flex-item-trailing">
-						<button class="ui basic red show-modal button" data-modal="#delete-package-modal">{{ctx.Locale.Tr "packages.settings.delete"}}</button>
+						<button class="ui basic red show-modal button" data-modal="#delete-package-modal">{{ctx.Locale.Tr "Delete package"}}</button>
 					</div>
 					<div class="ui tiny modal" id="delete-package-modal">
 						<div class="header">
-							{{ctx.Locale.Tr "packages.settings.delete"}}
+							{{ctx.Locale.Tr "Delete package"}}
 						</div>
 						<div class="content">
 							<div class="ui warning message tw-break-anywhere">
-								{{ctx.Locale.Tr "packages.settings.delete.notice" .PackageDescriptor.Package.Name .PackageDescriptor.Version.Version}}
+								{{ctx.Locale.Tr "You are about to delete %s (%s). This operation is irreversible, are you sure?" .PackageDescriptor.Package.Name .PackageDescriptor.Version.Version}}
 							</div>
 							<form class="ui form" action="{{.Link}}" method="post">
 								{{.CsrfTokenHtml}}

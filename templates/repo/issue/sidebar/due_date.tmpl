@@ -1,20 +1,20 @@
 <div class="divider"></div>
-<span class="text"><strong>{{ctx.Locale.Tr "repo.issues.due_date"}}</strong></span>
+<span class="text"><strong>{{ctx.Locale.Tr "Due Date"}}</strong></span>
 <div class="ui form tw-mt-2">
 	{{if .Issue.DeadlineUnix}}
 		<div class="tw-flex tw-justify-between tw-items-center tw-gap-2">
-			<div class="due-date {{if .Issue.IsOverdue}}text red{{end}}" {{if .Issue.IsOverdue}}data-tooltip-content="{{ctx.Locale.Tr "repo.issues.due_date_overdue"}}"{{end}}>
+			<div class="due-date {{if .Issue.IsOverdue}}text red{{end}}" {{if .Issue.IsOverdue}}data-tooltip-content="{{ctx.Locale.Tr "Overdue"}}"{{end}}>
 				{{svg "octicon-calendar"}} {{DateUtils.AbsoluteLong .Issue.DeadlineUnix}}
 			</div>
 			<div class="flex-text-block">
 				{{if and .HasIssuesOrPullsWritePermission (not .Repository.IsArchived)}}
-					<a class="issue-due-edit muted" data-tooltip-content="{{ctx.Locale.Tr "repo.issues.due_date_form_edit"}}">{{svg "octicon-pencil"}}</a>
-					<a class="issue-due-remove muted" data-tooltip-content="{{ctx.Locale.Tr "repo.issues.due_date_form_remove"}}">{{svg "octicon-trash"}}</a>
+					<a class="issue-due-edit muted" data-tooltip-content="{{ctx.Locale.Tr "Edit"}}">{{svg "octicon-pencil"}}</a>
+					<a class="issue-due-remove muted" data-tooltip-content="{{ctx.Locale.Tr "Remove"}}">{{svg "octicon-trash"}}</a>
 				{{end}}
 			</div>
 		</div>
 	{{else}}
-		{{ctx.Locale.Tr "repo.issues.due_date_not_set"}}
+		{{ctx.Locale.Tr "No due date set."}}
 	{{end}}
 
 	{{if and .HasIssuesOrPullsWritePermission (not .Repository.IsArchived)}}
@@ -22,7 +22,7 @@
 					method="post" action="{{AppSubUrl}}/{{PathEscape .Repository.Owner.Name}}/{{PathEscape .Repository.Name}}/issues/{{.Issue.Index}}/deadline"
 		>
 			{{$.CsrfTokenHtml}}
-			<input required type="date" name="deadline" placeholder="{{ctx.Locale.Tr "repo.issues.due_date_form"}}" {{if .Issue.DeadlineUnix}}value="{{.Issue.DeadlineUnix.FormatDate}}"{{end}}>
+			<input required type="date" name="deadline" placeholder="{{ctx.Locale.Tr "yyyy-mm-dd"}}" {{if .Issue.DeadlineUnix}}value="{{.Issue.DeadlineUnix.FormatDate}}"{{end}}>
 			<button class="ui icon button">{{Iif .Issue.DeadlineUnix (svg "octicon-pencil") (svg "octicon-plus")}}</button>
 		</form>
 	{{end}}

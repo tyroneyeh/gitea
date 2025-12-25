@@ -99,7 +99,7 @@ func getRunnersCtx(ctx *context.Context) (*runnersCtx, error) {
 // Runners render settings/actions/runners page for repo level
 func Runners(ctx *context.Context) {
 	ctx.Data["PageIsSharedSettingsRunners"] = true
-	ctx.Data["Title"] = ctx.Tr("actions.actions")
+	ctx.Data["Title"] = ctx.Tr("Actions")
 	ctx.Data["PageType"] = "runners"
 
 	rCtx, err := getRunnersCtx(ctx)
@@ -169,7 +169,7 @@ func Runners(ctx *context.Context) {
 // RunnersEdit renders runner edit page for repository level
 func RunnersEdit(ctx *context.Context) {
 	ctx.Data["PageIsSharedSettingsRunners"] = true
-	ctx.Data["Title"] = ctx.Tr("actions.runners.edit_runner")
+	ctx.Data["Title"] = ctx.Tr("Edit Runner")
 	rCtx, err := getRunnersCtx(ctx)
 	if err != nil {
 		ctx.ServerError("getRunnersCtx", err)
@@ -255,14 +255,14 @@ func RunnersEditPost(ctx *context.Context) {
 	err = actions_model.UpdateRunner(ctx, runner, "description")
 	if err != nil {
 		log.Warn("RunnerDetailsEditPost.UpdateRunner failed: %v, url: %s", err, ctx.Req.URL)
-		ctx.Flash.Warning(ctx.Tr("actions.runners.update_runner_failed"))
+		ctx.Flash.Warning(ctx.Tr("Failed to update runner"))
 		ctx.Redirect(redirectTo)
 		return
 	}
 
 	log.Debug("RunnerDetailsEditPost success: %s", ctx.Req.URL)
 
-	ctx.Flash.Success(ctx.Tr("actions.runners.update_runner_success"))
+	ctx.Flash.Success(ctx.Tr("Runner updated successfully"))
 	ctx.Redirect(redirectTo)
 }
 
@@ -281,7 +281,7 @@ func ResetRunnerRegistrationToken(ctx *context.Context) {
 		ctx.ServerError("ResetRunnerRegistrationToken", err)
 		return
 	}
-	ctx.Flash.Success(ctx.Tr("actions.runners.reset_registration_token_success"))
+	ctx.Flash.Success(ctx.Tr("Runner registration token reset successfully"))
 	ctx.JSONRedirect(redirectTo)
 }
 
@@ -308,7 +308,7 @@ func RunnerDeletePost(ctx *context.Context) {
 
 	if err := actions_model.DeleteRunner(ctx, runner.ID); err != nil {
 		log.Warn("DeleteRunnerPost.UpdateRunner failed: %v, url: %s", err, ctx.Req.URL)
-		ctx.Flash.Warning(ctx.Tr("actions.runners.delete_runner_failed"))
+		ctx.Flash.Warning(ctx.Tr("Failed to delete runner"))
 
 		ctx.JSONRedirect(failedRedirectTo)
 		return
@@ -316,7 +316,7 @@ func RunnerDeletePost(ctx *context.Context) {
 
 	log.Info("DeleteRunnerPost success: %s", ctx.Req.URL)
 
-	ctx.Flash.Success(ctx.Tr("actions.runners.delete_runner_success"))
+	ctx.Flash.Success(ctx.Tr("Runner deleted successfully"))
 
 	ctx.JSONRedirect(successRedirectTo)
 }

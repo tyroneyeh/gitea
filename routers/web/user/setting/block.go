@@ -18,7 +18,7 @@ const (
 )
 
 func BlockedUsers(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("user.block.list")
+	ctx.Data["Title"] = ctx.Tr("Blocked users")
 	ctx.Data["PageIsSettingsBlockedUsers"] = true
 	ctx.Data["UserDisabledFeatures"] = user_model.DisabledFeaturesWithLoginType(ctx.Doer)
 

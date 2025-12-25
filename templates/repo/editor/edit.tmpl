@@ -7,8 +7,8 @@
 			{{template "repo/view_file_tree" .}}
 			<div class="repo-view-content">
 				<form class="ui edit form form-fetch-action" method="post" action="{{.CommitFormOptions.TargetFormAction}}"
-					data-text-empty-confirm-header="{{ctx.Locale.Tr "repo.editor.commit_empty_file_header"}}"
-					data-text-empty-confirm-content="{{ctx.Locale.Tr "repo.editor.commit_empty_file_text"}}"
+					data-text-empty-confirm-header="{{ctx.Locale.Tr "Commit an empty file"}}"
+					data-text-empty-confirm-content="{{ctx.Locale.Tr "The file you're about to commit is empty. Proceed?"}}"
 				>
 					{{.CsrfTokenHtml}}
 					{{template "repo/editor/common_top" .}}
@@ -20,10 +20,10 @@
 						<div class="field">
 							<div class="ui top attached header">
 								<div class="ui compact small menu small-menu-items repo-editor-menu">
-									<a class="active item" data-tab="write">{{svg "octicon-code"}} {{if .IsNewFile}}{{ctx.Locale.Tr "repo.editor.new_file"}}{{else}}{{ctx.Locale.Tr "repo.editor.edit_file"}}{{end}}</a>
-									<a class="item" data-tab="preview" data-preview-url="{{.Repository.Link}}/markup" data-preview-context-ref="{{.RepoLink}}/src/{{.RefTypeNameSubURL}}">{{svg "octicon-eye"}} {{ctx.Locale.Tr "preview"}}</a>
+									<a class="active item" data-tab="write">{{svg "octicon-code"}} {{if .IsNewFile}}{{ctx.Locale.Tr "New File"}}{{else}}{{ctx.Locale.Tr "Edit File"}}{{end}}</a>
+									<a class="item" data-tab="preview" data-preview-url="{{.Repository.Link}}/markup" data-preview-context-ref="{{.RepoLink}}/src/{{.RefTypeNameSubURL}}">{{svg "octicon-eye"}} {{ctx.Locale.Tr "Preview"}}</a>
 									{{if not .IsNewFile}}
-									<a class="item" data-tab="diff" hx-params="context,content" hx-vals='{"context":"{{.BranchLink}}"}' hx-include="#edit_area" hx-swap="innerHTML" hx-target=".tab[data-tab='diff']" hx-indicator=".tab[data-tab='diff']" hx-post="{{.RepoLink}}/_preview/{{.BranchName | PathEscapeSegments}}/{{.TreePath | PathEscapeSegments}}">{{svg "octicon-diff"}} {{ctx.Locale.Tr "repo.editor.preview_changes"}}</a>
+									<a class="item" data-tab="diff" hx-params="context,content" hx-vals='{"context":"{{.BranchLink}}"}' hx-include="#edit_area" hx-swap="innerHTML" hx-target=".tab[data-tab='diff']" hx-indicator=".tab[data-tab='diff']" hx-post="{{.RepoLink}}/_preview/{{.BranchName | PathEscapeSegments}}/{{.TreePath | PathEscapeSegments}}">{{svg "octicon-diff"}} {{ctx.Locale.Tr "Preview Changes"}}</a>
 									{{end}}
 								</div>
 							</div>
@@ -35,7 +35,7 @@
 									<div class="editor-loading is-loading"></div>
 								</div>
 								<div class="ui tab tw-px-4 tw-py-3" data-tab="preview">
-									{{ctx.Locale.Tr "loading"}}
+									{{ctx.Locale.Tr "Loading…"}}
 								</div>
 								<div class="ui tab" data-tab="diff">
 									<div class="tw-p-16"></div>
@@ -46,7 +46,7 @@
 						<div class="field">
 							<div class="ui segment tw-text-center">
 								<h4 class="tw-font-semibold tw-mb-2">{{.NotEditableReason}}</h4>
-								<p>{{ctx.Locale.Tr "repo.editor.file_not_editable_hint"}}</p>
+								<p>{{ctx.Locale.Tr "But you can still rename or move it."}}</p>
 							</div>
 						</div>
 					{{end}}

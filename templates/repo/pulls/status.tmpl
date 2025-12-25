@@ -9,25 +9,25 @@
 <div class="commit-status-panel">
 	<div class="ui top attached header commit-status-header">
 		{{if or (eq .CommitStatus.State "pending") (.MissingRequiredChecks)}}
-			{{ctx.Locale.Tr "repo.pulls.status_checking"}}
+			{{ctx.Locale.Tr "Some checks are pending"}}
 		{{else if eq .CommitStatus.State "success"}}
-			{{ctx.Locale.Tr "repo.pulls.status_checks_success"}}
+			{{ctx.Locale.Tr "All checks were successful"}}
 		{{else if eq .CommitStatus.State "warning"}}
-			{{ctx.Locale.Tr "repo.pulls.status_checks_warning"}}
+			{{ctx.Locale.Tr "Some checks reported warnings"}}
 		{{else if eq .CommitStatus.State "failure"}}
-			{{ctx.Locale.Tr "repo.pulls.status_checks_failure"}}
+			{{ctx.Locale.Tr "Some checks failed"}}
 		{{else if eq .CommitStatus.State "error"}}
-			{{ctx.Locale.Tr "repo.pulls.status_checks_error"}}
+			{{ctx.Locale.Tr "Some checks reported errors"}}
 		{{else}}
-			{{ctx.Locale.Tr "repo.pulls.status_checking"}}
+			{{ctx.Locale.Tr "Some checks are pending"}}
 		{{end}}
 
 		{{if .ShowHideChecks}}
 		<div class="ui right">
 			<button class="commit-status-hide-checks btn interact-fg"
-			data-show-all="{{ctx.Locale.Tr "repo.pulls.status_checks_show_all"}}"
-			data-hide-all="{{ctx.Locale.Tr "repo.pulls.status_checks_hide_all"}}">
-			{{ctx.Locale.Tr "repo.pulls.status_checks_hide_all"}}</button>
+			data-show-all="{{ctx.Locale.Tr "Show all checks"}}"
+			data-hide-all="{{ctx.Locale.Tr "Hide all checks"}}">
+			{{ctx.Locale.Tr "Hide all checks"}}</button>
 		</div>
 		{{end}}
 	</div>
@@ -36,13 +36,13 @@
 		<div class="ui attached segment flex-text-block tw-justify-between" id="approve-status-checks">
 			<div>
 				<strong>
-					{{ctx.Locale.Tr "repo.pulls.status_checks_need_approvals" $statusCheckData.RequireApprovalRunCount}}
+					{{ctx.Locale.Tr "%d workflow awaiting approval" $statusCheckData.RequireApprovalRunCount}}
 				</strong>
-				<p>{{ctx.Locale.Tr "repo.pulls.status_checks_need_approvals_helper"}}</p>
+				<p>{{ctx.Locale.Tr "The workflow will only run after approval from the repository maintainer."}}</p>
 			</div>
 			{{if $statusCheckData.CanApprove}}
 				<button class="ui basic button link-action" data-url="{{$statusCheckData.ApproveLink}}">
-					{{ctx.Locale.Tr "repo.pulls.status_checks_approve_all"}}
+					{{ctx.Locale.Tr "Approve all workflows"}}
 				</button>
 			{{end}}
 		</div>
@@ -55,9 +55,9 @@
 				<div class="status-context gt-ellipsis">{{.Context}} <span class="text light-2">{{.Description}}</span></div>
 				<div class="ui status-details">
 					{{if and $statusCheckData $statusCheckData.IsContextRequired}}
-						{{if (call $statusCheckData.IsContextRequired .Context)}}<div class="ui label">{{ctx.Locale.Tr "repo.pulls.status_checks_requested"}}</div>{{end}}
+						{{if (call $statusCheckData.IsContextRequired .Context)}}<div class="ui label">{{ctx.Locale.Tr "Required"}}</div>{{end}}
 					{{end}}
-					<span>{{if .TargetURL}}<a href="{{.TargetURL}}">{{ctx.Locale.Tr "repo.pulls.status_checks_details"}}</a>{{end}}</span>
+					<span>{{if .TargetURL}}<a href="{{.TargetURL}}">{{ctx.Locale.Tr "Details"}}</a>{{end}}</span>
 				</div>
 			</div>
 		{{end}}
@@ -66,7 +66,7 @@
 				<div class="commit-status-item">
 					{{svg "octicon-dot-fill" 18 "commit-status icon text yellow"}}
 					<div class="status-context gt-ellipsis">{{.}}</div>
-					<div class="ui label">{{ctx.Locale.Tr "repo.pulls.status_checks_requested"}}</div>
+					<div class="ui label">{{ctx.Locale.Tr "Required"}}</div>
 				</div>
 			{{end}}
 		{{end}}

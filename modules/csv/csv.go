@@ -125,9 +125,9 @@ func guessDelimiter(data []byte) rune {
 func FormatError(err error, locale translation.Locale) (string, error) {
 	if perr, ok := err.(*stdcsv.ParseError); ok {
 		if perr.Err == stdcsv.ErrFieldCount {
-			return locale.TrString("repo.error.csv.invalid_field_count", perr.Line), nil
+			return locale.TrString("Can't render this file because it has a wrong number of fields in line %d.", perr.Line), nil
 		}
-		return locale.TrString("repo.error.csv.unexpected", perr.Line, perr.Column), nil
+		return locale.TrString("Can't render this file because it contains an unexpected character in line %d and column %d.", perr.Line, perr.Column), nil
 	}
 
 	return "", err

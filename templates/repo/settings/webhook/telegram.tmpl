@@ -1,17 +1,17 @@
 {{if eq .HookType "telegram"}}
-	<p>{{ctx.Locale.Tr "repo.settings.add_web_hook_desc" "https://core.telegram.org/bots" (ctx.Locale.Tr "repo.settings.web_hook_name_telegram")}}</p>
+	<p>{{ctx.Locale.Tr "Integrate <a target=\"_blank\" rel=\"noreferrer\" href=\"%s\">%s</a> into your repository." "https://core.telegram.org/bots" (ctx.Locale.Tr "Telegram")}}</p>
 	<form class="ui form" action="{{.BaseLink}}/telegram/{{or .Webhook.ID "new"}}" method="post">
 		{{.CsrfTokenHtml}}
 		<div class="required field {{if .Err_BotToken}}error{{end}}">
-			<label for="bot_token">{{ctx.Locale.Tr "repo.settings.bot_token"}}</label>
+			<label for="bot_token">{{ctx.Locale.Tr "Bot Token"}}</label>
 			<input id="bot_token" name="bot_token" type="text" value="{{.TelegramHook.BotToken}}" autofocus required>
 		</div>
 		<div class="required field {{if .Err_ChatID}}error{{end}}">
-			<label for="chat_id">{{ctx.Locale.Tr "repo.settings.chat_id"}}</label>
+			<label for="chat_id">{{ctx.Locale.Tr "Chat ID"}}</label>
 			<input id="chat_id" name="chat_id" type="text" value="{{.TelegramHook.ChatID}}" required>
 		</div>
 		<div class="field {{if .Err_ThreadID}}error{{end}}">
-			<label for="thread_id">{{ctx.Locale.Tr "repo.settings.thread_id"}}</label>
+			<label for="thread_id">{{ctx.Locale.Tr "Thread ID"}}</label>
 			<input id="thread_id" name="thread_id" type="text" value="{{.TelegramHook.ThreadID}}">
 		</div>
 		{{/* FIXME: support authorization header or not? */}}

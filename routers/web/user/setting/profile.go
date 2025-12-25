@@ -44,7 +44,7 @@ const (
 
 // Profile render user's profile page
 func Profile(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("settings.profile")
+	ctx.Data["Title"] = ctx.Tr("Profile")
 	ctx.Data["PageIsSettingsProfile"] = true
 	ctx.Data["AllowedUserVisibilityModes"] = setting.Service.AllowedUserVisibilityModesSlice.ToVisibleTypeSlice()
 	ctx.Data["DisableGravatar"] = setting.Config().Picture.DisableGravatar.Value(ctx)
@@ -56,7 +56,7 @@ func Profile(ctx *context.Context) {
 
 // ProfilePost response for change user's profile
 func ProfilePost(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("settings_title")
+	ctx.Data["Title"] = ctx.Tr("Settings")
 	ctx.Data["PageIsSettingsProfile"] = true
 	ctx.Data["AllowedUserVisibilityModes"] = setting.Service.AllowedUserVisibilityModesSlice.ToVisibleTypeSlice()
 	ctx.Data["DisableGravatar"] = setting.Config().Picture.DisableGravatar.Value(ctx)
@@ -78,15 +78,15 @@ func ProfilePost(ctx *context.Context) {
 		if err := user_service.RenameUser(ctx, ctx.Doer, form.Name, ctx.Doer); err != nil {
 			switch {
 			case user_model.IsErrUserIsNotLocal(err):
-				ctx.Flash.Error(ctx.Tr("form.username_change_not_local_user"))
+				ctx.Flash.Error(ctx.Tr("Non-local users are not allowed to change their username."))
 			case user_model.IsErrUserAlreadyExist(err):
-				ctx.Flash.Error(ctx.Tr("form.username_been_taken"))
+				ctx.Flash.Error(ctx.Tr("The username is already taken."))
 			case db.IsErrNameReserved(err):
-				ctx.Flash.Error(ctx.Tr("user.form.name_reserved", form.Name))
+				ctx.Flash.Error(ctx.Tr("The username \"%s\" is reserved.", form.Name))
 			case db.IsErrNamePatternNotAllowed(err):
-				ctx.Flash.Error(ctx.Tr("user.form.name_pattern_not_allowed", form.Name))
+				ctx.Flash.Error(ctx.Tr("The pattern \"%s\" is not allowed in a username.", form.Name))
 			case db.IsErrNameCharsNotAllowed(err):
-				ctx.Flash.Error(ctx.Tr("user.form.name_chars_not_allowed", form.Name))
+				ctx.Flash.Error(ctx.Tr("Username \"%s\" contains invalid characters.", form.Name))
 			default:
 				ctx.ServerError("RenameUser", err)
 				return
@@ -120,7 +120,7 @@ func ProfilePost(ctx *context.Context) {
 	}
 
 	log.Trace("User settings updated: %s", ctx.Doer.Name)
-	ctx.Flash.Success(ctx.Tr("settings.update_profile_success"))
+	ctx.Flash.Success(ctx.Tr("Your profile has been updated."))
 	ctx.Redirect(setting.AppSubURL + "/user/settings")
 }
 
@@ -145,7 +145,7 @@ func UpdateAvatarSetting(ctx *context.Context, form *forms.AvatarForm, ctxUser *
 		defer fr.Close()
 
 		if form.Avatar.Size > setting.Avatar.MaxFileSize {
-			return errors.New(ctx.Locale.TrString("settings.uploaded_avatar_is_too_big", form.Avatar.Size/1024, setting.Avatar.MaxFileSize/1024))
+			return errors.New(ctx.Locale.TrString("The uploaded file size (%d KiB) exceeds the maximum size (%d KiB).", form.Avatar.Size/1024, setting.Avatar.MaxFileSize/1024))
 		}
 
 		data, err := io.ReadAll(fr)
@@ -155,7 +155,7 @@ func UpdateAvatarSetting(ctx *context.Context, form *forms.AvatarForm, ctxUser *
 
 		st := typesniffer.DetectContentType(data)
 		if !(st.IsImage() && !st.IsSvgImage()) {
-			return errors.New(ctx.Locale.TrString("settings.uploaded_avatar_not_a_image"))
+			return errors.New(ctx.Locale.TrString("The uploaded file is not an image."))
 		}
 		if err = user_service.UploadAvatar(ctx, ctxUser, data); err != nil {
 			return fmt.Errorf("UploadAvatar: %w", err)
@@ -181,7 +181,7 @@ func AvatarPost(ctx *context.Context) {
 	if err := UpdateAvatarSetting(ctx, form, ctx.Doer); err != nil {
 		ctx.Flash.Error(err.Error())
 	} else {
-		ctx.Flash.Success(ctx.Tr("settings.update_avatar_success"))
+		ctx.Flash.Success(ctx.Tr("Your avatar has been updated."))
 	}
 
 	ctx.Redirect(setting.AppSubURL + "/user/settings")
@@ -198,7 +198,7 @@ func DeleteAvatar(ctx *context.Context) {
 
 // Organization render all the organization of the user
 func Organization(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("settings.organization")
+	ctx.Data["Title"] = ctx.Tr("Organizations")
 	ctx.Data["PageIsSettingsOrganization"] = true
 	ctx.Data["UserDisabledFeatures"] = user_model.DisabledFeaturesWithLoginType(ctx.Doer)
 
@@ -230,7 +230,7 @@ func Organization(ctx *context.Context) {
 
 // Repos display a list of all repositories of the user
 func Repos(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("settings.repos")
+	ctx.Data["Title"] = ctx.Tr("Repositories")
 	ctx.Data["PageIsSettingsRepos"] = true
 	ctx.Data["UserDisabledFeatures"] = user_model.DisabledFeaturesWithLoginType(ctx.Doer)
 	ctx.Data["allowAdopt"] = ctx.IsUserSiteAdmin() || setting.Repository.AllowAdoptionOfUnadoptedRepositories
@@ -337,7 +337,7 @@ func Repos(ctx *context.Context) {
 
 // Appearance render user's appearance settings
 func Appearance(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("settings.appearance")
+	ctx.Data["Title"] = ctx.Tr("Appearance")
 	ctx.Data["PageIsSettingsAppearance"] = true
 	ctx.Data["AllThemes"] = webtheme.GetAvailableThemes()
 	ctx.Data["UserDisabledFeatures"] = user_model.DisabledFeaturesWithLoginType(ctx.Doer)
@@ -360,7 +360,7 @@ func Appearance(ctx *context.Context) {
 // UpdateUIThemePost is used to update users' specific theme
 func UpdateUIThemePost(ctx *context.Context) {
 	form := web.GetForm(ctx).(*forms.UpdateThemeForm)
-	ctx.Data["Title"] = ctx.Tr("settings_title")
+	ctx.Data["Title"] = ctx.Tr("Settings")
 	ctx.Data["PageIsSettingsAppearance"] = true
 
 	if ctx.HasError() {
@@ -370,7 +370,7 @@ func UpdateUIThemePost(ctx *context.Context) {
 	}
 
 	if webtheme.GetThemeMetaInfo(form.Theme) == nil {
-		ctx.Flash.Error(ctx.Tr("settings.theme_update_error"))
+		ctx.Flash.Error(ctx.Tr("The selected theme does not exist."))
 		ctx.Redirect(setting.AppSubURL + "/user/settings/appearance")
 		return
 	}
@@ -379,9 +379,9 @@ func UpdateUIThemePost(ctx *context.Context) {
 		Theme: optional.Some(form.Theme),
 	}
 	if err := user_service.UpdateUser(ctx, ctx.Doer, opts); err != nil {
-		ctx.Flash.Error(ctx.Tr("settings.theme_update_error"))
+		ctx.Flash.Error(ctx.Tr("The selected theme does not exist."))
 	} else {
-		ctx.Flash.Success(ctx.Tr("settings.theme_update_success"))
+		ctx.Flash.Success(ctx.Tr("Your theme was updated."))
 	}
 
 	ctx.Redirect(setting.AppSubURL + "/user/settings/appearance")
@@ -390,12 +390,12 @@ func UpdateUIThemePost(ctx *context.Context) {
 // UpdateUserLang update a user's language
 func UpdateUserLang(ctx *context.Context) {
 	form := web.GetForm(ctx).(*forms.UpdateLanguageForm)
-	ctx.Data["Title"] = ctx.Tr("settings_title")
+	ctx.Data["Title"] = ctx.Tr("Settings")
 	ctx.Data["PageIsSettingsAppearance"] = true
 
 	if form.Language != "" {
 		if !util.SliceContainsString(setting.Langs, form.Language) {
-			ctx.Flash.Error(ctx.Tr("settings.update_language_not_found", form.Language))
+			ctx.Flash.Error(ctx.Tr("Language \"%s\" is not available.", form.Language))
 			ctx.Redirect(setting.AppSubURL + "/user/settings/appearance")
 			return
 		}
@@ -413,7 +413,7 @@ func UpdateUserLang(ctx *context.Context) {
 	middleware.SetLocaleCookie(ctx.Resp, ctx.Doer.Language, 0)
 
 	log.Trace("User settings updated: %s", ctx.Doer.Name)
-	ctx.Flash.Success(translation.NewLocale(ctx.Doer.Language).TrString("settings.update_language_success"))
+	ctx.Flash.Success(translation.NewLocale(ctx.Doer.Language).TrString("Language has been updated."))
 	ctx.Redirect(setting.AppSubURL + "/user/settings/appearance")
 }
 
@@ -426,6 +426,6 @@ func UpdateUserHiddenComments(ctx *context.Context) {
 	}
 
 	log.Trace("User settings updated: %s", ctx.Doer.Name)
-	ctx.Flash.Success(ctx.Tr("settings.saved_successfully"))
+	ctx.Flash.Success(ctx.Tr("Your settings were saved successfully."))
 	ctx.Redirect(setting.AppSubURL + "/user/settings/appearance")
 }

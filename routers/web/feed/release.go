@@ -28,10 +28,10 @@ func ShowReleaseFeed(ctx *context.Context, repo *repo_model.Repository, isReleas
 	var link *feeds.Link
 
 	if isReleasesOnly {
-		title = ctx.Locale.TrString("repo.release.releases_for", repo.FullName())
+		title = ctx.Locale.TrString("Releases for %s", repo.FullName())
 		link = &feeds.Link{Href: repo.HTMLURL() + "/release"}
 	} else {
-		title = ctx.Locale.TrString("repo.release.tags_for", repo.FullName())
+		title = ctx.Locale.TrString("Tags for %s", repo.FullName())
 		link = &feeds.Link{Href: repo.HTMLURL() + "/tags"}
 	}
 

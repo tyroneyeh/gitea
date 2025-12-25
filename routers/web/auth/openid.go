@@ -28,7 +28,7 @@ const (
 
 // SignInOpenID render sign in page
 func SignInOpenID(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("sign_in")
+	ctx.Data["Title"] = ctx.Tr("Sign In")
 
 	if ctx.FormString("openid.return_to") != "" {
 		signInOpenIDVerify(ctx)
@@ -71,7 +71,7 @@ func allowedOpenIDURI(uri string) (err error) {
 // SignInOpenIDPost response for openid sign in request
 func SignInOpenIDPost(ctx *context.Context) {
 	form := web.GetForm(ctx).(*forms.SignInOpenIDForm)
-	ctx.Data["Title"] = ctx.Tr("sign_in")
+	ctx.Data["Title"] = ctx.Tr("Sign In")
 	ctx.Data["PageIsSignIn"] = true
 	ctx.Data["PageIsLoginOpenID"] = true
 
@@ -273,14 +273,14 @@ func ConnectOpenIDPost(ctx *context.Context) {
 	userOID := &user_model.UserOpenID{UID: u.ID, URI: oid}
 	if err = user_model.AddUserOpenID(ctx, userOID); err != nil {
 		if user_model.IsErrOpenIDAlreadyUsed(err) {
-			ctx.RenderWithErr(ctx.Tr("form.openid_been_used", oid), tplConnectOID, &form)
+			ctx.RenderWithErr(ctx.Tr("The OpenID address \"%s\" is already used.", oid), tplConnectOID, &form)
 			return
 		}
 		ctx.ServerError("AddUserOpenID", err)
 		return
 	}
 
-	ctx.Flash.Success(ctx.Tr("settings.add_openid_success"))
+	ctx.Flash.Success(ctx.Tr("The new OpenID address has been added."))
 
 	remember, _ := ctx.Session.Get("openid_signin_remember").(bool)
 	log.Trace("Session stored openid-remember: %t", remember)
@@ -370,7 +370,7 @@ func RegisterOpenIDPost(ctx *context.Context) {
 	userOID := &user_model.UserOpenID{UID: u.ID, URI: oid}
 	if err = user_model.AddUserOpenID(ctx, userOID); err != nil {
 		if user_model.IsErrOpenIDAlreadyUsed(err) {
-			ctx.RenderWithErr(ctx.Tr("form.openid_been_used", oid), tplSignUpOID, &form)
+			ctx.RenderWithErr(ctx.Tr("The OpenID address \"%s\" is already used.", oid), tplSignUpOID, &form)
 			return
 		}
 		ctx.ServerError("AddUserOpenID", err)

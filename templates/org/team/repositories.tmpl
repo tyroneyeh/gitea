@@ -14,14 +14,14 @@
 							{{.CsrfTokenHtml}}
 							<div data-global-init="initSearchRepoBox" data-uid="{{.Org.ID}}" class="ui search">
 								<div class="ui input">
-									<input class="prompt" name="repo_name" placeholder="{{ctx.Locale.Tr "search.repo_kind"}}" autocomplete="off" required>
+									<input class="prompt" name="repo_name" placeholder="{{ctx.Locale.Tr "Search repos…"}}" autocomplete="off" required>
 								</div>
 							</div>
-							<button class="ui primary button tw-ml-2">{{ctx.Locale.Tr "add"}}</button>
+							<button class="ui primary button tw-ml-2">{{ctx.Locale.Tr "Add"}}</button>
 						</form>
 						<div class="tw-inline-block">
-							<button class="ui primary button link-action" data-modal-confirm="{{ctx.Locale.Tr "org.teams.add_all_repos_desc"}}" data-url="{{$.OrgLink}}/teams/{{$.Team.LowerName | PathEscape}}/action/repo/addall">{{ctx.Locale.Tr "add_all"}}</button>
-							<button class="ui red button link-action" data-modal-confirm="{{ctx.Locale.Tr "org.teams.remove_all_repos_desc"}}" data-url="{{$.OrgLink}}/teams/{{$.Team.LowerName | PathEscape}}/action/repo/removeall">{{ctx.Locale.Tr "remove_all"}}</button>
+							<button class="ui primary button link-action" data-modal-confirm="{{ctx.Locale.Tr "This will add all the organization's repositories to the team."}}" data-url="{{$.OrgLink}}/teams/{{$.Team.LowerName | PathEscape}}/action/repo/addall">{{ctx.Locale.Tr "Add All"}}</button>
+							<button class="ui red button link-action" data-modal-confirm="{{ctx.Locale.Tr "This will remove all repositories from the team."}}" data-url="{{$.OrgLink}}/teams/{{$.Team.LowerName | PathEscape}}/action/repo/removeall">{{ctx.Locale.Tr "Remove All"}}</button>
 						</div>
 					</div>
 				{{end}}
@@ -41,14 +41,14 @@
 									{{if $canAddRemove}}
 										<form method="post" action="{{$.OrgLink}}/teams/{{$.Team.LowerName | PathEscape}}/action/repo/remove">
 											{{$.CsrfTokenHtml}}
-											<button type="submit" class="ui red small button" name="repoid" value="{{.ID}}">{{ctx.Locale.Tr "remove"}}</button>
+											<button type="submit" class="ui red small button" name="repoid" value="{{.ID}}">{{ctx.Locale.Tr "Remove"}}</button>
 										</form>
 									{{end}}
 								</div>
 							</div>
 						{{else}}
 							<div class="flex-item">
-								<span class="text grey tw-italic">{{ctx.Locale.Tr "org.teams.repos.none"}}</span>
+								<span class="text grey tw-italic">{{ctx.Locale.Tr "No repositories could be accessed by this team."}}</span>
 							</div>
 						{{end}}
 					</div>

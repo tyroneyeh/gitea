@@ -14,11 +14,11 @@
 {{$repo_url := HTMLFormat "<a href='%s'>%s</a>" .Release.Repo.HTMLURL .Release.Repo.FullName}}
 <body>
 	<p>
-		{{.locale.Tr "mail.release.new.text" .Release.Publisher.Name $release_url $repo_url}}
+		{{.locale.Tr "<b>@%[1]s</b> released %[2]s in %[3]s" .Release.Publisher.Name $release_url $repo_url}}
 	</p>
-	<h4>{{.locale.Tr "mail.release.title" .Release.Title}}</h4>
+	<h4>{{.locale.Tr "Title: %s" .Release.Title}}</h4>
 	<p>
-		{{.locale.Tr "mail.release.note"}}<br>
+		{{.locale.Tr "Note:"}}<br>
 		{{- if eq .Release.RenderedNote ""}}
 		{{else}}
 			{{.Release.RenderedNote}}
@@ -28,14 +28,14 @@
 	<p>
 		---
 		<br>
-		{{.locale.Tr "mail.release.downloads"}}
+		{{.locale.Tr "Downloads:"}}
 		<ul>
 			{{if not .DisableDownloadSourceArchives}}
 			<li>
-				<a href="{{.Release.Repo.HTMLURL}}/archive/{{.Release.TagName | PathEscapeSegments}}.zip" rel="nofollow"><strong>{{.locale.Tr "mail.release.download.zip"}}</strong></a>
+				<a href="{{.Release.Repo.HTMLURL}}/archive/{{.Release.TagName | PathEscapeSegments}}.zip" rel="nofollow"><strong>{{.locale.Tr "Source Code (ZIP)"}}</strong></a>
 			</li>
 			<li>
-				<a href="{{.Release.Repo.HTMLURL}}/archive/{{.Release.TagName | PathEscapeSegments}}.tar.gz" rel="nofollow"><strong>{{.locale.Tr "mail.release.download.targz"}}</strong></a>
+				<a href="{{.Release.Repo.HTMLURL}}/archive/{{.Release.TagName | PathEscapeSegments}}.tar.gz" rel="nofollow"><strong>{{.locale.Tr "Source Code (TAR.GZ)"}}</strong></a>
 			</li>
 			{{end}}
 			{{if .Release.Attachments}}
@@ -53,7 +53,7 @@
 		<p>
 			---
 			<br>
-			<a href="{{.Link}}">{{.locale.Tr "mail.view_it_on" AppName}}</a>.
+			<a href="{{.Link}}">{{.locale.Tr "View it on %s" AppName}}</a>.
 		</p>
 	</div>
 </body>

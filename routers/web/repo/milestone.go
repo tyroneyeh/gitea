@@ -31,7 +31,7 @@ const (
 
 // Milestones render milestones page
 func Milestones(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("repo.milestones")
+	ctx.Data["Title"] = ctx.Tr("Milestones")
 	ctx.Data["PageIsIssueList"] = true
 	ctx.Data["PageIsMilestones"] = true
 
@@ -97,7 +97,7 @@ func Milestones(ctx *context.Context) {
 
 // NewMilestone render creating milestone page
 func NewMilestone(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("repo.milestones.new")
+	ctx.Data["Title"] = ctx.Tr("New Milestone")
 	ctx.Data["PageIsIssueList"] = true
 	ctx.Data["PageIsMilestones"] = true
 	ctx.HTML(http.StatusOK, tplMilestoneNew)
@@ -106,7 +106,7 @@ func NewMilestone(ctx *context.Context) {
 // NewMilestonePost response for creating milestone
 func NewMilestonePost(ctx *context.Context) {
 	form := web.GetForm(ctx).(*forms.CreateMilestoneForm)
-	ctx.Data["Title"] = ctx.Tr("repo.milestones.new")
+	ctx.Data["Title"] = ctx.Tr("New Milestone")
 	ctx.Data["PageIsIssueList"] = true
 	ctx.Data["PageIsMilestones"] = true
 
@@ -118,7 +118,7 @@ func NewMilestonePost(ctx *context.Context) {
 	deadlineUnix, err := common.ParseDeadlineDateToEndOfDay(form.Deadline)
 	if err != nil {
 		ctx.Data["Err_Deadline"] = true
-		ctx.RenderWithErr(ctx.Tr("repo.milestones.invalid_due_date_format"), tplMilestoneNew, &form)
+		ctx.RenderWithErr(ctx.Tr("Due date format must be 'yyyy-mm-dd'."), tplMilestoneNew, &form)
 		return
 	}
 
@@ -132,13 +132,13 @@ func NewMilestonePost(ctx *context.Context) {
 		return
 	}
 
-	ctx.Flash.Success(ctx.Tr("repo.milestones.create_success", form.Title))
+	ctx.Flash.Success(ctx.Tr("The milestone \"%s\" has been created.", form.Title))
 	ctx.Redirect(ctx.Repo.RepoLink + "/milestones")
 }
 
 // EditMilestone render edting milestone page
 func EditMilestone(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("repo.milestones.edit")
+	ctx.Data["Title"] = ctx.Tr("Edit Milestone")
 	ctx.Data["PageIsMilestones"] = true
 	ctx.Data["PageIsEditMilestone"] = true
 
@@ -162,7 +162,7 @@ func EditMilestone(ctx *context.Context) {
 // EditMilestonePost response for edting milestone
 func EditMilestonePost(ctx *context.Context) {
 	form := web.GetForm(ctx).(*forms.CreateMilestoneForm)
-	ctx.Data["Title"] = ctx.Tr("repo.milestones.edit")
+	ctx.Data["Title"] = ctx.Tr("Edit Milestone")
 	ctx.Data["PageIsMilestones"] = true
 	ctx.Data["PageIsEditMilestone"] = true
 
@@ -174,7 +174,7 @@ func EditMilestonePost(ctx *context.Context) {
 	deadlineUnix, err := common.ParseDeadlineDateToEndOfDay(form.Deadline)
 	if err != nil {
 		ctx.Data["Err_Deadline"] = true
-		ctx.RenderWithErr(ctx.Tr("repo.milestones.invalid_due_date_format"), tplMilestoneNew, &form)
+		ctx.RenderWithErr(ctx.Tr("Due date format must be 'yyyy-mm-dd'."), tplMilestoneNew, &form)
 		return
 	}
 
@@ -195,7 +195,7 @@ func EditMilestonePost(ctx *context.Context) {
 		return
 	}
 
-	ctx.Flash.Success(ctx.Tr("repo.milestones.edit_success", m.Name))
+	ctx.Flash.Success(ctx.Tr("Milestone \"%s\" has been updated.", m.Name))
 	ctx.Redirect(ctx.Repo.RepoLink + "/milestones")
 }
 
@@ -229,7 +229,7 @@ func DeleteMilestone(ctx *context.Context) {
 	if err := issues_model.DeleteMilestoneByRepoID(ctx, ctx.Repo.Repository.ID, ctx.FormInt64("id")); err != nil {
 		ctx.Flash.Error("DeleteMilestoneByRepoID: " + err.Error())
 	} else {
-		ctx.Flash.Success(ctx.Tr("repo.milestones.deletion_success"))
+		ctx.Flash.Success(ctx.Tr("The milestone has been deleted."))
 	}
 
 	ctx.JSONRedirect(ctx.Repo.RepoLink + "/milestones")

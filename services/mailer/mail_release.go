@@ -68,7 +68,7 @@ func mailNewRelease(ctx context.Context, lang string, tos []*user_model.User, re
 		return
 	}
 
-	subject := locale.TrString("mail.release.new.subject", rel.TagName, rel.Repo.FullName())
+	subject := locale.TrString("%s in %s released", rel.TagName, rel.Repo.FullName())
 	mailMeta := map[string]any{
 		"locale":   locale,
 		"Release":  rel,

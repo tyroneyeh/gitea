@@ -30,10 +30,10 @@ so this template should be kept as small as possible, DO NOT put large component
 			{{- $extraClass = print $extraClass " sign-trusted" -}}
 		{{- else if eq $verification.TrustStatus "untrusted" -}}
 			{{- $extraClass = print $extraClass " sign-untrusted" -}}
-			{{- $msgReasonPrefix = ctx.Locale.Tr "repo.commits.signed_by_untrusted_user" -}}
+			{{- $msgReasonPrefix = ctx.Locale.Tr "Signed by untrusted user" -}}
 		{{- else -}}
 			{{- $extraClass = print $extraClass " sign-unmatched" -}}
-			{{- $msgReasonPrefix = ctx.Locale.Tr "repo.commits.signed_by_untrusted_user_unmatched" -}}
+			{{- $msgReasonPrefix = ctx.Locale.Tr "Signed by untrusted user who does not match committer" -}}
 		{{- end -}}
 	{{- else -}}
 		{{- if $verification.Warning -}}
@@ -49,9 +49,9 @@ so this template should be kept as small as possible, DO NOT put large component
 	{{- end -}}
 
 	{{- if $verification.SigningSSHKey -}}
-		{{- $msgSigningKey = print (ctx.Locale.Tr "repo.commits.ssh_key_fingerprint") ": " $verification.SigningSSHKey.Fingerprint -}}
+		{{- $msgSigningKey = print (ctx.Locale.Tr "SSH Key Fingerprint") ": " $verification.SigningSSHKey.Fingerprint -}}
 	{{- else if $verification.SigningKey -}}{{- /* asymkey.GPGKey */ -}}
-		{{- $msgSigningKey = print (ctx.Locale.Tr "repo.commits.gpg_key_id") ": " $verification.SigningKey.PaddedKeyID -}}
+		{{- $msgSigningKey = print (ctx.Locale.Tr "GPG Key ID") ": " $verification.SigningKey.PaddedKeyID -}}
 	{{- end -}}
 {{- end -}}
 

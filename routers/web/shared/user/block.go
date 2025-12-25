@@ -45,7 +45,7 @@ func BlockedUsersPost(ctx *context.Context, blocker *user_model.User) {
 	case "block":
 		if err := user_service.BlockUser(ctx, ctx.Doer, blocker, blockee, form.Note); err != nil {
 			if errors.Is(err, user_model.ErrCanNotBlock) || errors.Is(err, user_model.ErrBlockOrganization) {
-				ctx.Flash.Error(ctx.Tr("user.block.block.failure", err.Error()))
+				ctx.Flash.Error(ctx.Tr("Failed to block user: %s", err.Error()))
 			} else {
 				ctx.ServerError("BlockUser", err)
 				return
@@ -54,7 +54,7 @@ func BlockedUsersPost(ctx *context.Context, blocker *user_model.User) {
 	case "unblock":
 		if err := user_service.UnblockUser(ctx, ctx.Doer, blocker, blockee); err != nil {
 			if errors.Is(err, user_model.ErrCanNotUnblock) || errors.Is(err, user_model.ErrBlockOrganization) {
-				ctx.Flash.Error(ctx.Tr("user.block.unblock.failure", err.Error()))
+				ctx.Flash.Error(ctx.Tr("Failed to unblock user: %s", err.Error()))
 			} else {
 				ctx.ServerError("UnblockUser", err)
 				return

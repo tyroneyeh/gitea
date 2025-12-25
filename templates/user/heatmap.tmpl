@@ -2,10 +2,10 @@
 <div class="activity-heatmap-container">
 	<div id="user-heatmap" class="is-loading"
 		data-heatmap-data="{{JsonUtils.EncodeToString .HeatmapData}}"
-		data-locale-total-contributions="{{ctx.Locale.Tr "heatmap.number_of_contributions_in_the_last_12_months" (ctx.Locale.PrettyNumber .HeatmapTotalContributions)}}"
-		data-locale-no-contributions="{{ctx.Locale.Tr "heatmap.no_contributions"}}"
-		data-locale-more="{{ctx.Locale.Tr "heatmap.more"}}"
-		data-locale-less="{{ctx.Locale.Tr "heatmap.less"}}"
+		data-locale-total-contributions="{{ctx.Locale.Tr "%s contributions in the last 12 months" (ctx.Locale.PrettyNumber .HeatmapTotalContributions)}}"
+		data-locale-no-contributions="{{ctx.Locale.Tr "No contributions"}}"
+		data-locale-more="{{ctx.Locale.Tr "More"}}"
+		data-locale-less="{{ctx.Locale.Tr "Less"}}"
 	></div>
 </div>
 <div class="divider"></div>

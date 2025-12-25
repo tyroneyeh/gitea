@@ -1,6 +1,6 @@
 <div class="repo-setting-content">
 	<h4 class="ui top attached header">
-		{{ctx.Locale.Tr "actions.general.enable_actions"}}
+		{{ctx.Locale.Tr "Enable Actions"}}
 	</h4>
 	<div class="ui attached segment">
 		<form class="ui form" action="{{.Link}}/actions_unit" method="post">
@@ -8,16 +8,16 @@
 			{{$isActionsEnabled := .Repository.UnitEnabled ctx ctx.Consts.RepoUnitTypeActions}}
 			{{$isActionsGlobalDisabled := ctx.Consts.RepoUnitTypeActions.UnitGlobalDisabled}}
 			<div class="inline field">
-				<label>{{ctx.Locale.Tr "actions.actions"}}</label>
-				<div class="ui checkbox{{if $isActionsGlobalDisabled}} disabled{{end}}"{{if $isActionsGlobalDisabled}} data-tooltip-content="{{ctx.Locale.Tr "repo.unit_disabled"}}"{{end}}>
+				<label>{{ctx.Locale.Tr "Actions"}}</label>
+				<div class="ui checkbox{{if $isActionsGlobalDisabled}} disabled{{end}}"{{if $isActionsGlobalDisabled}} data-tooltip-content="{{ctx.Locale.Tr "The site administrator has disabled this repository section."}}"{{end}}>
 					<input name="enable_actions" type="checkbox" {{if $isActionsGlobalDisabled}}disabled{{end}} {{if $isActionsEnabled}}checked{{end}}>
-					<label>{{ctx.Locale.Tr "repo.settings.actions_desc"}}</label>
+					<label>{{ctx.Locale.Tr "Enable Repository Actions"}}</label>
 				</div>
 			</div>
 			{{if not $isActionsGlobalDisabled}}
 			<div class="divider"></div>
 				<div class="field">
-				<button class="ui primary button">{{ctx.Locale.Tr "repo.settings.update_settings"}}</button>
+				<button class="ui primary button">{{ctx.Locale.Tr "Update Settings"}}</button>
 			</div>
 			{{end}}
 		</form>
@@ -26,7 +26,7 @@
 {{if and .EnableActions (.Permission.CanRead ctx.Consts.RepoUnitTypeActions)}}
 	{{if .Repository.IsPrivate}}
 	<h4 class="ui top attached header">
-		{{ctx.Locale.Tr "actions.general.collaborative_owners_management"}}
+		{{ctx.Locale.Tr "Collaborative Owners Management"}}
 	</h4>
 	{{if len .CollaborativeOwners}}
 	<div class="ui attached segment">
@@ -44,9 +44,9 @@
 				<div class="flex-item-trailing">
 					<button class="ui red tiny button inline link-action"
 						data-url="{{$.Link}}/collaborative_owner/delete?id={{.ID}}"
-						data-modal-confirm-header="{{ctx.Locale.Tr "actions.general.remove_collaborative_owner"}}"
-						data-modal-confirm-content="{{ctx.Locale.Tr "actions.general.remove_collaborative_owner_desc"}}"
-					>{{ctx.Locale.Tr "remove"}}</button>
+						data-modal-confirm-header="{{ctx.Locale.Tr "Remove Collaborative Owner"}}"
+						data-modal-confirm-content="{{ctx.Locale.Tr "Removing a collaborative owner will prevent the repositories of the owner from accessing the actions in this repository. Continue?"}}"
+					>{{ctx.Locale.Tr "Remove"}}</button>
 				</div>
 			</div>
 			{{end}}
@@ -57,12 +57,12 @@
 		<form class="ui form form-fetch-action" action="{{.Link}}/collaborative_owner/add" method="post">
 			{{.CsrfTokenHtml}}
 			<div id="search-user-box" class="ui search input tw-align-middle" data-include-orgs="true">
-				<input class="prompt" name="collaborative_owner" placeholder="{{ctx.Locale.Tr "search.user_kind"}}" autocomplete="off" autofocus required>
+				<input class="prompt" name="collaborative_owner" placeholder="{{ctx.Locale.Tr "Search users…"}}" autocomplete="off" autofocus required>
 			</div>
-			<button class="ui primary button">{{ctx.Locale.Tr "actions.general.add_collaborative_owner"}}</button>
+			<button class="ui primary button">{{ctx.Locale.Tr "Add Collaborative Owner"}}</button>
 		</form>
 		<br>
-		{{ctx.Locale.Tr "actions.general.collaborative_owners_management_help"}}
+		{{ctx.Locale.Tr "A collaborative owner is a user or an organization whose private repository has access to the actions and workflows of this repository."}}
 	</div>
 	{{end}}
 {{end}}

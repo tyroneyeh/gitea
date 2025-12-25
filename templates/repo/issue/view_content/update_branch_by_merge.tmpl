@@ -3,7 +3,7 @@
 	<div class="item item-section">
 		<div class="item-section-left flex-text-inline">
 			{{svg "octicon-alert"}}
-			{{ctx.Locale.Tr "repo.pulls.outdated_with_base_branch"}}
+			{{ctx.Locale.Tr "This branch is out-of-date with the base branch"}}
 		</div>
 		<div class="item-section-right">
 			{{if and $.UpdateAllowed $.UpdateByRebaseAllowed}}
@@ -11,14 +11,14 @@
 					<div id="update-pr-branch-with-base" class="ui buttons">
 						<button class="ui button" data-do="{{$.Issue.Link}}/update" data-redirect="{{$.Issue.Link}}">
 							<span class="button-text">
-								{{ctx.Locale.Tr "repo.pulls.update_branch"}}
+								{{ctx.Locale.Tr "Update branch by merge"}}
 							</span>
 						</button>
 						<div class="ui dropdown icon button">
 							{{svg "octicon-triangle-down"}}
 							<div class="menu">
-								<a class="item active selected" data-do="{{$.Issue.Link}}/update">{{ctx.Locale.Tr "repo.pulls.update_branch"}}</a>
-								<a class="item" data-do="{{$.Issue.Link}}/update?style=rebase">{{ctx.Locale.Tr "repo.pulls.update_branch_rebase"}}</a>
+								<a class="item active selected" data-do="{{$.Issue.Link}}/update">{{ctx.Locale.Tr "Update branch by merge"}}</a>
+								<a class="item" data-do="{{$.Issue.Link}}/update?style=rebase">{{ctx.Locale.Tr "Update branch by rebase"}}</a>
 							</div>
 						</div>
 					</div>
@@ -28,7 +28,7 @@
 				<form action="{{$.Issue.Link}}/update" method="post" class="ui update-branch-form">
 					{{$.CsrfTokenHtml}}
 					<button class="ui compact button">
-						<span class="ui text">{{ctx.Locale.Tr "repo.pulls.update_branch"}}</span>
+						<span class="ui text">{{ctx.Locale.Tr "Update branch by merge"}}</span>
 					</button>
 				</form>
 			{{end}}

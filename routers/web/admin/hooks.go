@@ -22,7 +22,7 @@ const (
 func DefaultOrSystemWebhooks(ctx *context.Context) {
 	var err error
 
-	ctx.Data["Title"] = ctx.Tr("admin.hooks")
+	ctx.Data["Title"] = ctx.Tr("Webhooks")
 	ctx.Data["PageIsAdminSystemHooks"] = true
 	ctx.Data["PageIsAdminDefaultHooks"] = true
 
@@ -33,8 +33,8 @@ func DefaultOrSystemWebhooks(ctx *context.Context) {
 		sys[k] = v
 	}
 
-	sys["Title"] = ctx.Tr("admin.systemhooks")
-	sys["Description"] = ctx.Tr("admin.systemhooks.desc", "https://docs.gitea.com/usage/webhooks")
+	sys["Title"] = ctx.Tr("System Webhooks")
+	sys["Description"] = ctx.Tr("Webhooks automatically make HTTP POST requests to a server when certain Gitea events trigger. Webhooks defined here will act on all repositories on the system, so please consider any performance implications this may have. Read more in the <a target=\"_blank\" rel=\"noopener\" href=\"%s\">webhooks guide</a>.", "https://docs.gitea.com/usage/webhooks")
 	sys["Webhooks"], err = webhook.GetSystemWebhooks(ctx, optional.None[bool]())
 	sys["BaseLink"] = setting.AppSubURL + "/-/admin/hooks"
 	sys["BaseLinkNew"] = setting.AppSubURL + "/-/admin/system-hooks"
@@ -43,8 +43,8 @@ func DefaultOrSystemWebhooks(ctx *context.Context) {
 		return
 	}
 
-	def["Title"] = ctx.Tr("admin.defaulthooks")
-	def["Description"] = ctx.Tr("admin.defaulthooks.desc", "https://docs.gitea.com/usage/webhooks")
+	def["Title"] = ctx.Tr("Default Webhooks")
+	def["Description"] = ctx.Tr("Webhooks automatically make HTTP POST requests to a server when certain Gitea events trigger. Webhooks defined here are defaults and will be copied into all new repositories. Read more in the <a target=\"_blank\" rel=\"noopener\" href=\"%s\">webhooks guide</a>.", "https://docs.gitea.com/usage/webhooks")
 	def["Webhooks"], err = webhook.GetDefaultWebhooks(ctx)
 	def["BaseLink"] = setting.AppSubURL + "/-/admin/hooks"
 	def["BaseLinkNew"] = setting.AppSubURL + "/-/admin/default-hooks"
@@ -64,7 +64,7 @@ func DeleteDefaultOrSystemWebhook(ctx *context.Context) {
 	if err := webhook.DeleteDefaultSystemWebhook(ctx, ctx.FormInt64("id")); err != nil {
 		ctx.Flash.Error("DeleteDefaultWebhook: " + err.Error())
 	} else {
-		ctx.Flash.Success(ctx.Tr("repo.settings.webhook_deletion_success"))
+		ctx.Flash.Success(ctx.Tr("The webhook has been removed."))
 	}
 
 	ctx.JSONRedirect(setting.AppSubURL + "/-/admin/hooks")

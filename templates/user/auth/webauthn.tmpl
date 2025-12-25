@@ -3,20 +3,20 @@
 	<div class="ui page grid">
 		<div class="column tw-text-center">
 			{{template "user/auth/webauthn_error" .}}
-			<h3 class="ui top attached header">{{ctx.Locale.Tr "twofa"}}</h3>
+			<h3 class="ui top attached header">{{ctx.Locale.Tr "Two-Factor Authentication"}}</h3>
 			<div class="ui attached segment">
 				{{svg "octicon-key" 56}}
-				<h3>{{ctx.Locale.Tr "webauthn_insert_key"}}</h3>
+				<h3>{{ctx.Locale.Tr "Insert your security key"}}</h3>
 				{{template "base/alert" .}}
-				<p>{{ctx.Locale.Tr "webauthn_sign_in"}}</p>
+				<p>{{ctx.Locale.Tr "Press the button on your security key. If your security key has no button, re-insert it."}}</p>
 			</div>
 			<div class="ui attached segment tw-flex tw-items-center tw-justify-center tw-gap-1 tw-py-2">
 				<div class="is-loading tw-w-[40px] tw-h-[40px]"></div>
-				{{ctx.Locale.Tr "webauthn_press_button"}}
+				{{ctx.Locale.Tr "Please press the button on your security key…"}}
 			</div>
 			{{if .HasTwoFactor}}
 				<div class="ui attached segment">
-					<a href="{{AppSubUrl}}/user/two_factor">{{ctx.Locale.Tr "webauthn_use_twofa"}}</a>
+					<a href="{{AppSubUrl}}/user/two_factor">{{ctx.Locale.Tr "Use a two-factor code from your phone"}}</a>
 				</div>
 			{{end}}
 		</div>

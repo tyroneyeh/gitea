@@ -1,10 +1,10 @@
 <h2 class="ui dividing header">
 	{{if .PageIsEditProjects}}
-		{{ctx.Locale.Tr "repo.projects.edit"}}
-		<div class="sub header">{{ctx.Locale.Tr "repo.projects.edit_subheader"}}</div>
+		{{ctx.Locale.Tr "Edit Project"}}
+		<div class="sub header">{{ctx.Locale.Tr "Projects organize issues and track progress."}}</div>
 	{{else}}
-		{{ctx.Locale.Tr "repo.projects.new"}}
-		<div class="sub header">{{ctx.Locale.Tr "repo.projects.new_subheader"}}</div>
+		{{ctx.Locale.Tr "New Project"}}
+		<div class="sub header">{{ctx.Locale.Tr "Coordinate, track, and update your work in one place, so projects stay transparent and on schedule."}}</div>
 	{{end}}
 </h2>
 {{template "base/alert" .}}
@@ -13,11 +13,11 @@
 	<div>
 		<input type="hidden" id="redirect" name="redirect" value="{{.redirect}}">
 		<div class="field {{if .Err_Title}}error{{end}}">
-			<label>{{ctx.Locale.Tr "repo.projects.title"}}</label>
-			<input name="title" placeholder="{{ctx.Locale.Tr "repo.projects.title"}}" value="{{.title}}" autofocus required>
+			<label>{{ctx.Locale.Tr "Title"}}</label>
+			<input name="title" placeholder="{{ctx.Locale.Tr "Title"}}" value="{{.title}}" autofocus required>
 		</div>
 		<div class="field">
-			<label>{{ctx.Locale.Tr "repo.projects.description"}}</label>
+			<label>{{ctx.Locale.Tr "Description (optional)"}}</label>
 			{{/* TODO: repo-level project and org-level project have different behaviors to render */}}
 			{{/* the "Repository" is nil when the project is org-level */}}
 			{{template "shared/combomarkdowneditor" (dict
@@ -26,16 +26,16 @@
 				"MarkdownPreviewMode" (Iif $.Repository "comment")
 				"TextareaName" "content"
 				"TextareaContent" .content
-				"TextareaPlaceholder" (ctx.Locale.Tr "repo.projects.description_placeholder")
+				"TextareaPlaceholder" (ctx.Locale.Tr "Description")
 			)}}
 		</div>
 
 		{{if not .PageIsEditProjects}}
 			<div class="field">
-				<label>{{ctx.Locale.Tr "repo.projects.template.desc"}}</label>
+				<label>{{ctx.Locale.Tr "Template"}}</label>
 				<div class="ui selection dropdown">
 					<input type="hidden" name="template_type" value="{{.type}}">
-					<div class="default text">{{ctx.Locale.Tr "repo.projects.template.desc_helper"}}</div>
+					<div class="default text">{{ctx.Locale.Tr "Select a project template to get started"}}</div>
 					<div class="menu">
 						{{range $element := .TemplateConfigs}}
 							<div class="item" data-id="{{$element.TemplateType}}" data-value="{{$element.TemplateType}}">{{ctx.Locale.Tr $element.Translation}}</div>
@@ -46,7 +46,7 @@
 		{{end}}
 
 		<div class="field">
-			<label>{{ctx.Locale.Tr "repo.projects.card_type.desc"}}</label>
+			<label>{{ctx.Locale.Tr "Card Previews"}}</label>
 			<div class="ui selection dropdown">
 				{{svg "octicon-triangle-down" 14 "dropdown icon"}}
 				{{range $element := .CardTypes}}
@@ -66,10 +66,10 @@
 	<div class="divider"></div>
 	<div class="flex-text-block tw-justify-end">
 		<a class="ui cancel button" href="{{$.CancelLink}}">
-			{{ctx.Locale.Tr "repo.milestones.cancel"}}
+			{{ctx.Locale.Tr "Cancel"}}
 		</a>
 		<button class="ui primary button">
-			{{if .PageIsEditProjects}}{{ctx.Locale.Tr "repo.projects.modify"}}{{else}}{{ctx.Locale.Tr "repo.projects.create"}}{{end}}
+			{{if .PageIsEditProjects}}{{ctx.Locale.Tr "Edit Project"}}{{else}}{{ctx.Locale.Tr "Create Project"}}{{end}}
 		</button>
 	</div>
 </form>

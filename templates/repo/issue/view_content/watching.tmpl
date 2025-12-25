@@ -3,10 +3,10 @@
 	<button class="fluid ui button">
 		{{if $.IssueWatch.IsWatching}}
 			{{svg "octicon-mute" 16 "tw-mr-2"}}
-			{{ctx.Locale.Tr "repo.issues.unsubscribe"}}
+			{{ctx.Locale.Tr "Unsubscribe"}}
 		{{else}}
 			{{svg "octicon-unmute" 16 "tw-mr-2"}}
-			{{ctx.Locale.Tr "repo.issues.subscribe"}}
+			{{ctx.Locale.Tr "Subscribe"}}
 		{{end}}
 	</button>
 </form>

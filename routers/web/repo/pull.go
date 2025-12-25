@@ -452,7 +452,7 @@ func prepareViewPullInfo(ctx *context.Context, issue *issues_model.Issue) *pull_
 			if pull.IsSameRepo() {
 				ctx.Data["HeadTarget"] = pull.HeadBranch
 			} else if pull.HeadRepo == nil {
-				ctx.Data["HeadTarget"] = ctx.Locale.Tr("repo.pull.deleted_branch", pull.HeadBranch)
+				ctx.Data["HeadTarget"] = ctx.Locale.Tr("(deleted):%s", pull.HeadBranch)
 			} else {
 				ctx.Data["HeadTarget"] = pull.HeadRepo.OwnerName + ":" + pull.HeadBranch
 			}
@@ -544,7 +544,7 @@ func prepareViewPullInfo(ctx *context.Context, issue *issues_model.Issue) *pull_
 		if pull.IsSameRepo() {
 			ctx.Data["HeadTarget"] = pull.HeadBranch
 		} else if pull.HeadRepo == nil {
-			ctx.Data["HeadTarget"] = ctx.Locale.Tr("repo.pull.deleted_branch", pull.HeadBranch)
+			ctx.Data["HeadTarget"] = ctx.Locale.Tr("(deleted):%s", pull.HeadBranch)
 		} else {
 			ctx.Data["HeadTarget"] = pull.HeadRepo.OwnerName + ":" + pull.HeadBranch
 		}
@@ -619,10 +619,10 @@ func GetPullCommits(ctx *context.Context) {
 	// Get the needed locale
 	resp.Locale = map[string]any{
 		"lang":                                ctx.Locale.Language(),
-		"show_all_commits":                    ctx.Tr("repo.pulls.show_all_commits"),
-		"stats_num_commits":                   ctx.TrN(len(commits), "repo.activity.git_stats_commit_1", "repo.activity.git_stats_commit_n", len(commits)),
-		"show_changes_since_your_last_review": ctx.Tr("repo.pulls.show_changes_since_your_last_review"),
-		"select_commit_hold_shift_for_range":  ctx.Tr("repo.pulls.select_commit_hold_shift_for_range"),
+		"show_all_commits":                    ctx.Tr("Show all commits"),
+		"stats_num_commits":                   ctx.TrN(len(commits), "%d commit", "%d commits", len(commits)),
+		"show_changes_since_your_last_review": ctx.Tr("Show changes since your last review"),
+		"select_commit_hold_shift_for_range":  ctx.Tr("Select commit. Hold Shift and click to select a range."),
 	}
 
 	resp.Commits = commits
@@ -938,7 +938,7 @@ func viewPullFiles(ctx *context.Context, beforeCommitID, afterCommitID string) {
 
 				if perm.CanWrite(unit.TypeCode) || issues_model.CanMaintainerWriteToBranch(ctx, perm, pull.HeadBranch, ctx.Doer) {
 					ctx.Data["CanEditFile"] = true
-					ctx.Data["EditFileTooltip"] = ctx.Tr("repo.editor.edit_this_file")
+					ctx.Data["EditFileTooltip"] = ctx.Tr("Edit File")
 					ctx.Data["HeadRepoLink"] = pull.HeadRepo.Link()
 					ctx.Data["HeadBranchName"] = pull.HeadBranch
 					ctx.Data["BackToLink"] = setting.AppSubURL + ctx.Req.URL.RequestURI()
@@ -998,7 +998,7 @@ func UpdatePullRequest(ctx *context.Context) {
 
 	// ToDo: add check if maintainers are allowed to change branch ... (need migration & co)
 	if (!allowedUpdateByMerge && !rebase) || (rebase && !allowedUpdateByRebase) {
-		ctx.Flash.Error(ctx.Tr("repo.pulls.update_not_allowed"))
+		ctx.Flash.Error(ctx.Tr("You are not allowed to update branch"))
 		ctx.Redirect(issue.Link())
 		return
 	}
@@ -1012,8 +1012,8 @@ func UpdatePullRequest(ctx *context.Context) {
 		if pull_service.IsErrMergeConflicts(err) {
 			conflictError := err.(pull_service.ErrMergeConflicts)
 			flashError, err := ctx.RenderToHTML(tplAlertDetails, map[string]any{
-				"Message": ctx.Tr("repo.pulls.merge_conflict"),
-				"Summary": ctx.Tr("repo.pulls.merge_conflict_summary"),
+				"Message": ctx.Tr("Merge Failed: There was a conflict while merging. Hint: Try a different strategy."),
+				"Summary": ctx.Tr("Error Message"),
 				"Details": utils.SanitizeFlashErrorString(conflictError.StdErr) + "<br>" + utils.SanitizeFlashErrorString(conflictError.StdOut),
 			})
 			if err != nil {
@@ -1026,8 +1026,8 @@ func UpdatePullRequest(ctx *context.Context) {
 		} else if pull_service.IsErrRebaseConflicts(err) {
 			conflictError := err.(pull_service.ErrRebaseConflicts)
 			flashError, err := ctx.RenderToHTML(tplAlertDetails, map[string]any{
-				"Message": ctx.Tr("repo.pulls.rebase_conflict", utils.SanitizeFlashErrorString(conflictError.CommitSHA)),
-				"Summary": ctx.Tr("repo.pulls.rebase_conflict_summary"),
+				"Message": ctx.Tr("Merge Failed: There was a conflict while rebasing commit: %[1]s. Hint: Try a different strategy.", utils.SanitizeFlashErrorString(conflictError.CommitSHA)),
+				"Summary": ctx.Tr("Error Message"),
 				"Details": utils.SanitizeFlashErrorString(conflictError.StdErr) + "<br>" + utils.SanitizeFlashErrorString(conflictError.StdOut),
 			})
 			if err != nil {
@@ -1045,7 +1045,7 @@ func UpdatePullRequest(ctx *context.Context) {
 
 	time.Sleep(1 * time.Second)
 
-	ctx.Flash.Success(ctx.Tr("repo.pulls.update_branch_success"))
+	ctx.Flash.Success(ctx.Tr("Branch update was successful"))
 	ctx.Redirect(issue.Link())
 }
 
@@ -1076,24 +1076,24 @@ func MergePullRequest(ctx *context.Context) {
 		switch {
 		case errors.Is(err, pull_service.ErrIsClosed):
 			if issue.IsPull {
-				ctx.JSONError(ctx.Tr("repo.pulls.is_closed"))
+				ctx.JSONError(ctx.Tr("The pull request has been closed."))
 			} else {
-				ctx.JSONError(ctx.Tr("repo.issues.closed_title"))
+				ctx.JSONError(ctx.Tr("Closed"))
 			}
 		case errors.Is(err, pull_service.ErrNoPermissionToMerge):
-			ctx.JSONError(ctx.Tr("repo.pulls.update_not_allowed"))
+			ctx.JSONError(ctx.Tr("You are not allowed to update branch"))
 		case errors.Is(err, pull_service.ErrHasMerged):
-			ctx.JSONError(ctx.Tr("repo.pulls.has_merged"))
+			ctx.JSONError(ctx.Tr("Failed: The pull request has been merged. You cannot merge again or change the target branch."))
 		case errors.Is(err, pull_service.ErrIsWorkInProgress):
-			ctx.JSONError(ctx.Tr("repo.pulls.no_merge_wip"))
+			ctx.JSONError(ctx.Tr("This pull request cannot be merged because it is marked as being a work in progress."))
 		case errors.Is(err, pull_service.ErrNotMergeableState):
-			ctx.JSONError(ctx.Tr("repo.pulls.no_merge_not_ready"))
+			ctx.JSONError(ctx.Tr("This pull request is not ready to be merged. Check review status and status checks."))
 		case errors.Is(err, pull_service.ErrNotReadyToMerge):
-			ctx.JSONError(ctx.Tr("repo.pulls.no_merge_not_ready"))
+			ctx.JSONError(ctx.Tr("This pull request is not ready to be merged. Check review status and status checks."))
 		case asymkey_service.IsErrWontSign(err):
 			ctx.JSONError(err.Error()) // has no translation ...
 		case errors.Is(err, pull_service.ErrDependenciesLeft):
-			ctx.JSONError(ctx.Tr("repo.issues.dependency.pr_close_blocked"))
+			ctx.JSONError(ctx.Tr("You need to close all issues that are blocking this pull request before you can merge it."))
 		default:
 			ctx.ServerError("WebCheck", err)
 		}
@@ -1106,9 +1106,9 @@ func MergePullRequest(ctx *context.Context) {
 		if err := pull_service.MergedManually(ctx, pr, ctx.Doer, ctx.Repo.GitRepo, form.MergeCommitID); err != nil {
 			switch {
 			case pull_service.IsErrInvalidMergeStyle(err):
-				ctx.JSONError(ctx.Tr("repo.pulls.invalid_merge_option"))
+				ctx.JSONError(ctx.Tr("You cannot use this merge option for this pull request."))
 			case strings.Contains(err.Error(), "Wrong commit ID"):
-				ctx.JSONError(ctx.Tr("repo.pulls.wrong_commit_id"))
+				ctx.JSONError(ctx.Tr("commit ID must be a commit ID on the target branch"))
 			default:
 				ctx.ServerError("MergedManually", err)
 			}
@@ -1151,7 +1151,7 @@ func MergePullRequest(ctx *context.Context) {
 			return
 		} else if scheduled {
 			// nothing more to do ...
-			ctx.Flash.Success(ctx.Tr("repo.pulls.auto_merge_newly_scheduled"))
+			ctx.Flash.Success(ctx.Tr("The pull request was scheduled to merge when all checks succeed."))
 			ctx.JSONRedirect(fmt.Sprintf("%s/pulls/%d", ctx.Repo.RepoLink, pr.Index))
 			return
 		}
@@ -1159,7 +1159,7 @@ func MergePullRequest(ctx *context.Context) {
 
 	if err := pull_service.Merge(ctx, pr, ctx.Doer, repo_model.MergeStyle(form.Do), form.HeadCommitID, message, false); err != nil {
 		if pull_service.IsErrInvalidMergeStyle(err) {
-			ctx.JSONError(ctx.Tr("repo.pulls.invalid_merge_option"))
+			ctx.JSONError(ctx.Tr("You cannot use this merge option for this pull request."))
 		} else if pull_service.IsErrMergeConflicts(err) {
 			conflictError := err.(pull_service.ErrMergeConflicts)
 			flashError, err := ctx.RenderToHTML(tplAlertDetails, map[string]any{
@@ -1176,8 +1176,8 @@ func MergePullRequest(ctx *context.Context) {
 		} else if pull_service.IsErrRebaseConflicts(err) {
 			conflictError := err.(pull_service.ErrRebaseConflicts)
 			flashError, err := ctx.RenderToHTML(tplAlertDetails, map[string]any{
-				"Message": ctx.Tr("repo.pulls.rebase_conflict", utils.SanitizeFlashErrorString(conflictError.CommitSHA)),
-				"Summary": ctx.Tr("repo.pulls.rebase_conflict_summary"),
+				"Message": ctx.Tr("Merge Failed: There was a conflict while rebasing commit: %[1]s. Hint: Try a different strategy.", utils.SanitizeFlashErrorString(conflictError.CommitSHA)),
+				"Summary": ctx.Tr("Error Message"),
 				"Details": utils.SanitizeFlashErrorString(conflictError.StdErr) + "<br>" + utils.SanitizeFlashErrorString(conflictError.StdOut),
 			})
 			if err != nil {
@@ -1188,26 +1188,26 @@ func MergePullRequest(ctx *context.Context) {
 			ctx.JSONRedirect(issue.Link())
 		} else if pull_service.IsErrMergeUnrelatedHistories(err) {
 			log.Debug("MergeUnrelatedHistories error: %v", err)
-			ctx.Flash.Error(ctx.Tr("repo.pulls.unrelated_histories"))
+			ctx.Flash.Error(ctx.Tr("Merge Failed: The merge head and base do not share a common history. Hint: Try a different strategy."))
 			ctx.JSONRedirect(issue.Link())
 		} else if git.IsErrPushOutOfDate(err) {
 			log.Debug("MergePushOutOfDate error: %v", err)
-			ctx.Flash.Error(ctx.Tr("repo.pulls.merge_out_of_date"))
+			ctx.Flash.Error(ctx.Tr("Merge Failed: While generating the merge, the base was updated. Hint: Try again."))
 			ctx.JSONRedirect(issue.Link())
 		} else if pull_service.IsErrSHADoesNotMatch(err) {
 			log.Debug("MergeHeadOutOfDate error: %v", err)
-			ctx.Flash.Error(ctx.Tr("repo.pulls.head_out_of_date"))
+			ctx.Flash.Error(ctx.Tr("Merge Failed: While generating the merge, the head was updated. Hint: Try again."))
 			ctx.JSONRedirect(issue.Link())
 		} else if git.IsErrPushRejected(err) {
 			log.Debug("MergePushRejected error: %v", err)
 			pushrejErr := err.(*git.ErrPushRejected)
 			message := pushrejErr.Message
 			if len(message) == 0 {
-				ctx.Flash.Error(ctx.Tr("repo.pulls.push_rejected_no_message"))
+				ctx.Flash.Error(ctx.Tr("Push Failed: The push was rejected but there was no remote message. Review the Git Hooks for this repository."))
 			} else {
 				flashError, err := ctx.RenderToHTML(tplAlertDetails, map[string]any{
-					"Message": ctx.Tr("repo.pulls.push_rejected"),
-					"Summary": ctx.Tr("repo.pulls.push_rejected_summary"),
+					"Message": ctx.Tr("Push Failed: The push was rejected. Review the Git Hooks for this repository."),
+					"Summary": ctx.Tr("Full Rejection Message"),
 					"Details": utils.SanitizeFlashErrorString(pushrejErr.Message),
 				})
 				if err != nil {
@@ -1251,7 +1251,7 @@ func deleteBranchAfterMergeAndFlashMessage(ctx *context.Context, prID int64) {
 		ctx.Flash.Error(errTr.Translate(ctx.Locale))
 		return
 	} else if err == nil {
-		ctx.Flash.Success(ctx.Tr("repo.branch.deletion_success", fullBranchName))
+		ctx.Flash.Success(ctx.Tr("Branch \"%s\" has been deleted.", fullBranchName))
 		return
 	}
 	// catch unknown errors
@@ -1267,14 +1267,14 @@ func CancelAutoMergePullRequest(ctx *context.Context) {
 
 	if err := automerge.RemoveScheduledAutoMerge(ctx, ctx.Doer, issue.PullRequest); err != nil {
 		if db.IsErrNotExist(err) {
-			ctx.Flash.Error(ctx.Tr("repo.pulls.auto_merge_not_scheduled"))
+			ctx.Flash.Error(ctx.Tr("This pull request is not scheduled to auto merge."))
 			ctx.Redirect(fmt.Sprintf("%s/pulls/%d", ctx.Repo.RepoLink, issue.Index))
 			return
 		}
 		ctx.ServerError("RemoveScheduledAutoMerge", err)
 		return
 	}
-	ctx.Flash.Success(ctx.Tr("repo.pulls.auto_merge_canceled_schedule"))
+	ctx.Flash.Success(ctx.Tr("The auto merge was canceled for this pull request."))
 	ctx.Redirect(fmt.Sprintf("%s/pulls/%d", ctx.Repo.RepoLink, issue.Index))
 }
 
@@ -1301,7 +1301,7 @@ func PullsNewRedirect(ctx *context.Context) {
 // CompareAndPullRequestPost response for creating pull request
 func CompareAndPullRequestPost(ctx *context.Context) {
 	form := web.GetForm(ctx).(*forms.CreateIssueForm)
-	ctx.Data["Title"] = ctx.Tr("repo.pulls.compare_changes")
+	ctx.Data["Title"] = ctx.Tr("New Pull Request")
 	ctx.Data["PageIsComparePull"] = true
 	ctx.Data["IsDiffCompare"] = true
 	ctx.Data["PullRequestWorkInProgressPrefixes"] = setting.Repository.PullRequest.WorkInProgressPrefixes
@@ -1336,7 +1336,7 @@ func CompareAndPullRequestPost(ctx *context.Context) {
 	}
 
 	if util.IsEmptyString(form.Title) {
-		ctx.JSONError(ctx.Tr("repo.issues.new.title_empty"))
+		ctx.JSONError(ctx.Tr("Title cannot be empty"))
 		return
 	}
 
@@ -1347,7 +1347,7 @@ func CompareAndPullRequestPost(ctx *context.Context) {
 		return
 	}
 	if pr != nil {
-		ctx.JSONError(ctx.Tr("repo.pulls.new.already_existed"))
+		ctx.JSONError(ctx.Tr("A pull request between these branches already exists"))
 		return
 	}
 
@@ -1399,12 +1399,12 @@ func CompareAndPullRequestPost(ctx *context.Context) {
 			pushrejErr := err.(*git.ErrPushRejected)
 			message := pushrejErr.Message
 			if len(message) == 0 {
-				ctx.JSONError(ctx.Tr("repo.pulls.push_rejected_no_message"))
+				ctx.JSONError(ctx.Tr("Push Failed: The push was rejected but there was no remote message. Review the Git Hooks for this repository."))
 				return
 			}
 			flashError, err := ctx.RenderToHTML(tplAlertDetails, map[string]any{
-				"Message": ctx.Tr("repo.pulls.push_rejected"),
-				"Summary": ctx.Tr("repo.pulls.push_rejected_summary"),
+				"Message": ctx.Tr("Push Failed: The push was rejected. Review the Git Hooks for this repository."),
+				"Summary": ctx.Tr("Full Rejection Message"),
 				"Details": utils.SanitizeFlashErrorString(pushrejErr.Message),
 			})
 			if err != nil {
@@ -1414,8 +1414,8 @@ func CompareAndPullRequestPost(ctx *context.Context) {
 			ctx.JSONError(flashError)
 		case errors.Is(err, user_model.ErrBlockedUser):
 			flashError, err := ctx.RenderToHTML(tplAlertDetails, map[string]any{
-				"Message": ctx.Tr("repo.pulls.push_rejected"),
-				"Summary": ctx.Tr("repo.pulls.new.blocked_user"),
+				"Message": ctx.Tr("Push Failed: The push was rejected. Review the Git Hooks for this repository."),
+				"Summary": ctx.Tr("Cannot create pull request because you are blocked by the repository owner."),
 			})
 			if err != nil {
 				ctx.ServerError("CompareAndPullRequest.HTMLString", err)
@@ -1424,8 +1424,8 @@ func CompareAndPullRequestPost(ctx *context.Context) {
 			ctx.JSONError(flashError)
 		case errors.Is(err, issues_model.ErrMustCollaborator):
 			flashError, err := ctx.RenderToHTML(tplAlertDetails, map[string]any{
-				"Message": ctx.Tr("repo.pulls.push_rejected"),
-				"Summary": ctx.Tr("repo.pulls.new.must_collaborator"),
+				"Message": ctx.Tr("Push Failed: The push was rejected. Review the Git Hooks for this repository."),
+				"Summary": ctx.Tr("You must be a collaborator to create pull request."),
 			})
 			if err != nil {
 				ctx.ServerError("CompareAndPullRequest.HTMLString", err)
@@ -1524,7 +1524,7 @@ func UpdatePullRequestTarget(ctx *context.Context) {
 	if err := pull_service.ChangeTargetBranch(ctx, pr, ctx.Doer, targetBranch); err != nil {
 		switch {
 		case git_model.IsErrBranchNotExist(err):
-			errorMessage := ctx.Tr("form.target_branch_not_exist")
+			errorMessage := ctx.Tr("Target branch does not exist.")
 
 			ctx.Flash.Error(errorMessage)
 			ctx.JSON(http.StatusBadRequest, map[string]any{
@@ -1535,7 +1535,7 @@ func UpdatePullRequestTarget(ctx *context.Context) {
 			err := err.(issues_model.ErrPullRequestAlreadyExists)
 
 			RepoRelPath := ctx.Repo.Owner.Name + "/" + ctx.Repo.Repository.Name
-			errorMessage := ctx.Tr("repo.pulls.has_pull_request", html.EscapeString(ctx.Repo.RepoLink+"/pulls/"+strconv.FormatInt(err.IssueID, 10)), html.EscapeString(RepoRelPath), err.IssueID) // FIXME: Creates url inside locale string
+			errorMessage := ctx.Tr("A pull request between these branches already exists: <a href=\"%[1]s\">%[2]s#%[3]d</a>", html.EscapeString(ctx.Repo.RepoLink+"/pulls/"+strconv.FormatInt(err.IssueID, 10)), html.EscapeString(RepoRelPath), err.IssueID) // FIXME: Creates url inside locale string
 
 			ctx.Flash.Error(errorMessage)
 			ctx.JSON(http.StatusConflict, map[string]any{
@@ -1543,7 +1543,7 @@ func UpdatePullRequestTarget(ctx *context.Context) {
 				"user_error": errorMessage,
 			})
 		case issues_model.IsErrIssueIsClosed(err):
-			errorMessage := ctx.Tr("repo.pulls.is_closed")
+			errorMessage := ctx.Tr("The pull request has been closed.")
 
 			ctx.Flash.Error(errorMessage)
 			ctx.JSON(http.StatusConflict, map[string]any{
@@ -1551,7 +1551,7 @@ func UpdatePullRequestTarget(ctx *context.Context) {
 				"user_error": errorMessage,
 			})
 		case pull_service.IsErrPullRequestHasMerged(err):
-			errorMessage := ctx.Tr("repo.pulls.has_merged")
+			errorMessage := ctx.Tr("Failed: The pull request has been merged. You cannot merge again or change the target branch.")
 
 			ctx.Flash.Error(errorMessage)
 			ctx.JSON(http.StatusConflict, map[string]any{
@@ -1559,7 +1559,7 @@ func UpdatePullRequestTarget(ctx *context.Context) {
 				"user_error": errorMessage,
 			})
 		case git_model.IsErrBranchesEqual(err):
-			errorMessage := ctx.Tr("repo.pulls.nothing_to_compare")
+			errorMessage := ctx.Tr("These branches are equal. There is no need to create a pull request.")
 
 			ctx.Flash.Error(errorMessage)
 			ctx.JSON(http.StatusBadRequest, map[string]any{

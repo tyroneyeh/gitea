@@ -11,7 +11,7 @@ import (
 func acceptTransfer(ctx *context.Context) {
 	err := repo_service.AcceptTransferOwnership(ctx, ctx.Repo.Repository, ctx.Doer)
 	if err == nil {
-		ctx.Flash.Success(ctx.Tr("repo.settings.transfer.success"))
+		ctx.Flash.Success(ctx.Tr("Repository transfer was successful."))
 		ctx.Redirect(ctx.Repo.Repository.Link())
 		return
 	}
@@ -21,7 +21,7 @@ func acceptTransfer(ctx *context.Context) {
 func rejectTransfer(ctx *context.Context) {
 	err := repo_service.RejectRepositoryTransfer(ctx, ctx.Repo.Repository, ctx.Doer)
 	if err == nil {
-		ctx.Flash.Success(ctx.Tr("repo.settings.transfer.rejected"))
+		ctx.Flash.Success(ctx.Tr("Repository transfer was rejected."))
 		ctx.Redirect(ctx.Repo.Repository.Link())
 		return
 	}

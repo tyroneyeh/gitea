@@ -3,47 +3,47 @@
 		<div class="divider"></div>
 		<div>
 			<div class="flex-text-block">
-				<strong class="tw-flex-1">{{ctx.Locale.Tr "repo.issues.tracker"}}</strong>
-				<button class="btn interact-fg show-modal" data-tooltip-content="{{ctx.Locale.Tr "repo.issues.time_estimate_set"}}" data-modal="#issue-time-set-estimate-modal">
+				<strong class="tw-flex-1">{{ctx.Locale.Tr "Time Tracker"}}</strong>
+				<button class="btn interact-fg show-modal" data-tooltip-content="{{ctx.Locale.Tr "Set estimated time"}}" data-modal="#issue-time-set-estimate-modal">
 					{{svg "octicon-pencil"}}
 				</button>
 			</div>
 			<div class="ui buttons tw-mt-2 tw-w-full">
 			{{if $.IsStopwatchRunning}}
 				<button class="ui button tw-flex-1 issue-stop-time link-action" data-url="{{.Issue.Link}}/times/stopwatch/stop">
-					{{svg "octicon-stopwatch"}} {{ctx.Locale.Tr "repo.issues.timetracker_timer_stop"}}
+					{{svg "octicon-stopwatch"}} {{ctx.Locale.Tr "Stop timer"}}
 				</button>
-				<button class="ui icon button issue-cancel-time link-action" data-url="{{.Issue.Link}}/times/stopwatch/cancel" data-tooltip-content="{{ctx.Locale.Tr "repo.issues.timetracker_timer_discard"}}">
+				<button class="ui icon button issue-cancel-time link-action" data-url="{{.Issue.Link}}/times/stopwatch/cancel" data-tooltip-content="{{ctx.Locale.Tr "Discard timer"}}">
 					{{svg "octicon-trash"}}
 				</button>
 			{{else}}
 				<button class="ui button tw-flex-1 issue-start-time link-action" data-url="{{.Issue.Link}}/times/stopwatch/start">
-					{{svg "octicon-stopwatch"}} {{ctx.Locale.Tr "repo.issues.timetracker_timer_start"}}
+					{{svg "octicon-stopwatch"}} {{ctx.Locale.Tr "Start timer"}}
 				</button>
-				<button class="ui icon button issue-add-time show-modal" data-modal="#issue-time-manually-add-modal" data-tooltip-content="{{ctx.Locale.Tr "repo.issues.timetracker_timer_manually_add"}}">
+				<button class="ui icon button issue-add-time show-modal" data-modal="#issue-time-manually-add-modal" data-tooltip-content="{{ctx.Locale.Tr "Add Time"}}">
 					{{svg "octicon-plus"}}
 				</button>
 			{{end}}
 			</div>
 
 			{{if and (not $.IsStopwatchRunning) .HasUserStopwatch}}
-				<div class="ui warning message">{{ctx.Locale.Tr "repo.issues.tracking_already_started" .OtherStopwatchURL}}</div>
+				<div class="ui warning message">{{ctx.Locale.Tr "You have already started time tracking on <a href=\"%s\">another issue</a>!" .OtherStopwatchURL}}</div>
 			{{end}}
 
 			{{if .Issue.TimeEstimate}}
-				<div class="tw-my-2">{{ctx.Locale.Tr "repo.issues.time_estimate_display" (TimeEstimateString .Issue.TimeEstimate)}}</div>
+				<div class="tw-my-2">{{ctx.Locale.Tr "Estimate: %s" (TimeEstimateString .Issue.TimeEstimate)}}</div>
 			{{end}}
 
 			{{/* set time estimate modal */}}
 			<div class="ui mini modal" id="issue-time-set-estimate-modal">
-				<div class="header">{{ctx.Locale.Tr "repo.issues.time_estimate_set"}}</div>
+				<div class="header">{{ctx.Locale.Tr "Set estimated time"}}</div>
 				<form method="post" class="ui form form-fetch-action" action="{{.Issue.Link}}/time_estimate">
 					<div class="content">
 						{{$.CsrfTokenHtml}}
 						<input name="time_estimate" placeholder="1h 2m" value="{{TimeEstimateString .Issue.TimeEstimate}}">
 						<div class="actions">
-							<button class="ui cancel button">{{ctx.Locale.Tr "cancel"}}</button>
-							<button class="ui primary button">{{ctx.Locale.Tr "repo.issues.save"}}</button>
+							<button class="ui cancel button">{{ctx.Locale.Tr "Cancel"}}</button>
+							<button class="ui primary button">{{ctx.Locale.Tr "Save"}}</button>
 						</div>
 					</div>
 				</form>
@@ -51,16 +51,16 @@
 
 			{{/* manually add time modal */}}
 			<div class="ui mini modal" id="issue-time-manually-add-modal">
-				<div class="header">{{ctx.Locale.Tr "repo.issues.add_time_manually"}}</div>
+				<div class="header">{{ctx.Locale.Tr "Manually Add Time"}}</div>
 				<form method="post" class="ui form form-fetch-action" action="{{.Issue.Link}}/times/add">
 					<div class="content flex-text-block">
 						{{$.CsrfTokenHtml}}
-						<input placeholder='{{ctx.Locale.Tr "repo.issues.add_time_hours"}}' type="number" name="hours">:
-						<input placeholder='{{ctx.Locale.Tr "repo.issues.add_time_minutes"}}' type="number" name="minutes">
+						<input placeholder='{{ctx.Locale.Tr "Hours"}}' type="number" name="hours">:
+						<input placeholder='{{ctx.Locale.Tr "Minutes"}}' type="number" name="minutes">
 					</div>
 					<div class="actions">
-						<button class="ui cancel button">{{ctx.Locale.Tr "cancel"}}</button>
-						<button class="ui primary button">{{ctx.Locale.Tr "repo.issues.timetracker_timer_manually_add"}}</button>
+						<button class="ui cancel button">{{ctx.Locale.Tr "Cancel"}}</button>
+						<button class="ui primary button">{{ctx.Locale.Tr "Add Time"}}</button>
 					</div>
 				</form>
 			</div>
@@ -68,7 +68,7 @@
 	{{end}}
 	{{if .WorkingUsers}}
 		<div class="tw-mt-2">
-			{{ctx.Locale.Tr "repo.issues.time_spent_from_all_authors" ($.Issue.TotalTrackedTime | Sec2Hour)}}
+			{{ctx.Locale.Tr "Total Time Spent: %s" ($.Issue.TotalTrackedTime | Sec2Hour)}}
 		</div>
 		<div class="ui list flex-items-block">
 			{{range $user, $trackedtime := .WorkingUsers}}

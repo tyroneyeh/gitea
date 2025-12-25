@@ -24,7 +24,7 @@ var (
 
 // TwoFactor shows the user a two-factor authentication page.
 func TwoFactor(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("twofa")
+	ctx.Data["Title"] = ctx.Tr("Two-Factor Authentication")
 
 	if CheckAutoLogin(ctx) {
 		return
@@ -42,7 +42,7 @@ func TwoFactor(ctx *context.Context) {
 // TwoFactorPost validates a user's two-factor authentication token.
 func TwoFactorPost(ctx *context.Context) {
 	form := web.GetForm(ctx).(*forms.TwoFactorAuthForm)
-	ctx.Data["Title"] = ctx.Tr("twofa")
+	ctx.Data["Title"] = ctx.Tr("Two-Factor Authentication")
 
 	// Ensure user is in a 2FA session.
 	idSess := ctx.Session.Get("twofaUid")
@@ -92,12 +92,12 @@ func TwoFactorPost(ctx *context.Context) {
 		return
 	}
 
-	ctx.RenderWithErr(ctx.Tr("auth.twofa_passcode_incorrect"), tplTwofa, forms.TwoFactorAuthForm{})
+	ctx.RenderWithErr(ctx.Tr("Your passcode is incorrect. If you misplaced your device, use your scratch code to sign in."), tplTwofa, forms.TwoFactorAuthForm{})
 }
 
 // TwoFactorScratch shows the scratch code form for two-factor authentication.
 func TwoFactorScratch(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("twofa_scratch")
+	ctx.Data["Title"] = ctx.Tr("Two-Factor Scratch Code")
 
 	if CheckAutoLogin(ctx) {
 		return
@@ -115,7 +115,7 @@ func TwoFactorScratch(ctx *context.Context) {
 // TwoFactorScratchPost validates and invalidates a user's two-factor scratch token.
 func TwoFactorScratchPost(ctx *context.Context) {
 	form := web.GetForm(ctx).(*forms.TwoFactorScratchAuthForm)
-	ctx.Data["Title"] = ctx.Tr("twofa_scratch")
+	ctx.Data["Title"] = ctx.Tr("Two-Factor Scratch Code")
 
 	// Ensure user is in a 2FA session.
 	idSess := ctx.Session.Get("twofaUid")
@@ -155,10 +155,10 @@ func TwoFactorScratchPost(ctx *context.Context) {
 		if ctx.Written() {
 			return
 		}
-		ctx.Flash.Info(ctx.Tr("auth.twofa_scratch_used"))
+		ctx.Flash.Info(ctx.Tr("You have used your scratch code. You have been redirected to the two-factor settings page so you may remove your device enrollment or generate a new scratch code."))
 		ctx.Redirect(setting.AppSubURL + "/user/settings/security")
 		return
 	}
 
-	ctx.RenderWithErr(ctx.Tr("auth.twofa_scratch_token_incorrect"), tplTwofaScratch, forms.TwoFactorScratchAuthForm{})
+	ctx.RenderWithErr(ctx.Tr("Your scratch code is incorrect."), tplTwofaScratch, forms.TwoFactorScratchAuthForm{})
 }

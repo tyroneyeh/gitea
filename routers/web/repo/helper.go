@@ -10,7 +10,7 @@ import (
 
 func HandleGitError(ctx *context.Context, msg string, err error) {
 	if git.IsErrNotExist(err) {
-		ctx.Data["NotFoundPrompt"] = ctx.Locale.Tr("repo.tree_path_not_found", ctx.Repo.TreePath, ctx.Repo.RefTypeNameSubURL())
+		ctx.Data["NotFoundPrompt"] = ctx.Locale.Tr("Path %[1]s doesn't exist in %[2]s", ctx.Repo.TreePath, ctx.Repo.RefTypeNameSubURL())
 		ctx.Data["NotFoundGoBackURL"] = ctx.Repo.RepoLink + "/src/" + ctx.Repo.RefTypeNameSubURL()
 		ctx.NotFound(err)
 	} else {

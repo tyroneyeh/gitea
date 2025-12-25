@@ -12,53 +12,53 @@
 				"QueryLink" $queryLink
 				"UserSearchList" $.Assignees
 				"SelectedUserId" $.AssigneeID
-				"TextFilterTitle" (ctx.Locale.Tr "repo.issues.filter_assignee")
-				"TextFilterMatchNone" (ctx.Locale.Tr "repo.issues.filter_assignee_no_assignee")
-				"TextFilterMatchAny" (ctx.Locale.Tr "repo.issues.filter_assignee_any_assignee")
+				"TextFilterTitle" (ctx.Locale.Tr "Assignee")
+				"TextFilterMatchNone" (ctx.Locale.Tr "Assigned to nobody")
+				"TextFilterMatchAny" (ctx.Locale.Tr "Assigned to anybody")
 			}}
 		</div>
 		{{if $canWriteProject}}
 			<div class="ui compact mini menu">
 				<a class="item screen-full">
 					{{svg "octicon-screen-full"}}
-					{{ctx.Locale.Tr "projects.enter_fullscreen"}}
+					{{ctx.Locale.Tr "Fullscreen"}}
 				</a>
 				<a class="item screen-normal tw-hidden">
 					{{svg "octicon-screen-normal"}}
-					{{ctx.Locale.Tr "projects.exit_fullscreen"}}
+					{{ctx.Locale.Tr "Exit Fullscreen"}}
 				</a>
 				<a class="item" href="{{.Link}}/edit?redirect=project">
 					{{svg "octicon-pencil"}}
-					{{ctx.Locale.Tr "repo.issues.label_edit"}}
+					{{ctx.Locale.Tr "Edit"}}
 				</a>
 				{{if .Project.IsClosed}}
 					<button class="item btn link-action" data-url="{{.Link}}/open">
 						{{svg "octicon-check"}}
-						{{ctx.Locale.Tr "repo.projects.open"}}
+						{{ctx.Locale.Tr "Open"}}
 					</button>
 				{{else}}
 					<button class="item btn link-action" data-url="{{.Link}}/close">
 						{{svg "octicon-skip"}}
-						{{ctx.Locale.Tr "repo.projects.close"}}
+						{{ctx.Locale.Tr "Close"}}
 					</button>
 				{{end}}
 				<button class="item btn link-action" data-url="{{.Link}}/delete?id={{.Project.ID}}"
-								data-modal-confirm-header="{{ctx.Locale.Tr "repo.projects.deletion"}}"
-								data-modal-confirm-content="{{ctx.Locale.Tr "repo.projects.deletion_desc"}}"
+								data-modal-confirm-header="{{ctx.Locale.Tr "Delete Project"}}"
+								data-modal-confirm-content="{{ctx.Locale.Tr "Deleting a project removes it from all related issues. Continue?"}}"
 				>
 					{{svg "octicon-trash"}}
-					{{ctx.Locale.Tr "repo.issues.label_delete"}}
+					{{ctx.Locale.Tr "Delete"}}
 				</button>
 				<button class="item btn show-modal show-project-column-modal-edit" data-modal="#project-column-modal-edit"
-								data-modal-header="{{ctx.Locale.Tr "repo.projects.column.new"}}"
-								data-modal-project-column-title-label="{{ctx.Locale.Tr "repo.projects.column.new_title"}}"
-								data-modal-project-column-button-save="{{ctx.Locale.Tr "repo.projects.column.new_submit"}}"
+								data-modal-header="{{ctx.Locale.Tr "New Column"}}"
+								data-modal-project-column-title-label="{{ctx.Locale.Tr "Name"}}"
+								data-modal-project-column-button-save="{{ctx.Locale.Tr "Create Column"}}"
 								data-modal-project-column-id=""
 								data-modal-project-column-title-input=""
 								data-modal-project-column-color-input=""
 				>
 					{{svg "octicon-plus"}}
-					{{ctx.Locale.Tr "new_project_column"}}
+					{{ctx.Locale.Tr "New Column"}}
 				</button>
 			</div>
 		{{end}}
@@ -78,7 +78,7 @@
 					<div class="ui circular label project-column-issue-count">
 						{{.NumIssues}}
 					</div>
-					<div class="project-column-title-text flex-text-inline gt-ellipsis" {{if .Default}}data-tooltip-content="{{ctx.Locale.Tr "repo.projects.column.default_column_hint"}}"{{end}}>
+					<div class="project-column-title-text flex-text-inline gt-ellipsis" {{if .Default}}data-tooltip-content="{{ctx.Locale.Tr "New issues added to this project will be added to this column"}}"{{end}}>
 						{{if .Default}}{{svg "octicon-star"}} {{end}}{{.Title}}
 					</div>
 					{{if $canWriteProject}}
@@ -86,27 +86,27 @@
 							{{svg "octicon-kebab-horizontal"}}
 							<div class="menu">
 								<a class="item button show-modal show-project-column-modal-edit" data-modal="#project-column-modal-edit"
-									data-modal-header="{{ctx.Locale.Tr "repo.projects.column.edit"}}"
-									data-modal-project-column-title-label="{{ctx.Locale.Tr "repo.projects.column.edit_title"}}"
-									data-modal-project-column-button-save="{{ctx.Locale.Tr "repo.projects.column.edit"}}"
+									data-modal-header="{{ctx.Locale.Tr "Edit Column"}}"
+									data-modal-project-column-title-label="{{ctx.Locale.Tr "Name"}}"
+									data-modal-project-column-button-save="{{ctx.Locale.Tr "Edit Column"}}"
 									data-modal-project-column-id="{{.ID}}"
 									data-modal-project-column-title-input="{{.Title}}"
 									data-modal-project-column-color-input="{{.Color}}"
 								>
-									{{svg "octicon-pencil"}} {{ctx.Locale.Tr "repo.projects.column.edit"}}
+									{{svg "octicon-pencil"}} {{ctx.Locale.Tr "Edit Column"}}
 								</a>
 								{{if not .Default}}
 									<a class="item button link-action" data-url="{{$.Link}}/{{.ID}}/default"
-										data-modal-confirm-header="{{ctx.Locale.Tr "repo.projects.column.set_default"}}"
-										data-modal-confirm-content="{{ctx.Locale.Tr "repo.projects.column.set_default_desc"}}"
+										data-modal-confirm-header="{{ctx.Locale.Tr "Set Default"}}"
+										data-modal-confirm-content="{{ctx.Locale.Tr "Set this column as default for uncategorized issues and pulls"}}"
 									>
-										{{svg "octicon-star"}} {{ctx.Locale.Tr "repo.projects.column.set_default"}}
+										{{svg "octicon-star"}} {{ctx.Locale.Tr "Set Default"}}
 									</a>
 									<a class="item button link-action" data-url="{{$.Link}}/{{.ID}}" data-link-action-method="DELETE"
-										data-modal-confirm-header="{{ctx.Locale.Tr "repo.projects.column.delete"}}"
-										data-modal-confirm-content="{{ctx.Locale.Tr "repo.projects.column.deletion_desc"}}"
+										data-modal-confirm-header="{{ctx.Locale.Tr "Delete Column"}}"
+										data-modal-confirm-content="{{ctx.Locale.Tr "Deleting a project column moves all related issues to the default column. Continue?"}}"
 									>
-										{{svg "octicon-trash"}} {{ctx.Locale.Tr "repo.projects.column.delete"}}
+										{{svg "octicon-trash"}} {{ctx.Locale.Tr "Delete Column"}}
 									</a>
 								{{end}}
 							</div>
@@ -144,7 +144,7 @@
 				</div>
 			</div>
 			<div class="actions">
-				<button class="ui cancel button">{{ctx.Locale.Tr "settings.cancel"}}</button>
+				<button class="ui cancel button">{{ctx.Locale.Tr "Cancel"}}</button>
 				<button type="submit" class="ui primary button project-column-button-save">save</button>
 			</div>
 		</form>

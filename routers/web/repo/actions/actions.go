@@ -65,12 +65,12 @@ func MustEnableActions(ctx *context.Context) {
 }
 
 func List(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("actions.actions")
+	ctx.Data["Title"] = ctx.Tr("Actions")
 	ctx.Data["PageIsActions"] = true
 
 	commit, err := ctx.Repo.GitRepo.GetBranchCommit(ctx.Repo.Repository.DefaultBranch)
 	if errors.Is(err, util.ErrNotExist) {
-		ctx.Data["NotFoundPrompt"] = ctx.Tr("repo.branch.default_branch_not_exist", ctx.Repo.Repository.DefaultBranch)
+		ctx.Data["NotFoundPrompt"] = ctx.Tr("Default branch \"%s\" does not exist.", ctx.Repo.Repository.DefaultBranch)
 		ctx.NotFound(nil)
 		return
 	} else if err != nil {
@@ -147,7 +147,7 @@ func prepareWorkflowTemplate(ctx *context.Context, commit *git.Commit) (workflow
 		}
 		wf, err := act_model.ReadWorkflow(bytes.NewReader(content))
 		if err != nil {
-			workflow.ErrMsg = ctx.Locale.TrString("actions.runs.invalid_workflow_helper", err.Error())
+			workflow.ErrMsg = ctx.Locale.TrString("Workflow config file is invalid. Please check your config file: %s", err.Error())
 			workflows = append(workflows, workflow)
 			continue
 		}
@@ -166,10 +166,10 @@ func prepareWorkflowTemplate(ctx *context.Context, commit *git.Commit) (workflow
 			}
 		}
 		if !hasJobWithoutNeeds {
-			workflow.ErrMsg = ctx.Locale.TrString("actions.runs.no_job_without_needs")
+			workflow.ErrMsg = ctx.Locale.TrString("The workflow must contain at least one job without dependencies.")
 		}
 		if emptyJobsNumber == len(wf.Jobs) {
-			workflow.ErrMsg = ctx.Locale.TrString("actions.runs.no_job")
+			workflow.ErrMsg = ctx.Locale.TrString("The workflow must contain at least one job")
 		}
 		workflows = append(workflows, workflow)
 	}
@@ -323,7 +323,7 @@ func prepareWorkflowList(ctx *context.Context, workflows []WorkflowInfo) {
 				}
 			}
 			if !hasOnlineRunner {
-				runErrors[run.ID] = ctx.Locale.TrString("actions.runs.no_matching_online_runner_helper", strings.Join(job.RunsOn, ","))
+				runErrors[run.ID] = ctx.Locale.TrString("No matching online runner with label: %s", strings.Join(job.RunsOn, ","))
 				break
 			}
 		}

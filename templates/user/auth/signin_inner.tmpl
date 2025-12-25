@@ -4,9 +4,9 @@
 	{{end}}
 	<h4 class="ui top attached header center">
 		{{if .LinkAccountMode}}
-			{{ctx.Locale.Tr "auth.oauth_signin_title"}}
+			{{ctx.Locale.Tr "Sign In to Authorize Linked Account"}}
 		{{else}}
-			{{ctx.Locale.Tr "auth.login_userpass"}}
+			{{ctx.Locale.Tr "Sign In"}}
 		{{end}}
 	</h4>
 	<div class="ui attached segment">
@@ -14,14 +14,14 @@
 		<form class="ui form" action="{{.SignInLink}}" method="post">
 			{{.CsrfTokenHtml}}
 			<div class="required field {{if and (.Err_UserName) (or (not .LinkAccountMode) (and .LinkAccountMode .LinkAccountModeSignIn))}}error{{end}}">
-				<label for="user_name">{{ctx.Locale.Tr "home.uname_holder"}}</label>
+				<label for="user_name">{{ctx.Locale.Tr "Username or Email Address"}}</label>
 				<input id="user_name" type="text" name="user_name" value="{{.user_name}}" autofocus required tabindex="1">
 			</div>
 			{{if or (not .DisablePassword) .LinkAccountMode}}
 			<div class="required field {{if and (.Err_Password) (or (not .LinkAccountMode) (and .LinkAccountMode .LinkAccountModeSignIn))}}error{{end}}">
 				<div class="tw-flex tw-mb-1">
-					<label for="password" class="tw-flex-1">{{ctx.Locale.Tr "password"}}</label>
-					<a href="{{AppSubUrl}}/user/forgot_password" tabindex="4">{{ctx.Locale.Tr "auth.forgot_password"}}</a>
+					<label for="password" class="tw-flex-1">{{ctx.Locale.Tr "Password"}}</label>
+					<a href="{{AppSubUrl}}/user/forgot_password" tabindex="4">{{ctx.Locale.Tr "Forgot password?"}}</a>
 				</div>
 				<input id="password" name="password" type="password" value="{{.password}}" autocomplete="current-password" required tabindex="2">
 			</div>
@@ -29,7 +29,7 @@
 			{{if not .LinkAccountMode}}
 			<div class="inline field">
 				<div class="ui checkbox">
-					<label>{{ctx.Locale.Tr "auth.remember_me"}}</label>
+					<label>{{ctx.Locale.Tr "Remember This Device"}}</label>
 					<input name="remember" type="checkbox" tabindex="5">
 				</div>
 			</div>
@@ -40,9 +40,9 @@
 			<div class="field">
 				<button class="ui primary button tw-w-full" tabindex="3">
 					{{if .LinkAccountMode}}
-						{{ctx.Locale.Tr "auth.oauth_signin_submit"}}
+						{{ctx.Locale.Tr "Link Account"}}
 					{{else}}
-						{{ctx.Locale.Tr "sign_in"}}
+						{{ctx.Locale.Tr "Sign In"}}
 					{{end}}
 				</button>
 			</div>
@@ -51,7 +51,7 @@
 		{{/* "oauth_container" contains not only "oauth2" methods, but also "OIDC" and "SSPI" methods */}}
 		{{$showOAuth2Methods := or .OAuth2Providers .EnableOpenIDSignIn .EnableSSPI}}
 		{{if and $showOAuth2Methods .EnablePasswordSignInForm}}
-			<div class="divider divider-text">{{ctx.Locale.Tr "sign_in_or"}}</div>
+			<div class="divider divider-text">{{ctx.Locale.Tr "or"}}</div>
 		{{end}}
 		{{if $showOAuth2Methods}}
 			{{template "user/auth/oauth_container" .}}
@@ -64,13 +64,13 @@
 	<div class="ui attached segment header top tw-max-w-2xl tw-m-auto tw-flex tw-flex-col tw-items-center">
 		{{if .EnablePasskeyAuth}}
 			{{template "user/auth/webauthn_error" .}}
-			<a class="signin-passkey">{{ctx.Locale.Tr "auth.signin_passkey"}}</a>
+			<a class="signin-passkey">{{ctx.Locale.Tr "Sign in with a passkey"}}</a>
 		{{end}}
 
 		{{if .ShowRegistrationButton}}
 			<div class="field">
-				<span>{{ctx.Locale.Tr "auth.need_account"}}</span>
-				<a href="{{AppSubUrl}}/user/sign_up">{{ctx.Locale.Tr "auth.sign_up_now"}}</a>
+				<span>{{ctx.Locale.Tr "Need an account?"}}</span>
+				<a href="{{AppSubUrl}}/user/sign_up">{{ctx.Locale.Tr "Register now."}}</a>
 			</div>
 		{{end}}
 	</div>

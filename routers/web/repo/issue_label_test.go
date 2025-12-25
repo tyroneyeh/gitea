@@ -159,7 +159,7 @@ func testDeleteLabel(t *testing.T) {
 	assert.Equal(t, http.StatusOK, ctx.Resp.WrittenStatus())
 	unittest.AssertNotExistsBean(t, &issues_model.Label{ID: 2})
 	unittest.AssertNotExistsBean(t, &issues_model.IssueLabel{LabelID: 2})
-	assert.EqualValues(t, ctx.Tr("repo.issues.label_deletion_success"), ctx.Flash.SuccessMsg)
+	assert.EqualValues(t, ctx.Tr("The label has been deleted."), ctx.Flash.SuccessMsg)
 }
 
 func testUpdateIssueLabelClear(t *testing.T) {

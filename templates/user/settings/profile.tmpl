@@ -1,74 +1,74 @@
 {{template "user/settings/layout_head" (dict "ctxData" . "pageClass" "user settings profile")}}
 	<div class="user-setting-content">
 		<h4 class="ui top attached header">
-			{{ctx.Locale.Tr "settings.public_profile"}}
+			{{ctx.Locale.Tr "Public Profile"}}
 		</h4>
 		<div class="ui attached segment">
-			<p>{{ctx.Locale.Tr "settings.profile_desc"}}</p>
+			<p>{{ctx.Locale.Tr "Control how your profile is shown to other users. Your primary email address will be used for notifications, password recovery and web-based Git operations."}}</p>
 			<form class="ui form" action="{{.Link}}" method="post">
 				{{.CsrfTokenHtml}}
 				<div class="required field {{if .Err_Name}}error{{end}}">
-					<label for="username">{{ctx.Locale.Tr "username"}}
-						<span class="text red tw-hidden" id="name-change-prompt"> {{ctx.Locale.Tr "settings.change_username_prompt"}}</span>
-						<span class="text red tw-hidden" id="name-change-redirect-prompt"> {{ctx.Locale.Tr "settings.change_username_redirect_prompt"}}</span>
+					<label for="username">{{ctx.Locale.Tr "Username"}}
+						<span class="text red tw-hidden" id="name-change-prompt"> {{ctx.Locale.Tr "Note: Changing your username also changes your account URL."}}</span>
+						<span class="text red tw-hidden" id="name-change-redirect-prompt"> {{ctx.Locale.Tr "The old username will redirect until someone claims it."}}</span>
 					</label>
 					<input id="username" name="name" value="{{.SignedUser.Name}}" data-name="{{.SignedUser.Name}}" required {{if or (not .SignedUser.IsLocal) ($.UserDisabledFeatures.Contains "change_username") .IsReverseProxy}}disabled{{end}} maxlength="40">
 					{{if or (not .SignedUser.IsLocal) ($.UserDisabledFeatures.Contains "change_username") .IsReverseProxy}}
-					<p class="help text blue">{{ctx.Locale.Tr "settings.password_username_disabled"}}</p>
+					<p class="help text blue">{{ctx.Locale.Tr "You are not allowed to change your username. Please contact your site administrator for more details."}}</p>
 					{{end}}
 				</div>
 				<div class="field {{if .Err_FullName}}error{{end}}">
-					<label for="full_name">{{ctx.Locale.Tr "settings.full_name"}}</label>
+					<label for="full_name">{{ctx.Locale.Tr "Full Name"}}</label>
 					<input id="full_name" name="full_name" value="{{.SignedUser.FullName}}" {{if ($.UserDisabledFeatures.Contains "change_full_name")}}disabled{{end}} maxlength="100">
 					{{if ($.UserDisabledFeatures.Contains "change_full_name")}}
-					<p class="help text blue">{{ctx.Locale.Tr "settings.password_full_name_disabled"}}</p>
+					<p class="help text blue">{{ctx.Locale.Tr "You are not allowed to change your full name. Please contact your site administrator for more details."}}</p>
 					{{end}}
 				</div>
 				<div class="field {{if .Err_Email}}error{{end}}">
-					<label>{{ctx.Locale.Tr "email"}}</label>
+					<label>{{ctx.Locale.Tr "Email Address"}}</label>
 					<p id="signed-user-email">{{.SignedUser.Email}}</p>
 				</div>
 				<div class="field {{if .Err_Description}}error{{end}}">
 					{{/* it is rendered as markdown, but the length is limited, so at the moment we do not use the markdown editor here */}}
-					<label for="description">{{ctx.Locale.Tr "user.user_bio"}}</label>
-					<textarea id="description" name="description" rows="2" placeholder="{{ctx.Locale.Tr "settings.biography_placeholder"}}" maxlength="255">{{.SignedUser.Description}}</textarea>
+					<label for="description">{{ctx.Locale.Tr "Biography"}}</label>
+					<textarea id="description" name="description" rows="2" placeholder="{{ctx.Locale.Tr "Tell us a little bit about yourself! (You can use Markdown)"}}" maxlength="255">{{.SignedUser.Description}}</textarea>
 				</div>
 				<div class="field {{if .Err_Website}}error{{end}}">
-					<label for="website">{{ctx.Locale.Tr "settings.website"}}</label>
+					<label for="website">{{ctx.Locale.Tr "Website"}}</label>
 					<input id="website" name="website" type="url" value="{{.SignedUser.Website}}" maxlength="255">
 				</div>
 				<div class="field">
-					<label for="location">{{ctx.Locale.Tr "settings.location"}}</label>
-					<input id="location" name="location" placeholder="{{ctx.Locale.Tr "settings.location_placeholder"}}" value="{{.SignedUser.Location}}" maxlength="50">
+					<label for="location">{{ctx.Locale.Tr "Location"}}</label>
+					<input id="location" name="location" placeholder="{{ctx.Locale.Tr "Share your approximate location with others"}}" value="{{.SignedUser.Location}}" maxlength="50">
 				</div>
 
 				<div class="divider"></div>
 				<!-- private block -->
 
 				<div class="field" id="privacy-user-settings">
-					<label><strong>{{ctx.Locale.Tr "settings.privacy"}}</strong></label>
+					<label><strong>{{ctx.Locale.Tr "Privacy"}}</strong></label>
 				</div>
 
 				<div class="inline field {{if .Err_Visibility}}error{{end}}">
-					<span class="inline required field"><label>{{ctx.Locale.Tr "settings.visibility"}}</label></span>
+					<span class="inline required field"><label>{{ctx.Locale.Tr "User visibility"}}</label></span>
 					<div class="ui selection type dropdown">
 						{{if .SignedUser.Visibility.IsPublic}}<input type="hidden" id="visibility" name="visibility" value="0">{{end}}
 						{{if .SignedUser.Visibility.IsLimited}}<input type="hidden" id="visibility" name="visibility" value="1">{{end}}
 						{{if .SignedUser.Visibility.IsPrivate}}<input type="hidden" id="visibility" name="visibility" value="2">{{end}}
 						<div class="text">
-							{{if .SignedUser.Visibility.IsPublic}}{{ctx.Locale.Tr "settings.visibility.public"}}{{end}}
-							{{if .SignedUser.Visibility.IsLimited}}{{ctx.Locale.Tr "settings.visibility.limited"}}{{end}}
-							{{if .SignedUser.Visibility.IsPrivate}}{{ctx.Locale.Tr "settings.visibility.private"}}{{end}}
+							{{if .SignedUser.Visibility.IsPublic}}{{ctx.Locale.Tr "Public"}}{{end}}
+							{{if .SignedUser.Visibility.IsLimited}}{{ctx.Locale.Tr "Limited"}}{{end}}
+							{{if .SignedUser.Visibility.IsPrivate}}{{ctx.Locale.Tr "Private"}}{{end}}
 						</div>
 						{{svg "octicon-triangle-down" 14 "dropdown icon"}}
 						<div class="menu">
 							{{range $mode := .AllowedUserVisibilityModes}}
 								{{if $mode.IsPublic}}
-									<div class="item" data-tooltip-content="{{ctx.Locale.Tr "settings.visibility.public_tooltip"}}" data-value="0">{{ctx.Locale.Tr "settings.visibility.public"}}</div>
+									<div class="item" data-tooltip-content="{{ctx.Locale.Tr "Visible to everyone"}}" data-value="0">{{ctx.Locale.Tr "Public"}}</div>
 								{{else if $mode.IsLimited}}
-									<div class="item" data-tooltip-content="{{ctx.Locale.Tr "settings.visibility.limited_tooltip"}}" data-value="1">{{ctx.Locale.Tr "settings.visibility.limited"}}</div>
+									<div class="item" data-tooltip-content="{{ctx.Locale.Tr "Visible only to authenticated users"}}" data-value="1">{{ctx.Locale.Tr "Limited"}}</div>
 								{{else if $mode.IsPrivate}}
-									<div class="item" data-tooltip-content="{{ctx.Locale.Tr "settings.visibility.private_tooltip"}}" data-value="2">{{ctx.Locale.Tr "settings.visibility.private"}}</div>
+									<div class="item" data-tooltip-content="{{ctx.Locale.Tr "Visible only to members of organizations you have joined"}}" data-value="2">{{ctx.Locale.Tr "Private"}}</div>
 								{{end}}
 							{{end}}
 						</div>
@@ -77,14 +77,14 @@
 
 				<div class="field">
 					<div class="ui checkbox">
-						<label data-tooltip-content="{{ctx.Locale.Tr "settings.keep_email_private_popup" .SignedUser.GetPlaceholderEmail}}"><strong>{{ctx.Locale.Tr "settings.keep_email_private"}}</strong></label>
+						<label data-tooltip-content="{{ctx.Locale.Tr "This will hide your email address from your profile, as well as when you make a pull request or edit a file using the web interface. Pushed commits will not be modified. Use %s in commits to associate them with your account." .SignedUser.GetPlaceholderEmail}}"><strong>{{ctx.Locale.Tr "Hide Email Address"}}</strong></label>
 						<input name="keep_email_private" type="checkbox" {{if .SignedUser.KeepEmailPrivate}}checked{{end}}>
 					</div>
 				</div>
 
 				<div class="field">
 					<div class="ui checkbox" id="keep-activity-private">
-						<label data-tooltip-content="{{ctx.Locale.Tr "settings.keep_activity_private_popup"}}"><strong>{{ctx.Locale.Tr "settings.keep_activity_private"}}</strong></label>
+						<label data-tooltip-content="{{ctx.Locale.Tr "Makes the activity visible only for you and the admins"}}"><strong>{{ctx.Locale.Tr "Hide Activity from profile page"}}</strong></label>
 						<input name="keep_activity_private" type="checkbox" {{if .SignedUser.KeepActivityPrivate}}checked{{end}}>
 					</div>
 				</div>
@@ -92,13 +92,13 @@
 				<div class="divider"></div>
 
 				<div class="field">
-					<button class="ui primary button">{{ctx.Locale.Tr "settings.update_profile"}}</button>
+					<button class="ui primary button">{{ctx.Locale.Tr "Update Profile"}}</button>
 				</div>
 			</form>
 		</div>
 
 		<h4 class="ui top attached header">
-			{{ctx.Locale.Tr "settings.avatar"}}
+			{{ctx.Locale.Tr "Avatar"}}
 		</h4>
 		<div class="ui attached segment">
 			<form class="ui form" action="{{.Link}}/avatar" method="post" enctype="multipart/form-data">
@@ -107,11 +107,11 @@
 				<div class="inline field">
 					<div class="ui radio checkbox">
 						<input name="source" value="lookup" type="radio" {{if not .SignedUser.UseCustomAvatar}}checked{{end}}>
-						<label>{{ctx.Locale.Tr "settings.lookup_avatar_by_mail"}}</label>
+						<label>{{ctx.Locale.Tr "Look Up Avatar by Email Address"}}</label>
 					</div>
 				</div>
 				<div class="field tw-pl-4 {{if .Err_Gravatar}}error{{end}}">
-					<label for="gravatar">Avatar {{ctx.Locale.Tr "email"}}</label>
+					<label for="gravatar">Avatar {{ctx.Locale.Tr "Email Address"}}</label>
 					<input id="gravatar" name="gravatar" value="{{.SignedUser.AvatarEmail}}">
 				</div>
 				{{end}}
@@ -119,17 +119,17 @@
 				<div class="inline field">
 					<div class="ui radio checkbox">
 						<input name="source" value="local" type="radio" {{if .SignedUser.UseCustomAvatar}}checked{{end}}>
-						<label>{{ctx.Locale.Tr "settings.enable_custom_avatar"}}</label>
+						<label>{{ctx.Locale.Tr "Use Custom Avatar"}}</label>
 					</div>
 				</div>
 
 				<div class="inline field tw-pl-4">
-					{{template "shared/avatar_upload_crop" dict "LabelText" (ctx.Locale.Tr "settings.choose_new_avatar")}}
+					{{template "shared/avatar_upload_crop" dict "LabelText" (ctx.Locale.Tr "Choose new avatar")}}
 				</div>
 
 				<div class="field">
-					<button class="ui primary button">{{ctx.Locale.Tr "settings.update_avatar"}}</button>
-					<button class="ui red button link-action" data-url="{{.Link}}/avatar/delete">{{ctx.Locale.Tr "settings.delete_current_avatar"}}</button>
+					<button class="ui primary button">{{ctx.Locale.Tr "Update Avatar"}}</button>
+					<button class="ui red button link-action" data-url="{{.Link}}/avatar/delete">{{ctx.Locale.Tr "Delete Current Avatar"}}</button>
 				</div>
 			</form>
 		</div>

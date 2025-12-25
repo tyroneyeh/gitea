@@ -47,7 +47,7 @@ func Projects(ctx *context.Context) {
 		ctx.ServerError("RenderUserOrgHeader", err)
 		return
 	}
-	ctx.Data["Title"] = ctx.Tr("repo.projects")
+	ctx.Data["Title"] = ctx.Tr("Projects")
 
 	sortType := ctx.FormTrim("sort")
 
@@ -138,7 +138,7 @@ func canWriteProjects(ctx *context.Context) bool {
 
 // RenderNewProject render creating a project page
 func RenderNewProject(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("repo.projects.new")
+	ctx.Data["Title"] = ctx.Tr("New Project")
 	ctx.Data["TemplateConfigs"] = project_model.GetTemplateConfigs()
 	ctx.Data["CardTypes"] = project_model.GetCardConfig()
 	ctx.Data["CanWriteProjects"] = canWriteProjects(ctx)
@@ -156,7 +156,7 @@ func RenderNewProject(ctx *context.Context) {
 // NewProjectPost creates a new project
 func NewProjectPost(ctx *context.Context) {
 	form := web.GetForm(ctx).(*forms.CreateProjectForm)
-	ctx.Data["Title"] = ctx.Tr("repo.projects.new")
+	ctx.Data["Title"] = ctx.Tr("New Project")
 	if _, err := shared_user.RenderUserOrgHeader(ctx); err != nil {
 		ctx.ServerError("RenderUserOrgHeader", err)
 		return
@@ -187,7 +187,7 @@ func NewProjectPost(ctx *context.Context) {
 		return
 	}
 
-	ctx.Flash.Success(ctx.Tr("repo.projects.create_success", form.Title))
+	ctx.Flash.Success(ctx.Tr("The project \"%s\" has been created.", form.Title))
 	ctx.Redirect(ctx.ContextUser.HomeLink() + "/-/projects")
 }
 
@@ -227,7 +227,7 @@ func DeleteProject(ctx *context.Context) {
 	if err := project_model.DeleteProjectByID(ctx, p.ID); err != nil {
 		ctx.Flash.Error("DeleteProjectByID: " + err.Error())
 	} else {
-		ctx.Flash.Success(ctx.Tr("repo.projects.deletion_success"))
+		ctx.Flash.Success(ctx.Tr("The project has been deleted."))
 	}
 
 	ctx.JSONRedirect(ctx.ContextUser.HomeLink() + "/-/projects")
@@ -235,7 +235,7 @@ func DeleteProject(ctx *context.Context) {
 
 // RenderEditProject allows a project to be edited
 func RenderEditProject(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("repo.projects.edit")
+	ctx.Data["Title"] = ctx.Tr("Edit Project")
 	ctx.Data["PageIsEditProjects"] = true
 	ctx.Data["PageIsViewProjects"] = true
 	ctx.Data["CanWriteProjects"] = canWriteProjects(ctx)
@@ -271,7 +271,7 @@ func RenderEditProject(ctx *context.Context) {
 func EditProjectPost(ctx *context.Context) {
 	form := web.GetForm(ctx).(*forms.CreateProjectForm)
 	projectID := ctx.PathParamInt64("id")
-	ctx.Data["Title"] = ctx.Tr("repo.projects.edit")
+	ctx.Data["Title"] = ctx.Tr("Edit Project")
 	ctx.Data["PageIsEditProjects"] = true
 	ctx.Data["PageIsViewProjects"] = true
 	ctx.Data["CanWriteProjects"] = canWriteProjects(ctx)
@@ -306,7 +306,7 @@ func EditProjectPost(ctx *context.Context) {
 		return
 	}
 
-	ctx.Flash.Success(ctx.Tr("repo.projects.edit_success", p.Title))
+	ctx.Flash.Success(ctx.Tr("Project \"%s\" has been updated.", p.Title))
 	if ctx.FormString("redirect") == "project" {
 		ctx.Redirect(p.Link(ctx))
 	} else {

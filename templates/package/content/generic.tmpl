@@ -1,9 +1,9 @@
 {{if eq .PackageDescriptor.Package.Type "generic"}}
-	<h4 class="ui top attached header">{{ctx.Locale.Tr "packages.installation"}}</h4>
+	<h4 class="ui top attached header">{{ctx.Locale.Tr "Installation"}}</h4>
 	<div class="ui attached segment">
 		<div class="ui form">
 			<div class="field">
-				<label>{{svg "octicon-terminal"}} {{ctx.Locale.Tr "packages.generic.download"}}</label>
+				<label>{{svg "octicon-terminal"}} {{ctx.Locale.Tr "Download package from the command line:"}}</label>
 				<div class="markup"><pre class="code-block"><code>
 {{- range .PackageDescriptor.Files -}}
 curl -OJ <origin-url data-url="{{AppSubUrl}}/api/packages/{{$.PackageDescriptor.Owner.Name}}/generic/{{$.PackageDescriptor.Package.Name}}/{{$.PackageDescriptor.Version.Version}}/{{.File.Name}}"></origin-url>
@@ -11,7 +11,7 @@ curl -OJ <origin-url data-url="{{AppSubUrl}}/api/packages/{{$.PackageDescriptor.
 				</code></pre></div>
 			</div>
 			<div class="field">
-				<label>{{ctx.Locale.Tr "packages.registry.documentation" "Generic" "https://docs.gitea.com/usage/packages/generic"}}</label>
+				<label>{{ctx.Locale.Tr "For more information on the %s registry, see <a target=\"_blank\" rel=\"noopener noreferrer\" href=\"%s\">the documentation</a>." "Generic" "https://docs.gitea.com/usage/packages/generic"}}</label>
 			</div>
 		</div>
 	</div>

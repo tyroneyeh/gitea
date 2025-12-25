@@ -14,10 +14,10 @@
 		{{else}}
 			{{Iif .PageIsPullList (svg "octicon-git-pull-request") (svg "octicon-issue-opened")}}
 		{{end}}
-		{{ctx.Locale.PrettyNumber .OpenCount}} {{ctx.Locale.Tr "repo.issues.open_title"}}
+		{{ctx.Locale.PrettyNumber .OpenCount}} {{ctx.Locale.Tr "Open"}}
 	</a>
 	<a class="{{if eq .State "closed"}}active {{end}}item flex-text-inline" href="{{if eq .State "closed"}}{{$allStatesLink}}{{else}}{{$closedLink}}{{end}}">
 		{{svg "octicon-issue-closed"}}
-		{{ctx.Locale.PrettyNumber .ClosedCount}} {{ctx.Locale.Tr "repo.issues.closed_title"}}
+		{{ctx.Locale.PrettyNumber .ClosedCount}} {{ctx.Locale.Tr "Closed"}}
 	</a>
 </div>

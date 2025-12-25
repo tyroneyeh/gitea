@@ -32,14 +32,14 @@ const (
 func Home(ctx *context.Context) {
 	if ctx.IsSigned {
 		if !ctx.Doer.IsActive && setting.Service.RegisterEmailConfirm {
-			ctx.Data["Title"] = ctx.Tr("auth.active_your_account")
+			ctx.Data["Title"] = ctx.Tr("Activate Your Account")
 			ctx.HTML(http.StatusOK, auth.TplActivate)
 		} else if !ctx.Doer.IsActive || ctx.Doer.ProhibitLogin {
 			log.Info("Failed authentication attempt for %s from %s", ctx.Doer.Name, ctx.RemoteAddr())
-			ctx.Data["Title"] = ctx.Tr("auth.prohibit_login")
+			ctx.Data["Title"] = ctx.Tr("Sign-In Prohibited")
 			ctx.HTML(http.StatusOK, "user/auth/prohibit_login")
 		} else if ctx.Doer.MustChangePassword {
-			ctx.Data["Title"] = ctx.Tr("auth.must_change_password")
+			ctx.Data["Title"] = ctx.Tr("Update your password")
 			ctx.Data["ChangePasscodeLink"] = setting.AppSubURL + "/user/change_password"
 			middleware.SetRedirectToCookie(ctx.Resp, setting.AppSubURL+ctx.Req.URL.RequestURI())
 			ctx.Redirect(setting.AppSubURL + "/user/settings/change_password")

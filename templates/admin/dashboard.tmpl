@@ -2,11 +2,11 @@
 	<div class="admin-setting-content">
 		{{if .NeedUpdate}}
 			<div class="ui negative message flash-error">
-				<p>{{ctx.Locale.Tr "admin.dashboard.new_version_hint" .RemoteVersion AppVer "https://blog.gitea.com"}}</p>
+				<p>{{ctx.Locale.Tr "Gitea %s is now available, you are running %s. Check <a target=\"_blank\" rel=\"noreferrer\" href=\"%s\">the blog</a> for more details." .RemoteVersion AppVer "https://blog.gitea.com"}}</p>
 			</div>
 		{{end}}
 		<h4 class="ui top attached header">
-			{{ctx.Locale.Tr "admin.dashboard.maintenance_operations"}}
+			{{ctx.Locale.Tr "Maintenance Operations"}}
 		</h4>
 		<div class="ui attached table segment">
 			<form method="post" action="{{AppSubUrl}}/-/admin">
@@ -14,58 +14,58 @@
 				<table class="ui very basic table tw-mt-0 tw-px-4">
 					<tbody>
 						<tr>
-							<td>{{ctx.Locale.Tr "admin.dashboard.delete_inactive_accounts"}}</td>
-							<td class="tw-text-right"><button type="submit" class="ui primary button" name="op" value="delete_inactive_accounts">{{svg "octicon-play"}} {{ctx.Locale.Tr "admin.dashboard.operation_run"}}</button></td>
+							<td>{{ctx.Locale.Tr "Delete all unactivated accounts"}}</td>
+							<td class="tw-text-right"><button type="submit" class="ui primary button" name="op" value="delete_inactive_accounts">{{svg "octicon-play"}} {{ctx.Locale.Tr "Run"}}</button></td>
 						</tr>
 						<tr>
-							<td>{{ctx.Locale.Tr "admin.dashboard.delete_repo_archives"}}</td>
-							<td class="tw-text-right"><button type="submit" class="ui primary button" name="op" value="delete_repo_archives">{{svg "octicon-play"}} {{ctx.Locale.Tr "admin.dashboard.operation_run"}}</button></td>
+							<td>{{ctx.Locale.Tr "Delete all repositories' archives (ZIP, TAR.GZ, etc..)"}}</td>
+							<td class="tw-text-right"><button type="submit" class="ui primary button" name="op" value="delete_repo_archives">{{svg "octicon-play"}} {{ctx.Locale.Tr "Run"}}</button></td>
 						</tr>
 						<tr>
-							<td>{{ctx.Locale.Tr "admin.dashboard.delete_missing_repos"}}</td>
-							<td class="tw-text-right"><button type="submit" class="ui primary button" name="op" value="delete_missing_repos">{{svg "octicon-play"}} {{ctx.Locale.Tr "admin.dashboard.operation_run"}}</button></td>
+							<td>{{ctx.Locale.Tr "Delete all repositories missing their Git files"}}</td>
+							<td class="tw-text-right"><button type="submit" class="ui primary button" name="op" value="delete_missing_repos">{{svg "octicon-play"}} {{ctx.Locale.Tr "Run"}}</button></td>
 						</tr>
 						<tr>
-							<td>{{ctx.Locale.Tr "admin.dashboard.git_gc_repos"}}</td>
-							<td class="tw-text-right"><button type="submit" class="ui primary button" name="op" value="git_gc_repos">{{svg "octicon-play"}} {{ctx.Locale.Tr "admin.dashboard.operation_run"}}</button></td>
+							<td>{{ctx.Locale.Tr "Garbage-collect all repositories"}}</td>
+							<td class="tw-text-right"><button type="submit" class="ui primary button" name="op" value="git_gc_repos">{{svg "octicon-play"}} {{ctx.Locale.Tr "Run"}}</button></td>
 						</tr>
 						{{if and (not .SSH.Disabled) (not .SSH.StartBuiltinServer)}}
 							<tr>
-								<td>{{ctx.Locale.Tr "admin.dashboard.resync_all_sshkeys"}}</td>
-								<td class="tw-text-right"><button type="submit" class="ui primary button" name="op" value="resync_all_sshkeys">{{svg "octicon-play"}} {{ctx.Locale.Tr "admin.dashboard.operation_run"}}</button></td>
+								<td>{{ctx.Locale.Tr "Update the '.ssh/authorized_keys' file with Gitea SSH keys"}}</td>
+								<td class="tw-text-right"><button type="submit" class="ui primary button" name="op" value="resync_all_sshkeys">{{svg "octicon-play"}} {{ctx.Locale.Tr "Run"}}</button></td>
 							</tr>
 							<tr>
-								<td>{{ctx.Locale.Tr "admin.dashboard.resync_all_sshprincipals"}}</td>
-								<td class="tw-text-right"><button type="submit" class="ui primary button" name="op" value="resync_all_sshprincipals">{{svg "octicon-play" 16}} {{ctx.Locale.Tr "admin.dashboard.operation_run"}}</button></td>
+								<td>{{ctx.Locale.Tr "Update the '.ssh/authorized_principals' file with Gitea SSH principals"}}</td>
+								<td class="tw-text-right"><button type="submit" class="ui primary button" name="op" value="resync_all_sshprincipals">{{svg "octicon-play" 16}} {{ctx.Locale.Tr "Run"}}</button></td>
 							</tr>
 						{{end}}
 						<tr>
-							<td>{{ctx.Locale.Tr "admin.dashboard.resync_all_hooks"}}</td>
-							<td class="tw-text-right"><button type="submit" class="ui primary button" name="op" value="resync_all_hooks">{{svg "octicon-play"}} {{ctx.Locale.Tr "admin.dashboard.operation_run"}}</button></td>
+							<td>{{ctx.Locale.Tr "Resynchronize git hooks of all repositories (pre-receive, update, post-receive, proc-receive, ...)"}}</td>
+							<td class="tw-text-right"><button type="submit" class="ui primary button" name="op" value="resync_all_hooks">{{svg "octicon-play"}} {{ctx.Locale.Tr "Run"}}</button></td>
 						</tr>
 						<tr>
-							<td>{{ctx.Locale.Tr "admin.dashboard.reinit_missing_repos"}}</td>
-							<td class="tw-text-right"><button type="submit" class="ui primary button" name="op" value="reinit_missing_repos">{{svg "octicon-play"}} {{ctx.Locale.Tr "admin.dashboard.operation_run"}}</button></td>
+							<td>{{ctx.Locale.Tr "Reinitialize all missing Git repositories for which records exist"}}</td>
+							<td class="tw-text-right"><button type="submit" class="ui primary button" name="op" value="reinit_missing_repos">{{svg "octicon-play"}} {{ctx.Locale.Tr "Run"}}</button></td>
 						</tr>
 						<tr>
-							<td>{{ctx.Locale.Tr "admin.dashboard.sync_external_users"}}</td>
-							<td class="tw-text-right"><button type="submit" class="ui primary button" name="op" value="sync_external_users">{{svg "octicon-play"}} {{ctx.Locale.Tr "admin.dashboard.operation_run"}}</button></td>
+							<td>{{ctx.Locale.Tr "Synchronize external user data"}}</td>
+							<td class="tw-text-right"><button type="submit" class="ui primary button" name="op" value="sync_external_users">{{svg "octicon-play"}} {{ctx.Locale.Tr "Run"}}</button></td>
 						</tr>
 						<tr>
-							<td>{{ctx.Locale.Tr "admin.dashboard.repo_health_check"}}</td>
-							<td class="tw-text-right"><button type="submit" class="ui primary button" name="op" value="repo_health_check">{{svg "octicon-play"}} {{ctx.Locale.Tr "admin.dashboard.operation_run"}}</button></td>
+							<td>{{ctx.Locale.Tr "Health check all repositories"}}</td>
+							<td class="tw-text-right"><button type="submit" class="ui primary button" name="op" value="repo_health_check">{{svg "octicon-play"}} {{ctx.Locale.Tr "Run"}}</button></td>
 						</tr>
 						<tr>
-							<td>{{ctx.Locale.Tr "admin.dashboard.delete_generated_repository_avatars"}}</td>
-							<td class="tw-text-right"><button type="submit" class="ui primary button" name="op" value="delete_generated_repository_avatars">{{svg "octicon-play"}} {{ctx.Locale.Tr "admin.dashboard.operation_run"}}</button></td>
+							<td>{{ctx.Locale.Tr "Delete generated repository avatars"}}</td>
+							<td class="tw-text-right"><button type="submit" class="ui primary button" name="op" value="delete_generated_repository_avatars">{{svg "octicon-play"}} {{ctx.Locale.Tr "Run"}}</button></td>
 						</tr>
 						<tr>
-							<td>{{ctx.Locale.Tr "admin.dashboard.sync_repo_branches"}}</td>
-							<td class="tw-text-right"><button type="submit" class="ui primary button" name="op" value="sync_repo_branches">{{svg "octicon-play"}} {{ctx.Locale.Tr "admin.dashboard.operation_run"}}</button></td>
+							<td>{{ctx.Locale.Tr "Sync missed branches from git data to databases"}}</td>
+							<td class="tw-text-right"><button type="submit" class="ui primary button" name="op" value="sync_repo_branches">{{svg "octicon-play"}} {{ctx.Locale.Tr "Run"}}</button></td>
 						</tr>
 						<tr>
-							<td>{{ctx.Locale.Tr "admin.dashboard.sync_repo_tags"}}</td>
-							<td class="tw-text-right"><button type="submit" class="ui primary button" name="op" value="sync_repo_tags">{{svg "octicon-play"}} {{ctx.Locale.Tr "admin.dashboard.operation_run"}}</button></td>
+							<td>{{ctx.Locale.Tr "Sync tags from git data to database"}}</td>
+							<td class="tw-text-right"><button type="submit" class="ui primary button" name="op" value="sync_repo_tags">{{svg "octicon-play"}} {{ctx.Locale.Tr "Run"}}</button></td>
 						</tr>
 					</tbody>
 				</table>
@@ -73,7 +73,7 @@
 		</div>
 
 		<h4 class="ui top attached header">
-			{{ctx.Locale.Tr "admin.dashboard.system_status"}}
+			{{ctx.Locale.Tr "System Status"}}
 		</h4>
 		{{/* TODO: make these stats work in multi-server deployments, likely needs per-server stats in DB */}}
 		<div class="ui attached table segment">

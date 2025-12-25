@@ -65,7 +65,7 @@ func NewProtectedTagPost(ctx *context.Context) {
 		return
 	}
 
-	ctx.Flash.Success(ctx.Tr("repo.settings.update_settings_success"))
+	ctx.Flash.Success(ctx.Tr("The repository settings have been updated."))
 	ctx.Redirect(setting.AppSubURL + ctx.Req.URL.EscapedPath())
 }
 
@@ -118,7 +118,7 @@ func EditProtectedTagPost(ctx *context.Context) {
 		return
 	}
 
-	ctx.Flash.Success(ctx.Tr("repo.settings.update_settings_success"))
+	ctx.Flash.Success(ctx.Tr("The repository settings have been updated."))
 	ctx.Redirect(ctx.Repo.Repository.Link() + "/settings/tags")
 }
 
@@ -134,12 +134,12 @@ func DeleteProtectedTagPost(ctx *context.Context) {
 		return
 	}
 
-	ctx.Flash.Success(ctx.Tr("repo.settings.update_settings_success"))
+	ctx.Flash.Success(ctx.Tr("The repository settings have been updated."))
 	ctx.Redirect(ctx.Repo.Repository.Link() + "/settings/tags")
 }
 
 func setTagsContext(ctx *context.Context) error {
-	ctx.Data["Title"] = ctx.Tr("repo.settings.tags")
+	ctx.Data["Title"] = ctx.Tr("Tags")
 	ctx.Data["PageIsSettingsTags"] = true
 
 	protectedTags, err := git_model.GetProtectedTags(ctx, ctx.Repo.Repository.ID)

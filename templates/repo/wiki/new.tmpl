@@ -4,23 +4,23 @@
 	<div class="ui container">
 		{{template "base/alert" .}}
 		<div class="ui header flex-text-block tw-justify-between">
-			{{ctx.Locale.Tr "repo.wiki.new_page"}}
+			{{ctx.Locale.Tr "Page"}}
 			{{if .PageIsWikiEdit}}
-				<a class="ui tiny primary button" href="{{.RepoLink}}/wiki?action=_new">{{ctx.Locale.Tr "repo.wiki.new_page_button"}}</a>
+				<a class="ui tiny primary button" href="{{.RepoLink}}/wiki?action=_new">{{ctx.Locale.Tr "New Page"}}</a>
 			{{end}}
 		</div>
 		<form class="ui form" action="?action={{if .PageIsWikiEdit}}_edit{{else}}_new{{end}}" method="post">
 			{{.CsrfTokenHtml}}
 			<div class="field {{if .Err_Title}}error{{end}}">
-				<input name="title" value="{{.title}}" aria-label="{{ctx.Locale.Tr "repo.wiki.page_title"}}" placeholder="{{ctx.Locale.Tr "repo.wiki.page_title"}}" autofocus required>
+				<input name="title" value="{{.title}}" aria-label="{{ctx.Locale.Tr "Page title"}}" placeholder="{{ctx.Locale.Tr "Page title"}}" autofocus required>
 			</div>
 			<div class="help">
-				{{ctx.Locale.Tr "repo.wiki.page_name_desc"}}
+				{{ctx.Locale.Tr "Enter a name for this Wiki page. Some special names are: 'Home', '_Sidebar' and '_Footer'."}}
 			</div>
 
 			{{$content := .WikiEditContent}}
 			{{if not .PageIsWikiEdit}}
-				{{$content = ctx.Locale.Tr "repo.wiki.welcome"}}
+				{{$content = ctx.Locale.Tr "Welcome to the Wiki."}}
 			{{end}}
 			{{template "shared/combomarkdowneditor" (dict
 				"CustomInit" true
@@ -28,16 +28,16 @@
 				"MarkdownPreviewMode" "wiki"
 				"TextareaName" "content"
 				"TextareaContent" $content
-				"TextareaPlaceholder" (ctx.Locale.Tr "repo.wiki.page_content")
+				"TextareaPlaceholder" (ctx.Locale.Tr "Page content")
 			)}}
 
 			<div class="field tw-mt-4">
-				<input name="message" aria-label="{{ctx.Locale.Tr "repo.wiki.default_commit_message"}}" placeholder="{{ctx.Locale.Tr "repo.wiki.default_commit_message"}}">
+				<input name="message" aria-label="{{ctx.Locale.Tr "Write a note about this page update (optional)."}}" placeholder="{{ctx.Locale.Tr "Write a note about this page update (optional)."}}">
 			</div>
 			<div class="divider"></div>
 			<div class="flex-text-block tw-justify-end">
-				<a class="ui basic cancel button" href="{{.Link}}">{{ctx.Locale.Tr "cancel"}}</a>
-				<button class="ui primary button">{{ctx.Locale.Tr "repo.wiki.save_page"}}</button>
+				<a class="ui basic cancel button" href="{{.Link}}">{{ctx.Locale.Tr "Cancel"}}</a>
+				<button class="ui primary button">{{ctx.Locale.Tr "Save Page"}}</button>
 			</div>
 		</form>
 	</div>

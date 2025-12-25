@@ -8,31 +8,31 @@
 				{{if .Repository.IsArchived}}
 					<div class="ui warning message tw-text-center">
 						{{if .Repository.ArchivedUnix.IsZero}}
-							{{ctx.Locale.Tr "repo.archive.title"}}
+							{{ctx.Locale.Tr "This repo is archived. You can view files and clone it. You cannot open issues or pull requests or push a commit."}}
 						{{else}}
-							{{ctx.Locale.Tr "repo.archive.title_date" (DateUtils.AbsoluteLong .Repository.ArchivedUnix)}}
+							{{ctx.Locale.Tr "This repository has been archived on %s. You can view files and clone it. You cannot open issues or pull requests or push a commit." (DateUtils.AbsoluteLong .Repository.ArchivedUnix)}}
 						{{end}}
 					</div>
 				{{end}}
 
 				{{if .Repository.IsBroken}}
-					<div class="ui segment center">{{ctx.Locale.Tr "repo.broken_message"}}</div>
+					<div class="ui segment center">{{ctx.Locale.Tr "The Git data underlying this repository cannot be read. Contact the administrator of this instance or delete this repository."}}</div>
 				{{else if .RepoHasContentsWithoutBranch}}
-					<div class="ui segment center">{{ctx.Locale.Tr "repo.no_branch"}}</div>
+					<div class="ui segment center">{{ctx.Locale.Tr "This repository doesn't have any branches."}}</div>
 				{{else if .CanWriteCode}}
-					<h4 class="ui top attached header">{{ctx.Locale.Tr "repo.quick_guide"}}</h4>
+					<h4 class="ui top attached header">{{ctx.Locale.Tr "Quick Guide"}}</h4>
 					<div class="ui attached guide table segment empty-repo-guide">
 						<div class="item">
-							<h3>{{ctx.Locale.Tr "repo.clone_this_repo"}} <small>{{ctx.Locale.Tr "repo.clone_helper" "http://git-scm.com/book/en/v2/Git-Basics-Getting-a-Git-Repository"}}</small></h3>
+							<h3>{{ctx.Locale.Tr "Clone this repository"}} <small>{{ctx.Locale.Tr "Need help cloning? Visit <a target=\"_blank\" rel=\"noopener noreferrer\" href=\"%s\">Help</a>." "http://git-scm.com/book/en/v2/Git-Basics-Getting-a-Git-Repository"}}</small></h3>
 
 							<div class="repo-button-row">
 								{{if and .CanWriteCode (not .Repository.IsArchived)}}
 									<a class="ui small button" href="{{.RepoLink}}/_new/{{.BranchName | PathEscapeSegments}}/">
-										{{ctx.Locale.Tr "repo.editor.new_file"}}
+										{{ctx.Locale.Tr "New File"}}
 									</a>
 									{{if .RepositoryUploadEnabled}}
 									<a class="ui small button" href="{{.RepoLink}}/_upload/{{.BranchName | PathEscapeSegments}}/">
-										{{ctx.Locale.Tr "repo.editor.upload_file"}}
+										{{ctx.Locale.Tr "Upload File"}}
 									</a>
 									{{end}}
 								{{end}}
@@ -44,7 +44,7 @@
 							<div class="divider tw-my-0"></div>
 
 							<div class="item">
-								<h3>{{ctx.Locale.Tr "repo.create_new_repo_command"}}</h3>
+								<h3>{{ctx.Locale.Tr "Creating a new repository on the command line"}}</h3>
 								<div class="markup">
 									{{$gitRemoteName := $.SystemConfig.Repository.GitGuideRemoteName.Value ctx}}
 									<pre><code>touch README.md
@@ -59,7 +59,7 @@ git push -u {{$gitRemoteName}} {{.Repository.DefaultBranch}}</code></pre>
 							<div class="divider"></div>
 
 							<div class="item">
-								<h3>{{ctx.Locale.Tr "repo.push_exist_repo"}}</h3>
+								<h3>{{ctx.Locale.Tr "Pushing an existing repository from the command line"}}</h3>
 								<div class="markup">
 									<pre><code>git remote add {{$gitRemoteName}} <span class="js-clone-url">{{$.CloneButtonOriginLink.HTTPS}}</span>
 git push -u {{$gitRemoteName}} {{.Repository.DefaultBranch}}</code></pre>
@@ -68,7 +68,7 @@ git push -u {{$gitRemoteName}} {{.Repository.DefaultBranch}}</code></pre>
 						{{end}}
 					</div>
 				{{else}}
-					<div class="ui segment center">{{ctx.Locale.Tr "repo.empty_message"}}</div>
+					<div class="ui segment center">{{ctx.Locale.Tr "This repository does not have any content."}}</div>
 				{{end}}
 			</div>
 		</div>

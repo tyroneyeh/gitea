@@ -265,7 +265,7 @@ func (ctx *Context) JSONError(msg any) {
 func (ctx *Context) JSONErrorNotFound(optMsg ...string) {
 	msg := util.OptionalArg(optMsg)
 	if msg == "" {
-		msg = ctx.Locale.TrString("error.not_found")
+		msg = ctx.Locale.TrString("The target couldn't be found.")
 	}
 	ctx.JSON(http.StatusNotFound, map[string]any{"errorMessage": msg, "renderFormat": "text"})
 }

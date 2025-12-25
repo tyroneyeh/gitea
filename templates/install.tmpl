@@ -3,19 +3,19 @@
 	<div class="ui grid install-config-container">
 		<div class="sixteen wide tw-text-center centered column">
 			<h3 class="ui top attached header">
-				{{ctx.Locale.Tr "install.title"}}
+				{{ctx.Locale.Tr "Initial Configuration"}}
 			</h3>
 			<div class="ui attached segment">
 				{{template "base/alert" .}}
 
-				<p>{{ctx.Locale.Tr "install.docker_helper" "https://docs.gitea.com/installation/install-with-docker"}}</p>
+				<p>{{ctx.Locale.Tr "If you run Gitea inside Docker, please read the <a target=\"_blank\" rel=\"noopener noreferrer\" href=\"%s\">documentation</a> before changing any settings." "https://docs.gitea.com/installation/install-with-docker"}}</p>
 
 				<form class="ui form" action="{{AppSubUrl}}/" method="post">
 					<!-- Database Settings -->
-					<h4 class="ui dividing header">{{ctx.Locale.Tr "install.db_title"}}</h4>
-					<p>{{ctx.Locale.Tr "install.require_db_desc"}}</p>
+					<h4 class="ui dividing header">{{ctx.Locale.Tr "Database Settings"}}</h4>
+					<p>{{ctx.Locale.Tr "Gitea requires MySQL, PostgreSQL, MSSQL, SQLite3 or TiDB (MySQL protocol)."}}</p>
 					<div class="inline required field {{if .Err_DbType}}error{{end}}">
-						<label>{{ctx.Locale.Tr "install.db_type"}}</label>
+						<label>{{ctx.Locale.Tr "Database Type"}}</label>
 						<div class="ui selection database type dropdown">
 							<input type="hidden" id="db_type" name="db_type" value="{{.CurDbType}}">
 							<div class="text">{{.CurDbType}}</div>
@@ -30,26 +30,26 @@
 
 					<div class="tw-mt-4 tw-hidden" data-db-setting-for="common-host">
 						<div class="inline required field {{if .Err_DbSetting}}error{{end}}">
-							<label for="db_host">{{ctx.Locale.Tr "install.host"}}</label>
+							<label for="db_host">{{ctx.Locale.Tr "Host"}}</label>
 							<input id="db_host" name="db_host" value="{{.db_host}}">
 						</div>
 						<div class="inline required field {{if .Err_DbSetting}}error{{end}}">
-							<label for="db_user">{{ctx.Locale.Tr "install.user"}}</label>
+							<label for="db_user">{{ctx.Locale.Tr "Username"}}</label>
 							<input id="db_user" name="db_user" value="{{.db_user}}">
 						</div>
 						<div class="inline required field {{if .Err_DbSetting}}error{{end}}">
-							<label for="db_passwd">{{ctx.Locale.Tr "install.password"}}</label>
+							<label for="db_passwd">{{ctx.Locale.Tr "Password"}}</label>
 							<input id="db_passwd" name="db_passwd" type="password" value="{{.db_passwd}}">
 						</div>
 						<div class="inline required field {{if .Err_DbSetting}}error{{end}}">
-							<label for="db_name">{{ctx.Locale.Tr "install.db_name"}}</label>
+							<label for="db_name">{{ctx.Locale.Tr "Database Name"}}</label>
 							<input id="db_name" name="db_name" value="{{.db_name}}">
 						</div>
 					</div>
 
 					<div class="tw-mt-4 tw-hidden" data-db-setting-for="postgres">
 						<div class="inline required field">
-							<label>{{ctx.Locale.Tr "install.ssl_mode"}}</label>
+							<label>{{ctx.Locale.Tr "SSL"}}</label>
 							<div class="ui selection database type dropdown">
 								<input type="hidden" name="ssl_mode" value="{{if .ssl_mode}}{{.ssl_mode}}{{else}}disable{{end}}">
 								<div class="default text">disable</div>
@@ -62,38 +62,38 @@
 							</div>
 						</div>
 						<div class="inline field {{if .Err_DbSetting}}error{{end}}">
-							<label for="db_schema">{{ctx.Locale.Tr "install.db_schema"}}</label>
+							<label for="db_schema">{{ctx.Locale.Tr "Schema"}}</label>
 							<input id="db_schema" name="db_schema" value="{{.db_schema}}">
-							<span class="help">{{ctx.Locale.Tr "install.db_schema_helper"}}</span>
+							<span class="help">{{ctx.Locale.Tr "Leave blank for database default (\"public\")."}}</span>
 						</div>
 					</div>
 
 					<div class="tw-mt-4 tw-hidden" data-db-setting-for="sqlite3">
 						<div class="inline required field {{if or .Err_DbPath .Err_DbSetting}}error{{end}}">
-							<label for="db_path">{{ctx.Locale.Tr "install.path"}}</label>
+							<label for="db_path">{{ctx.Locale.Tr "Path"}}</label>
 							<input id="db_path" name="db_path" value="{{.db_path}}">
-							<span class="help">{{ctx.Locale.Tr "install.sqlite_helper"}}</span>
+							<span class="help">{{ctx.Locale.Tr "File path for the SQLite3 database.<br>Enter an absolute path if you run Gitea as a service."}}</span>
 						</div>
 					</div>
 
 					{{if .Err_DbInstalledBefore}}
 					<div>
-						<p class="reinstall-message">{{ctx.Locale.Tr "install.reinstall_confirm_message"}}</p>
+						<p class="reinstall-message">{{ctx.Locale.Tr "Re-installing with an existing Gitea database can cause multiple problems. In most cases, you should use your existing \"app.ini\" to run Gitea. If you know what you are doing, confirm the following:"}}</p>
 						<div class="reinstall-confirm">
 							<div class="ui checkbox">
-								<label>{{ctx.Locale.Tr "install.reinstall_confirm_check_1"}}</label>
+								<label>{{ctx.Locale.Tr "The data encrypted by the SECRET_KEY in app.ini may be lost: users may not be able to log in with 2FA/OTP and mirrors may not function correctly. By checking this box, you confirm that the current app.ini file contains the correct SECRET_KEY."}}</label>
 								<input name="reinstall_confirm_first" type="checkbox">
 							</div>
 						</div>
 						<div class="reinstall-confirm">
 							<div class="ui checkbox">
-								<label>{{ctx.Locale.Tr "install.reinstall_confirm_check_2"}}</label>
+								<label>{{ctx.Locale.Tr "The repositories and settings may need to be resynchronized. By checking this box, you confirm that you will resynchronize the hooks for the repositories and authorized_keys file manually. You confirm that you will ensure that repository and mirror settings are correct."}}</label>
 								<input name="reinstall_confirm_second" type="checkbox">
 							</div>
 						</div>
 						<div class="reinstall-confirm">
 							<div class="ui checkbox">
-								<label>{{ctx.Locale.Tr "install.reinstall_confirm_check_3"}}</label>
+								<label>{{ctx.Locale.Tr "You confirm that you are absolutely sure that this Gitea is running with the correct app.ini location and that you are sure that you have to re-install. You confirm that you acknowledge the above risks."}}</label>
 								<input name="reinstall_confirm_third" type="checkbox">
 							</div>
 						</div>
@@ -101,98 +101,98 @@
 					{{end}}
 
 					<!-- General Settings -->
-					<h4 class="ui dividing header">{{ctx.Locale.Tr "install.general_title"}}</h4>
+					<h4 class="ui dividing header">{{ctx.Locale.Tr "General Settings"}}</h4>
 					<div class="inline required field {{if .Err_AppName}}error{{end}}">
-						<label for="app_name">{{ctx.Locale.Tr "install.app_name"}}</label>
+						<label for="app_name">{{ctx.Locale.Tr "Site Title"}}</label>
 						<input id="app_name" name="app_name" value="{{.app_name}}" required>
-						<span class="help">{{ctx.Locale.Tr "install.app_name_helper"}}</span>
+						<span class="help">{{ctx.Locale.Tr "You can enter your company name here."}}</span>
 					</div>
 					<div class="inline required field {{if .Err_RepoRootPath}}error{{end}}">
-						<label for="repo_root_path">{{ctx.Locale.Tr "install.repo_path"}}</label>
+						<label for="repo_root_path">{{ctx.Locale.Tr "Repository Root Path"}}</label>
 						<input id="repo_root_path" name="repo_root_path" value="{{.repo_root_path}}" required>
-						<span class="help">{{ctx.Locale.Tr "install.repo_path_helper"}}</span>
+						<span class="help">{{ctx.Locale.Tr "Remote Git repositories will be saved to this directory."}}</span>
 					</div>
 					<div class="inline field {{if .Err_LFSRootPath}}error{{end}}">
-						<label for="lfs_root_path">{{ctx.Locale.Tr "install.lfs_path"}}</label>
+						<label for="lfs_root_path">{{ctx.Locale.Tr "Git LFS Root Path"}}</label>
 						<input id="lfs_root_path" name="lfs_root_path" value="{{.lfs_root_path}}">
-						<span class="help">{{ctx.Locale.Tr "install.lfs_path_helper"}}</span>
+						<span class="help">{{ctx.Locale.Tr "Files tracked by Git LFS will be stored in this directory. Leave empty to disable."}}</span>
 					</div>
 					<div class="inline required field {{if .Err_RunUser}}error{{end}}">
-						<label for="run_user">{{ctx.Locale.Tr "install.run_user"}}</label>
+						<label for="run_user">{{ctx.Locale.Tr "Run As Username"}}</label>
 						<input id="run_user" name="run_user" value="{{.run_user}}" readonly>
-						<span class="help">{{ctx.Locale.Tr "install.run_user_helper"}}</span>
+						<span class="help">{{ctx.Locale.Tr "The operating system username that Gitea runs as. Note that this user must have access to the repository root path."}}</span>
 					</div>
 					<div class="inline required field">
-						<label for="domain">{{ctx.Locale.Tr "install.domain"}}</label>
+						<label for="domain">{{ctx.Locale.Tr "Server Domain"}}</label>
 						<input id="domain" name="domain" value="{{.domain}}" placeholder="demo.gitea.com" required>
-						<span class="help">{{ctx.Locale.Tr "install.domain_helper"}}</span>
+						<span class="help">{{ctx.Locale.Tr "Domain or host address for the server."}}</span>
 					</div>
 					<div class="inline field">
-						<label for="ssh_port">{{ctx.Locale.Tr "install.ssh_port"}}</label>
+						<label for="ssh_port">{{ctx.Locale.Tr "SSH Server Port"}}</label>
 						<input id="ssh_port" name="ssh_port" value="{{.ssh_port}}">
-						<span class="help">{{ctx.Locale.Tr "install.ssh_port_helper"}}</span>
+						<span class="help">{{ctx.Locale.Tr "Port number your SSH server listens on. Leave empty to disable."}}</span>
 					</div>
 					<div class="inline required field">
-						<label for="http_port">{{ctx.Locale.Tr "install.http_port"}}</label>
+						<label for="http_port">{{ctx.Locale.Tr "Gitea HTTP Listen Port"}}</label>
 						<input id="http_port" name="http_port" value="{{.http_port}}" required>
-						<span class="help">{{ctx.Locale.Tr "install.http_port_helper"}}</span>
+						<span class="help">{{ctx.Locale.Tr "Port number the Gitea web server will listen on."}}</span>
 					</div>
 					<div class="inline required field">
-						<label for="app_url">{{ctx.Locale.Tr "install.app_url"}}</label>
+						<label for="app_url">{{ctx.Locale.Tr "Gitea Base URL"}}</label>
 						<input id="app_url" name="app_url" value="{{.app_url}}" placeholder="https://demo.gitea.com" required>
-						<span class="help">{{ctx.Locale.Tr "install.app_url_helper"}}</span>
+						<span class="help">{{ctx.Locale.Tr "Base address for HTTP(S) clone URLs and email notifications."}}</span>
 					</div>
 					<div class="inline required field">
-						<label for="log_root_path">{{ctx.Locale.Tr "install.log_root_path"}}</label>
+						<label for="log_root_path">{{ctx.Locale.Tr "Log Path"}}</label>
 						<input id="log_root_path" name="log_root_path" value="{{.log_root_path}}" placeholder="log" required>
-						<span class="help">{{ctx.Locale.Tr "install.log_root_path_helper"}}</span>
+						<span class="help">{{ctx.Locale.Tr "Log files will be written to this directory."}}</span>
 					</div>
 					<div class="inline field">
 						<div class="ui checkbox">
-							<label>{{ctx.Locale.Tr "install.enable_update_checker"}}</label>
+							<label>{{ctx.Locale.Tr "Enable Update Checker"}}</label>
 							<input name="enable_update_checker" type="checkbox">
 						</div>
-						<span class="help">{{ctx.Locale.Tr "install.enable_update_checker_helper"}}</span>
+						<span class="help">{{ctx.Locale.Tr "Checks for new version releases periodically by connecting to gitea.io."}}</span>
 					</div>
 
 					<!-- Optional Settings -->
-					<h4 class="ui dividing header">{{ctx.Locale.Tr "install.optional_title"}}</h4>
+					<h4 class="ui dividing header">{{ctx.Locale.Tr "Optional Settings"}}</h4>
 					<div>
 						<!-- Email -->
 						<details class="optional field">
 							<summary class="right-content tw-py-2{{if .Err_SMTP}} text red{{end}}">
-								{{ctx.Locale.Tr "install.email_title"}}
+								{{ctx.Locale.Tr "Email Settings"}}
 							</summary>
 							<div class="inline field">
-								<label for="smtp_addr">{{ctx.Locale.Tr "install.smtp_addr"}}</label>
+								<label for="smtp_addr">{{ctx.Locale.Tr "SMTP Host"}}</label>
 								<input id="smtp_addr" name="smtp_addr" value="{{.smtp_addr}}">
 							</div>
 							<div class="inline field">
-								<label for="smtp_port">{{ctx.Locale.Tr "install.smtp_port"}}</label>
+								<label for="smtp_port">{{ctx.Locale.Tr "SMTP Port"}}</label>
 								<input id="smtp_port" name="smtp_port" value="{{.smtp_port}}">
 							</div>
 							<div class="inline field {{if .Err_SMTPFrom}}error{{end}}">
-								<label for="smtp_from">{{ctx.Locale.Tr "install.smtp_from"}}</label>
+								<label for="smtp_from">{{ctx.Locale.Tr "Send Email As"}}</label>
 								<input id="smtp_from" name="smtp_from" value="{{.smtp_from}}">
-								<span class="help">{{ctx.Locale.TrString "install.smtp_from_helper"}}{{/* it contains lt/gt chars*/}}</span>
+								<span class="help">{{ctx.Locale.TrString `Email address Gitea will use. Enter a plain email address or use the \"Name\" <email@example.com> format.`}}{{/* it contains lt/gt chars*/}}</span>
 							</div>
 							<div class="inline field {{if .Err_SMTPUser}}error{{end}}">
-								<label for="smtp_user">{{ctx.Locale.Tr "install.mailer_user"}}</label>
+								<label for="smtp_user">{{ctx.Locale.Tr "SMTP Username"}}</label>
 								<input id="smtp_user" name="smtp_user" value="{{.smtp_user}}">
 							</div>
 							<div class="inline field">
-								<label for="smtp_passwd">{{ctx.Locale.Tr "install.mailer_password"}}</label>
+								<label for="smtp_passwd">{{ctx.Locale.Tr "SMTP Password"}}</label>
 								<input id="smtp_passwd" name="smtp_passwd" type="password" value="{{.smtp_passwd}}">
 							</div>
 							<div class="inline field">
 								<div class="ui checkbox">
-									<label>{{ctx.Locale.Tr "install.register_confirm"}}</label>
+									<label>{{ctx.Locale.Tr "Require Email Confirmation to Register"}}</label>
 									<input name="register_confirm" type="checkbox" {{if .register_confirm}}checked{{end}}>
 								</div>
 							</div>
 							<div class="inline field">
 								<div class="ui checkbox">
-									<label>{{ctx.Locale.Tr "install.mail_notify"}}</label>
+									<label>{{ctx.Locale.Tr "Enable Email Notifications"}}</label>
 									<input name="mail_notify" type="checkbox" {{if .mail_notify}}checked{{end}}>
 								</div>
 							</div>
@@ -201,87 +201,87 @@
 						<!-- Server and other services -->
 						<details class="optional field">
 							<summary class="right-content tw-py-2{{if .Err_Services}} text red{{end}}">
-								{{ctx.Locale.Tr "install.server_service_title"}}
+								{{ctx.Locale.Tr "Server and Third-Party Service Settings"}}
 							</summary>
 							<div class="inline field">
 								<div class="ui checkbox" id="offline-mode">
-									<label data-tooltip-content="{{ctx.Locale.Tr "install.offline_mode_popup"}}">{{ctx.Locale.Tr "install.offline_mode"}}</label>
+									<label data-tooltip-content="{{ctx.Locale.Tr "Disable third-party content delivery networks and serve all resources locally."}}">{{ctx.Locale.Tr "Enable Local Mode"}}</label>
 									<input name="offline_mode" type="checkbox" {{if .offline_mode}}checked{{end}}>
 								</div>
 							</div>
 							<div class="inline field">
 								<div class="ui checkbox" id="disable-gravatar">
-									<label data-tooltip-content="{{ctx.Locale.Tr "install.disable_gravatar_popup"}}">{{ctx.Locale.Tr "install.disable_gravatar"}}</label>
+									<label data-tooltip-content="{{ctx.Locale.Tr "Disable Gravatar and third-party avatar sources. A default avatar will be used unless a user locally uploads an avatar."}}">{{ctx.Locale.Tr "Disable Gravatar"}}</label>
 									<input name="disable_gravatar" type="checkbox" {{if .disable_gravatar}}checked{{end}}>
 								</div>
 							</div>
 							<div class="inline field">
 								<div class="ui checkbox" id="federated-avatar-lookup">
-									<label data-tooltip-content="{{ctx.Locale.Tr "install.federated_avatar_lookup_popup"}}">{{ctx.Locale.Tr "install.federated_avatar_lookup"}}</label>
+									<label data-tooltip-content="{{ctx.Locale.Tr "Enable federated avatar lookup using Libravatar."}}">{{ctx.Locale.Tr "Enable Federated Avatars"}}</label>
 									<input name="enable_federated_avatar" type="checkbox" {{if .enable_federated_avatar}}checked{{end}}>
 								</div>
 							</div>
 							<div class="inline field">
 								<div class="ui checkbox" id="enable-openid-signin">
-									<label data-tooltip-content="{{ctx.Locale.Tr "install.openid_signin_popup"}}">{{ctx.Locale.Tr "install.openid_signin"}}</label>
+									<label data-tooltip-content="{{ctx.Locale.Tr "Enable user sign-in via OpenID."}}">{{ctx.Locale.Tr "Enable OpenID Sign-In"}}</label>
 									<input name="enable_open_id_sign_in" type="checkbox" {{if .enable_open_id_sign_in}}checked{{end}}>
 								</div>
 							</div>
 							<div class="inline field">
 								<div class="ui checkbox" id="disable-registration">
-									<label data-tooltip-content="{{ctx.Locale.Tr "install.disable_registration_popup"}}">{{ctx.Locale.Tr "install.disable_registration"}}</label>
+									<label data-tooltip-content="{{ctx.Locale.Tr "Disable user self-registration. Only administrators will be able to create new user accounts."}}">{{ctx.Locale.Tr "Disable Self-Registration"}}</label>
 									<input name="disable_registration" type="checkbox" {{if .disable_registration}}checked{{end}}>
 								</div>
 							</div>
 							<div class="inline field">
 								<div class="ui checkbox" id="allow-only-external-registration">
-									<label data-tooltip-content="{{ctx.Locale.Tr "install.allow_only_external_registration_popup"}}">{{ctx.Locale.Tr "install.allow_only_external_registration_popup"}}</label>
+									<label data-tooltip-content="{{ctx.Locale.Tr "Allow Registration Only Through External Services"}}">{{ctx.Locale.Tr "Allow Registration Only Through External Services"}}</label>
 									<input name="allow_only_external_registration" type="checkbox" {{if .allow_only_external_registration}}checked{{end}}>
 								</div>
 							</div>
 							<div class="inline field">
 								<div class="ui checkbox" id="enable-openid-signup">
-									<label data-tooltip-content="{{ctx.Locale.Tr "install.openid_signup_popup"}}">{{ctx.Locale.Tr "install.openid_signup"}}</label>
+									<label data-tooltip-content="{{ctx.Locale.Tr "Enable OpenID-based user self-registration."}}">{{ctx.Locale.Tr "Enable OpenID Self-Registration"}}</label>
 									<input name="enable_open_id_sign_up" type="checkbox" {{if .enable_open_id_sign_up}}checked{{end}}>
 								</div>
 							</div>
 							<div class="inline field">
 								<div class="ui checkbox" id="enable-captcha">
-									<label data-tooltip-content="{{ctx.Locale.Tr "install.enable_captcha_popup"}}">{{ctx.Locale.Tr "install.enable_captcha"}}</label>
+									<label data-tooltip-content="{{ctx.Locale.Tr "Require a CAPTCHA for user self-registration."}}">{{ctx.Locale.Tr "Enable registration CAPTCHA"}}</label>
 									<input name="enable_captcha" type="checkbox" {{if .enable_captcha}}checked{{end}}>
 								</div>
 							</div>
 							<div class="inline field">
 								<div class="ui checkbox">
-									<label data-tooltip-content="{{ctx.Locale.Tr "install.require_sign_in_view_popup"}}">{{ctx.Locale.Tr "install.require_sign_in_view"}}</label>
+									<label data-tooltip-content="{{ctx.Locale.Tr "Limit page access to signed-in users. Visitors will only see the sign-in and registration pages."}}">{{ctx.Locale.Tr "Require Sign-In to View Pages"}}</label>
 									<input name="require_sign_in_view" type="checkbox" {{if .require_sign_in_view}}checked{{end}}>
 								</div>
 							</div>
 							<div class="inline field">
 								<div class="ui checkbox">
-									<label data-tooltip-content="{{ctx.Locale.Tr "install.default_keep_email_private_popup"}}">{{ctx.Locale.Tr "install.default_keep_email_private"}}</label>
+									<label data-tooltip-content="{{ctx.Locale.Tr "Hide email addresses of new user accounts by default."}}">{{ctx.Locale.Tr "Hide Email Addresses by Default"}}</label>
 									<input name="default_keep_email_private" type="checkbox" {{if .default_keep_email_private}}checked{{end}}>
 								</div>
 							</div>
 							<div class="inline field">
 								<div class="ui checkbox">
-									<label data-tooltip-content="{{ctx.Locale.Tr "install.default_allow_create_organization_popup"}}">{{ctx.Locale.Tr "install.default_allow_create_organization"}}</label>
+									<label data-tooltip-content="{{ctx.Locale.Tr "Allow new user accounts to create organizations by default."}}">{{ctx.Locale.Tr "Allow Creation of Organizations by Default"}}</label>
 									<input name="default_allow_create_organization" type="checkbox" {{if .default_allow_create_organization}}checked{{end}}>
 								</div>
 							</div>
 							<div class="inline field">
 								<div class="ui checkbox">
-									<label data-tooltip-content="{{ctx.Locale.Tr "install.default_enable_timetracking_popup"}}">{{ctx.Locale.Tr "install.default_enable_timetracking"}}</label>
+									<label data-tooltip-content="{{ctx.Locale.Tr "Enable time tracking for new repositories by default."}}">{{ctx.Locale.Tr "Enable Time Tracking by Default"}}</label>
 									<input name="default_enable_timetracking" type="checkbox" {{if .default_enable_timetracking}}checked{{end}}>
 								</div>
 							</div>
 							<div class="inline field">
-								<label for="no_reply_address">{{ctx.Locale.Tr "install.no_reply_address"}}</label>
+								<label for="no_reply_address">{{ctx.Locale.Tr "Hidden Email Domain"}}</label>
 								<input id="_no_reply_address" name="no_reply_address" value="{{.no_reply_address}}">
-								<span class="help">{{ctx.Locale.Tr "install.no_reply_address_helper"}}</span>
+								<span class="help">{{ctx.Locale.Tr "Domain name for users with a hidden email address. For example, the username 'joe' will be logged in Git as 'joe@noreply.example.org' if the hidden email domain is set to 'noreply.example.org'."}}</span>
 							</div>
 							<div class="inline field">
-								<label for="password_algorithm">{{ctx.Locale.Tr "install.password_algorithm"}}</label>
+								<label for="password_algorithm">{{ctx.Locale.Tr "Password Hash Algorithm"}}</label>
 								<div class="ui selection dropdown">
 									<input id="password_algorithm" type="hidden" name="password_algorithm" value="{{.password_algorithm}}">
 									<div class="text">{{.password_algorithm}}</div>
@@ -292,30 +292,30 @@
 										{{end}}
 									</div>
 								</div>
-								<span class="help">{{ctx.Locale.Tr "install.password_algorithm_helper"}}</span>
+								<span class="help">{{ctx.Locale.Tr "Set the password hashing algorithm. Algorithms have differing requirements and strengths. The argon2 algorithm is rather secure but uses a lot of memory and may be inappropriate for small systems."}}</span>
 							</div>
 						</details>
 
 						<!-- Admin -->
 						<details class="optional field">
 							<summary class="right-content tw-py-2{{if .Err_Admin}} text red{{end}}">
-								{{ctx.Locale.Tr "install.admin_title"}}
+								{{ctx.Locale.Tr "Administrator Account Settings"}}
 							</summary>
-							<p class="center">{{ctx.Locale.Tr "install.admin_setting_desc"}}</p>
+							<p class="center">{{ctx.Locale.Tr "Creating an administrator account is optional. The first registered user will automatically become an administrator."}}</p>
 							<div class="inline field {{if .Err_AdminName}}error{{end}}">
-								<label for="admin_name">{{ctx.Locale.Tr "install.admin_name"}}</label>
+								<label for="admin_name">{{ctx.Locale.Tr "Administrator Username"}}</label>
 								<input id="admin_name" name="admin_name" value="{{.admin_name}}">
 							</div>
 							<div class="inline field {{if .Err_AdminEmail}}error{{end}}">
-								<label for="admin_email">{{ctx.Locale.Tr "install.admin_email"}}</label>
+								<label for="admin_email">{{ctx.Locale.Tr "Email Address"}}</label>
 								<input id="admin_email" name="admin_email" type="email" value="{{.admin_email}}">
 							</div>
 							<div class="inline field {{if .Err_AdminPasswd}}error{{end}}">
-								<label for="admin_passwd">{{ctx.Locale.Tr "install.admin_password"}}</label>
+								<label for="admin_passwd">{{ctx.Locale.Tr "Password"}}</label>
 								<input id="admin_passwd" name="admin_passwd" type="password" autocomplete="new-password" value="{{.admin_passwd}}">
 							</div>
 							<div class="inline field {{if .Err_AdminPasswd}}error{{end}}">
-								<label for="admin_confirm_passwd">{{ctx.Locale.Tr "install.confirm_password"}}</label>
+								<label for="admin_confirm_passwd">{{ctx.Locale.Tr "Confirm Password"}}</label>
 								<input id="admin_confirm_passwd" name="admin_confirm_passwd" autocomplete="new-password" type="password" value="{{.admin_confirm_passwd}}">
 							</div>
 						</details>
@@ -325,10 +325,10 @@
 
 					{{if .EnvConfigKeys}}
 					<!-- Environment Config -->
-					<h4 class="ui dividing header">{{ctx.Locale.Tr "install.env_config_keys"}}</h4>
+					<h4 class="ui dividing header">{{ctx.Locale.Tr "Environment Configuration"}}</h4>
 					<div class="inline field">
 						<div class="right-content">
-							{{ctx.Locale.Tr "install.env_config_keys_prompt"}}
+							{{ctx.Locale.Tr "The following environment variables will also be applied to your configuration file:"}}
 						</div>
 						<div class="right-content tw-mt-2">
 							{{range .EnvConfigKeys}}<span class="ui label">{{.}}</span>{{end}}
@@ -340,10 +340,10 @@
 						<div class="right-content">
 							{{$copyBtn := svg "octicon-copy" 14}}
 							{{$filePath := HTMLFormat `<span class="ui label">%s</span> <button class="btn interact-fg" data-clipboard-text="%s">%s</button>` .CustomConfFile .CustomConfFile $copyBtn}}
-							{{ctx.Locale.Tr "install.config_write_file_prompt" $filePath}}
+							{{ctx.Locale.Tr "These configuration options will be written into: %s" $filePath}}
 						</div>
 						<div class="tw-mt-4 tw-mb-2 tw-text-center">
-							<button class="ui primary button">{{ctx.Locale.Tr "install.install_btn_confirm"}}</button>
+							<button class="ui primary button">{{ctx.Locale.Tr "Install Gitea"}}</button>
 						</div>
 					</div>
 				</form>

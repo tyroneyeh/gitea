@@ -1,12 +1,12 @@
 {{template "admin/layout_head" (dict "ctxData" . "pageClass" "admin settings new webhook")}}
 	<div class="admin-setting-content">
-		{{$CustomHeaderTitle := ctx.Locale.Tr "admin.defaulthooks.update_webhook"}}
+		{{$CustomHeaderTitle := ctx.Locale.Tr "Update Default Webhook"}}
 		{{if .PageIsAdminDefaultHooksNew}}
-			{{$CustomHeaderTitle = ctx.Locale.Tr "admin.defaulthooks.add_webhook"}}
+			{{$CustomHeaderTitle = ctx.Locale.Tr "Add Default Webhook"}}
 		{{else if .PageIsAdminSystemHooksNew}}
-			{{$CustomHeaderTitle = ctx.Locale.Tr "admin.systemhooks.add_webhook"}}
+			{{$CustomHeaderTitle = ctx.Locale.Tr "Add System Webhook"}}
 		{{else if .Webhook.IsSystemWebhook}}
-			{{$CustomHeaderTitle = ctx.Locale.Tr "admin.systemhooks.update_webhook"}}
+			{{$CustomHeaderTitle = ctx.Locale.Tr "Update System Webhook"}}
 		{{end}}
 		{{template "webhook/new" (dict "ctxData" . "CustomHeaderTitle" $CustomHeaderTitle)}}
 	</div>

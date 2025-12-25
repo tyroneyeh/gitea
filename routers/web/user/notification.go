@@ -123,7 +123,7 @@ func prepareUserNotificationsData(ctx *context.Context) {
 		ctx.Flash.Error(fmt.Sprintf("ERROR: %d notifications were removed due to missing parts - check the logs", failCount))
 	}
 
-	ctx.Data["Title"] = ctx.Tr("notifications")
+	ctx.Data["Title"] = ctx.Tr("Notifications")
 	ctx.Data["PageType"] = pageType
 	ctx.Data["Notifications"] = notifications
 	ctx.Data["Link"] = setting.AppSubURL + "/notifications"
@@ -209,7 +209,7 @@ func NotificationSubscriptions(ctx *context.Context) {
 		var err error
 		labelIDs, err = base.StringsToInt64s(strings.Split(selectedLabels, ","))
 		if err != nil {
-			ctx.Flash.Error(ctx.Tr("invalid_data", selectedLabels), true)
+			ctx.Flash.Error(ctx.Tr("Invalid data: %v", selectedLabels), true)
 		}
 	}
 
@@ -280,7 +280,7 @@ func NotificationSubscriptions(ctx *context.Context) {
 	}
 
 	ctx.Data["Status"] = 1
-	ctx.Data["Title"] = ctx.Tr("notification.subscriptions")
+	ctx.Data["Title"] = ctx.Tr("Subscriptions")
 
 	// redirect to last page if request page is more than total pages
 	pager := context.NewPagination(int(count), setting.UI.IssuePagingNum, page, 5)
@@ -377,7 +377,7 @@ func NotificationWatching(ctx *context.Context) {
 	ctx.Data["Page"] = pager
 
 	ctx.Data["Status"] = 2
-	ctx.Data["Title"] = ctx.Tr("notification.watching")
+	ctx.Data["Title"] = ctx.Tr("Watching")
 
 	ctx.HTML(http.StatusOK, tplNotificationSubscriptions)
 }

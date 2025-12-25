@@ -35,7 +35,7 @@ const (
 
 // ProtectedBranchRules render the page to protect the repository
 func ProtectedBranchRules(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("repo.settings.branches")
+	ctx.Data["Title"] = ctx.Tr("Branches")
 	ctx.Data["PageIsSettingsBranches"] = true
 
 	rules, err := git_model.FindRepoProtectedBranchRules(ctx, ctx.Repo.Repository.ID)
@@ -72,7 +72,7 @@ func SettingsProtectedBranch(c *context.Context) {
 	}
 
 	c.Data["PageIsSettingsBranches"] = true
-	c.Data["Title"] = c.Locale.TrString("repo.settings.protected_branch") + " - " + rule.RuleName
+	c.Data["Title"] = c.Locale.TrString("Branch Protection") + " - " + rule.RuleName
 	users, err := access_model.GetUsersWithUnitAccess(c, c.Repo.Repository, perm.AccessModeRead, unit.TypePullRequests)
 	if err != nil {
 		c.ServerError("GetUsersWithUnitAccess", err)
@@ -109,7 +109,7 @@ func SettingsProtectedBranchPost(ctx *context.Context) {
 	f := web.GetForm(ctx).(*forms.ProtectBranchForm)
 	var protectBranch *git_model.ProtectedBranch
 	if f.RuleName == "" {
-		ctx.Flash.Error(ctx.Tr("repo.settings.protected_branch_required_rule_name"))
+		ctx.Flash.Error(ctx.Tr("Required rule name"))
 		ctx.Redirect(ctx.Repo.RepoLink + "/settings/branches/edit")
 		return
 	}
@@ -131,7 +131,7 @@ func SettingsProtectedBranchPost(ctx *context.Context) {
 				return
 			}
 			if sameNameProtectBranch != nil {
-				ctx.Flash.Error(ctx.Tr("repo.settings.protected_branch_duplicate_rule_name"))
+				ctx.Flash.Error(ctx.Tr("Duplicate rule name"))
 				ctx.Redirect(fmt.Sprintf("%s/settings/branches/edit?rule_name=%s", ctx.Repo.RepoLink, protectBranch.RuleName))
 				return
 			}
@@ -157,7 +157,7 @@ func SettingsProtectedBranchPost(ctx *context.Context) {
 	var whitelistUsers, whitelistTeams, forcePushAllowlistUsers, forcePushAllowlistTeams, mergeWhitelistUsers, mergeWhitelistTeams, approvalsWhitelistUsers, approvalsWhitelistTeams []int64
 	protectBranch.RuleName = f.RuleName
 	if f.RequiredApprovals < 0 {
-		ctx.Flash.Error(ctx.Tr("repo.settings.protected_branch_required_approvals_min"))
+		ctx.Flash.Error(ctx.Tr("Required approvals cannot be negative."))
 		ctx.Redirect(fmt.Sprintf("%s/settings/branches/edit?rule_name=%s", ctx.Repo.RepoLink, f.RuleName))
 		return
 	}
@@ -224,7 +224,7 @@ func SettingsProtectedBranchPost(ctx *context.Context) {
 				continue
 			}
 			if _, err := glob.Compile(trimmed); err != nil {
-				ctx.Flash.Error(ctx.Tr("repo.settings.protect_invalid_status_check_pattern", pattern))
+				ctx.Flash.Error(ctx.Tr("Invalid status check pattern: \"%s\".", pattern))
 				ctx.Redirect(fmt.Sprintf("%s/settings/branches/edit?rule_name=%s", ctx.Repo.RepoLink, url.QueryEscape(protectBranch.RuleName)))
 				return
 			}
@@ -232,7 +232,7 @@ func SettingsProtectedBranchPost(ctx *context.Context) {
 		}
 		if len(validPatterns) == 0 {
 			// if status check is enabled, patterns slice is not allowed to be empty
-			ctx.Flash.Error(ctx.Tr("repo.settings.protect_no_valid_status_check_patterns"))
+			ctx.Flash.Error(ctx.Tr("No valid status check patterns."))
 			ctx.Redirect(fmt.Sprintf("%s/settings/branches/edit?rule_name=%s", ctx.Repo.RepoLink, url.QueryEscape(protectBranch.RuleName)))
 			return
 		}
@@ -275,7 +275,7 @@ func SettingsProtectedBranchPost(ctx *context.Context) {
 		return
 	}
 
-	ctx.Flash.Success(ctx.Tr("repo.settings.update_protect_branch_success", protectBranch.RuleName))
+	ctx.Flash.Success(ctx.Tr("Branch protection for rule \"%s\" has been updated.", protectBranch.RuleName))
 	ctx.Redirect(fmt.Sprintf("%s/settings/branches?rule_name=%s", ctx.Repo.RepoLink, protectBranch.RuleName))
 }
 
@@ -283,31 +283,31 @@ func SettingsProtectedBranchPost(ctx *context.Context) {
 func DeleteProtectedBranchRulePost(ctx *context.Context) {
 	ruleID := ctx.PathParamInt64("id")
 	if ruleID <= 0 {
-		ctx.Flash.Error(ctx.Tr("repo.settings.remove_protected_branch_failed", strconv.FormatInt(ruleID, 10)))
+		ctx.Flash.Error(ctx.Tr("Removing branch protection rule \"%s\" failed.", strconv.FormatInt(ruleID, 10)))
 		ctx.JSONRedirect(ctx.Repo.RepoLink + "/settings/branches")
 		return
 	}
 
 	rule, err := git_model.GetProtectedBranchRuleByID(ctx, ctx.Repo.Repository.ID, ruleID)
 	if err != nil {
-		ctx.Flash.Error(ctx.Tr("repo.settings.remove_protected_branch_failed", strconv.FormatInt(ruleID, 10)))
+		ctx.Flash.Error(ctx.Tr("Removing branch protection rule \"%s\" failed.", strconv.FormatInt(ruleID, 10)))
 		ctx.JSONRedirect(ctx.Repo.RepoLink + "/settings/branches")
 		return
 	}
 
 	if rule == nil {
-		ctx.Flash.Error(ctx.Tr("repo.settings.remove_protected_branch_failed", strconv.FormatInt(ruleID, 10)))
+		ctx.Flash.Error(ctx.Tr("Removing branch protection rule \"%s\" failed.", strconv.FormatInt(ruleID, 10)))
 		ctx.JSONRedirect(ctx.Repo.RepoLink + "/settings/branches")
 		return
 	}
 
 	if err := git_model.DeleteProtectedBranch(ctx, ctx.Repo.Repository, ruleID); err != nil {
-		ctx.Flash.Error(ctx.Tr("repo.settings.remove_protected_branch_failed", rule.RuleName))
+		ctx.Flash.Error(ctx.Tr("Removing branch protection rule \"%s\" failed.", rule.RuleName))
 		ctx.JSONRedirect(ctx.Repo.RepoLink + "/settings/branches")
 		return
 	}
 
-	ctx.Flash.Success(ctx.Tr("repo.settings.remove_protected_branch_success", rule.RuleName))
+	ctx.Flash.Success(ctx.Tr("Branch protection for rule \"%s\" has been removed.", rule.RuleName))
 	ctx.JSONRedirect(ctx.Repo.RepoLink + "/settings/branches")
 }
 
@@ -340,13 +340,13 @@ func RenameBranchPost(ctx *context.Context) {
 	if err != nil {
 		switch {
 		case repo_model.IsErrUserDoesNotHaveAccessToRepo(err):
-			ctx.Flash.Error(ctx.Tr("repo.branch.rename_default_or_protected_branch_error"))
+			ctx.Flash.Error(ctx.Tr("Only admins can rename default or protected branches."))
 			ctx.Redirect(ctx.Repo.RepoLink + "/branches")
 		case git_model.IsErrBranchAlreadyExists(err):
-			ctx.Flash.Error(ctx.Tr("repo.branch.branch_already_exists", form.To))
+			ctx.Flash.Error(ctx.Tr("Branch \"%s\" already exists in this repository.", form.To))
 			ctx.Redirect(ctx.Repo.RepoLink + "/branches")
 		case errors.Is(err, git_model.ErrBranchIsProtected):
-			ctx.Flash.Error(ctx.Tr("repo.branch.rename_protected_branch_failed"))
+			ctx.Flash.Error(ctx.Tr("This branch is protected by glob-based protection rules."))
 			ctx.Redirect(ctx.Repo.RepoLink + "/branches")
 		default:
 			ctx.ServerError("RenameBranch", err)
@@ -355,17 +355,17 @@ func RenameBranchPost(ctx *context.Context) {
 	}
 
 	if msg == "target_exist" {
-		ctx.Flash.Error(ctx.Tr("repo.settings.rename_branch_failed_exist", form.To))
+		ctx.Flash.Error(ctx.Tr("Cannot rename branch because target branch %s exists.", form.To))
 		ctx.Redirect(ctx.Repo.RepoLink + "/branches")
 		return
 	}
 
 	if msg == "from_not_exist" {
-		ctx.Flash.Error(ctx.Tr("repo.settings.rename_branch_failed_not_exist", form.From))
+		ctx.Flash.Error(ctx.Tr("Cannot rename branch %s because it does not exist.", form.From))
 		ctx.Redirect(ctx.Repo.RepoLink + "/branches")
 		return
 	}
 
-	ctx.Flash.Success(ctx.Tr("repo.settings.rename_branch_success", form.From, form.To))
+	ctx.Flash.Success(ctx.Tr("Branch %s was successfully renamed to %s.", form.From, form.To))
 	ctx.Redirect(ctx.Repo.RepoLink + "/branches")
 }

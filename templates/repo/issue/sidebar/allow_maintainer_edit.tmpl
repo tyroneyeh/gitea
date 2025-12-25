@@ -8,11 +8,11 @@
 			{{if $allowToChange}}
 			id="allow-edits-from-maintainers"
 			data-url="{{.Issue.Link}}"
-			data-tooltip-content="{{ctx.Locale.Tr "repo.pulls.allow_edits_from_maintainers_desc"}}"
-			data-prompt-error="{{ctx.Locale.Tr "repo.pulls.allow_edits_from_maintainers_err"}}"
+			data-tooltip-content="{{ctx.Locale.Tr "Users with write access to the base branch can also push to this branch"}}"
+			data-prompt-error="{{ctx.Locale.Tr "Updating failed"}}"
 			{{end}}
 	>
-		<label><strong>{{ctx.Locale.Tr "repo.pulls.allow_edits_from_maintainers"}}</strong></label>
+		<label><strong>{{ctx.Locale.Tr "Allow edits from maintainers"}}</strong></label>
 		<input type="checkbox" {{if .Issue.PullRequest.AllowMaintainerEdit}}checked{{end}} {{if not $allowToChange}}disabled{{end}}>
 	</div>
 {{end}}

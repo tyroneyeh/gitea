@@ -57,10 +57,10 @@ func TestSignin(t *testing.T) {
 		password string
 		message  string
 	}{
-		{username: "wrongUsername", password: "wrongPassword", message: translation.NewLocale("en-US").TrString("form.username_password_incorrect")},
-		{username: "wrongUsername", password: "password", message: translation.NewLocale("en-US").TrString("form.username_password_incorrect")},
-		{username: "user15", password: "wrongPassword", message: translation.NewLocale("en-US").TrString("form.username_password_incorrect")},
-		{username: "user1@example.com", password: "wrongPassword", message: translation.NewLocale("en-US").TrString("form.username_password_incorrect")},
+		{username: "wrongUsername", password: "wrongPassword", message: translation.NewLocale("en-US").TrString("Username or password is incorrect.")},
+		{username: "wrongUsername", password: "password", message: translation.NewLocale("en-US").TrString("Username or password is incorrect.")},
+		{username: "user15", password: "wrongPassword", message: translation.NewLocale("en-US").TrString("Username or password is incorrect.")},
+		{username: "user1@example.com", password: "wrongPassword", message: translation.NewLocale("en-US").TrString("Username or password is incorrect.")},
 	}
 
 	for _, s := range samples {

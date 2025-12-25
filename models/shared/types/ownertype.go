@@ -17,13 +17,13 @@ const (
 func (o OwnerType) LocaleString(locale translation.Locale) string {
 	switch o {
 	case OwnerTypeSystemGlobal:
-		return locale.TrString("concept_system_global")
+		return locale.TrString("Global")
 	case OwnerTypeIndividual:
-		return locale.TrString("concept_user_individual")
+		return locale.TrString("Individual")
 	case OwnerTypeRepository:
-		return locale.TrString("concept_code_repository")
+		return locale.TrString("Repository")
 	case OwnerTypeOrganization:
-		return locale.TrString("concept_user_organization")
+		return locale.TrString("Organization")
 	}
-	return locale.TrString("unknown")
+	return locale.TrString("Unknown")
 }

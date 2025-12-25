@@ -134,7 +134,7 @@ func prepareStartupProblemsAlert(ctx *context.Context) {
 
 // Dashboard show admin panel dashboard
 func Dashboard(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("admin.dashboard")
+	ctx.Data["Title"] = ctx.Tr("Dashboard")
 	ctx.Data["PageIsAdminDashboard"] = true
 	ctx.Data["NeedUpdate"] = updatechecker.GetNeedUpdate(ctx)
 	ctx.Data["RemoteVersion"] = updatechecker.GetRemoteVersion(ctx)
@@ -154,7 +154,7 @@ func SystemStatus(ctx *context.Context) {
 // DashboardPost run an admin operation
 func DashboardPost(ctx *context.Context) {
 	form := web.GetForm(ctx).(*forms.AdminDashboardForm)
-	ctx.Data["Title"] = ctx.Tr("admin.dashboard")
+	ctx.Data["Title"] = ctx.Tr("Dashboard")
 	ctx.Data["PageIsAdminDashboard"] = true
 	updateSystemStatus()
 	ctx.Data["SysStatus"] = sysStatus
@@ -168,21 +168,21 @@ func DashboardPost(ctx *context.Context) {
 					log.Error("AddAllRepoBranchesToSyncQueue: %v: %v", ctx.Doer.ID, err)
 				}
 			}()
-			ctx.Flash.Success(ctx.Tr("admin.dashboard.sync_branch.started"))
+			ctx.Flash.Success(ctx.Tr("Branches Sync started"))
 		case "sync_repo_tags":
 			go func() {
 				if err := release_service.AddAllRepoTagsToSyncQueue(graceful.GetManager().ShutdownContext()); err != nil {
 					log.Error("AddAllRepoTagsToSyncQueue: %v: %v", ctx.Doer.ID, err)
 				}
 			}()
-			ctx.Flash.Success(ctx.Tr("admin.dashboard.sync_tag.started"))
+			ctx.Flash.Success(ctx.Tr("Tags Sync started"))
 		default:
 			task := cron.GetTask(form.Op)
 			if task != nil {
 				go task.RunWithUser(ctx.Doer, nil)
-				ctx.Flash.Success(ctx.Tr("admin.dashboard.task.started", ctx.Tr("admin.dashboard."+form.Op)))
+				ctx.Flash.Success(ctx.Tr("Started Task: %[1]s", ctx.Tr("admin.dashboard."+form.Op)))
 			} else {
-				ctx.Flash.Error(ctx.Tr("admin.dashboard.task.unknown", form.Op))
+				ctx.Flash.Error(ctx.Tr("Unknown task: %[1]s", form.Op))
 			}
 		}
 	}
@@ -241,20 +241,20 @@ func SelfCheckPost(ctx *context.Context) {
 	frontendAppURL := ctx.FormString("location_origin") + setting.AppSubURL + "/"
 	ctxAppURL := httplib.GuessCurrentAppURL(ctx)
 	if !strings.HasPrefix(ctxAppURL, frontendAppURL) {
-		problems = append(problems, ctx.Locale.TrString("admin.self_check.location_origin_mismatch", frontendAppURL, ctxAppURL))
+		problems = append(problems, ctx.Locale.TrString("Current URL (%[1]s) doesn't match the URL seen by Gitea (%[2]s). If you are using a reverse proxy, please make sure the \"Host\" and \"X-Forwarded-Proto\" headers are set correctly.", frontendAppURL, ctxAppURL))
 	}
 	ctx.JSON(http.StatusOK, map[string]any{"problems": problems})
 }
 
 func CronTasks(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("admin.monitor.cron")
+	ctx.Data["Title"] = ctx.Tr("Cron Tasks")
 	ctx.Data["PageIsAdminMonitorCron"] = true
 	ctx.Data["Entries"] = cron.ListTasks()
 	ctx.HTML(http.StatusOK, tplCron)
 }
 
 func MonitorStats(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("admin.monitor.stats")
+	ctx.Data["Title"] = ctx.Tr("Stats")
 	ctx.Data["PageIsAdminMonitorStats"] = true
 	bs, err := json.Marshal(activities_model.GetStatistic(ctx).Counter)
 	if err != nil {

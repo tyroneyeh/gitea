@@ -21,10 +21,10 @@
 									{{.Issue.OriginalAuthor}}
 								</span>
 								<span class="text grey muted-links">
-									{{ctx.Locale.Tr "repo.issues.commented_at" .Issue.HashTag $createdStr}}
+									{{ctx.Locale.Tr "commented <a href=\"#%s\">%s</a>" .Issue.HashTag $createdStr}}
 								</span>
 								<span class="text migrate">
-									{{if .Repository.OriginalURL}} ({{ctx.Locale.Tr "repo.migrated_from" .Repository.OriginalURL .Repository.GetOriginalURLHostname}}){{end}}
+									{{if .Repository.OriginalURL}} ({{ctx.Locale.Tr "Migrated from <a href=\"%[1]s\">%[2]s</a>" .Repository.OriginalURL .Repository.GetOriginalURLHostname}}){{end}}
 								</span>
 							{{else}}
 								<a class="inline-timeline-avatar" href="{{.Issue.Poster.HomeLink}}">
@@ -32,7 +32,7 @@
 								</a>
 								<span class="text grey muted-links">
 									{{template "shared/user/authorlink" .Issue.Poster}}
-									{{ctx.Locale.Tr "repo.issues.commented_at" .Issue.HashTag $createdStr}}
+									{{ctx.Locale.Tr "commented <a href=\"#%s\">%s</a>" .Issue.HashTag $createdStr}}
 								</span>
 							{{end}}
 						</div>
@@ -49,7 +49,7 @@
 							{{if .Issue.RenderedContent}}
 								{{.Issue.RenderedContent}}
 							{{else}}
-								<span class="no-content">{{ctx.Locale.Tr "repo.issues.no_content"}}</span>
+								<span class="no-content">{{ctx.Locale.Tr "No description provided."}}</span>
 							{{end}}
 						</div>
 						<div id="issue-{{.Issue.ID}}-raw" class="raw-content tw-hidden">{{.Issue.Content}}</div>
@@ -86,21 +86,21 @@
 									<div class="flex-text-block tw-justify-end">
 										{{if and (or .HasIssuesOrPullsWritePermission .IsIssuePoster) (not .DisableStatusChange)}}
 											{{if .Issue.IsClosed}}
-												<button id="status-button" class="ui primary basic button" data-status="{{ctx.Locale.Tr "repo.issues.reopen_issue"}}" data-status-and-comment="{{ctx.Locale.Tr "repo.issues.reopen_comment_issue"}}" name="status" value="reopen">
-													{{ctx.Locale.Tr "repo.issues.reopen_issue"}}
+												<button id="status-button" class="ui primary basic button" data-status="{{ctx.Locale.Tr "Reopen"}}" data-status-and-comment="{{ctx.Locale.Tr "Reopen with Comment"}}" name="status" value="reopen">
+													{{ctx.Locale.Tr "Reopen"}}
 												</button>
 											{{else}}
-												{{$closeTranslationKey := "repo.issues.close"}}
+												{{$closeTranslationKey := "Close Issue"}}
 												{{if .Issue.IsPull}}
-													{{$closeTranslationKey = "repo.pulls.close"}}
+													{{$closeTranslationKey = "Close Pull Request"}}
 												{{end}}
-												<button id="status-button" class="ui red basic button" data-status="{{ctx.Locale.Tr $closeTranslationKey}}" data-status-and-comment="{{ctx.Locale.Tr "repo.issues.close_comment_issue"}}" name="status" value="close">
+												<button id="status-button" class="ui red basic button" data-status="{{ctx.Locale.Tr $closeTranslationKey}}" data-status-and-comment="{{ctx.Locale.Tr "Close with Comment"}}" name="status" value="close">
 													{{ctx.Locale.Tr $closeTranslationKey}}
 												</button>
 											{{end}}
 										{{end}}
 										<button id="comment-button" class="ui primary button">
-											{{ctx.Locale.Tr "repo.issues.create_comment"}}
+											{{ctx.Locale.Tr "Comment"}}
 										</button>
 									</div>
 								</div>
@@ -111,9 +111,9 @@
 				{{else if .Repository.IsArchived}}
 					<div class="ui warning message tw-text-center">
 						{{if .Issue.IsPull}}
-							{{ctx.Locale.Tr "repo.archive.pull.nocomment"}}
+							{{ctx.Locale.Tr "This repo is archived. You cannot comment on pull requests."}}
 						{{else}}
-							{{ctx.Locale.Tr "repo.archive.issue.nocomment"}}
+							{{ctx.Locale.Tr "This repo is archived. You cannot comment on issues."}}
 						{{end}}
 					</div>
 				{{end}}
@@ -121,14 +121,14 @@
 				{{if .Repository.IsArchived}}
 					<div class="ui warning message tw-text-center">
 						{{if .Issue.IsPull}}
-							{{ctx.Locale.Tr "repo.archive.pull.nocomment"}}
+							{{ctx.Locale.Tr "This repo is archived. You cannot comment on pull requests."}}
 						{{else}}
-							{{ctx.Locale.Tr "repo.archive.issue.nocomment"}}
+							{{ctx.Locale.Tr "This repo is archived. You cannot comment on issues."}}
 						{{end}}
 					</div>
 				{{else}}
 					<div class="ui warning message">
-						{{ctx.Locale.Tr "repo.issues.sign_in_require_desc" .SignInLink}}
+						{{ctx.Locale.Tr "<a href=\"%s\">Sign in</a> to join this conversation." .SignInLink}}
 					</div>
 				{{end}}
 			{{end}}{{/* end if: .IsSigned */}}
@@ -158,8 +158,8 @@
 
 		<div class="field">
 			<div class="flex-text-block tw-justify-end">
-				<button type="button" class="ui cancel button">{{ctx.Locale.Tr "repo.issues.cancel"}}</button>
-				<button type="submit" class="ui primary button">{{ctx.Locale.Tr "repo.issues.save"}}</button>
+				<button type="button" class="ui cancel button">{{ctx.Locale.Tr "Cancel"}}</button>
+				<button type="submit" class="ui primary button">{{ctx.Locale.Tr "Save"}}</button>
 			</div>
 		</div>
 	</form>
@@ -171,10 +171,10 @@
 <div class="ui g-modal-confirm delete modal">
 	<div class="header">
 		{{svg "octicon-trash"}}
-		{{ctx.Locale.Tr "repo.branch.delete" .HeadTarget}}
+		{{ctx.Locale.Tr "Delete Branch \"%s\"" .HeadTarget}}
 	</div>
 	<div class="content">
-		<p>{{ctx.Locale.Tr "repo.branch.delete_desc"}}</p>
+		<p>{{ctx.Locale.Tr "Deleting a branch is permanent. Although the deleted branch may continue to exist for a short time before it actually gets removed, it CANNOT be undone in most cases. Continue?"}}</p>
 	</div>
 	{{template "base/modal_actions_confirm" .}}
 </div>

@@ -1,11 +1,11 @@
 <h4 class="ui top attached header">
-	{{ctx.Locale.Tr "repository"}}
+	{{ctx.Locale.Tr "Repository"}}
 </h4>
 <div class="ui attached segment">
 	<form class="ui form form-fetch-action" method="post" action="{{AppSubUrl}}/-/admin/config">
 		<div class="field">
 			<details>
-				<summary>{{ctx.Locale.Tr "admin.config.open_with_editor_app_help"}}</summary>
+				<summary>{{ctx.Locale.Tr "The \"Open with\" editors for the clone menu. If left empty, the default will be used. Expand to see the default."}}</summary>
 				<pre class="tw-px-4">{{.DefaultOpenWithEditorAppsString}}</pre>
 			</details>
 		</div>
@@ -16,13 +16,13 @@
 		</div>
 
 		<div class="field">
-			<label>{{ctx.Locale.Tr "admin.config.git_guide_remote_name"}}</label>
+			<label>{{ctx.Locale.Tr "Repository remote name for git commands in the guide"}}</label>
 			{{$cfg = .SystemConfig.Repository.GitGuideRemoteName}}
 			<input type="hidden" name="key" value="{{$cfg.DynKey}}">
 			<input name="value" value="{{$cfg.Value ctx}}" placeholder="{{$cfg.DefaultValue}}" maxlength="100" dir="auto" required pattern="^[A-Za-z0-9][\-_A-Za-z0-9]*$">
 		</div>
 		<div class="field">
-			<button class="ui primary button">{{ctx.Locale.Tr "save"}}</button>
+			<button class="ui primary button">{{ctx.Locale.Tr "Save"}}</button>
 		</div>
 	</form>
 </div>

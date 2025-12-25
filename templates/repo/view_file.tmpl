@@ -38,32 +38,32 @@
 			{{/* this componment is also controlled by frontend plugin renders */}}
 			<div class="ui compact icon buttons file-view-toggle-buttons {{Iif .HasSourceRenderedToggle "" "tw-hidden"}}">
 				{{if .IsRepresentableAsText}}
-				<a href="?display=source" class="ui mini basic button file-view-toggle-source {{if .IsDisplayingSource}}active{{end}}" data-tooltip-content="{{ctx.Locale.Tr "repo.file_view_source"}}">{{svg "octicon-code" 15}}</a>
+				<a href="?display=source" class="ui mini basic button file-view-toggle-source {{if .IsDisplayingSource}}active{{end}}" data-tooltip-content="{{ctx.Locale.Tr "View Source"}}">{{svg "octicon-code" 15}}</a>
 				{{end}}
-				<a href="?display=rendered" class="ui mini basic button file-view-toggle-rendered {{if not .IsDisplayingSource}}active{{end}}" data-tooltip-content="{{ctx.Locale.Tr "repo.file_view_rendered"}}">{{svg "octicon-file" 15}}</a>
+				<a href="?display=rendered" class="ui mini basic button file-view-toggle-rendered {{if not .IsDisplayingSource}}active{{end}}" data-tooltip-content="{{ctx.Locale.Tr "View Rendered"}}">{{svg "octicon-file" 15}}</a>
 			</div>
 			{{if not .ReadmeInList}}
 				<div class="ui buttons tw-mr-1">
-					<a class="ui mini basic button" href="{{$.RawFileLink}}">{{ctx.Locale.Tr "repo.file_raw"}}</a>
+					<a class="ui mini basic button" href="{{$.RawFileLink}}">{{ctx.Locale.Tr "Raw"}}</a>
 					{{if or .RefFullName.IsBranch .RefFullName.IsTag}}
-						<a class="ui mini basic button" href="{{.RepoLink}}/src/commit/{{PathEscape .CommitID}}/{{PathEscapeSegments .TreePath}}">{{ctx.Locale.Tr "repo.file_permalink"}}</a>
+						<a class="ui mini basic button" href="{{.RepoLink}}/src/commit/{{PathEscape .CommitID}}/{{PathEscapeSegments .TreePath}}">{{ctx.Locale.Tr "Permalink"}}</a>
 					{{end}}
 					{{if .IsRepresentableAsText}}
-						<a class="ui mini basic button" href="{{.RepoLink}}/blame/{{.RefTypeNameSubURL}}/{{PathEscapeSegments .TreePath}}">{{ctx.Locale.Tr "repo.blame"}}</a>
+						<a class="ui mini basic button" href="{{.RepoLink}}/blame/{{.RefTypeNameSubURL}}/{{PathEscapeSegments .TreePath}}">{{ctx.Locale.Tr "Blame"}}</a>
 					{{end}}
-					<a class="ui mini basic button" href="{{.RepoLink}}/commits/{{.RefTypeNameSubURL}}/{{PathEscapeSegments .TreePath}}">{{ctx.Locale.Tr "repo.file_history"}}</a>
+					<a class="ui mini basic button" href="{{.RepoLink}}/commits/{{.RefTypeNameSubURL}}/{{PathEscapeSegments .TreePath}}">{{ctx.Locale.Tr "History"}}</a>
 					{{if .EscapeStatus.Escaped}}
-						<button class="ui mini basic button unescape-button tw-hidden">{{ctx.Locale.Tr "repo.unescape_control_characters"}}</button>
-						<button class="ui mini basic button escape-button">{{ctx.Locale.Tr "repo.escape_control_characters"}}</button>
+						<button class="ui mini basic button unescape-button tw-hidden">{{ctx.Locale.Tr "Unescape"}}</button>
+						<button class="ui mini basic button escape-button">{{ctx.Locale.Tr "Escape"}}</button>
 					{{end}}
 				</div>
-				<a download class="btn-octicon" data-tooltip-content="{{ctx.Locale.Tr "repo.download_file"}}" href="{{$.RawFileLink}}">{{svg "octicon-download"}}</a>
+				<a download class="btn-octicon" data-tooltip-content="{{ctx.Locale.Tr "Download file"}}" href="{{$.RawFileLink}}">{{svg "octicon-download"}}</a>
 				<a class="btn-octicon {{if not .CanCopyContent}}disabled{{end}}" data-global-click="onCopyContentButtonClick"
 					{{if not .IsDisplayingSource}}data-raw-file-link="{{$.RawFileLink}}"{{end}}
-					data-tooltip-content="{{if .CanCopyContent}}{{ctx.Locale.Tr "copy_content"}}{{else}}{{ctx.Locale.Tr "copy_type_unsupported"}}{{end}}"
+					data-tooltip-content="{{if .CanCopyContent}}{{ctx.Locale.Tr "Copy content"}}{{else}}{{ctx.Locale.Tr "This file type cannot be copied"}}{{end}}"
 				>{{svg "octicon-copy"}}</a>
 				{{if and .EnableFeed .RefFullName.IsBranch}}
-				<a class="btn-octicon" href="{{$.RepoLink}}/rss/{{$.RefTypeNameSubURL}}/{{PathEscapeSegments .TreePath}}" data-tooltip-content="{{ctx.Locale.Tr "rss_feed"}}">
+				<a class="btn-octicon" href="{{$.RepoLink}}/rss/{{$.RefTypeNameSubURL}}/{{PathEscapeSegments .TreePath}}" data-tooltip-content="{{ctx.Locale.Tr "RSS Feed"}}">
 					{{svg "octicon-rss"}}
 				</a>
 				{{end}}
@@ -80,11 +80,11 @@
 					{{end}}
 				{{end}}
 			{{else if .EscapeStatus.Escaped}}
-				<button class="ui mini basic button unescape-button tw-mr-1 tw-hidden">{{ctx.Locale.Tr "repo.unescape_control_characters"}}</button>
-				<button class="ui mini basic button escape-button tw-mr-1">{{ctx.Locale.Tr "repo.escape_control_characters"}}</button>
+				<button class="ui mini basic button unescape-button tw-mr-1 tw-hidden">{{ctx.Locale.Tr "Unescape"}}</button>
+				<button class="ui mini basic button escape-button tw-mr-1">{{ctx.Locale.Tr "Escape"}}</button>
 			{{end}}
 			{{if and .ReadmeInList .CanEditReadmeFile}}
-				<a class="btn-octicon" data-tooltip-content="{{ctx.Locale.Tr "repo.editor.edit_this_file"}}" href="{{.RepoLink}}/_edit/{{PathEscapeSegments .BranchName}}/{{PathEscapeSegments .FileTreePath}}">{{svg "octicon-pencil"}}</a>
+				<a class="btn-octicon" data-tooltip-content="{{ctx.Locale.Tr "Edit File"}}" href="{{.RepoLink}}/_edit/{{PathEscapeSegments .BranchName}}/{{PathEscapeSegments .FileTreePath}}">{{svg "octicon-pencil"}}</a>
 			{{end}}
 		</div>
 	</h4>
@@ -110,7 +110,7 @@
 						<tr>
 							<td class="lines-num"><span id="L{{$line}}" data-line-number="{{$line}}"></span></td>
 							{{if $.EscapeStatus.Escaped}}
-								<td class="lines-escape">{{if (index $.LineEscapeStatus $idx).Escaped}}<button class="toggle-escape-button btn interact-bg" title="{{if (index $.LineEscapeStatus $idx).HasInvisible}}{{ctx.Locale.Tr "repo.invisible_runes_line"}} {{end}}{{if (index $.LineEscapeStatus $idx).HasAmbiguous}}{{ctx.Locale.Tr "repo.ambiguous_runes_line"}}{{end}}"></button>{{end}}</td>
+								<td class="lines-escape">{{if (index $.LineEscapeStatus $idx).Escaped}}<button class="toggle-escape-button btn interact-bg" title="{{if (index $.LineEscapeStatus $idx).HasInvisible}}{{ctx.Locale.Tr "This line has invisible unicode characters"}} {{end}}{{if (index $.LineEscapeStatus $idx).HasAmbiguous}}{{ctx.Locale.Tr "This line has ambiguous unicode characters"}}{{end}}"></button>{{end}}</td>
 							{{end}}
 							<td rel="L{{$line}}" class="lines-code chroma"><code class="code-inner">{{$code}}</code></td>
 						</tr>
@@ -123,16 +123,16 @@
 						<img alt="{{$.RawFileLink}}" src="{{$.RawFileLink}}">
 					{{else if .IsVideoFile}}
 						<video controls src="{{$.RawFileLink}}">
-							<strong>{{ctx.Locale.Tr "repo.video_not_supported_in_browser"}}</strong>
+							<strong>{{ctx.Locale.Tr "Your browser does not support the HTML5 'video' tag."}}</strong>
 						</video>
 					{{else if .IsAudioFile}}
 						<audio controls src="{{$.RawFileLink}}">
-							<strong>{{ctx.Locale.Tr "repo.audio_not_supported_in_browser"}}</strong>
+							<strong>{{ctx.Locale.Tr "Your browser does not support the HTML5 'audio' tag."}}</strong>
 						</audio>
 					{{else}}
 						<div class="file-view-render-container">
 							<div class="file-view-raw-prompt tw-p-4">
-								<a href="{{$.RawFileLink}}" rel="nofollow">{{ctx.Locale.Tr "repo.file_view_raw"}}</a>
+								<a href="{{$.RawFileLink}}" rel="nofollow">{{ctx.Locale.Tr "View Raw"}}</a>
 							</div>
 						</div>
 					{{end}}
@@ -142,10 +142,10 @@
 
 		<div class="code-line-menu tippy-target">
 			{{if $.Permission.CanRead ctx.Consts.RepoUnitTypeIssues}}
-			<a class="item ref-in-new-issue" role="menuitem" data-url-issue-new="{{.RepoLink}}/issues/new" data-url-param-body-link="{{.Repository.Link}}/src/commit/{{PathEscape .CommitID}}/{{PathEscapeSegments .TreePath}}{{if $.HasSourceRenderedToggle}}?display=source{{end}}" rel="nofollow noindex">{{ctx.Locale.Tr "repo.issues.context.reference_issue"}}</a>
+			<a class="item ref-in-new-issue" role="menuitem" data-url-issue-new="{{.RepoLink}}/issues/new" data-url-param-body-link="{{.Repository.Link}}/src/commit/{{PathEscape .CommitID}}/{{PathEscapeSegments .TreePath}}{{if $.HasSourceRenderedToggle}}?display=source{{end}}" rel="nofollow noindex">{{ctx.Locale.Tr "Reference in New Issue"}}</a>
 			{{end}}
-			<a class="item view_git_blame" role="menuitem" href="{{.Repository.Link}}/blame/commit/{{PathEscape .CommitID}}/{{PathEscapeSegments .TreePath}}">{{ctx.Locale.Tr "repo.view_git_blame"}}</a>
-			<a class="item copy-line-permalink" role="menuitem" data-url="{{.Repository.Link}}/src/commit/{{PathEscape .CommitID}}/{{PathEscapeSegments .TreePath}}{{if $.HasSourceRenderedToggle}}?display=source{{end}}">{{ctx.Locale.Tr "repo.file_copy_permalink"}}</a>
+			<a class="item view_git_blame" role="menuitem" href="{{.Repository.Link}}/blame/commit/{{PathEscape .CommitID}}/{{PathEscapeSegments .TreePath}}">{{ctx.Locale.Tr "View Git Blame"}}</a>
+			<a class="item copy-line-permalink" role="menuitem" data-url="{{.Repository.Link}}/src/commit/{{PathEscape .CommitID}}/{{PathEscapeSegments .TreePath}}{{if $.HasSourceRenderedToggle}}?display=source{{end}}">{{ctx.Locale.Tr "Copy Permalink"}}</a>
 		</div>
 	</div>
 </div>

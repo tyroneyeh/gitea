@@ -133,7 +133,7 @@ func setCsvCompareContext(ctx *context.Context) {
 			return CsvDiffResult{nil, ""}
 		}
 
-		errTooLarge := errors.New(ctx.Locale.TrString("repo.error.csv.too_large"))
+		errTooLarge := errors.New(ctx.Locale.TrString("Can't render this file because it is too large."))
 
 		csvReaderFromCommit := func(ctx *markup.RenderContext, blob *git.Blob) (*csv.Reader, io.Closer, error) {
 			if blob == nil {

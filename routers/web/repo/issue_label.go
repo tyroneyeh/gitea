@@ -28,7 +28,7 @@ const (
 
 // Labels render issue's labels page
 func Labels(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("repo.labels")
+	ctx.Data["Title"] = ctx.Tr("Labels")
 	ctx.Data["PageIsIssueList"] = true
 	ctx.Data["PageIsLabels"] = true
 	ctx.Data["LabelTemplateFiles"] = repo_module.LabelTemplateFiles
@@ -46,7 +46,7 @@ func InitializeLabels(ctx *context.Context) {
 	if err := repo_module.InitializeLabels(ctx, ctx.Repo.Repository.ID, form.TemplateName, false); err != nil {
 		if label.IsErrTemplateLoad(err) {
 			originalErr := err.(label.ErrTemplateLoad).OriginalError
-			ctx.Flash.Error(ctx.Tr("repo.issues.label_templates.fail_to_load_file", form.TemplateName, originalErr))
+			ctx.Flash.Error(ctx.Tr("Failed to load label template file \"%s\": %v", form.TemplateName, originalErr))
 			ctx.Redirect(ctx.Repo.RepoLink + "/labels")
 			return
 		}
@@ -157,7 +157,7 @@ func DeleteLabel(ctx *context.Context) {
 	if err := issues_model.DeleteLabel(ctx, ctx.Repo.Repository.ID, ctx.FormInt64("id")); err != nil {
 		ctx.Flash.Error("DeleteLabel: " + err.Error())
 	} else {
-		ctx.Flash.Success(ctx.Tr("repo.issues.label_deletion_success"))
+		ctx.Flash.Success(ctx.Tr("The label has been deleted."))
 	}
 
 	ctx.JSONRedirect(ctx.Repo.RepoLink + "/labels")

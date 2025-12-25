@@ -152,7 +152,7 @@ func getReleaseInfos(ctx *context.Context, opts *repo_model.FindReleasesOptions)
 // Releases render releases list page
 func Releases(ctx *context.Context) {
 	ctx.Data["PageIsReleaseList"] = true
-	ctx.Data["Title"] = ctx.Tr("repo.release.releases")
+	ctx.Data["Title"] = ctx.Tr("Releases")
 
 	listOptions := db.ListOptions{
 		Page:     ctx.FormInt("page"),
@@ -196,7 +196,7 @@ func Releases(ctx *context.Context) {
 // TagsList render tags list page
 func TagsList(ctx *context.Context) {
 	ctx.Data["PageIsTagList"] = true
-	ctx.Data["Title"] = ctx.Tr("repo.release.tags")
+	ctx.Data["Title"] = ctx.Tr("Tags")
 	ctx.Data["CanCreateRelease"] = ctx.Repo.CanWrite(unit.TypeReleases) && !ctx.Repo.Repository.IsArchived
 
 	namePattern := ctx.FormTrim("q")
@@ -332,7 +332,7 @@ func LatestRelease(ctx *context.Context) {
 }
 
 func newReleaseCommon(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("repo.release.new_release")
+	ctx.Data["Title"] = ctx.Tr("New Release")
 	ctx.Data["PageIsReleaseList"] = true
 
 	tags, err := repo_model.GetTagNamesByRepoID(ctx, ctx.Repo.Repository.ID)
@@ -452,13 +452,13 @@ func NewReleasePost(ctx *context.Context) {
 	}
 
 	if exist, _ := git_model.IsBranchExist(ctx, ctx.Repo.Repository.ID, form.Target); !exist {
-		ctx.RenderWithErr(ctx.Tr("form.target_branch_not_exist"), tplReleaseNew, &form)
+		ctx.RenderWithErr(ctx.Tr("Target branch does not exist."), tplReleaseNew, &form)
 		return
 	}
 
 	if !form.TagOnly && form.Title == "" {
 		// if not "tag only", then the title of the release cannot be empty
-		ctx.RenderWithErr(ctx.Tr("repo.release.title_empty"), tplReleaseNew, &form)
+		ctx.RenderWithErr(ctx.Tr("Title cannot be empty."), tplReleaseNew, &form)
 		return
 	}
 
@@ -466,13 +466,13 @@ func NewReleasePost(ctx *context.Context) {
 		ctx.Data["Err_TagName"] = true
 		switch {
 		case release_service.IsErrTagAlreadyExists(err):
-			ctx.RenderWithErr(ctx.Tr("repo.branch.tag_collision", form.TagName), tplReleaseNew, &form)
+			ctx.RenderWithErr(ctx.Tr("Branch \"%s\" cannot be created as a tag with same name already exists in the repository.", form.TagName), tplReleaseNew, &form)
 		case repo_model.IsErrReleaseAlreadyExist(err):
-			ctx.RenderWithErr(ctx.Tr("repo.release.tag_name_already_exist"), tplReleaseNew, &form)
+			ctx.RenderWithErr(ctx.Tr("A release with this tag name already exists."), tplReleaseNew, &form)
 		case release_service.IsErrInvalidTagName(err):
-			ctx.RenderWithErr(ctx.Tr("repo.release.tag_name_invalid"), tplReleaseNew, &form)
+			ctx.RenderWithErr(ctx.Tr("The tag name is not valid."), tplReleaseNew, &form)
 		case release_service.IsErrProtectedTagName(err):
-			ctx.RenderWithErr(ctx.Tr("repo.release.tag_name_protected"), tplReleaseNew, &form)
+			ctx.RenderWithErr(ctx.Tr("The tag name is protected."), tplReleaseNew, &form)
 		default:
 			ctx.ServerError("handleTagReleaseError", err)
 		}
@@ -490,7 +490,7 @@ func NewReleasePost(ctx *context.Context) {
 			handleTagReleaseError(err)
 			return
 		}
-		ctx.Flash.Success(ctx.Tr("repo.tag.create_success", form.TagName))
+		ctx.Flash.Success(ctx.Tr("Tag \"%s\" has been created.", form.TagName))
 		ctx.Redirect(ctx.Repo.RepoLink + "/src/tag/" + util.PathEscapeSegments(form.TagName))
 		return
 	}
@@ -525,7 +525,7 @@ func NewReleasePost(ctx *context.Context) {
 	// add new logic: if tag-only, do not convert the tag to a release
 	if form.TagOnly || !rel.IsTag {
 		ctx.Data["Err_TagName"] = true
-		ctx.RenderWithErr(ctx.Tr("repo.release.tag_name_already_exist"), tplReleaseNew, &form)
+		ctx.RenderWithErr(ctx.Tr("A release with this tag name already exists."), tplReleaseNew, &form)
 		return
 	}
 
@@ -551,7 +551,7 @@ func EditRelease(ctx *context.Context) {
 		return
 	}
 
-	ctx.Data["Title"] = ctx.Tr("repo.release.edit_release")
+	ctx.Data["Title"] = ctx.Tr("Update Release")
 	ctx.Data["PageIsEditRelease"] = true
 
 	tagName := ctx.PathParam("*")
@@ -599,7 +599,7 @@ func EditReleasePost(ctx *context.Context) {
 		return
 	}
 
-	ctx.Data["Title"] = ctx.Tr("repo.release.edit_release")
+	ctx.Data["Title"] = ctx.Tr("Update Release")
 	ctx.Data["PageIsEditRelease"] = true
 
 	tagName := ctx.PathParam("*")
@@ -687,15 +687,15 @@ func deleteReleaseOrTag(ctx *context.Context, isDelTag bool) {
 
 	if err := release_service.DeleteReleaseByID(ctx, ctx.Repo.Repository, rel, ctx.Doer, isDelTag); err != nil {
 		if release_service.IsErrProtectedTagName(err) {
-			ctx.Flash.Error(ctx.Tr("repo.release.tag_name_protected"))
+			ctx.Flash.Error(ctx.Tr("The tag name is protected."))
 		} else {
 			ctx.Flash.Error("DeleteReleaseByID: " + err.Error())
 		}
 	} else {
 		if isDelTag {
-			ctx.Flash.Success(ctx.Tr("repo.release.deletion_tag_success"))
+			ctx.Flash.Success(ctx.Tr("The tag has been deleted."))
 		} else {
-			ctx.Flash.Success(ctx.Tr("repo.release.deletion_success"))
+			ctx.Flash.Success(ctx.Tr("The release has been deleted."))
 		}
 	}
 

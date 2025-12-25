@@ -137,8 +137,8 @@ func (r Renderer) Render(ctx *markup.RenderContext, input io.Reader, output io.W
 
 		// Try to get the user translation
 		if locale, ok := ctx.Value(translation.ContextKey).(translation.Locale); ok {
-			warn += locale.TrString("repo.file_too_large")
-			rawLink += locale.TrString("repo.file_view_raw")
+			warn += locale.TrString("The file is too large to be shown.")
+			rawLink += locale.TrString("View Raw")
 		} else {
 			warn += "The file is too large to be shown."
 			rawLink += "View Raw"

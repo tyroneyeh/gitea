@@ -16,7 +16,7 @@ func Queues(ctx *context.Context) {
 	if !setting.IsProd {
 		initTestQueueOnce()
 	}
-	ctx.Data["Title"] = ctx.Tr("admin.monitor.queues")
+	ctx.Data["Title"] = ctx.Tr("Queues")
 	ctx.Data["PageIsAdminMonitorQueue"] = true
 	ctx.Data["Queues"] = queue.GetManager().ManagedQueues()
 	ctx.HTML(http.StatusOK, tplQueue)
@@ -30,7 +30,7 @@ func QueueManage(ctx *context.Context) {
 		ctx.Status(http.StatusNotFound)
 		return
 	}
-	ctx.Data["Title"] = ctx.Tr("admin.monitor.queue", mq.GetName())
+	ctx.Data["Title"] = ctx.Tr("Queue: %s", mq.GetName())
 	ctx.Data["PageIsAdminMonitor"] = true
 	ctx.Data["Queue"] = mq
 	ctx.HTML(http.StatusOK, tplQueueManage)
@@ -52,7 +52,7 @@ func QueueSet(ctx *context.Context) {
 	if len(maxNumberStr) > 0 {
 		maxNumber, err = strconv.Atoi(maxNumberStr)
 		if err != nil {
-			ctx.Flash.Error(ctx.Tr("admin.monitor.queue.settings.maxnumberworkers.error"))
+			ctx.Flash.Error(ctx.Tr("Max number of workers must be a number"))
 			ctx.Redirect(setting.AppSubURL + "/-/admin/monitor/queue/" + strconv.FormatInt(qid, 10))
 			return
 		}
@@ -64,7 +64,7 @@ func QueueSet(ctx *context.Context) {
 	}
 
 	mq.SetWorkerMaxNumber(maxNumber)
-	ctx.Flash.Success(ctx.Tr("admin.monitor.queue.settings.changed"))
+	ctx.Flash.Success(ctx.Tr("Settings Updated"))
 	ctx.Redirect(setting.AppSubURL + "/-/admin/monitor/queue/" + strconv.FormatInt(qid, 10))
 }
 
@@ -84,6 +84,6 @@ func QueueRemoveAllItems(ctx *context.Context) {
 		return
 	}
 
-	ctx.Flash.Success(ctx.Tr("admin.monitor.queue.settings.remove_all_items_done"))
+	ctx.Flash.Success(ctx.Tr("All items in the queue have been removed."))
 	ctx.Redirect(setting.AppSubURL + "/-/admin/monitor/queue/" + strconv.FormatInt(qid, 10))
 }

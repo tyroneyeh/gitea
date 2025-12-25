@@ -1,10 +1,10 @@
 <h4 class="ui top attached header">
-	{{ctx.Locale.Tr "settings.authorized_oauth2_applications"}}
+	{{ctx.Locale.Tr "Authorized OAuth2 Applications"}}
 </h4>
 <div class="ui attached segment">
 	<div class="flex-list">
 		<div class="flex-item">
-			{{ctx.Locale.Tr "settings.authorized_oauth2_applications_description"}}
+			{{ctx.Locale.Tr "You have granted access to your personal Gitea account to these third-party applications. Please revoke access for applications you no longer need."}}
 		</div>
 		{{range .Grants}}
 			<div class="flex-item">
@@ -14,13 +14,13 @@
 				<div class="flex-item-main">
 					<div class="flex-item-title">{{.Application.Name}}</div>
 					<div class="flex-item-body">
-						<i>{{ctx.Locale.Tr "settings.added_on" (DateUtils.AbsoluteShort .CreatedUnix)}}</i>
+						<i>{{ctx.Locale.Tr "Added on %s" (DateUtils.AbsoluteShort .CreatedUnix)}}</i>
 					</div>
 				</div>
 				<div class="flex-item-trailing">
 					<button class="ui red tiny button delete-button" data-modal-id="revoke-gitea-oauth2-grant"
 							data-url="{{AppSubUrl}}/user/settings/applications/oauth2/{{.ApplicationID}}/revoke/{{.ID}}">
-						{{ctx.Locale.Tr "settings.revoke_key"}}
+						{{ctx.Locale.Tr "Revoke"}}
 					</button>
 				</div>
 			</div>
@@ -30,10 +30,10 @@
 	<div class="ui g-modal-confirm delete modal" id="revoke-gitea-oauth2-grant">
 		<div class="header">
 			{{svg "octicon-shield" 16 "tw-mr-1"}}
-			{{ctx.Locale.Tr "settings.revoke_oauth2_grant"}}
+			{{ctx.Locale.Tr "Revoke Access"}}
 		</div>
 		<div class="content">
-			<p>{{ctx.Locale.Tr "settings.revoke_oauth2_grant_description"}}</p>
+			<p>{{ctx.Locale.Tr "Revoking access for this third-party application will prevent this application from accessing your data. Are you sure?"}}</p>
 		</div>
 		{{template "base/modal_actions_confirm" .}}
 	</div>

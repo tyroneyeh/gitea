@@ -17,20 +17,20 @@
 						<a class="text primary name" href="{{.Link}}">{{.Name}}</a>
 						<span class="label-list">
 							{{if .IsArchived}}
-								<span class="ui basic label">{{ctx.Locale.Tr "repo.desc.archived"}}</span>
+								<span class="ui basic label">{{ctx.Locale.Tr "Archived"}}</span>
 							{{end}}
 							{{if .IsPrivate}}
-								<span class="ui basic label">{{ctx.Locale.Tr "repo.desc.private"}}</span>
+								<span class="ui basic label">{{ctx.Locale.Tr "Private"}}</span>
 							{{else}}
 								{{if .Owner.Visibility.IsPrivate}}
-									<span class="ui basic label">{{ctx.Locale.Tr "repo.desc.internal"}}</span>
+									<span class="ui basic label">{{ctx.Locale.Tr "Internal"}}</span>
 								{{end}}
 							{{end}}
 							{{if .IsTemplate}}
-								<span class="ui basic label">{{ctx.Locale.Tr "repo.desc.template"}}</span>
+								<span class="ui basic label">{{ctx.Locale.Tr "Template"}}</span>
 							{{end}}
 							{{if eq .ObjectFormatName "sha256"}}
-								<span class="ui basic label">{{ctx.Locale.Tr "repo.desc.sha256"}}</span>
+								<span class="ui basic label">{{ctx.Locale.Tr "SHA256"}}</span>
 							{{end}}
 						</span>
 					</div>
@@ -43,12 +43,12 @@
 						{{end}}
 						{{if not $.DisableStars}}
 							<a class="flex-text-inline" href="{{.Link}}/stars">
-								<span class="tw-contents" aria-label="{{ctx.Locale.Tr "repo.stars"}}">{{svg "octicon-star" 16}}</span>
+								<span class="tw-contents" aria-label="{{ctx.Locale.Tr "Stars"}}">{{svg "octicon-star" 16}}</span>
 								<span {{if ge .NumStars 1000}}data-tooltip-content="{{.NumStars}}"{{end}}>{{CountFmt .NumStars}}</span>
 							</a>
 						{{end}}
 						<a class="flex-text-inline" href="{{.Link}}/forks">
-							<span class="tw-contents" aria-label="{{ctx.Locale.Tr "repo.forks"}}">{{svg "octicon-git-branch" 16}}</span>
+							<span class="tw-contents" aria-label="{{ctx.Locale.Tr "Forks"}}">{{svg "octicon-git-branch" 16}}</span>
 							<span {{if ge .NumForks 1000}}data-tooltip-content="{{.NumForks}}"{{end}}>{{CountFmt .NumForks}}</span>
 						</a>
 					</div>
@@ -64,12 +64,12 @@
 					{{end}}
 					</div>
 				{{end}}
-				<div class="flex-item-body">{{ctx.Locale.Tr "org.repo_updated"}} {{DateUtils.TimeSince .UpdatedUnix}}</div>
+				<div class="flex-item-body">{{ctx.Locale.Tr "Updated"}} {{DateUtils.TimeSince .UpdatedUnix}}</div>
 			</div>
 		</div>
 	{{else}}
 	<div>
-		{{ctx.Locale.Tr "search.no_results"}}
+		{{ctx.Locale.Tr "No matching results found."}}
 	</div>
 	{{end}}
 </div>

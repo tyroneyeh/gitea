@@ -295,7 +295,7 @@ func (f *NewSlackHookForm) Validate(req *http.Request, errs binding.Errors) bind
 		errs = append(errs, binding.Error{
 			FieldNames:     []string{"Channel"},
 			Classification: "",
-			Message:        ctx.Locale.TrString("repo.settings.add_webhook.invalid_channel_name"),
+			Message:        ctx.Locale.TrString("Webhook channel name cannot be empty and cannot contain only a # character."),
 		})
 	}
 	return middleware.Validate(errs, ctx.Data, f, ctx.Locale)

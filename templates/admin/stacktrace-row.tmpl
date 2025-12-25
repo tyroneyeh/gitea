@@ -18,8 +18,8 @@
 		<div>
 			{{if or (eq .Process.Type "request") (eq .Process.Type "normal")}}
 				<a class="link-action" data-url="{{.root.Link}}/cancel/{{.Process.PID}}"
-					data-modal-confirm-header="{{ctx.Locale.Tr "admin.monitor.process.cancel"}}"
-					data-modal-confirm-content="{{ctx.Locale.Tr "admin.monitor.process.cancel_desc"}}"
+					data-modal-confirm-header="{{ctx.Locale.Tr "Cancel process"}}"
+					data-modal-confirm-content="{{ctx.Locale.Tr "Canceling a process may cause data loss"}}"
 				>{{svg "octicon-trash" 16 "text-red"}}</a>
 			{{end}}
 		</div>

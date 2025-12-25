@@ -5,31 +5,31 @@
 			<form class="ui form ignore-dirty" action="{{.Link}}" method="post">
 				{{.CsrfTokenHtml}}
 				<h2 class="ui top attached header">
-					{{ctx.Locale.Tr "auth.forgot_password_title"}}
+					{{ctx.Locale.Tr "Forgot Password"}}
 				</h2>
 				<div class="ui attached segment">
 					{{template "base/alert" .}}
 					{{if .IsResetSent}}
-						<p>{{ctx.Locale.Tr "auth.reset_password_mail_sent_prompt" .Email .ResetPwdCodeLives}}</p>
+						<p>{{ctx.Locale.Tr "A confirmation email has been sent to <b>%s</b>. Please check your inbox within the next %s to complete the account recovery process." .Email .ResetPwdCodeLives}}</p>
 					{{else if .IsResetRequest}}
 						<div class="required field {{if .Err_Email}}error{{end}}">
-							<label for="email">{{ctx.Locale.Tr "email"}}</label>
+							<label for="email">{{ctx.Locale.Tr "Email Address"}}</label>
 							<input id="email" name="email" type="email"  value="{{.Email}}" autofocus required>
 						</div>
 						<div class="divider"></div>
 						<div class="inline field">
-							<button class="ui primary button">{{ctx.Locale.Tr "auth.send_reset_mail"}}</button>
+							<button class="ui primary button">{{ctx.Locale.Tr "Send Account Recovery Email"}}</button>
 						</div>
 					{{else if .IsResetDisable}}
 						<p class="center">
 							{{if $.IsAdmin}}
-								{{ctx.Locale.Tr "auth.disable_forgot_password_mail_admin"}}
+								{{ctx.Locale.Tr "Account recovery is only available when an email address is set up."}}
 							{{else}}
-								{{ctx.Locale.Tr "auth.disable_forgot_password_mail"}}
+								{{ctx.Locale.Tr "Account recovery is disabled because no email address is set up. Please contact your site administrator."}}
 							{{end}}
 						</p>
 					{{else if .ResendLimited}}
-						<p class="center">{{ctx.Locale.Tr "auth.resent_limit_prompt"}}</p>
+						<p class="center">{{ctx.Locale.Tr "You have already requested an activation email recently. Please wait 3 minutes and try again."}}</p>
 					{{end}}
 				</div>
 			</form>

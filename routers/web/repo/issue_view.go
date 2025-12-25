@@ -670,7 +670,7 @@ func prepareIssueViewCommentsAndSidebarParticipants(ctx *context.Context, issue 
 			}
 			ghostMilestone := &issues_model.Milestone{
 				ID:   -1,
-				Name: ctx.Locale.TrString("repo.issues.deleted_milestone"),
+				Name: ctx.Locale.TrString("(deleted)"),
 			}
 			if comment.OldMilestoneID > 0 && comment.OldMilestone == nil {
 				comment.OldMilestone = ghostMilestone
@@ -686,7 +686,7 @@ func prepareIssueViewCommentsAndSidebarParticipants(ctx *context.Context, issue 
 
 			ghostProject := &project_model.Project{
 				ID:    project_model.GhostProjectID,
-				Title: ctx.Locale.TrString("repo.issues.deleted_project"),
+				Title: ctx.Locale.TrString("(deleted)"),
 			}
 
 			if comment.OldProjectID > 0 && comment.OldProject == nil {

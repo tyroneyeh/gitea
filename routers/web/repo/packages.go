@@ -53,7 +53,7 @@ func Packages(ctx *context.Context) {
 		return
 	}
 
-	ctx.Data["Title"] = ctx.Tr("packages.title")
+	ctx.Data["Title"] = ctx.Tr("Packages")
 	ctx.Data["IsPackagesPage"] = true
 	ctx.Data["Query"] = query
 	ctx.Data["PackageType"] = packageType

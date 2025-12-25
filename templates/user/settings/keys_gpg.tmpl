@@ -1,7 +1,7 @@
 <h4 class="ui top attached header">
-	{{ctx.Locale.Tr "settings.manage_gpg_keys"}}
+	{{ctx.Locale.Tr "Manage GPG Keys"}}
 	<div class="ui right">
-		<button class="ui primary tiny show-panel toggle button" data-panel="#add-gpg-key-panel">{{ctx.Locale.Tr "settings.add_key"}}</button>
+		<button class="ui primary tiny show-panel toggle button" data-panel="#add-gpg-key-panel">{{ctx.Locale.Tr "Add Key"}}</button>
 	</div>
 </h4>
 <div class="ui attached segment">
@@ -10,40 +10,40 @@
 			{{.CsrfTokenHtml}}
 			<input type="hidden" name="title" value="none">
 			<div class="field {{if .Err_Content}}error{{end}}">
-				<label for="gpg-key-content">{{ctx.Locale.Tr "settings.key_content"}}</label>
-				<textarea id="gpg-key-content" name="content" placeholder="{{ctx.Locale.Tr "settings.key_content_gpg_placeholder"}}" required>{{.content}}</textarea>
+				<label for="gpg-key-content">{{ctx.Locale.Tr "Content"}}</label>
+				<textarea id="gpg-key-content" name="content" placeholder="{{ctx.Locale.Tr "Begins with '-----BEGIN PGP PUBLIC KEY BLOCK-----'"}}" required>{{.content}}</textarea>
 			</div>
 			{{if .Err_Signature}}
 				<div class="ui error message">
-					<p>{{ctx.Locale.Tr "settings.gpg_token_required"}}</p>
+					<p>{{ctx.Locale.Tr "You must provide a signature for the below token"}}</p>
 				</div>
 				<div class="field">
-					<label for="token">{{ctx.Locale.Tr "settings.gpg_token"}}</label>
+					<label for="token">{{ctx.Locale.Tr "Token"}}</label>
 					<input readonly="" value="{{.TokenToSign}}">
 					<div class="help">
-						{{ctx.Locale.Tr "settings.gpg_token_help"}}
+						{{ctx.Locale.Tr "You can generate a signature using:"}}
 						<pre class="command-block">{{printf `echo "%s" | gpg -a --default-key %s --detach-sig` .TokenToSign .PaddedKeyID}}</pre>
 					</div>
 				</div>
 				<div class="field">
-					<label for="gpg-key-signature">{{ctx.Locale.Tr "settings.gpg_token_signature"}}</label>
-					<textarea id="gpg-key-signature" name="signature" placeholder="{{ctx.Locale.Tr "settings.key_signature_gpg_placeholder"}}" required>{{.signature}}</textarea>
+					<label for="gpg-key-signature">{{ctx.Locale.Tr "Armored GPG signature"}}</label>
+					<textarea id="gpg-key-signature" name="signature" placeholder="{{ctx.Locale.Tr "Begins with '-----BEGIN PGP SIGNATURE-----'"}}" required>{{.signature}}</textarea>
 				</div>
 			{{end}}
 			<input name="type" type="hidden" value="gpg">
 			<button class="ui primary button">
-				{{ctx.Locale.Tr "settings.add_key"}}
+				{{ctx.Locale.Tr "Add Key"}}
 			</button>
 			<button class="ui hide-panel button" data-panel="#add-gpg-key-panel">
-				{{ctx.Locale.Tr "cancel"}}
+				{{ctx.Locale.Tr "Cancel"}}
 			</button>
 		</form>
 	</div>
 	<div class="flex-list">
 		<div class="flex-item">
 			<p>
-				{{ctx.Locale.Tr "settings.gpg_desc"}}<br>
-				{{ctx.Locale.Tr "settings.gpg_helper" "https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/about-commit-signature-verification#gpg-commit-signature-verification"}}
+				{{ctx.Locale.Tr "These public GPG keys are associated with your account. Keep your private keys safe as they allow commits to be verified."}}<br>
+				{{ctx.Locale.Tr "<strong>Need help?</strong> Have a look at GitHub's guide <a href=\"%s\">about GPG</a>." "https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/about-commit-signature-verification#gpg-commit-signature-verification"}}
 			</p>
 		</div>
 		{{range .GPGKeys}}
@@ -53,57 +53,57 @@
 				</div>
 				<div class="flex-item-main">
 					{{if .Verified}}
-						<span class="flex-text-block" data-tooltip-content="{{ctx.Locale.Tr "settings.gpg_key_verified_long"}}">{{svg "octicon-verified"}} <strong>{{ctx.Locale.Tr "settings.gpg_key_verified"}}</strong></span>
+						<span class="flex-text-block" data-tooltip-content="{{ctx.Locale.Tr "Key has been verified with a token and can be used to verify commits matching any activated email addresses for this user in addition to any matched identities for this key."}}">{{svg "octicon-verified"}} <strong>{{ctx.Locale.Tr "Verified Key"}}</strong></span>
 					{{end}}
 					{{if .Emails}}
-						<span class="flex-text-block" data-tooltip-content="{{ctx.Locale.Tr "settings.gpg_key_matched_identities_long"}}">{{svg "octicon-mail"}} {{ctx.Locale.Tr "settings.gpg_key_matched_identities"}} {{range .Emails}}<strong>{{.Email}} </strong>{{end}}</span>
+						<span class="flex-text-block" data-tooltip-content="{{ctx.Locale.Tr "The embedded identities in this key match the following activated email addresses for this user. Commits matching these email addresses can be verified with this key."}}">{{svg "octicon-mail"}} {{ctx.Locale.Tr "Matched Identities:"}} {{range .Emails}}<strong>{{.Email}} </strong>{{end}}</span>
 					{{end}}
 					<div class="flex-item-body">
-						<b>{{ctx.Locale.Tr "settings.key_id"}}:</b> {{.PaddedKeyID}}
-						<b>{{ctx.Locale.Tr "settings.subkeys"}}:</b> {{range .SubsKey}} {{.PaddedKeyID}} {{end}}
+						<b>{{ctx.Locale.Tr "Key ID"}}:</b> {{.PaddedKeyID}}
+						<b>{{ctx.Locale.Tr "Subkeys"}}:</b> {{range .SubsKey}} {{.PaddedKeyID}} {{end}}
 					</div>
 					<div class="flex-item-body">
-						<i>{{ctx.Locale.Tr "settings.added_on" (DateUtils.AbsoluteShort .AddedUnix)}}</i>
+						<i>{{ctx.Locale.Tr "Added on %s" (DateUtils.AbsoluteShort .AddedUnix)}}</i>
 						-
-						<i>{{if not .ExpiredUnix.IsZero}}{{ctx.Locale.Tr "settings.valid_until_date" (DateUtils.AbsoluteShort .ExpiredUnix)}}{{else}}{{ctx.Locale.Tr "settings.valid_forever"}}{{end}}</i>
+						<i>{{if not .ExpiredUnix.IsZero}}{{ctx.Locale.Tr "Valid until %s" (DateUtils.AbsoluteShort .ExpiredUnix)}}{{else}}{{ctx.Locale.Tr "Valid forever"}}{{end}}</i>
 					</div>
 				</div>
 				<div class="flex-item-trailing">
 					<button class="ui red tiny button delete-button" data-modal-id="delete-gpg" data-url="{{$.Link}}/delete?type=gpg" data-id="{{.ID}}">
-						{{ctx.Locale.Tr "settings.delete_key"}}
+						{{ctx.Locale.Tr "Remove"}}
 					</button>
 					{{if and (not .Verified) (ne $.VerifyingID .KeyID)}}
-						<a class="ui primary tiny button" href="?verify_gpg={{.KeyID}}">{{ctx.Locale.Tr "settings.gpg_key_verify"}}</a>
+						<a class="ui primary tiny button" href="?verify_gpg={{.KeyID}}">{{ctx.Locale.Tr "Verify"}}</a>
 					{{end}}
 				</div>
 			</div>
 			{{if and (not .Verified) (eq $.VerifyingID .KeyID)}}
 				<div class="ui  segment">
-					<h4>{{ctx.Locale.Tr "settings.gpg_token_required"}}</h4>
+					<h4>{{ctx.Locale.Tr "You must provide a signature for the below token"}}</h4>
 					<form class="ui form{{if $.HasGPGVerifyError}} error{{end}}" action="{{$.Link}}" method="post">
 						{{$.CsrfTokenHtml}}
 						<input type="hidden" name="title" value="none">
 						<input type="hidden" name="content" value="{{.KeyID}}">
 						<input type="hidden" name="key_id" value="{{.KeyID}}">
 						<div class="field">
-							<label for="token">{{ctx.Locale.Tr "settings.gpg_token"}}</label>
+							<label for="token">{{ctx.Locale.Tr "Token"}}</label>
 							<input readonly="" value="{{$.TokenToSign}}">
 							<div class="help">
-								{{ctx.Locale.Tr "settings.gpg_token_help"}}
+								{{ctx.Locale.Tr "You can generate a signature using:"}}
 								<pre class="command-block">{{printf `echo "%s" | gpg -a --default-key %s --detach-sig` $.TokenToSign .PaddedKeyID}}</pre>
 							</div>
 							<br>
 						</div>
 						<div class="field">
-							<label for="signature">{{ctx.Locale.Tr "settings.gpg_token_signature"}}</label>
-							<textarea id="gpg-key-signature" name="signature" placeholder="{{ctx.Locale.Tr "settings.key_signature_gpg_placeholder"}}" required>{{$.signature}}</textarea>
+							<label for="signature">{{ctx.Locale.Tr "Armored GPG signature"}}</label>
+							<textarea id="gpg-key-signature" name="signature" placeholder="{{ctx.Locale.Tr "Begins with '-----BEGIN PGP SIGNATURE-----'"}}" required>{{$.signature}}</textarea>
 						</div>
 						<input name="type" type="hidden" value="verify_gpg">
 						<button class="ui primary button">
-							{{ctx.Locale.Tr "settings.gpg_key_verify"}}
+							{{ctx.Locale.Tr "Verify"}}
 						</button>
 						<a class="ui red button" href="{{$.Link}}">
-							{{ctx.Locale.Tr "settings.cancel"}}
+							{{ctx.Locale.Tr "Cancel"}}
 						</a>
 					</form>
 				</div>
@@ -113,10 +113,10 @@
 	<div class="ui g-modal-confirm delete modal" id="delete-gpg">
 		<div class="header">
 			{{svg "octicon-trash"}}
-			{{ctx.Locale.Tr "settings.gpg_key_deletion"}}
+			{{ctx.Locale.Tr "Remove GPG Key"}}
 		</div>
 		<div class="content">
-			<p>{{ctx.Locale.Tr "settings.gpg_key_deletion_desc"}}</p>
+			<p>{{ctx.Locale.Tr "Removing a GPG key un-verifies commits signed by it. Continue?"}}</p>
 		</div>
 		{{template "base/modal_actions_confirm" .}}
 	</div>

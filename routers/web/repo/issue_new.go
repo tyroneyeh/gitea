@@ -101,7 +101,7 @@ func NewIssue(ctx *context.Context) {
 	issueConfig, _ := issue_service.GetTemplateConfigFromDefaultBranch(ctx.Repo.Repository, ctx.Repo.GitRepo)
 	hasTemplates := issue_service.HasTemplatesOrContactLinks(ctx.Repo.Repository, ctx.Repo.GitRepo)
 
-	ctx.Data["Title"] = ctx.Tr("repo.issues.new")
+	ctx.Data["Title"] = ctx.Tr("New Issue")
 	ctx.Data["PageIsIssueList"] = true
 	ctx.Data["NewIssueChooseTemplate"] = hasTemplates
 	ctx.Data["PullRequestWorkInProgressPrefixes"] = setting.Repository.PullRequest.WorkInProgressPrefixes
@@ -172,20 +172,20 @@ func renderErrorOfTemplates(ctx *context.Context, errs map[string]error) templat
 	}
 
 	flashError, err := ctx.RenderToHTML(tplAlertDetails, map[string]any{
-		"Message": ctx.Tr("repo.issues.choose.ignore_invalid_templates"),
-		"Summary": ctx.Tr("repo.issues.choose.invalid_templates", len(errs)),
+		"Message": ctx.Tr("Invalid templates have been ignored"),
+		"Summary": ctx.Tr("%v invalid template(s) found", len(errs)),
 		"Details": utils.SanitizeFlashErrorString(strings.Join(lines, "\n")),
 	})
 	if err != nil {
 		log.Debug("render flash error: %v", err)
-		flashError = ctx.Locale.Tr("repo.issues.choose.ignore_invalid_templates")
+		flashError = ctx.Locale.Tr("Invalid templates have been ignored")
 	}
 	return flashError
 }
 
 // NewIssueChooseTemplate render creating issue from template page
 func NewIssueChooseTemplate(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("repo.issues.new")
+	ctx.Data["Title"] = ctx.Tr("New Issue")
 	ctx.Data["PageIsIssueList"] = true
 
 	ret := issue_service.ParseTemplatesFromDefaultBranch(ctx.Repo.Repository, ctx.Repo.GitRepo)
@@ -330,7 +330,7 @@ func ValidateRepoMetasForNewIssue(ctx *context.Context, form forms.CreateIssueFo
 // NewIssuePost response for creating new issue
 func NewIssuePost(ctx *context.Context) {
 	form := web.GetForm(ctx).(*forms.CreateIssueForm)
-	ctx.Data["Title"] = ctx.Tr("repo.issues.new")
+	ctx.Data["Title"] = ctx.Tr("New Issue")
 	ctx.Data["PageIsIssueList"] = true
 	ctx.Data["NewIssueChooseTemplate"] = issue_service.HasTemplatesOrContactLinks(ctx.Repo.Repository, ctx.Repo.GitRepo)
 	ctx.Data["PullRequestWorkInProgressPrefixes"] = setting.Repository.PullRequest.WorkInProgressPrefixes
@@ -367,7 +367,7 @@ func NewIssuePost(ctx *context.Context) {
 	}
 
 	if util.IsEmptyString(form.Title) {
-		ctx.JSONError(ctx.Tr("repo.issues.new.title_empty"))
+		ctx.JSONError(ctx.Tr("Title cannot be empty"))
 		return
 	}
 
@@ -393,7 +393,7 @@ func NewIssuePost(ctx *context.Context) {
 		if repo_model.IsErrUserDoesNotHaveAccessToRepo(err) {
 			ctx.HTTPError(http.StatusBadRequest, "UserDoesNotHaveAccessToRepo", err.Error())
 		} else if errors.Is(err, user_model.ErrBlockedUser) {
-			ctx.JSONError(ctx.Tr("repo.issues.new.blocked_user"))
+			ctx.JSONError(ctx.Tr("Cannot create issue because you are blocked by the repository owner."))
 		} else {
 			ctx.ServerError("NewIssue", err)
 		}

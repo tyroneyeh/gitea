@@ -71,7 +71,7 @@ func PerformRuleEditPost(ctx *context.Context, owner *user_model.User, redirectU
 			return
 		}
 
-		ctx.Flash.Success(ctx.Tr("packages.owner.settings.cleanuprules.success.delete"))
+		ctx.Flash.Success(ctx.Tr("Cleanup rule has been deleted."))
 		ctx.Redirect(redirectURL)
 	} else {
 		performRuleEditPost(ctx, owner, pcr, redirectURL, template)
@@ -128,7 +128,7 @@ func performRuleEditPost(ctx *context.Context, owner *user_model.User, pcr *pack
 		}
 	}
 
-	ctx.Flash.Success(ctx.Tr("packages.owner.settings.cleanuprules.success.update"))
+	ctx.Flash.Success(ctx.Tr("Cleanup rule has been updated."))
 	ctx.Redirect(fmt.Sprintf("%s/rules/%d", redirectURL, pcr.ID))
 }
 
@@ -234,9 +234,9 @@ func InitializeCargoIndex(ctx *context.Context, owner *user_model.User) {
 	err := cargo_service.InitializeIndexRepository(ctx, owner, owner)
 	if err != nil {
 		log.Error("InitializeIndexRepository failed: %v", err)
-		ctx.Flash.Error(ctx.Tr("packages.owner.settings.cargo.initialize.error", err))
+		ctx.Flash.Error(ctx.Tr("Failed to initialize Cargo index: %v", err))
 	} else {
-		ctx.Flash.Success(ctx.Tr("packages.owner.settings.cargo.initialize.success"))
+		ctx.Flash.Success(ctx.Tr("The Cargo index was successfully created."))
 	}
 }
 
@@ -244,8 +244,8 @@ func RebuildCargoIndex(ctx *context.Context, owner *user_model.User) {
 	err := cargo_service.RebuildIndex(ctx, owner, owner)
 	if err != nil {
 		log.Error("RebuildIndex failed: %v", err)
-		ctx.Flash.Error(ctx.Tr("packages.owner.settings.cargo.rebuild.error", err))
+		ctx.Flash.Error(ctx.Tr("Failed to rebuild Cargo index: %v", err))
 	} else {
-		ctx.Flash.Success(ctx.Tr("packages.owner.settings.cargo.rebuild.success"))
+		ctx.Flash.Success(ctx.Tr("The Cargo index was successfully rebuilt."))
 	}
 }

@@ -1,9 +1,9 @@
 {{if eq .PackageDescriptor.Package.Type "container"}}
-	<h4 class="ui top attached header">{{ctx.Locale.Tr "packages.installation"}}</h4>
+	<h4 class="ui top attached header">{{ctx.Locale.Tr "Installation"}}</h4>
 	<div class="ui attached segment">
 		<div class="ui form">
 			<div class="field">
-				<label>{{svg "octicon-terminal"}} {{ctx.Locale.Tr "packages.container.pull"}}</label>
+				<label>{{svg "octicon-terminal"}} {{ctx.Locale.Tr "Pull the image from the command line:"}}</label>
 				{{if eq .PackageDescriptor.Metadata.Type "helm"}}
 				<div class="markup"><pre class="code-block"><code>helm pull oci://{{.PackageRegistryHost}}/{{.PackageDescriptor.Owner.LowerName}}/{{.PackageDescriptor.Package.LowerName}} --version {{.PackageDescriptor.Version.LowerVersion}}</code></pre></div>
 				{{else}}
@@ -15,7 +15,7 @@
 				{{end}}
 			</div>
 			<div class="field">
-				<label>{{svg "octicon-code"}} {{ctx.Locale.Tr "packages.container.digest"}}</label>
+				<label>{{svg "octicon-code"}} {{ctx.Locale.Tr "Digest"}}</label>
 				<div class="markup">
 					<div class="code-block-container code-overflow-scroll">
 						<pre class="code-block"><code>
@@ -29,19 +29,19 @@
 				</div>
 			</div>
 			<div class="field">
-				<label>{{ctx.Locale.Tr "packages.registry.documentation" "Container" "https://docs.gitea.com/usage/packages/container/"}}</label>
+				<label>{{ctx.Locale.Tr "For more information on the %s registry, see <a target=\"_blank\" rel=\"noopener noreferrer\" href=\"%s\">the documentation</a>." "Container" "https://docs.gitea.com/usage/packages/container/"}}</label>
 			</div>
 		</div>
 	</div>
 	{{if .PackageDescriptor.Metadata.Manifests}}
-		<h4 class="ui top attached header">{{ctx.Locale.Tr "packages.container.images"}}</h4>
+		<h4 class="ui top attached header">{{ctx.Locale.Tr "Images"}}</h4>
 		<div class="ui attached segment">
 			<table class="ui very basic compact table">
 				<thead>
 					<tr>
-						<th>{{ctx.Locale.Tr "packages.container.digest"}}</th>
-						<th>{{ctx.Locale.Tr "packages.container.multi_arch"}}</th>
-						<th>{{ctx.Locale.Tr "admin.packages.size"}}</th>
+						<th>{{ctx.Locale.Tr "Digest"}}</th>
+						<th>{{ctx.Locale.Tr "OS / Arch"}}</th>
+						<th>{{ctx.Locale.Tr "Size"}}</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -64,7 +64,7 @@
 		</div>
 	{{end}}
 	{{if .PackageDescriptor.Metadata.Description}}
-		<h4 class="ui top attached header">{{ctx.Locale.Tr "packages.about"}}</h4>
+		<h4 class="ui top attached header">{{ctx.Locale.Tr "About this package"}}</h4>
 		<div class="ui attached segment">
 			{{.PackageDescriptor.Metadata.Description}}
 		</div>
@@ -75,10 +75,10 @@
 	{{$imageMetadata := .ContainerImageMetadata}}
 	{{if $imageMetadata.ImageLayers}}
 		<h4 class="ui top attached header flex-text-block">
-			{{ctx.Locale.Tr "packages.container.layers"}}
+			{{ctx.Locale.Tr "Image Layers"}}
 			{{/* only show the platform if the image metadata is not the package's, which means that it is a sub manifest */}}
 			{{if ne .ContainerImageMetadata .PackageDescriptor.Metadata}}
-				<span class="tw-text-sm flex-text-inline" title="{{ctx.Locale.Tr "packages.container.details.platform"}}">
+				<span class="tw-text-sm flex-text-inline" title="{{ctx.Locale.Tr "Platform"}}">
 					({{svg "octicon-cpu" 12}} {{.ContainerImageMetadata.Platform}})
 				</span>
 			{{end}}
@@ -96,13 +96,13 @@
 		</div>
 	{{end}}
 	{{if $imageMetadata.Labels}}
-		<h4 class="ui top attached header">{{ctx.Locale.Tr "packages.container.labels"}}</h4>
+		<h4 class="ui top attached header">{{ctx.Locale.Tr "Labels"}}</h4>
 		<div class="ui attached segment">
 			<table class="ui very basic compact table tw-font-mono">
 				<thead>
 					<tr>
-						<th>{{ctx.Locale.Tr "packages.container.labels.key"}}</th>
-						<th>{{ctx.Locale.Tr "packages.container.labels.value"}}</th>
+						<th>{{ctx.Locale.Tr "Key"}}</th>
+						<th>{{ctx.Locale.Tr "Value"}}</th>
 					</tr>
 				</thead>
 				<tbody>

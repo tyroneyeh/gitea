@@ -27,7 +27,7 @@ const (
 
 // Repos show all the repositories
 func Repos(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("admin.repositories")
+	ctx.Data["Title"] = ctx.Tr("Repositories")
 	ctx.Data["PageIsAdminRepositories"] = true
 
 	explore.RenderRepoSearch(ctx, &explore.RepoSearchOptions{
@@ -56,13 +56,13 @@ func DeleteRepo(ctx *context.Context) {
 	}
 	log.Trace("Repository deleted: %s", repo.FullName())
 
-	ctx.Flash.Success(ctx.Tr("repo.settings.deletion_success"))
+	ctx.Flash.Success(ctx.Tr("The repository has been deleted."))
 	ctx.JSONRedirect(setting.AppSubURL + "/-/admin/repos?page=" + url.QueryEscape(ctx.FormString("page")) + "&sort=" + url.QueryEscape(ctx.FormString("sort")))
 }
 
 // UnadoptedRepos lists the unadopted repositories
 func UnadoptedRepos(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("admin.repositories")
+	ctx.Data["Title"] = ctx.Tr("Repositories")
 	ctx.Data["PageIsAdminRepositories"] = true
 
 	opts := db.ListOptions{
@@ -149,13 +149,13 @@ func AdoptOrDeleteRepository(ctx *context.Context) {
 			ctx.ServerError("repository.AdoptRepository", err)
 			return
 		}
-		ctx.Flash.Success(ctx.Tr("repo.adopt_preexisting_success", dir))
+		ctx.Flash.Success(ctx.Tr("Adopted files and created repository from %s", dir))
 	} else if action == "delete" {
 		if err := repo_service.DeleteUnadoptedRepository(ctx, ctx.Doer, ctxUser, dirSplit[1]); err != nil {
 			ctx.ServerError("repository.AdoptRepository", err)
 			return
 		}
-		ctx.Flash.Success(ctx.Tr("repo.delete_preexisting_success", dir))
+		ctx.Flash.Success(ctx.Tr("Deleted unadopted files in %s", dir))
 	}
 	ctx.Redirect(setting.AppSubURL + "/-/admin/repos/unadopted?search=true&q=" + url.QueryEscape(q) + "&page=" + url.QueryEscape(page))
 }

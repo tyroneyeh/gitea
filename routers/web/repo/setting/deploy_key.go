@@ -18,7 +18,7 @@ import (
 
 // DeployKeys render the deploy keys list of a repository page
 func DeployKeys(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("repo.settings.deploy_keys") + " / " + ctx.Tr("secrets.secrets")
+	ctx.Data["Title"] = ctx.Tr("Deploy Keys") + " / " + ctx.Tr("Secrets")
 	ctx.Data["PageIsSettingsKeys"] = true
 	ctx.Data["DisableSSH"] = setting.SSH.Disabled
 
@@ -35,7 +35,7 @@ func DeployKeys(ctx *context.Context) {
 // DeployKeysPost response for adding a deploy key of a repository
 func DeployKeysPost(ctx *context.Context) {
 	form := web.GetForm(ctx).(*forms.AddKeyForm)
-	ctx.Data["Title"] = ctx.Tr("repo.settings.deploy_keys")
+	ctx.Data["Title"] = ctx.Tr("Deploy Keys")
 	ctx.Data["PageIsSettingsKeys"] = true
 	ctx.Data["DisableSSH"] = setting.SSH.Disabled
 
@@ -54,17 +54,17 @@ func DeployKeysPost(ctx *context.Context) {
 	content, err := asymkey_model.CheckPublicKeyString(form.Content)
 	if err != nil {
 		if db.IsErrSSHDisabled(err) {
-			ctx.Flash.Info(ctx.Tr("settings.ssh_disabled"))
+			ctx.Flash.Info(ctx.Tr("SSH Disabled"))
 		} else if asymkey_model.IsErrKeyUnableVerify(err) {
-			ctx.Flash.Info(ctx.Tr("form.unable_verify_ssh_key"))
+			ctx.Flash.Info(ctx.Tr("Cannot verify the SSH key. Double-check it for mistakes."))
 		} else if err == asymkey_model.ErrKeyIsPrivate {
 			ctx.Data["HasError"] = true
 			ctx.Data["Err_Content"] = true
-			ctx.Flash.Error(ctx.Tr("form.must_use_public_key"))
+			ctx.Flash.Error(ctx.Tr("The key you provided is a private key. Please do not upload your private key anywhere. Use your public key instead."))
 		} else {
 			ctx.Data["HasError"] = true
 			ctx.Data["Err_Content"] = true
-			ctx.Flash.Error(ctx.Tr("form.invalid_ssh_key", err.Error()))
+			ctx.Flash.Error(ctx.Tr("Cannot verify your SSH key: %s", err.Error()))
 		}
 		ctx.Redirect(ctx.Repo.RepoLink + "/settings/keys")
 		return
@@ -76,16 +76,16 @@ func DeployKeysPost(ctx *context.Context) {
 		switch {
 		case asymkey_model.IsErrDeployKeyAlreadyExist(err):
 			ctx.Data["Err_Content"] = true
-			ctx.RenderWithErr(ctx.Tr("repo.settings.key_been_used"), tplDeployKeys, &form)
+			ctx.RenderWithErr(ctx.Tr("A deploy key with identical content is already in use."), tplDeployKeys, &form)
 		case asymkey_model.IsErrKeyAlreadyExist(err):
 			ctx.Data["Err_Content"] = true
-			ctx.RenderWithErr(ctx.Tr("settings.ssh_key_been_used"), tplDeployKeys, &form)
+			ctx.RenderWithErr(ctx.Tr("This SSH key has already been added to the server."), tplDeployKeys, &form)
 		case asymkey_model.IsErrKeyNameAlreadyUsed(err):
 			ctx.Data["Err_Title"] = true
-			ctx.RenderWithErr(ctx.Tr("repo.settings.key_name_used"), tplDeployKeys, &form)
+			ctx.RenderWithErr(ctx.Tr("A deploy key with the same name already exists."), tplDeployKeys, &form)
 		case asymkey_model.IsErrDeployKeyNameAlreadyUsed(err):
 			ctx.Data["Err_Title"] = true
-			ctx.RenderWithErr(ctx.Tr("repo.settings.key_name_used"), tplDeployKeys, &form)
+			ctx.RenderWithErr(ctx.Tr("A deploy key with the same name already exists."), tplDeployKeys, &form)
 		default:
 			ctx.ServerError("AddDeployKey", err)
 		}
@@ -93,7 +93,7 @@ func DeployKeysPost(ctx *context.Context) {
 	}
 
 	log.Trace("Deploy key added: %d", ctx.Repo.Repository.ID)
-	ctx.Flash.Success(ctx.Tr("repo.settings.add_key_success", key.Name))
+	ctx.Flash.Success(ctx.Tr("The deploy key \"%s\" has been added.", key.Name))
 	ctx.Redirect(ctx.Repo.RepoLink + "/settings/keys")
 }
 
@@ -102,7 +102,7 @@ func DeleteDeployKey(ctx *context.Context) {
 	if err := asymkey_service.DeleteDeployKey(ctx, ctx.Repo.Repository, ctx.FormInt64("id")); err != nil {
 		ctx.Flash.Error("DeleteDeployKey: " + err.Error())
 	} else {
-		ctx.Flash.Success(ctx.Tr("repo.settings.deploy_key_deletion_success"))
+		ctx.Flash.Success(ctx.Tr("The deploy key has been removed."))
 	}
 
 	ctx.JSONRedirect(ctx.Repo.RepoLink + "/settings/keys")

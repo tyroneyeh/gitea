@@ -1,7 +1,7 @@
 {{template "repo/settings/layout_head" (dict "ctxData" . "pageClass" "repository settings lfs")}}
 	<div class="repo-setting-content">
 		<h4 class="ui top attached header">
-			{{ctx.Locale.Tr "repo.settings.lfs_pointers.found" .NumPointers .NumAssociated .NumNotAssociated .NumNoExist}}
+			{{ctx.Locale.Tr "Found %d blob pointer(s) — %d associated, %d unassociated (%d missing from store)" .NumPointers .NumAssociated .NumNotAssociated .NumNoExist}}
 			{{if gt .NumAssociatable 0}}
 				<div class="ui right">
 					<form class="ui form" method="post" action="{{$.Link}}/associate">
@@ -11,7 +11,7 @@
 								<input type="hidden" name="oid" value="{{.Oid}} {{.Size}}">
 							{{end}}
 						{{end}}
-						<button class="ui primary tiny button">{{ctx.Locale.Tr "repo.settings.lfs_pointers.associateAccessible" $.NumAssociatable}}</button>
+						<button class="ui primary tiny button">{{ctx.Locale.Tr "Associate accessible %d OIDs" $.NumAssociatable}}</button>
 					</form>
 				</div>
 			{{end}}
@@ -20,11 +20,11 @@
 			<table id="lfs-files-table" class="ui fixed single line table">
 				<thead>
 					<tr>
-						<th class="three wide">{{ctx.Locale.Tr "repo.settings.lfs_pointers.sha"}}</th>
-						<th class="four wide">{{ctx.Locale.Tr "repo.settings.lfs_pointers.oid"}}</th>
-						<th class="two wide">{{ctx.Locale.Tr "repo.settings.lfs_pointers.inRepo"}}</th>
-						<th class="two wide">{{ctx.Locale.Tr "repo.settings.lfs_pointers.exists"}}</th>
-						<th class="two wide" data-tooltip-content="{{ctx.Locale.Tr "repo.settings.lfs_pointers.accessible"}}">{{ctx.Locale.Tr "repo.settings.lfs_pointers.accessible"}}</th>
+						<th class="three wide">{{ctx.Locale.Tr "Blob SHA"}}</th>
+						<th class="four wide">{{ctx.Locale.Tr "OID"}}</th>
+						<th class="two wide">{{ctx.Locale.Tr "In Repo"}}</th>
+						<th class="two wide">{{ctx.Locale.Tr "Exists in store"}}</th>
+						<th class="two wide" data-tooltip-content="{{ctx.Locale.Tr "Accessible to User"}}">{{ctx.Locale.Tr "Accessible to User"}}</th>
 						<th class="three wide"></th>
 					</tr>
 				</thead>
@@ -45,7 +45,7 @@
 							<td>{{svg (Iif .Exists "octicon-check" "octicon-x")}}</td>
 							<td>{{svg (Iif .Accessible "octicon-check" "octicon-x")}}</td>
 							<td class="tw-text-right">
-								<a class="ui primary button" href="{{$.LFSFilesLink}}/find?oid={{.Oid}}&size={{.Size}}&sha={{.SHA}}">{{ctx.Locale.Tr "repo.settings.lfs_findcommits"}}</a>
+								<a class="ui primary button" href="{{$.LFSFilesLink}}/find?oid={{.Oid}}&size={{.Size}}&sha={{.SHA}}">{{ctx.Locale.Tr "Find commits"}}</a>
 							</td>
 						</tr>
 					{{end}}

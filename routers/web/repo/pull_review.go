@@ -246,9 +246,9 @@ func SubmitReview(ctx *context.Context) {
 		if issue.IsPoster(ctx.Doer.ID) {
 			var translated string
 			if reviewType == issues_model.ReviewTypeApprove {
-				translated = ctx.Locale.TrString("repo.issues.review.self.approval")
+				translated = ctx.Locale.TrString("You cannot approve your own pull request.")
 			} else {
-				translated = ctx.Locale.TrString("repo.issues.review.self.rejection")
+				translated = ctx.Locale.TrString("You cannot request changes on your own pull request.")
 			}
 
 			ctx.Flash.Error(translated)
@@ -265,7 +265,7 @@ func SubmitReview(ctx *context.Context) {
 	_, comm, err := pull_service.SubmitReview(ctx, ctx.Doer, ctx.Repo.GitRepo, issue, reviewType, form.Content, form.CommitID, attachments)
 	if err != nil {
 		if issues_model.IsContentEmptyErr(err) {
-			ctx.Flash.Error(ctx.Tr("repo.issues.review.content.empty"))
+			ctx.Flash.Error(ctx.Tr("You need to leave a comment indicating the requested change(s)."))
 			ctx.JSONRedirect(fmt.Sprintf("%s/pulls/%d/files", ctx.Repo.RepoLink, issue.Index))
 		} else if errors.Is(err, pull_service.ErrSubmitReviewOnClosedPR) {
 			ctx.Status(http.StatusUnprocessableEntity)

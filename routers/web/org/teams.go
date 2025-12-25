@@ -81,7 +81,7 @@ func TeamsAction(ctx *context.Context) {
 		err = org_service.RemoveTeamMember(ctx, ctx.Org.Team, ctx.Doer)
 		if err != nil {
 			if org_model.IsErrLastOrgOwner(err) {
-				ctx.Flash.Error(ctx.Tr("form.last_org_owner"))
+				ctx.Flash.Error(ctx.Tr("You cannot remove the last user from the 'owners' team. There must be at least one owner for an organization."))
 			} else {
 				log.Error("Action(%s): %v", ctx.PathParam("action"), err)
 				ctx.JSON(http.StatusOK, map[string]any{
@@ -108,7 +108,7 @@ func TeamsAction(ctx *context.Context) {
 		err = org_service.RemoveTeamMember(ctx, ctx.Org.Team, user)
 		if err != nil {
 			if org_model.IsErrLastOrgOwner(err) {
-				ctx.Flash.Error(ctx.Tr("form.last_org_owner"))
+				ctx.Flash.Error(ctx.Tr("You cannot remove the last user from the 'owners' team. There must be at least one owner for an organization."))
 			} else {
 				log.Error("Action(%s): %v", ctx.PathParam("action"), err)
 				ctx.JSON(http.StatusOK, map[string]any{
@@ -135,16 +135,16 @@ func TeamsAction(ctx *context.Context) {
 				if setting.MailService != nil && user_model.ValidateEmail(uname) == nil {
 					if err := org_service.CreateTeamInvite(ctx, ctx.Doer, ctx.Org.Team, uname); err != nil {
 						if org_model.IsErrTeamInviteAlreadyExist(err) {
-							ctx.Flash.Error(ctx.Tr("form.duplicate_invite_to_team"))
+							ctx.Flash.Error(ctx.Tr("The user was already invited as a team member."))
 						} else if org_model.IsErrUserEmailAlreadyAdded(err) {
-							ctx.Flash.Error(ctx.Tr("org.teams.add_duplicate_users"))
+							ctx.Flash.Error(ctx.Tr("User is already a team member."))
 						} else {
 							ctx.ServerError("CreateTeamInvite", err)
 							return
 						}
 					}
 				} else {
-					ctx.Flash.Error(ctx.Tr("form.user_not_exist"))
+					ctx.Flash.Error(ctx.Tr("The user does not exist."))
 				}
 				ctx.Redirect(ctx.Org.OrgLink + "/teams/" + url.PathEscape(ctx.Org.Team.LowerName))
 			} else {
@@ -154,13 +154,13 @@ func TeamsAction(ctx *context.Context) {
 		}
 
 		if u.IsOrganization() {
-			ctx.Flash.Error(ctx.Tr("form.cannot_add_org_to_team"))
+			ctx.Flash.Error(ctx.Tr("An organization cannot be added as a team member."))
 			ctx.Redirect(ctx.Org.OrgLink + "/teams/" + url.PathEscape(ctx.Org.Team.LowerName))
 			return
 		}
 
 		if ctx.Org.Team.IsMember(ctx, u.ID) {
-			ctx.Flash.Error(ctx.Tr("org.teams.add_duplicate_users"))
+			ctx.Flash.Error(ctx.Tr("User is already a team member."))
 		} else {
 			err = org_service.AddTeamMember(ctx, ctx.Org.Team, u)
 		}
@@ -191,9 +191,9 @@ func TeamsAction(ctx *context.Context) {
 
 	if err != nil {
 		if org_model.IsErrLastOrgOwner(err) {
-			ctx.Flash.Error(ctx.Tr("form.last_org_owner"))
+			ctx.Flash.Error(ctx.Tr("You cannot remove the last user from the 'owners' team. There must be at least one owner for an organization."))
 		} else if errors.Is(err, user_model.ErrBlockedUser) {
-			ctx.Flash.Error(ctx.Tr("org.teams.members.blocked_user"))
+			ctx.Flash.Error(ctx.Tr("Cannot add the user because it is blocked by the organization."))
 		} else {
 			log.Error("Action(%s): %v", ctx.PathParam("action"), err)
 			ctx.JSON(http.StatusOK, map[string]any{
@@ -244,7 +244,7 @@ func TeamsRepoAction(ctx *context.Context) {
 		repo, err = repo_model.GetRepositoryByName(ctx, ctx.Org.Organization.ID, repoName)
 		if err != nil {
 			if repo_model.IsErrRepoNotExist(err) {
-				ctx.Flash.Error(ctx.Tr("org.teams.add_nonexistent_repo"))
+				ctx.Flash.Error(ctx.Tr("The repository you're trying to add doesn't exist. Please create it first."))
 				ctx.Redirect(ctx.Org.OrgLink + "/teams/" + url.PathEscape(ctx.Org.Team.LowerName) + "/repositories")
 				return
 			}
@@ -368,7 +368,7 @@ func NewTeamPost(ctx *context.Context) {
 	}
 
 	if t.AccessMode < perm.AccessModeAdmin && len(unitPerms) == 0 {
-		ctx.RenderWithErr(ctx.Tr("form.team_no_units_error"), tplTeamNew, &form)
+		ctx.RenderWithErr(ctx.Tr("Allow access to at least one repository section."), tplTeamNew, &form)
 		return
 	}
 
@@ -376,7 +376,7 @@ func NewTeamPost(ctx *context.Context) {
 		ctx.Data["Err_TeamName"] = true
 		switch {
 		case org_model.IsErrTeamAlreadyExist(err):
-			ctx.RenderWithErr(ctx.Tr("form.team_name_been_taken"), tplTeamNew, &form)
+			ctx.RenderWithErr(ctx.Tr("The team name is already taken."), tplTeamNew, &form)
 		default:
 			ctx.ServerError("NewTeam", err)
 		}
@@ -545,7 +545,7 @@ func EditTeamPost(ctx *context.Context) {
 	}
 
 	if t.AccessMode < perm.AccessModeAdmin && len(unitPerms) == 0 {
-		ctx.RenderWithErr(ctx.Tr("form.team_no_units_error"), tplTeamNew, &form)
+		ctx.RenderWithErr(ctx.Tr("Allow access to at least one repository section."), tplTeamNew, &form)
 		return
 	}
 
@@ -553,7 +553,7 @@ func EditTeamPost(ctx *context.Context) {
 		ctx.Data["Err_TeamName"] = true
 		switch {
 		case org_model.IsErrTeamAlreadyExist(err):
-			ctx.RenderWithErr(ctx.Tr("form.team_name_been_taken"), tplTeamNew, &form)
+			ctx.RenderWithErr(ctx.Tr("The team name is already taken."), tplTeamNew, &form)
 		default:
 			ctx.ServerError("UpdateTeam", err)
 		}
@@ -570,7 +570,7 @@ func DeleteTeam(ctx *context.Context) {
 	if err := org_service.DeleteTeam(ctx, ctx.Org.Team); err != nil {
 		ctx.Flash.Error("DeleteTeam: " + err.Error())
 	} else {
-		ctx.Flash.Success(ctx.Tr("org.teams.delete_team_success"))
+		ctx.Flash.Success(ctx.Tr("The team has been deleted."))
 	}
 
 	ctx.JSONRedirect(ctx.Org.OrgLink + "/teams")
@@ -588,7 +588,7 @@ func TeamInvite(ctx *context.Context) {
 		return
 	}
 
-	ctx.Data["Title"] = ctx.Tr("org.teams.invite_team_member", team.Name)
+	ctx.Data["Title"] = ctx.Tr("Invite to %s", team.Name)
 	ctx.Data["Invite"] = invite
 	ctx.Data["Organization"] = org
 	ctx.Data["Team"] = team

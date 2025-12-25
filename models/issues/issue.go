@@ -482,11 +482,11 @@ func (issue *Issue) GetLastEventTimestamp() timeutil.TimeStamp {
 func (issue *Issue) GetLastEventLabel() string {
 	if issue.IsClosed {
 		if issue.IsPull && issue.PullRequest.HasMerged {
-			return "repo.pulls.merged_by"
+			return "by <a href=\"%[2]s\">%[3]s</a> was merged %[1]s"
 		}
-		return "repo.issues.closed_by"
+		return "by <a href=\"%[2]s\">%[3]s</a> was closed %[1]s"
 	}
-	return "repo.issues.opened_by"
+	return "opened %[1]s by <a href=\"%[2]s\">%[3]s</a>"
 }
 
 // GetLastComment return last comment for the current issue.
@@ -507,11 +507,11 @@ func (issue *Issue) GetLastComment(ctx context.Context) (*Comment, error) {
 func (issue *Issue) GetLastEventLabelFake() string {
 	if issue.IsClosed {
 		if issue.IsPull && issue.PullRequest.HasMerged {
-			return "repo.pulls.merged_by_fake"
+			return "by %[2]s was merged %[1]s"
 		}
-		return "repo.issues.closed_by_fake"
+		return "by %[2]s was closed %[1]s"
 	}
-	return "repo.issues.opened_by_fake"
+	return "opened %[1]s by %[2]s"
 }
 
 // GetIssueByIndex returns raw issue without loading attributes by index in a repository.

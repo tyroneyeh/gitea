@@ -92,7 +92,7 @@ func getForkRepository(ctx *context.Context) *repo_model.Repository {
 	ctx.Data["Orgs"] = orgs
 
 	// TODO: this message should only be shown for the "current doer" when it is selected, just like the "new repo" page.
-	// msg := ctx.TrN(maxCreationLimit, "repo.form.reach_limit_of_creation_1", "repo.form.reach_limit_of_creation_n", ctx.Doer.MaxCreationLimit())
+	// msg := ctx.TrN(maxCreationLimit, "The owner has already reached the limit of %d repository.", "The owner has already reached the limit of %d repositories.", ctx.Doer.MaxCreationLimit())
 
 	if canForkToUser {
 		ctx.Data["ContextUser"] = ctx.Doer
@@ -102,7 +102,7 @@ func getForkRepository(ctx *context.Context) *repo_model.Repository {
 		ctx.Data["CanForkRepoInNewOwner"] = true
 	} else {
 		ctx.Data["CanForkRepoInNewOwner"] = false
-		ctx.Flash.Error(ctx.Tr("repo.fork_no_valid_owners"), true)
+		ctx.Flash.Error(ctx.Tr("This repository cannot be forked because there are no valid owners."), true)
 		return nil
 	}
 
@@ -124,7 +124,7 @@ func getForkRepository(ctx *context.Context) *repo_model.Repository {
 
 // Fork render repository fork page
 func Fork(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("new_fork")
+	ctx.Data["Title"] = ctx.Tr("New Repository Fork")
 	getForkRepository(ctx)
 	if ctx.Written() {
 		return
@@ -136,7 +136,7 @@ func Fork(ctx *context.Context) {
 // ForkPost response for forking a repository
 func ForkPost(ctx *context.Context) {
 	form := web.GetForm(ctx).(*forms.CreateRepoForm)
-	ctx.Data["Title"] = ctx.Tr("new_fork")
+	ctx.Data["Title"] = ctx.Tr("New Repository Fork")
 
 	ctxUser := checkContextUser(ctx, form.UID)
 	if ctx.Written() {
@@ -159,7 +159,7 @@ func ForkPost(ctx *context.Context) {
 	traverseParentRepo := forkRepo
 	for {
 		if !repository.CanUserForkBetweenOwners(ctxUser.ID, traverseParentRepo.OwnerID) {
-			ctx.JSONError(ctx.Tr("repo.settings.new_owner_has_same_repo"))
+			ctx.JSONError(ctx.Tr("The new owner already has a repository with same name. Please choose another name."))
 			return
 		}
 		repo := repo_model.GetForkedRepo(ctx, ctxUser.ID, traverseParentRepo.ID)
@@ -208,27 +208,27 @@ func ForkRepoTo(ctx *context.Context, owner *user_model.User, forkOpts repo_serv
 		switch {
 		case repo_model.IsErrReachLimitOfRepo(err):
 			maxCreationLimit := owner.MaxCreationLimit()
-			msg := ctx.TrN(maxCreationLimit, "repo.form.reach_limit_of_creation_1", "repo.form.reach_limit_of_creation_n", maxCreationLimit)
+			msg := ctx.TrN(maxCreationLimit, "The owner has already reached the limit of %d repository.", "The owner has already reached the limit of %d repositories.", maxCreationLimit)
 			ctx.JSONError(msg)
 		case repo_model.IsErrRepoAlreadyExist(err):
-			ctx.JSONError(ctx.Tr("repo.settings.new_owner_has_same_repo"))
+			ctx.JSONError(ctx.Tr("The new owner already has a repository with same name. Please choose another name."))
 		case repo_model.IsErrRepoFilesAlreadyExist(err):
 			switch {
 			case ctx.IsUserSiteAdmin() || (setting.Repository.AllowAdoptionOfUnadoptedRepositories && setting.Repository.AllowDeleteOfUnadoptedRepositories):
-				ctx.JSONError(ctx.Tr("form.repository_files_already_exist.adopt_or_delete"))
+				ctx.JSONError(ctx.Tr("Files already exist for this repository. Either adopt them or delete them."))
 			case setting.Repository.AllowAdoptionOfUnadoptedRepositories:
-				ctx.JSONError(ctx.Tr("form.repository_files_already_exist.adopt"))
+				ctx.JSONError(ctx.Tr("Files already exist for this repository and can only be adopted."))
 			case setting.Repository.AllowDeleteOfUnadoptedRepositories:
-				ctx.JSONError(ctx.Tr("form.repository_files_already_exist.delete"))
+				ctx.JSONError(ctx.Tr("Files already exist for this repository. You must delete them."))
 			default:
-				ctx.JSONError(ctx.Tr("form.repository_files_already_exist"))
+				ctx.JSONError(ctx.Tr("Files already exist for this repository. Contact the system administrator."))
 			}
 		case db.IsErrNameReserved(err):
-			ctx.JSONError(ctx.Tr("repo.form.name_reserved", err.(db.ErrNameReserved).Name))
+			ctx.JSONError(ctx.Tr("The repository name \"%s\" is reserved.", err.(db.ErrNameReserved).Name))
 		case db.IsErrNamePatternNotAllowed(err):
-			ctx.JSONError(ctx.Tr("repo.form.name_pattern_not_allowed", err.(db.ErrNamePatternNotAllowed).Pattern))
+			ctx.JSONError(ctx.Tr("The pattern \"%s\" is not allowed in a repository name.", err.(db.ErrNamePatternNotAllowed).Pattern))
 		case errors.Is(err, user_model.ErrBlockedUser):
-			ctx.JSONError(ctx.Tr("repo.fork.blocked_user"))
+			ctx.JSONError(ctx.Tr("Cannot fork the repository because you are blocked by the repository owner."))
 		default:
 			ctx.ServerError("ForkPost", err)
 		}

@@ -5,7 +5,7 @@
 			<div class="flex-item-main">
 				<div class="flex-item-title">
 					<a class="item muted" href="{{.RepoLink}}/releases">
-						{{ctx.Locale.Tr "repo.releases"}}
+						{{ctx.Locale.Tr "Releases"}}
 					</a>
 					<span class="ui small label">{{.NumReleases}}</span>
 				</div>
@@ -33,7 +33,7 @@
 		<div class="flex-item">
 			<div class="flex-item-main">
 				<div class="flex-item-title">
-					{{ctx.Locale.Tr "repo.repo_lang"}}
+					{{ctx.Locale.Tr "Languages"}}
 				</div>
 
 				<div class="flex-item-body">
@@ -47,7 +47,7 @@
 							<div class="item">
 								<i class="color-icon" style="background-color: {{.Color}}"></i>
 								<span class="tw-font-semibold">
-									{{Iif (eq .Language "other") (ctx.Locale.Tr "repo.language_other") .Language}}
+									{{Iif (eq .Language "other") (ctx.Locale.Tr "Other") .Language}}
 								</span>
 								{{.Percentage}}%
 							</div>

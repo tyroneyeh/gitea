@@ -22,7 +22,7 @@ const (
 
 // Notices show notices for admin
 func Notices(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("admin.notices")
+	ctx.Data["Title"] = ctx.Tr("System Notices")
 	ctx.Data["PageIsAdminNotices"] = true
 
 	total := system_model.CountNotices(ctx)
@@ -57,7 +57,7 @@ func DeleteNotices(ctx *context.Context) {
 		ctx.Flash.Error("DeleteNoticesByIDs: " + err.Error())
 		ctx.Status(http.StatusInternalServerError)
 	} else {
-		ctx.Flash.Success(ctx.Tr("admin.notices.delete_success"))
+		ctx.Flash.Success(ctx.Tr("The system notices have been deleted."))
 		ctx.Status(http.StatusOK)
 	}
 }
@@ -70,6 +70,6 @@ func EmptyNotices(ctx *context.Context) {
 	}
 
 	log.Trace("System notices deleted by admin (%s): [start: %d]", ctx.Doer.Name, 0)
-	ctx.Flash.Success(ctx.Tr("admin.notices.delete_success"))
+	ctx.Flash.Success(ctx.Tr("The system notices have been deleted."))
 	ctx.Redirect(setting.AppSubURL + "/-/admin/notices")
 }

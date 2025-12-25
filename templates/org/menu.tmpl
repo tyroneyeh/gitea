@@ -3,18 +3,18 @@
 		<div class="overflow-menu-items">
 			{{if .HasOrgProfileReadme}}
 				<a class="{{if .PageIsViewOverview}}active {{end}}item" href="{{$.Org.HomeLink}}">
-					{{svg "octicon-info"}} {{ctx.Locale.Tr "user.overview"}}
+					{{svg "octicon-info"}} {{ctx.Locale.Tr "Overview"}}
 				</a>
 			{{end}}
 			<a class="{{if .PageIsViewRepositories}}active {{end}}item" href="{{$.Org.HomeLink}}{{if .HasOrgProfileReadme}}/-/repositories{{end}}">
-				{{svg "octicon-repo"}} {{ctx.Locale.Tr "user.repositories"}}
+				{{svg "octicon-repo"}} {{ctx.Locale.Tr "Repositories"}}
 				{{if .RepoCount}}
 					<div class="ui small label">{{.RepoCount}}</div>
 				{{end}}
 			</a>
 			{{if .CanReadProjects}}
 			<a class="{{if .PageIsViewProjects}}active {{end}}item" href="{{$.Org.HomeLink}}/-/projects">
-				{{svg "octicon-project-symlink"}} {{ctx.Locale.Tr "user.projects"}}
+				{{svg "octicon-project-symlink"}} {{ctx.Locale.Tr "Projects"}}
 				{{if .ProjectCount}}
 					<div class="ui small label">{{.ProjectCount}}</div>
 				{{end}}
@@ -22,23 +22,23 @@
 			{{end}}
 			{{if and .IsPackageEnabled .CanReadPackages}}
 			<a class="{{if .IsPackagesPage}}active {{end}}item" href="{{$.Org.HomeLink}}/-/packages">
-				{{svg "octicon-package"}} {{ctx.Locale.Tr "packages.title"}}
+				{{svg "octicon-package"}} {{ctx.Locale.Tr "Packages"}}
 			</a>
 			{{end}}
 			{{if and .IsRepoIndexerEnabled .CanReadCode}}
 			<a class="{{if .IsCodePage}}active {{end}}item" href="{{$.Org.HomeLink}}/-/code">
-				{{svg "octicon-code"}} {{ctx.Locale.Tr "org.code"}}
+				{{svg "octicon-code"}} {{ctx.Locale.Tr "Code"}}
 			</a>
 			{{end}}
 			{{if .NumMembers}}
 			<a class="{{if $.PageIsOrgMembers}}active {{end}}item" href="{{$.OrgLink}}/members">
-				{{svg "octicon-person"}} {{ctx.Locale.Tr "org.members"}}
+				{{svg "octicon-person"}} {{ctx.Locale.Tr "Members"}}
 				<div class="ui small label">{{.NumMembers}}</div>
 			</a>
 			{{end}}
 			{{if .IsOrganizationMember}}
 			<a class="{{if $.PageIsOrgTeams}}active {{end}}item" href="{{$.OrgLink}}/teams">
-				{{svg "octicon-people"}} {{ctx.Locale.Tr "org.teams"}}
+				{{svg "octicon-people"}} {{ctx.Locale.Tr "Teams"}}
 				{{if .NumTeams}}
 					<div class="ui small label">{{.NumTeams}}</div>
 				{{end}}
@@ -46,13 +46,13 @@
 			{{end}}
 			{{if and EnableTimetracking .IsOrganizationOwner}}
 			<a class="{{if $.PageIsOrgTimes}}active{{end}} item" href="{{$.OrgLink}}/worktime">
-				{{svg "octicon-clock"}} {{ctx.Locale.Tr "org.worktime"}}
+				{{svg "octicon-clock"}} {{ctx.Locale.Tr "Worktime"}}
 			</a>
 			{{end}}
 			{{if .IsOrganizationOwner}}
 			<span class="item-flex-space"></span>
 			<a class="{{if .PageIsOrgSettings}}active {{end}}item" href="{{.OrgLink}}/settings">
-				{{svg "octicon-tools"}} {{ctx.Locale.Tr "repo.settings"}}
+				{{svg "octicon-tools"}} {{ctx.Locale.Tr "Settings"}}
 			</a>
 			{{end}}
 		</div>

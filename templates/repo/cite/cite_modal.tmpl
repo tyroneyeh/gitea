@@ -1,12 +1,12 @@
 <div class="ui small modal" id="cite-repo-modal">
 	<div class="header">
-		{{ctx.Locale.Tr "repo.cite_this_repo"}}
+		{{ctx.Locale.Tr "Cite this repository"}}
 	</div>
 	<div class="content">
 		<div class="ui stackable secondary menu">
 			<div class="ui action input" id="citation-panel">
 				{{template "repo/cite/cite_buttons" .}}
-				<a id="goto-citation-btn" class="ui basic jump icon button" href="{{$.RepoLink}}/src/{{$.BranchName}}/CITATION.cff" data-tooltip-content="{{ctx.Locale.Tr "repo.find_file.go_to_file"}}">
+				<a id="goto-citation-btn" class="ui basic jump icon button" href="{{$.RepoLink}}/src/{{$.BranchName}}/CITATION.cff" data-tooltip-content="{{ctx.Locale.Tr "Go to file"}}">
 					{{svg "octicon-file-moved"}}
 				</a>
 			</div>
@@ -14,7 +14,7 @@
 	</div>
 	<div class="actions">
 		<button class="ui cancel button">
-			{{ctx.Locale.Tr "cancel"}}
+			{{ctx.Locale.Tr "Cancel"}}
 		</button>
 	</div>
 </div>

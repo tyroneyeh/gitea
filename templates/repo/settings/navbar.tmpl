@@ -1,58 +1,58 @@
 <div class="flex-container-nav">
 	<div class="ui fluid vertical menu">
-		<div class="header item">{{ctx.Locale.Tr "repo.settings"}}</div>
+		<div class="header item">{{ctx.Locale.Tr "Settings"}}</div>
 		<a class="{{if .PageIsSettingsOptions}}active {{end}}item" href="{{.RepoLink}}/settings">
-			{{ctx.Locale.Tr "repo.settings.options"}}
+			{{ctx.Locale.Tr "Repository"}}
 		</a>
 		{{if or .Repository.IsPrivate .Permission.HasAnyUnitPublicAccess}}
 		<a class="{{if .PageIsSettingsPublicAccess}}active {{end}}item" href="{{.RepoLink}}/settings/public_access">
-			{{ctx.Locale.Tr "repo.settings.public_access"}}
+			{{ctx.Locale.Tr "Public Access"}}
 		</a>
 		{{end}}
 		<a class="{{if .PageIsSettingsCollaboration}}active {{end}}item" href="{{.RepoLink}}/settings/collaboration">
-			{{ctx.Locale.Tr "repo.settings.collaboration"}}
+			{{ctx.Locale.Tr "Collaborators"}}
 		</a>
 		{{if not DisableWebhooks}}
 			<a class="{{if .PageIsSettingsHooks}}active {{end}}item" href="{{.RepoLink}}/settings/hooks">
-				{{ctx.Locale.Tr "repo.settings.hooks"}}
+				{{ctx.Locale.Tr "Webhooks"}}
 			</a>
 		{{end}}
 		{{if .Repository.UnitEnabled ctx ctx.Consts.RepoUnitTypeCode}}
 			<a class="{{if .PageIsSettingsBranches}}active {{end}}item" href="{{.RepoLink}}/settings/branches">
-				{{ctx.Locale.Tr "repo.settings.branches"}}
+				{{ctx.Locale.Tr "Branches"}}
 			</a>
 			<a class="{{if .PageIsSettingsTags}}active {{end}}item" href="{{.RepoLink}}/settings/tags">
-				{{ctx.Locale.Tr "repo.settings.tags"}}
+				{{ctx.Locale.Tr "Tags"}}
 			</a>
 			{{if .SignedUser.CanEditGitHook}}
 				<a class="{{if .PageIsSettingsGitHooks}}active {{end}}item" href="{{.RepoLink}}/settings/hooks/git">
-					{{ctx.Locale.Tr "repo.settings.githooks"}}
+					{{ctx.Locale.Tr "Git Hooks"}}
 				</a>
 			{{end}}
 			<a class="{{if .PageIsSettingsKeys}}active {{end}}item" href="{{.RepoLink}}/settings/keys">
-				{{ctx.Locale.Tr "repo.settings.deploy_keys"}}
+				{{ctx.Locale.Tr "Deploy Keys"}}
 			</a>
 			{{if .LFSStartServer}}
 				<a class="{{if .PageIsSettingsLFS}}active {{end}}item" href="{{.RepoLink}}/settings/lfs">
-					{{ctx.Locale.Tr "repo.settings.lfs"}}
+					{{ctx.Locale.Tr "LFS"}}
 				</a>
 			{{end}}
 		{{end}}
 		<details class="item toggleable-item" {{if or .PageIsSharedSettingsRunners .PageIsSharedSettingsSecrets .PageIsSharedSettingsVariables .PageIsActionsSettingsGeneral}}open{{end}}>
-			<summary>{{ctx.Locale.Tr "actions.actions"}}</summary>
+			<summary>{{ctx.Locale.Tr "Actions"}}</summary>
 			<div class="menu">
 				<a class="{{if .PageIsActionsSettingsGeneral}}active {{end}}item" href="{{.RepoLink}}/settings/actions/general">
-					{{ctx.Locale.Tr "actions.general"}}
+					{{ctx.Locale.Tr "General"}}
 				</a>
 				{{if and .EnableActions (.Permission.CanRead ctx.Consts.RepoUnitTypeActions)}}
 				<a class="{{if .PageIsSharedSettingsRunners}}active {{end}}item" href="{{.RepoLink}}/settings/actions/runners">
-					{{ctx.Locale.Tr "actions.runners"}}
+					{{ctx.Locale.Tr "Runners"}}
 				</a>
 				<a class="{{if .PageIsSharedSettingsSecrets}}active {{end}}item" href="{{.RepoLink}}/settings/actions/secrets">
-					{{ctx.Locale.Tr "secrets.secrets"}}
+					{{ctx.Locale.Tr "Secrets"}}
 				</a>
 				<a class="{{if .PageIsSharedSettingsVariables}}active {{end}}item" href="{{.RepoLink}}/settings/actions/variables">
-					{{ctx.Locale.Tr "actions.variables"}}
+					{{ctx.Locale.Tr "Variables"}}
 				</a>
 				{{end}}
 			</div>

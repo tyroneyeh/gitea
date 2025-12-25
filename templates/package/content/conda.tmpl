@@ -1,9 +1,9 @@
 {{if eq .PackageDescriptor.Package.Type "conda"}}
-	<h4 class="ui top attached header">{{ctx.Locale.Tr "packages.installation"}}</h4>
+	<h4 class="ui top attached header">{{ctx.Locale.Tr "Installation"}}</h4>
 	<div class="ui attached segment">
 		<div class="ui form">
 			<div class="field">
-				<label>{{svg "octicon-code"}} {{ctx.Locale.Tr "packages.conda.registry"}}</label>
+				<label>{{svg "octicon-code"}} {{ctx.Locale.Tr "Set up this registry as a Conda repository in your <code>.condarc</code> file:"}}</label>
 				<div class="markup"><pre class="code-block"><code>channel_alias: <origin-url data-url="{{AppSubUrl}}/api/packages/{{.PackageDescriptor.Owner.Name}}/conda"></origin-url>
 channels:
 &#32;&#32;- <origin-url data-url="{{AppSubUrl}}/api/packages/{{.PackageDescriptor.Owner.Name}}/conda"></origin-url>
@@ -11,18 +11,18 @@ default_channels:
 &#32;&#32;- <origin-url data-url="{{AppSubUrl}}/api/packages/{{.PackageDescriptor.Owner.Name}}/conda"></origin-url></code></pre></div>
 			</div>
 			<div class="field">
-				<label>{{svg "octicon-terminal"}} {{ctx.Locale.Tr "packages.conda.install"}}</label>
+				<label>{{svg "octicon-terminal"}} {{ctx.Locale.Tr "To install the package using Conda, run the following command:"}}</label>
 				{{$channel := .PackageDescriptor.PackageProperties.GetByName "conda.channel"}}
 				<div class="markup"><pre class="code-block"><code>conda install{{if $channel}} -c {{$channel}}{{end}} {{.PackageDescriptor.PackageProperties.GetByName "conda.name"}}={{.PackageDescriptor.Version.Version}}</code></pre></div>
 			</div>
 			<div class="field">
-				<label>{{ctx.Locale.Tr "packages.registry.documentation" "Conda" "https://docs.gitea.com/usage/packages/conda/"}}</label>
+				<label>{{ctx.Locale.Tr "For more information on the %s registry, see <a target=\"_blank\" rel=\"noopener noreferrer\" href=\"%s\">the documentation</a>." "Conda" "https://docs.gitea.com/usage/packages/conda/"}}</label>
 			</div>
 		</div>
 	</div>
 
 	{{if or .PackageDescriptor.Metadata.Description .PackageDescriptor.Metadata.Summary}}
-		<h4 class="ui top attached header">{{ctx.Locale.Tr "packages.about"}}</h4>
+		<h4 class="ui top attached header">{{ctx.Locale.Tr "About this package"}}</h4>
 		<div class="ui attached segment">
 			{{if .PackageDescriptor.Metadata.Description}}{{.PackageDescriptor.Metadata.Description}}{{else}}{{.PackageDescriptor.Metadata.Summary}}{{end}}
 		</div>

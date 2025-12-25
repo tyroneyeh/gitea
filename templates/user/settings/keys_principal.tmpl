@@ -1,33 +1,33 @@
 {{if .AllowPrincipals}}
 	<h4 class="ui top attached header">
-		{{ctx.Locale.Tr "settings.manage_ssh_principals"}}
+		{{ctx.Locale.Tr "Manage SSH Certificate Principals"}}
 		<div class="ui right">
 		{{if not .DisableSSH}}
-			<button class="ui primary tiny show-panel button" data-panel="#add-ssh-principal-panel">{{ctx.Locale.Tr "settings.add_new_principal"}}</button>
+			<button class="ui primary tiny show-panel button" data-panel="#add-ssh-principal-panel">{{ctx.Locale.Tr "Add Principal"}}</button>
 		{{else}}
-			<button class="ui primary tiny button disabled">{{ctx.Locale.Tr "settings.ssh_disabled"}}</button>
+			<button class="ui primary tiny button disabled">{{ctx.Locale.Tr "SSH Disabled"}}</button>
 		{{end}}
 		</div>
 	</h4>
 	<div class="ui attached segment">
 		<div class="flex-list">
 			<div class="flex-item">
-				{{ctx.Locale.Tr "settings.principal_desc"}}
+				{{ctx.Locale.Tr "These SSH certificate principals are associated with your account and allow full access to your repositories."}}
 			</div>
 			{{range .Principals}}
 				<div class="flex-item">
 					<div class="flex-item-leading">
-						<span class="text {{if .HasRecentActivity}}green{{end}}" {{if .HasRecentActivity}}data-tooltip-content="{{ctx.Locale.Tr "settings.principal_state_desc"}}"{{end}}>{{svg "octicon-key" 32}}</span>
+						<span class="text {{if .HasRecentActivity}}green{{end}}" {{if .HasRecentActivity}}data-tooltip-content="{{ctx.Locale.Tr "This principal has been used in the last 7 days"}}"{{end}}>{{svg "octicon-key" 32}}</span>
 					</div>
 					<div class="flex-item-main">
 						<div class="flex-item-title">{{.Name}}</div>
 						<div class="flex-item-body">
-							<i>{{ctx.Locale.Tr "settings.added_on" (DateUtils.AbsoluteShort .CreatedUnix)}} —  {{svg "octicon-info" 16}} {{if .HasUsed}}{{ctx.Locale.Tr "settings.last_used"}} <span {{if .HasRecentActivity}}class="green"{{end}}>{{DateUtils.AbsoluteShort .UpdatedUnix}}</span>{{else}}{{ctx.Locale.Tr "settings.no_activity"}}{{end}}</i>
+							<i>{{ctx.Locale.Tr "Added on %s" (DateUtils.AbsoluteShort .CreatedUnix)}} —  {{svg "octicon-info" 16}} {{if .HasUsed}}{{ctx.Locale.Tr "Last used on"}} <span {{if .HasRecentActivity}}class="green"{{end}}>{{DateUtils.AbsoluteShort .UpdatedUnix}}</span>{{else}}{{ctx.Locale.Tr "No recent activity"}}{{end}}</i>
 						</div>
 					</div>
 					<div class="flex-item-trailing">
 						<button class="ui red tiny button delete-button" data-modal-id="delete-principal" data-url="{{$.Link}}/delete?type=principal" data-id="{{.ID}}">
-							{{ctx.Locale.Tr "settings.delete_key"}}
+							{{ctx.Locale.Tr "Remove"}}
 						</button>
 					</div>
 				</div>
@@ -38,19 +38,19 @@
 
 	<div {{if not .HasPrincipalError}}class="tw-hidden"{{end}} id="add-ssh-principal-panel">
 		<h4 class="ui top attached header">
-			{{ctx.Locale.Tr "settings.add_new_principal"}}
+			{{ctx.Locale.Tr "Add Principal"}}
 		</h4>
 		<div class="ui attached segment">
 			<form class="ui form" action="{{.Link}}" method="post">
 				{{.CsrfTokenHtml}}
 				<div class="field {{if .Err_Content}}error{{end}}">
-					<label for="ssh-principal-content">{{ctx.Locale.Tr "settings.principal_content"}}</label>
+					<label for="ssh-principal-content">{{ctx.Locale.Tr "Content"}}</label>
 					<input id="ssh-principal-content" name="content" value="{{.content}}" autofocus required>
 				</div>
 				<input name="title" type="hidden" value="principal">
 				<input name="type" type="hidden" value="principal">
 				<button class="ui primary button">
-					{{ctx.Locale.Tr "settings.add_new_principal"}}
+					{{ctx.Locale.Tr "Add Principal"}}
 				</button>
 			</form>
 		</div>
@@ -59,10 +59,10 @@
 	<div class="ui g-modal-confirm delete modal" id="delete-principal">
 		<div class="header">
 			{{svg "octicon-trash"}}
-			{{ctx.Locale.Tr "settings.ssh_principal_deletion"}}
+			{{ctx.Locale.Tr "Remove SSH Certificate Principal"}}
 		</div>
 		<div class="content">
-			<p>{{ctx.Locale.Tr "settings.ssh_principal_deletion_desc"}}</p>
+			<p>{{ctx.Locale.Tr "Removing an SSH Certificate Principal revokes its access to your account. Continue?"}}</p>
 		</div>
 		{{template "base/modal_actions_confirm" .}}
 	</div>

@@ -144,7 +144,7 @@ func CheckAutoLogin(ctx *context.Context) bool {
 	isSucceed, err := autoSignIn(ctx) // try to auto-login
 	if err != nil {
 		if errors.Is(err, auth_service.ErrAuthTokenInvalidHash) {
-			ctx.Flash.Error(ctx.Tr("auth.remember_me.compromised"), true)
+			ctx.Flash.Error(ctx.Tr("The login token is not valid anymore which may indicate a compromised account. Please check your account for unusual activities."), true)
 			return false
 		}
 		ctx.ServerError("autoSignIn", err)
@@ -165,9 +165,9 @@ func CheckAutoLogin(ctx *context.Context) bool {
 }
 
 func prepareSignInPageData(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("sign_in")
+	ctx.Data["Title"] = ctx.Tr("Sign In")
 	ctx.Data["OAuth2Providers"], _ = oauth2.GetOAuth2Providers(ctx, optional.Some(true))
-	ctx.Data["Title"] = ctx.Tr("sign_in")
+	ctx.Data["Title"] = ctx.Tr("Sign In")
 	ctx.Data["SignInLink"] = setting.AppSubURL + "/user/login"
 	ctx.Data["PageIsSignIn"] = true
 	ctx.Data["PageIsLogin"] = true
@@ -218,22 +218,22 @@ func SignInPost(ctx *context.Context) {
 	u, source, err := auth_service.UserSignIn(ctx, form.UserName, form.Password)
 	if err != nil {
 		if errors.Is(err, util.ErrNotExist) || errors.Is(err, util.ErrInvalidArgument) {
-			ctx.RenderWithErr(ctx.Tr("form.username_password_incorrect"), tplSignIn, &form)
+			ctx.RenderWithErr(ctx.Tr("Username or password is incorrect."), tplSignIn, &form)
 			log.Warn("Failed authentication attempt for %s from %s: %v", form.UserName, ctx.RemoteAddr(), err)
 		} else if user_model.IsErrEmailAlreadyUsed(err) {
-			ctx.RenderWithErr(ctx.Tr("form.email_been_used"), tplSignIn, &form)
+			ctx.RenderWithErr(ctx.Tr("The email address is already used."), tplSignIn, &form)
 			log.Warn("Failed authentication attempt for %s from %s: %v", form.UserName, ctx.RemoteAddr(), err)
 		} else if user_model.IsErrUserProhibitLogin(err) {
 			log.Warn("Failed authentication attempt for %s from %s: %v", form.UserName, ctx.RemoteAddr(), err)
-			ctx.Data["Title"] = ctx.Tr("auth.prohibit_login")
+			ctx.Data["Title"] = ctx.Tr("Sign-In Prohibited")
 			ctx.HTML(http.StatusOK, "user/auth/prohibit_login")
 		} else if user_model.IsErrUserInactive(err) {
 			if setting.Service.RegisterEmailConfirm {
-				ctx.Data["Title"] = ctx.Tr("auth.active_your_account")
+				ctx.Data["Title"] = ctx.Tr("Activate Your Account")
 				ctx.HTML(http.StatusOK, TplActivate)
 			} else {
 				log.Warn("Failed authentication attempt for %s from %s: %v", form.UserName, ctx.RemoteAddr(), err)
-				ctx.Data["Title"] = ctx.Tr("auth.prohibit_login")
+				ctx.Data["Title"] = ctx.Tr("Sign-In Prohibited")
 				ctx.HTML(http.StatusOK, "user/auth/prohibit_login")
 			}
 		} else {
@@ -421,7 +421,7 @@ func SignOut(ctx *context.Context) {
 
 // SignUp render the register page
 func SignUp(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("sign_up")
+	ctx.Data["Title"] = ctx.Tr("Register")
 	ctx.Data["SignUpLink"] = setting.AppSubURL + "/user/sign_up"
 
 	hasUsers, _ := user_model.HasUsers(ctx)
@@ -452,7 +452,7 @@ func SignUp(ctx *context.Context) {
 // SignUpPost response for sign up information submission
 func SignUpPost(ctx *context.Context) {
 	form := web.GetForm(ctx).(*forms.RegisterForm)
-	ctx.Data["Title"] = ctx.Tr("sign_up")
+	ctx.Data["Title"] = ctx.Tr("Register")
 
 	ctx.Data["SignUpLink"] = setting.AppSubURL + "/user/sign_up"
 
@@ -484,18 +484,18 @@ func SignUpPost(ctx *context.Context) {
 	}
 
 	if !form.IsEmailDomainAllowed() {
-		ctx.RenderWithErr(ctx.Tr("auth.email_domain_blacklisted"), tplSignUp, &form)
+		ctx.RenderWithErr(ctx.Tr("You cannot register with your email address."), tplSignUp, &form)
 		return
 	}
 
 	if form.Password != form.Retype {
 		ctx.Data["Err_Password"] = true
-		ctx.RenderWithErr(ctx.Tr("form.password_not_match"), tplSignUp, &form)
+		ctx.RenderWithErr(ctx.Tr("The passwords do not match."), tplSignUp, &form)
 		return
 	}
 	if len(form.Password) < setting.MinPasswordLength {
 		ctx.Data["Err_Password"] = true
-		ctx.RenderWithErr(ctx.Tr("auth.password_too_short", setting.MinPasswordLength), tplSignUp, &form)
+		ctx.RenderWithErr(ctx.Tr("Password length cannot be less than %d characters.", setting.MinPasswordLength), tplSignUp, &form)
 		return
 	}
 	if !password.IsComplexEnough(form.Password) {
@@ -504,10 +504,10 @@ func SignUpPost(ctx *context.Context) {
 		return
 	}
 	if err := password.IsPwned(ctx, form.Password); err != nil {
-		errMsg := ctx.Tr("auth.password_pwned", "https://haveibeenpwned.com/Passwords")
+		errMsg := ctx.Tr("The password you chose is on a <a target=\"_blank\" rel=\"noopener noreferrer\" href=\"%s\">list of stolen passwords</a> previously exposed in public data breaches. Please try again with a different password and consider changing this password elsewhere too.", "https://haveibeenpwned.com/Passwords")
 		if password.IsErrIsPwnedRequest(err) {
 			log.Error(err.Error())
-			errMsg = ctx.Tr("auth.password_pwned_err")
+			errMsg = ctx.Tr("Could not complete request to HaveIBeenPwned")
 		}
 		ctx.Data["Err_Password"] = true
 		ctx.RenderWithErr(errMsg, tplSignUp, &form)
@@ -525,7 +525,7 @@ func SignUpPost(ctx *context.Context) {
 		return
 	}
 
-	ctx.Flash.Success(ctx.Tr("auth.sign_up_successful"))
+	ctx.Flash.Success(ctx.Tr("Account was successfully created. Welcome!"))
 	handleSignIn(ctx, u, false)
 }
 
@@ -580,25 +580,25 @@ func createUserInContext(ctx *context.Context, tpl templates.TplName, form any, 
 		switch {
 		case user_model.IsErrUserAlreadyExist(err):
 			ctx.Data["Err_UserName"] = true
-			ctx.RenderWithErr(ctx.Tr("form.username_been_taken"), tpl, form)
+			ctx.RenderWithErr(ctx.Tr("The username is already taken."), tpl, form)
 		case user_model.IsErrEmailAlreadyUsed(err):
 			ctx.Data["Err_Email"] = true
-			ctx.RenderWithErr(ctx.Tr("form.email_been_used"), tpl, form)
+			ctx.RenderWithErr(ctx.Tr("The email address is already used."), tpl, form)
 		case user_model.IsErrEmailCharIsNotSupported(err):
 			ctx.Data["Err_Email"] = true
-			ctx.RenderWithErr(ctx.Tr("form.email_invalid"), tpl, form)
+			ctx.RenderWithErr(ctx.Tr("The email address is invalid."), tpl, form)
 		case user_model.IsErrEmailInvalid(err):
 			ctx.Data["Err_Email"] = true
-			ctx.RenderWithErr(ctx.Tr("form.email_invalid"), tpl, form)
+			ctx.RenderWithErr(ctx.Tr("The email address is invalid."), tpl, form)
 		case db.IsErrNameReserved(err):
 			ctx.Data["Err_UserName"] = true
-			ctx.RenderWithErr(ctx.Tr("user.form.name_reserved", err.(db.ErrNameReserved).Name), tpl, form)
+			ctx.RenderWithErr(ctx.Tr("The username \"%s\" is reserved.", err.(db.ErrNameReserved).Name), tpl, form)
 		case db.IsErrNamePatternNotAllowed(err):
 			ctx.Data["Err_UserName"] = true
-			ctx.RenderWithErr(ctx.Tr("user.form.name_pattern_not_allowed", err.(db.ErrNamePatternNotAllowed).Pattern), tpl, form)
+			ctx.RenderWithErr(ctx.Tr("The pattern \"%s\" is not allowed in a username.", err.(db.ErrNamePatternNotAllowed).Pattern), tpl, form)
 		case db.IsErrNameCharsNotAllowed(err):
 			ctx.Data["Err_UserName"] = true
-			ctx.RenderWithErr(ctx.Tr("user.form.name_chars_not_allowed", err.(db.ErrNameCharsNotAllowed).Name), tpl, form)
+			ctx.RenderWithErr(ctx.Tr("Username \"%s\" contains invalid characters.", err.(db.ErrNameCharsNotAllowed).Name), tpl, form)
 		default:
 			ctx.ServerError("CreateUser", err)
 		}
@@ -644,7 +644,7 @@ func handleUserCreated(ctx *context.Context, u *user_model.User, possibleLinkAcc
 	}
 
 	if setting.Service.RegisterManualConfirm {
-		renderActivationPromptMessage(ctx, ctx.Locale.Tr("auth.manual_activation_only"))
+		renderActivationPromptMessage(ctx, ctx.Locale.Tr("Contact your site administrator to complete activation."))
 		return false
 	}
 
@@ -659,20 +659,20 @@ func renderActivationPromptMessage(ctx *context.Context, msg template.HTML) {
 
 func sendActivateEmail(ctx *context.Context, u *user_model.User) {
 	if ctx.Cache.IsExist("MailResendLimit_" + u.LowerName) {
-		renderActivationPromptMessage(ctx, ctx.Locale.Tr("auth.resent_limit_prompt"))
+		renderActivationPromptMessage(ctx, ctx.Locale.Tr("You have already requested an activation email recently. Please wait 3 minutes and try again."))
 		return
 	}
 
 	if err := ctx.Cache.Put("MailResendLimit_"+u.LowerName, u.LowerName, 180); err != nil {
 		log.Error("Set cache(MailResendLimit) fail: %v", err)
-		renderActivationPromptMessage(ctx, ctx.Locale.Tr("auth.resent_limit_prompt"))
+		renderActivationPromptMessage(ctx, ctx.Locale.Tr("You have already requested an activation email recently. Please wait 3 minutes and try again."))
 		return
 	}
 
 	mailer.SendActivateAccountMail(ctx.Locale, u)
 
 	activeCodeLives := timeutil.MinutesToFriendly(setting.Service.ActiveCodeLives, ctx.Locale)
-	msgHTML := ctx.Locale.Tr("auth.confirmation_mail_sent_prompt_ex", u.Email, activeCodeLives)
+	msgHTML := ctx.Locale.Tr("A new confirmation email has been sent to <b>%s</b>. Please check your inbox within the next %s to complete the registration process. If your registration email address is incorrect, you can sign in again and change it.", u.Email, activeCodeLives)
 	renderActivationPromptMessage(ctx, msgHTML)
 }
 
@@ -700,7 +700,7 @@ func Activate(ctx *context.Context) {
 		}
 
 		if setting.MailService == nil || !setting.Service.RegisterEmailConfirm {
-			renderActivationPromptMessage(ctx, ctx.Tr("auth.disable_register_mail"))
+			renderActivationPromptMessage(ctx, ctx.Tr("Email confirmation for registration is disabled."))
 			return
 		}
 
@@ -712,7 +712,7 @@ func Activate(ctx *context.Context) {
 	// TODO: ctx.Doer/ctx.Data["SignedUser"] could be nil or not the same user as the one being activated
 	user := user_model.VerifyUserTimeLimitCode(ctx, &user_model.TimeLimitCodeOptions{Purpose: user_model.TimeLimitCodeActivateAccount}, code)
 	if user == nil { // if code is wrong
-		renderActivationPromptMessage(ctx, ctx.Locale.Tr("auth.invalid_code"))
+		renderActivationPromptMessage(ctx, ctx.Locale.Tr("Your confirmation code is invalid or has expired."))
 		return
 	}
 
@@ -737,13 +737,13 @@ func ActivatePost(ctx *context.Context) {
 		newEmail := strings.TrimSpace(ctx.FormString("change_email"))
 		if ctx.Doer != nil && newEmail != "" && !strings.EqualFold(ctx.Doer.Email, newEmail) {
 			if user_model.ValidateEmail(newEmail) != nil {
-				ctx.Flash.Error(ctx.Locale.Tr("form.email_invalid"), true)
+				ctx.Flash.Error(ctx.Locale.Tr("The email address is invalid."), true)
 				renderActivationChangeEmail(ctx)
 				return
 			}
 			err := user_model.ChangeInactivePrimaryEmail(ctx, ctx.Doer.ID, ctx.Doer.Email, newEmail)
 			if err != nil {
-				ctx.Flash.Error(ctx.Locale.Tr("admin.emails.not_updated", newEmail), true)
+				ctx.Flash.Error(ctx.Locale.Tr("Failed to update the requested email address: %v", newEmail), true)
 				renderActivationChangeEmail(ctx)
 				return
 			}
@@ -757,7 +757,7 @@ func ActivatePost(ctx *context.Context) {
 	// TODO: ctx.Doer/ctx.Data["SignedUser"] could be nil or not the same user as the one being activated
 	user := user_model.VerifyUserTimeLimitCode(ctx, &user_model.TimeLimitCodeOptions{Purpose: user_model.TimeLimitCodeActivateAccount}, code)
 	if user == nil { // if code is wrong
-		renderActivationPromptMessage(ctx, ctx.Locale.Tr("auth.invalid_code"))
+		renderActivationPromptMessage(ctx, ctx.Locale.Tr("Your confirmation code is invalid or has expired."))
 		return
 	}
 
@@ -769,7 +769,7 @@ func ActivatePost(ctx *context.Context) {
 			return
 		}
 		if !user.ValidatePassword(password) {
-			ctx.Flash.Error(ctx.Locale.Tr("auth.invalid_password"), true)
+			ctx.Flash.Error(ctx.Locale.Tr("Your password does not match the password that was used to create the account."), true)
 			renderActivationVerifyPassword(ctx, code)
 			return
 		}
@@ -823,7 +823,7 @@ func handleAccountActivation(ctx *context.Context, user *user_model.User) {
 		return
 	}
 
-	ctx.Flash.Success(ctx.Tr("auth.account_activated"))
+	ctx.Flash.Success(ctx.Tr("Account has been activated"))
 	if redirectTo := ctx.GetSiteCookie("redirect_to"); len(redirectTo) > 0 {
 		middleware.DeleteRedirectToCookie(ctx.Resp)
 		ctx.RedirectToCurrentSite(redirectTo)
@@ -846,7 +846,7 @@ func ActivateEmail(ctx *context.Context) {
 		}
 
 		log.Trace("Email activated: %s", email.Email)
-		ctx.Flash.Success(ctx.Tr("settings.add_email_success"))
+		ctx.Flash.Success(ctx.Tr("The new email address has been added."))
 
 		if u, err := user_model.GetUserByID(ctx, email.UID); err != nil {
 			log.Warn("GetUserByID: %d", email.UID)

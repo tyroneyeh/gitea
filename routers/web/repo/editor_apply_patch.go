@@ -30,7 +30,7 @@ func NewDiffPatchPost(ctx *context.Context) {
 		return
 	}
 
-	defaultCommitMessage := ctx.Locale.TrString("repo.editor.patch")
+	defaultCommitMessage := ctx.Locale.TrString("Apply Patch")
 	_, err := files.ApplyDiffPatch(ctx, ctx.Repo.Repository, ctx.Doer, &files.ApplyDiffPatchOptions{
 		LastCommitID: parsed.form.LastCommit,
 		OldBranch:    parsed.OldBranchName,

@@ -2,14 +2,14 @@
 	<div class="user-main-content twelve wide column content repository file list">
 		<div class="tab-size-8 non-diff-file-content">
 			<h4 class="ui top attached header">
-				<a href="{{.LFSFilesLink}}">{{ctx.Locale.Tr "repo.settings.lfs"}}</a> / {{ctx.Locale.Tr "repo.settings.lfs_locks"}} ({{ctx.Locale.Tr "admin.total" .Total}})
+				<a href="{{.LFSFilesLink}}">{{ctx.Locale.Tr "LFS"}}</a> / {{ctx.Locale.Tr "Locks"}} ({{ctx.Locale.Tr "Total: %d" .Total}})
 			</h4>
 			<div class="ui attached segment">
 				<form class="ui form ignore-dirty" method="post">
 					{{$.CsrfTokenHtml}}
 					<div class="ui fluid action input">
-						<input name="path" value="" placeholder="{{ctx.Locale.Tr "repo.settings.lfs_lock_path"}}" autofocus>
-						<button class="ui primary button">{{ctx.Locale.Tr "repo.settings.lfs_lock"}}</button>
+						<input name="path" value="" placeholder="{{ctx.Locale.Tr "Filepath to lock…"}}" autofocus>
+						<button class="ui primary button">{{ctx.Locale.Tr "Lock"}}</button>
 					</div>
 				</form>
 			</div>
@@ -23,10 +23,10 @@
 								<a href="{{$.RepoLink}}/src/branch/{{PathEscapeSegments $.Repository.DefaultBranch}}/{{PathEscapeSegments $lock.Path}}" title="{{$lock.Path}}">{{$lock.Path}}</a>
 								{{else}}
 									{{svg "octicon-diff"}}
-								<span data-tooltip-content="{{ctx.Locale.Tr "repo.settings.lfs_lock_file_no_exist"}}">{{$lock.Path}}</span>
+								<span data-tooltip-content="{{ctx.Locale.Tr "Locked file does not exist in default branch"}}">{{$lock.Path}}</span>
 								{{end}}
 								{{if not (index $.Lockables $index)}}
-									<span data-tooltip-content="{{ctx.Locale.Tr "repo.settings.lfs_noattribute"}}">{{svg "octicon-alert"}}</span>
+									<span data-tooltip-content="{{ctx.Locale.Tr "This path does not have the lockable attribute in the default branch"}}">{{svg "octicon-alert"}}</span>
 								{{end}}
 							</td>
 							<td>
@@ -39,13 +39,13 @@
 							<td class="tw-text-right">
 								<form action="{{$.LFSFilesLink}}/locks/{{$lock.ID}}/unlock" method="post">
 									{{$.CsrfTokenHtml}}
-									<button class="ui primary button"><span class="btn-octicon">{{svg "octicon-lock"}}</span>{{ctx.Locale.Tr "repo.settings.lfs_force_unlock"}}</button>
+									<button class="ui primary button"><span class="btn-octicon">{{svg "octicon-lock"}}</span>{{ctx.Locale.Tr "Force Unlock"}}</button>
 								</form>
 							</td>
 						</tr>
 					{{else}}
 						<tr>
-							<td colspan="4">{{ctx.Locale.Tr "repo.settings.lfs_locks_no_locks"}}</td>
+							<td colspan="4">{{ctx.Locale.Tr "No Locks"}}</td>
 						</tr>
 					{{end}}
 				</tbody>

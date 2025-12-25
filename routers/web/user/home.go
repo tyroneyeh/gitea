@@ -91,7 +91,7 @@ func Dashboard(ctx *context.Context) {
 		page = 1
 	}
 
-	ctx.Data["Title"] = ctxUser.DisplayName() + " - " + ctx.Locale.TrString("dashboard")
+	ctx.Data["Title"] = ctxUser.DisplayName() + " - " + ctx.Locale.TrString("Dashboard")
 	ctx.Data["PageIsDashboard"] = true
 	ctx.Data["PageIsNews"] = true
 	cnt, _ := organization.GetOrganizationCount(ctx, ctxUser)
@@ -153,7 +153,7 @@ func Milestones(ctx *context.Context) {
 		return
 	}
 
-	ctx.Data["Title"] = ctx.Tr("milestones")
+	ctx.Data["Title"] = ctx.Tr("Milestones")
 	ctx.Data["PageIsMilestonesDashboard"] = true
 
 	ctxUser := getDashboardContextUser(ctx)
@@ -344,7 +344,7 @@ func Pulls(ctx *context.Context) {
 		return
 	}
 
-	ctx.Data["Title"] = ctx.Tr("pull_requests")
+	ctx.Data["Title"] = ctx.Tr("Pull Requests")
 	ctx.Data["PageIsPulls"] = true
 	buildIssueOverview(ctx, unit.TypePullRequests)
 }
@@ -357,7 +357,7 @@ func Issues(ctx *context.Context) {
 		return
 	}
 
-	ctx.Data["Title"] = ctx.Tr("issues")
+	ctx.Data["Title"] = ctx.Tr("Issues")
 	ctx.Data["PageIsIssues"] = true
 	buildIssueOverview(ctx, unit.TypeIssues)
 }
@@ -533,7 +533,7 @@ func buildIssueOverview(ctx *context.Context, unitType unit.Type) {
 		var err error
 		opts.LabelIDs, err = base.StringsToInt64s(strings.Split(selectedLabels, ","))
 		if err != nil {
-			ctx.Flash.Error(ctx.Tr("invalid_data", selectedLabels), true)
+			ctx.Flash.Error(ctx.Tr("Invalid data: %v", selectedLabels), true)
 		}
 	}
 

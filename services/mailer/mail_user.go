@@ -55,7 +55,7 @@ func SendActivateAccountMail(locale translation.Locale, u *user_model.User) {
 		return
 	}
 	opts := &user_model.TimeLimitCodeOptions{Purpose: user_model.TimeLimitCodeActivateAccount}
-	sendUserMail(locale.Language(), u, mailAuthActivate, user_model.GenerateUserTimeLimitCode(opts, u), locale.TrString("mail.activate_account"), "activate account")
+	sendUserMail(locale.Language(), u, mailAuthActivate, user_model.GenerateUserTimeLimitCode(opts, u), locale.TrString("Please activate your account"), "activate account")
 }
 
 // SendResetPasswordMail sends a password reset mail to the user
@@ -66,7 +66,7 @@ func SendResetPasswordMail(u *user_model.User) {
 	}
 	locale := translation.NewLocale(u.Language)
 	opts := &user_model.TimeLimitCodeOptions{Purpose: user_model.TimeLimitCodeResetPassword}
-	sendUserMail(u.Language, u, mailAuthResetPassword, user_model.GenerateUserTimeLimitCode(opts, u), locale.TrString("mail.reset_password"), "recover account")
+	sendUserMail(u.Language, u, mailAuthResetPassword, user_model.GenerateUserTimeLimitCode(opts, u), locale.TrString("Recover your account"), "recover account")
 }
 
 // SendActivateEmailMail sends confirmation email to confirm new email address
@@ -93,7 +93,7 @@ func SendActivateEmailMail(u *user_model.User, email string) {
 		return
 	}
 
-	msg := sender_service.NewMessage(email, locale.TrString("mail.activate_email"), content.String())
+	msg := sender_service.NewMessage(email, locale.TrString("Verify your email address"), content.String())
 	msg.Info = fmt.Sprintf("UID: %d, activate email", u.ID)
 
 	SendAsync(msg)
@@ -121,7 +121,7 @@ func SendRegisterNotifyMail(u *user_model.User) {
 		return
 	}
 
-	msg := sender_service.NewMessage(u.EmailTo(), locale.TrString("mail.register_notify", setting.AppName), content.String())
+	msg := sender_service.NewMessage(u.EmailTo(), locale.TrString("Welcome to %s", setting.AppName), content.String())
 	msg.Info = fmt.Sprintf("UID: %d, registration notify", u.ID)
 
 	SendAsync(msg)

@@ -15,7 +15,7 @@
 						<br>{{.About}}
 					</div>
 					<div class="column tw-text-right">
-						<a href="{{$.RepoLink}}/issues/new?template={{.FileName}}{{if $.milestone}}&milestone={{$.milestone}}{{end}}{{if $.project}}&project={{$.project}}{{end}}" class="ui primary button">{{ctx.Locale.Tr "repo.issues.choose.get_started"}}</a>
+						<a href="{{$.RepoLink}}/issues/new?template={{.FileName}}{{if $.milestone}}&milestone={{$.milestone}}{{end}}{{if $.project}}&project={{$.project}}{{end}}" class="ui primary button">{{ctx.Locale.Tr "Get Started"}}</a>
 					</div>
 				</div>
 			</div>
@@ -28,7 +28,7 @@
 						<br>{{.About}}
 					</div>
 					<div class="column tw-text-right">
-						<a href="{{.URL}}" class="ui primary button">{{svg "octicon-link-external"}} {{ctx.Locale.Tr "repo.issues.choose.open_external_link"}}</a>
+						<a href="{{.URL}}" class="ui primary button">{{svg "octicon-link-external"}} {{ctx.Locale.Tr "Open"}}</a>
 					</div>
 				</div>
 			</div>
@@ -37,11 +37,11 @@
 			<div class="ui attached segment">
 				<div class="ui two column grid">
 					<div class="column">
-						<strong>{{ctx.Locale.Tr "repo.issues.choose.blank"}}</strong>
-						<br/>{{ctx.Locale.Tr "repo.issues.choose.blank_about"}}
+						<strong>{{ctx.Locale.Tr "Default"}}</strong>
+						<br/>{{ctx.Locale.Tr "Create an issue from default template."}}
 					</div>
 					<div class="column tw-text-right">
-						<a href="{{.RepoLink}}/issues/new?{{if .milestone}}&milestone={{.milestone}}{{end}}{{if $.project}}&project={{$.project}}{{end}}" class="ui primary button">{{ctx.Locale.Tr "repo.issues.choose.get_started"}}</a>
+						<a href="{{.RepoLink}}/issues/new?{{if .milestone}}&milestone={{.milestone}}{{end}}{{if $.project}}&project={{$.project}}{{end}}" class="ui primary button">{{ctx.Locale.Tr "Get Started"}}</a>
 					</div>
 				</div>
 			</div>
@@ -49,7 +49,7 @@
 		{{- if .IssueConfigError}}{{/* normal warning flash makes problems here*/}}
 			<div class="ui warning message">
 				<div class="text left">
-					<div>{{ctx.Locale.Tr "repo.issues.choose.invalid_config"}}</div>
+					<div>{{ctx.Locale.Tr "The issue config contains errors:"}}</div>
 					<div>{{.IssueConfigError}}</div>
 				</div>
 			</div>

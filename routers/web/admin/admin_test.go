@@ -87,6 +87,6 @@ func TestSelfCheckPost(t *testing.T) {
 	err := json.Unmarshal(resp.Body.Bytes(), &data)
 	assert.NoError(t, err)
 	assert.Equal(t, []string{
-		ctx.Locale.TrString("admin.self_check.location_origin_mismatch", "http://frontend/sub/", "http://config/sub/"),
+		ctx.Locale.TrString("Current URL (%[1]s) doesn't match the URL seen by Gitea (%[2]s). If you are using a reverse proxy, please make sure the \"Host\" and \"X-Forwarded-Proto\" headers are set correctly.", "http://frontend/sub/", "http://config/sub/"),
 	}, data.Problems)
 }

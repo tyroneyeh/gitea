@@ -29,10 +29,10 @@ func GetContentHistoryOverview(ctx *context.Context) {
 	editedHistoryCountMap, _ := issues_model.QueryIssueContentHistoryEditedCountMap(ctx, issue.ID)
 	ctx.JSON(http.StatusOK, map[string]any{
 		"i18n": map[string]any{
-			"textEdited":                   ctx.Tr("repo.issues.content_history.edited"),
-			"textDeleteFromHistory":        ctx.Tr("repo.issues.content_history.delete_from_history"),
-			"textDeleteFromHistoryConfirm": ctx.Tr("repo.issues.content_history.delete_from_history_confirm"),
-			"textOptions":                  ctx.Tr("repo.issues.content_history.options"),
+			"textEdited":                   ctx.Tr("edited"),
+			"textDeleteFromHistory":        ctx.Tr("Delete from history"),
+			"textDeleteFromHistoryConfirm": ctx.Tr("Delete from history?"),
+			"textOptions":                  ctx.Tr("Options"),
 		},
 		"editedHistoryCountMap": editedHistoryCountMap,
 	})
@@ -55,12 +55,12 @@ func GetContentHistoryList(ctx *context.Context) {
 	for _, item := range items {
 		var actionText string
 		if item.IsDeleted {
-			actionTextDeleted := ctx.Locale.TrString("repo.issues.content_history.deleted")
+			actionTextDeleted := ctx.Locale.TrString("deleted")
 			actionText = "<i data-history-is-deleted='1'>" + actionTextDeleted + "</i>"
 		} else if item.IsFirstCreated {
-			actionText = ctx.Locale.TrString("repo.issues.content_history.created")
+			actionText = ctx.Locale.TrString("created")
 		} else {
-			actionText = ctx.Locale.TrString("repo.issues.content_history.edited")
+			actionText = ctx.Locale.TrString("edited")
 		}
 
 		username := item.UserName

@@ -1,8 +1,8 @@
 <div class="divider"></div>
 <details>
-	<summary>{{ctx.Locale.Tr "repo.pulls.cmd_instruction_hint"}}</summary>
+	<summary>{{ctx.Locale.Tr "View command line instructions"}}</summary>
 	<div class="tw-mt-2">
-		<div><h3>{{ctx.Locale.Tr "repo.pulls.cmd_instruction_checkout_title"}}</h3>{{ctx.Locale.Tr "repo.pulls.cmd_instruction_checkout_desc"}}</div>
+		<div><h3>{{ctx.Locale.Tr "Checkout"}}</h3>{{ctx.Locale.Tr "From your project repository, check out a new branch and test the changes."}}</div>
 		{{$localBranch := .PullRequest.HeadBranch}}
 		{{if ne .PullRequest.HeadRepo.ID .PullRequest.BaseRepo.ID}}
 			{{$localBranch = print .PullRequest.HeadRepo.OwnerName "-" .PullRequest.HeadBranch}}
@@ -18,10 +18,10 @@
 		</div>
 		{{if .ShowMergeInstructions}}
 		<div>
-			<h3>{{ctx.Locale.Tr "repo.pulls.cmd_instruction_merge_title"}}</h3>
-			{{ctx.Locale.Tr "repo.pulls.cmd_instruction_merge_desc"}}
+			<h3>{{ctx.Locale.Tr "Merge"}}</h3>
+			{{ctx.Locale.Tr "Merge the changes and update on Gitea."}}
 			{{if not .AutodetectManualMerge}}
-				<div>{{ctx.Locale.Tr "repo.pulls.cmd_instruction_merge_warning"}}</div>
+				<div>{{ctx.Locale.Tr "Warning: This operation cannot merge pull request because \"autodetect manual merge\" is not enabled."}}</div>
 			{{end}}
 		</div>
 		<div class="ui secondary segment tw-font-mono">

@@ -63,42 +63,42 @@ func repoUnitPublicAccesses(ctx *context.Context) []*repoUnitPublicAccess {
 	accesses := []*repoUnitPublicAccess{
 		{
 			UnitType:          unit.TypeCode,
-			DisplayName:       ctx.Locale.TrString("repo.code"),
+			DisplayName:       ctx.Locale.TrString("Code"),
 			PublicAccessTypes: []string{paAnonymousRead, paEveryoneRead},
 		},
 		{
 			UnitType:          unit.TypeIssues,
-			DisplayName:       ctx.Locale.TrString("issues"),
+			DisplayName:       ctx.Locale.TrString("Issues"),
 			PublicAccessTypes: []string{paAnonymousRead, paEveryoneRead},
 		},
 		{
 			UnitType:          unit.TypePullRequests,
-			DisplayName:       ctx.Locale.TrString("pull_requests"),
+			DisplayName:       ctx.Locale.TrString("Pull Requests"),
 			PublicAccessTypes: []string{paAnonymousRead, paEveryoneRead},
 		},
 		{
 			UnitType:          unit.TypeReleases,
-			DisplayName:       ctx.Locale.TrString("repo.releases"),
+			DisplayName:       ctx.Locale.TrString("Releases"),
 			PublicAccessTypes: []string{paAnonymousRead, paEveryoneRead},
 		},
 		{
 			UnitType:          unit.TypeWiki,
-			DisplayName:       ctx.Locale.TrString("repo.wiki"),
+			DisplayName:       ctx.Locale.TrString("Wiki"),
 			PublicAccessTypes: []string{paAnonymousRead, paEveryoneRead, paEveryoneWrite},
 		},
 		{
 			UnitType:          unit.TypeProjects,
-			DisplayName:       ctx.Locale.TrString("repo.projects"),
+			DisplayName:       ctx.Locale.TrString("Projects"),
 			PublicAccessTypes: []string{paAnonymousRead, paEveryoneRead},
 		},
 		{
 			UnitType:          unit.TypePackages,
-			DisplayName:       ctx.Locale.TrString("repo.packages"),
+			DisplayName:       ctx.Locale.TrString("Packages"),
 			PublicAccessTypes: []string{paAnonymousRead, paEveryoneRead},
 		},
 		{
 			UnitType:          unit.TypeActions,
-			DisplayName:       ctx.Locale.TrString("repo.actions"),
+			DisplayName:       ctx.Locale.TrString("Actions"),
 			PublicAccessTypes: []string{paAnonymousRead, paEveryoneRead},
 		},
 	}
@@ -129,7 +129,7 @@ func PublicAccess(ctx *context.Context) {
 	ctx.Data["RepoUnitPublicAccesses"] = repoUnitPublicAccesses(ctx)
 	ctx.Data["GlobalForcePrivate"] = setting.Repository.ForcePrivate
 	if setting.Repository.ForcePrivate {
-		ctx.Flash.Error(ctx.Tr("form.repository_force_private"), true)
+		ctx.Flash.Error(ctx.Tr("Force Private is enabled: private repositories cannot be made public."), true)
 	}
 	ctx.HTML(http.StatusOK, tplRepoSettingsPublicAccess)
 }
@@ -150,6 +150,6 @@ func PublicAccessPost(ctx *context.Context) {
 			return
 		}
 	}
-	ctx.Flash.Success(ctx.Tr("repo.settings.update_settings_success"))
+	ctx.Flash.Success(ctx.Tr("The repository settings have been updated."))
 	ctx.Redirect(ctx.Repo.Repository.Link() + "/settings/public_access")
 }

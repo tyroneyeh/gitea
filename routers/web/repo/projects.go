@@ -55,7 +55,7 @@ func MustEnableRepoProjects(ctx *context.Context) {
 
 // Projects renders the home page of projects
 func Projects(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("repo.projects")
+	ctx.Data["Title"] = ctx.Tr("Projects")
 
 	sortType := ctx.FormTrim("sort")
 
@@ -131,7 +131,7 @@ func Projects(ctx *context.Context) {
 
 // RenderNewProject render creating a project page
 func RenderNewProject(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("repo.projects.new")
+	ctx.Data["Title"] = ctx.Tr("New Project")
 	ctx.Data["TemplateConfigs"] = project_model.GetTemplateConfigs()
 	ctx.Data["CardTypes"] = project_model.GetCardConfig()
 	ctx.Data["CanWriteProjects"] = ctx.Repo.Permission.CanWrite(unit.TypeProjects)
@@ -142,7 +142,7 @@ func RenderNewProject(ctx *context.Context) {
 // NewProjectPost creates a new project
 func NewProjectPost(ctx *context.Context) {
 	form := web.GetForm(ctx).(*forms.CreateProjectForm)
-	ctx.Data["Title"] = ctx.Tr("repo.projects.new")
+	ctx.Data["Title"] = ctx.Tr("New Project")
 
 	if ctx.HasError() {
 		RenderNewProject(ctx)
@@ -162,7 +162,7 @@ func NewProjectPost(ctx *context.Context) {
 		return
 	}
 
-	ctx.Flash.Success(ctx.Tr("repo.projects.create_success", form.Title))
+	ctx.Flash.Success(ctx.Tr("The project \"%s\" has been created.", form.Title))
 	ctx.Redirect(ctx.Repo.RepoLink + "/projects")
 }
 
@@ -206,7 +206,7 @@ func DeleteProject(ctx *context.Context) {
 	if err := project_model.DeleteProjectByID(ctx, p.ID); err != nil {
 		ctx.Flash.Error("DeleteProjectByID: " + err.Error())
 	} else {
-		ctx.Flash.Success(ctx.Tr("repo.projects.deletion_success"))
+		ctx.Flash.Success(ctx.Tr("The project has been deleted."))
 	}
 
 	ctx.JSONRedirect(ctx.Repo.RepoLink + "/projects")
@@ -214,7 +214,7 @@ func DeleteProject(ctx *context.Context) {
 
 // RenderEditProject allows a project to be edited
 func RenderEditProject(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("repo.projects.edit")
+	ctx.Data["Title"] = ctx.Tr("Edit Project")
 	ctx.Data["PageIsEditProjects"] = true
 	ctx.Data["CanWriteProjects"] = ctx.Repo.Permission.CanWrite(unit.TypeProjects)
 	ctx.Data["CardTypes"] = project_model.GetCardConfig()
@@ -248,7 +248,7 @@ func EditProjectPost(ctx *context.Context) {
 	form := web.GetForm(ctx).(*forms.CreateProjectForm)
 	projectID := ctx.PathParamInt64("id")
 
-	ctx.Data["Title"] = ctx.Tr("repo.projects.edit")
+	ctx.Data["Title"] = ctx.Tr("Edit Project")
 	ctx.Data["PageIsEditProjects"] = true
 	ctx.Data["CanWriteProjects"] = ctx.Repo.Permission.CanWrite(unit.TypeProjects)
 	ctx.Data["CardTypes"] = project_model.GetCardConfig()
@@ -281,7 +281,7 @@ func EditProjectPost(ctx *context.Context) {
 		return
 	}
 
-	ctx.Flash.Success(ctx.Tr("repo.projects.edit_success", p.Title))
+	ctx.Flash.Success(ctx.Tr("Project \"%s\" has been updated.", p.Title))
 	if ctx.FormString("redirect") == "project" {
 		ctx.Redirect(p.Link(ctx))
 	} else {

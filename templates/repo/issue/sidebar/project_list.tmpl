@@ -8,20 +8,20 @@
 	<input class="combo-value" name="project_ids" type="hidden" value="{{$data.SelectedProjectID}}">
 	<div class="ui dropdown full-width {{if not $pageMeta.CanModifyIssueOrPull}}disabled{{end}}">
 		<a class="fixed-text muted">
-			<strong>{{ctx.Locale.Tr "repo.issues.new.projects"}}</strong> {{if $pageMeta.CanModifyIssueOrPull}}{{svg "octicon-gear"}}{{end}}
+			<strong>{{ctx.Locale.Tr "Projects"}}</strong> {{if $pageMeta.CanModifyIssueOrPull}}{{svg "octicon-gear"}}{{end}}
 		</a>
 		<div class="menu">
 			{{if or $data.OpenProjects $data.ClosedProjects}}
 			<div class="ui icon search input">
 				<i class="icon">{{svg "octicon-search" 16}}</i>
-				<input type="text" placeholder="{{ctx.Locale.Tr "repo.issues.filter_projects"}}">
+				<input type="text" placeholder="{{ctx.Locale.Tr "Filter Project"}}">
 			</div>
 			{{end}}
 			<div class="scrolling menu">
-				<div class="item clear-selection" data-text="">{{ctx.Locale.Tr "repo.issues.new.clear_projects"}}</div>
+				<div class="item clear-selection" data-text="">{{ctx.Locale.Tr "Clear projects"}}</div>
 				<div class="divider"></div>
 				{{if $data.OpenProjects}}
-					<div class="header">{{ctx.Locale.Tr "repo.issues.new.open_projects"}}</div>
+					<div class="header">{{ctx.Locale.Tr "Open Projects"}}</div>
 					{{range $data.OpenProjects}}
 						<a class="item muted" data-value="{{.ID}}" href="{{.Link ctx}}">
 							<span class="item-check-mark">{{svg "octicon-check"}}</span>
@@ -31,7 +31,7 @@
 				{{end}}
 				{{if and $data.OpenProjects $data.ClosedProjects}}<div class="divider"></div>{{end}}
 				{{if $data.ClosedProjects}}
-					<div class="header">{{ctx.Locale.Tr "repo.issues.new.closed_projects"}}</div>
+					<div class="header">{{ctx.Locale.Tr "Closed Projects"}}</div>
 					{{range $data.ClosedProjects}}
 						<a class="item muted" data-value="{{.ID}}" href="{{.Link ctx}}">
 							<span class="item-check-mark">{{svg "octicon-check"}}</span>
@@ -43,7 +43,7 @@
 		</div>
 	</div>
 	<div class="ui list muted-links flex-items-block">
-		<span class="item empty-list {{if $issueProject}}tw-hidden{{end}}">{{ctx.Locale.Tr "repo.issues.new.no_projects"}}</span>
+		<span class="item empty-list {{if $issueProject}}tw-hidden{{end}}">{{ctx.Locale.Tr "No project"}}</span>
 		{{range $issueProject}}
 			<a class="item" href="{{.Link ctx}}">
 				{{svg .IconName 18}} {{.Title}}

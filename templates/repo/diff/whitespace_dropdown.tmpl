@@ -1,30 +1,30 @@
-<div class="ui dropdown tiny basic button" data-tooltip-content="{{ctx.Locale.Tr "repo.diff.whitespace_button"}}">
+<div class="ui dropdown tiny basic button" data-tooltip-content="{{ctx.Locale.Tr "Whitespace"}}">
 	{{svg "gitea-whitespace"}}
 	<div class="menu">
 		<a class="item" href="?style={{if .IsSplitStyle}}split{{else}}unified{{end}}&whitespace=show-all&show-outdated={{$.ShowOutdatedComments}}">
 			<label class="tw-pointer-events-none">
 				<input class="tw-mr-2 tw-pointer-events-none" type="radio"{{if eq .WhitespaceBehavior "show-all"}} checked{{end}}>
-				{{ctx.Locale.Tr "repo.diff.whitespace_show_everything"}}
+				{{ctx.Locale.Tr "Show all changes"}}
 			</label>
 		</a>
 		<a class="item" href="?style={{if .IsSplitStyle}}split{{else}}unified{{end}}&whitespace=ignore-all&show-outdated={{$.ShowOutdatedComments}}">
 			<label class="tw-pointer-events-none">
 				<input class="tw-mr-2 tw-pointer-events-none" type="radio"{{if eq .WhitespaceBehavior "ignore-all"}} checked{{end}}>
-				{{ctx.Locale.Tr "repo.diff.whitespace_ignore_all_whitespace"}}
+				{{ctx.Locale.Tr "Ignore whitespace when comparing lines"}}
 			</label>
 		</a>
 		<a class="item" href="?style={{if .IsSplitStyle}}split{{else}}unified{{end}}&whitespace=ignore-change&show-outdated={{$.ShowOutdatedComments}}">
 			<label class="tw-pointer-events-none">
 				<input class="tw-mr-2 tw-pointer-events-none" type="radio"{{if eq .WhitespaceBehavior "ignore-change"}} checked{{end}}>
-				{{ctx.Locale.Tr "repo.diff.whitespace_ignore_amount_changes"}}
+				{{ctx.Locale.Tr "Ignore changes in amount of whitespace"}}
 			</label>
 		</a>
 		<a class="item" href="?style={{if .IsSplitStyle}}split{{else}}unified{{end}}&whitespace=ignore-eol&show-outdated={{$.ShowOutdatedComments}}">
 			<label class="tw-pointer-events-none">
 				<input class="tw-mr-2 tw-pointer-events-none" type="radio"{{if eq .WhitespaceBehavior "ignore-eol"}} checked{{end}}>
-				{{ctx.Locale.Tr "repo.diff.whitespace_ignore_at_eol"}}
+				{{ctx.Locale.Tr "Ignore changes in whitespace at EOL"}}
 			</label>
 		</a>
 	</div>
 </div>
-<a class="ui tiny basic button" href="?style={{if .IsSplitStyle}}unified{{else}}split{{end}}&whitespace={{$.WhitespaceBehavior}}&show-outdated={{$.ShowOutdatedComments}}" data-tooltip-content="{{if .IsSplitStyle}}{{ctx.Locale.Tr "repo.diff.show_unified_view"}}{{else}}{{ctx.Locale.Tr "repo.diff.show_split_view"}}{{end}}">{{svg (Iif .IsSplitStyle "gitea-join" "gitea-split")}}</a>
+<a class="ui tiny basic button" href="?style={{if .IsSplitStyle}}unified{{else}}split{{end}}&whitespace={{$.WhitespaceBehavior}}&show-outdated={{$.ShowOutdatedComments}}" data-tooltip-content="{{if .IsSplitStyle}}{{ctx.Locale.Tr "Unified View"}}{{else}}{{ctx.Locale.Tr "Split View"}}{{end}}">{{svg (Iif .IsSplitStyle "gitea-join" "gitea-split")}}</a>

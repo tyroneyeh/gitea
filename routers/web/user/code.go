@@ -33,7 +33,7 @@ func CodeSearch(ctx *context.Context) {
 	}
 
 	ctx.Data["IsPackageEnabled"] = setting.Packages.Enabled
-	ctx.Data["Title"] = ctx.Tr("explore.code")
+	ctx.Data["Title"] = ctx.Tr("Code")
 	ctx.Data["IsCodePage"] = true
 
 	prepareSearch := common.PrepareCodeSearch(ctx)

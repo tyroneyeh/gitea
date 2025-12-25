@@ -6,17 +6,17 @@
 		{{$thisRepoBranchDisplay := HTMLFormat "%s:%s" .Repository.FullName .BranchName}}
 		{{$upstreamHtml := HTMLFormat `<a href="%s">%s</a>` $upstreamLink $upstreamRepoBranchDisplay}}
 		{{if .UpstreamDivergingInfo.HeadBranchCommitsBehind}}
-			{{ctx.Locale.TrN .UpstreamDivergingInfo.HeadBranchCommitsBehind "repo.pulls.upstream_diverging_prompt_behind_1" "repo.pulls.upstream_diverging_prompt_behind_n" .UpstreamDivergingInfo.HeadBranchCommitsBehind $upstreamHtml}}
+			{{ctx.Locale.TrN .UpstreamDivergingInfo.HeadBranchCommitsBehind "This branch is %[1]d commit behind %[2]s" "This branch is %[1]d commits behind %[2]s" .UpstreamDivergingInfo.HeadBranchCommitsBehind $upstreamHtml}}
 		{{else}}
-			{{ctx.Locale.Tr "repo.pulls.upstream_diverging_prompt_base_newer" $upstreamHtml}}
+			{{ctx.Locale.Tr "The base branch %s has new changes" $upstreamHtml}}
 		{{end}}
 	</div>
 	{{if .CanWriteCode}}
 	<button class="ui compact primary button tw-m-0 link-action"
-					data-modal-confirm-header="{{ctx.Locale.Tr "repo.pulls.upstream_diverging_merge"}}"
-					data-modal-confirm-content="{{ctx.Locale.Tr "repo.pulls.upstream_diverging_merge_confirm" $upstreamRepoBranchDisplay $thisRepoBranchDisplay}}"
+					data-modal-confirm-header="{{ctx.Locale.Tr "Sync fork"}}"
+					data-modal-confirm-content="{{ctx.Locale.Tr "Would you like to merge \"%[1]s\" onto \"%[2]s\"?" $upstreamRepoBranchDisplay $thisRepoBranchDisplay}}"
 					data-url="{{.Repository.Link}}/branches/merge-upstream?branch={{.BranchName}}">
-		{{ctx.Locale.Tr "repo.pulls.upstream_diverging_merge"}}
+		{{ctx.Locale.Tr "Sync fork"}}
 	</button>
 	{{end}}
 </div>

@@ -12,7 +12,7 @@ import (
 
 // GitHooks hooks of a repository
 func GitHooks(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("repo.settings.githooks")
+	ctx.Data["Title"] = ctx.Tr("Git Hooks")
 	ctx.Data["PageIsSettingsGitHooks"] = true
 
 	hooks, err := ctx.Repo.GitRepo.Hooks()
@@ -27,7 +27,7 @@ func GitHooks(ctx *context.Context) {
 
 // GitHooksEdit render for editing a hook of repository page
 func GitHooksEdit(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("repo.settings.githooks")
+	ctx.Data["Title"] = ctx.Tr("Git Hooks")
 	ctx.Data["PageIsSettingsGitHooks"] = true
 
 	name := ctx.PathParam("name")

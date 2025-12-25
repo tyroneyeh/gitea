@@ -235,7 +235,7 @@ func checkHomeCodeViewable(ctx *context.Context) {
 		}
 	}
 
-	ctx.NotFound(errors.New(ctx.Locale.TrString("units.error.no_unit_allowed_repo")))
+	ctx.NotFound(errors.New(ctx.Locale.TrString("You are not allowed to access any section of this repository.")))
 }
 
 // LastCommit returns lastCommit data for the provided branch/tag/commit and directory (in url) and filenames in body
@@ -368,8 +368,8 @@ func RenderUserCards(ctx *context.Context, total int, getter func(opts db.ListOp
 
 // Watchers render repository's watch users
 func Watchers(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("repo.watchers")
-	ctx.Data["CardsTitle"] = ctx.Tr("repo.watchers")
+	ctx.Data["Title"] = ctx.Tr("Watchers")
+	ctx.Data["CardsTitle"] = ctx.Tr("Watchers")
 	RenderUserCards(ctx, ctx.Repo.Repository.NumWatches, func(opts db.ListOptions) ([]*user_model.User, error) {
 		return repo_model.GetRepoWatchers(ctx, ctx.Repo.Repository.ID, opts)
 	}, tplWatchers)
@@ -377,8 +377,8 @@ func Watchers(ctx *context.Context) {
 
 // Stars render repository's starred users
 func Stars(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("repo.stargazers")
-	ctx.Data["CardsTitle"] = ctx.Tr("repo.stargazers")
+	ctx.Data["Title"] = ctx.Tr("Stargazers")
+	ctx.Data["CardsTitle"] = ctx.Tr("Stargazers")
 	RenderUserCards(ctx, ctx.Repo.Repository.NumStars, func(opts db.ListOptions) ([]*user_model.User, error) {
 		return repo_model.GetStargazers(ctx, ctx.Repo.Repository, opts)
 	}, tplWatchers)
@@ -386,7 +386,7 @@ func Stars(ctx *context.Context) {
 
 // Forks render repository's forked users
 func Forks(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("repo.forks")
+	ctx.Data["Title"] = ctx.Tr("Forks")
 
 	page := ctx.FormInt("page")
 	if page <= 0 {

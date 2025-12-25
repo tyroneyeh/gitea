@@ -5,12 +5,12 @@
 		{{template "base/alert" .}}
 		{{template "repo/release_tag_header" .}}
 		<h4 class="ui top attached header">
-			{{.TagCount}} {{ctx.Locale.Tr "repo.release.tags"}}
+			{{.TagCount}} {{ctx.Locale.Tr "Tags"}}
 		</h4>
 		{{$canReadReleases := $.Permission.CanRead ctx.Consts.RepoUnitTypeReleases}}
 		<div class="ui attached segment">
 			<form class="ignore-dirty" method="get">
-				{{template "shared/search/combo" dict "Value" .Keyword "Placeholder" (ctx.Locale.Tr "search.tag_kind") "Tooltip" (ctx.Locale.Tr "search.tag_tooltip")}}
+				{{template "shared/search/combo" dict "Value" .Keyword "Placeholder" (ctx.Locale.Tr "Search tags…") "Tooltip" (ctx.Locale.Tr "Search for matching tags. Use '%' to match any sequence of numbers.")}}
 			</form>
 		</div>
 		<div class="ui attached segment tw-p-0">
@@ -39,17 +39,17 @@
 								{{end}}
 
 								{{if (and $canReadReleases $.CanCreateRelease $release.IsTag)}}
-									<a class="flex-text-inline" href="{{$.RepoLink}}/releases/new?tag={{.TagName}}">{{svg "octicon-tag"}}{{ctx.Locale.Tr "repo.release.new_release"}}</a>
+									<a class="flex-text-inline" href="{{$.RepoLink}}/releases/new?tag={{.TagName}}">{{svg "octicon-tag"}}{{ctx.Locale.Tr "New Release"}}</a>
 								{{end}}
 
 								{{if (and ($.Permission.CanWrite ctx.Consts.RepoUnitTypeCode) $release.IsTag)}}
 									<a class="flex-text-inline link-action" data-url="{{$.RepoLink}}/tags/delete?id={{.ID}}" data-modal-confirm="#confirm-delete-tag-modal">
-										{{svg "octicon-trash"}}{{ctx.Locale.Tr "repo.release.delete_tag"}}
+										{{svg "octicon-trash"}}{{ctx.Locale.Tr "Delete Tag"}}
 									</a>
 								{{end}}
 
 								{{if and $canReadReleases (not $release.IsTag)}}
-									<a class="flex-text-inline" href="{{$.RepoLink}}/releases/tag/{{.TagName | PathEscapeSegments}}">{{svg "octicon-tag"}}{{ctx.Locale.Tr "repo.release.detail"}}</a>
+									<a class="flex-text-inline" href="{{$.RepoLink}}/releases/tag/{{.TagName | PathEscapeSegments}}">{{svg "octicon-tag"}}{{ctx.Locale.Tr "Release details"}}</a>
 								{{end}}
 							{{end}}
 						</div>
@@ -58,7 +58,7 @@
 				</div>
 			{{else}}
 				{{if .NumTags}}
-					<p class="tw-p-4">{{ctx.Locale.Tr "no_results_found"}}</p>
+					<p class="tw-p-4">{{ctx.Locale.Tr "No results found."}}</p>
 				{{end}}
 			{{end}}
 		</div>
@@ -69,10 +69,10 @@
 {{if $.Permission.CanWrite ctx.Consts.RepoUnitTypeCode}}
 <div id="confirm-delete-tag-modal" class="ui small modal">
 	<div class="header">
-		{{ctx.Locale.Tr "repo.release.delete_tag"}}
+		{{ctx.Locale.Tr "Delete Tag"}}
 	</div>
 	<div class="content">
-		<p>{{ctx.Locale.Tr "repo.release.deletion_tag_desc"}}</p>
+		<p>{{ctx.Locale.Tr "Will delete this tag from repository. Repository contents and history remain unchanged. Continue?"}}</p>
 	</div>
 	{{template "base/modal_actions_confirm" .}}
 </div>

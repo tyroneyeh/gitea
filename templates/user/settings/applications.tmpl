@@ -1,17 +1,17 @@
 {{template "user/settings/layout_head" (dict "ctxData" . "pageClass" "user settings applications")}}
 	<div class="user-setting-content">
 		<h4 class="ui top attached header">
-			{{ctx.Locale.Tr "settings.manage_access_token"}}
+			{{ctx.Locale.Tr "Manage Access Tokens"}}
 		</h4>
 		<div class="ui attached segment">
 			<div class="flex-list">
 				<div class="flex-item">
-					{{ctx.Locale.Tr "settings.tokens_desc"}}
+					{{ctx.Locale.Tr "These tokens grant access to your account using the Gitea API."}}
 				</div>
 				{{range .Tokens}}
 					<div class="flex-item">
 						<div class="flex-item-leading">
-							<span class="text {{if .HasRecentActivity}}green{{end}}" {{if .HasRecentActivity}}data-tooltip-content="{{ctx.Locale.Tr "settings.token_state_desc"}}"{{end}}>
+							<span class="text {{if .HasRecentActivity}}green{{end}}" {{if .HasRecentActivity}}data-tooltip-content="{{ctx.Locale.Tr "This token has been used in the last 7 days"}}"{{end}}>
 								{{svg "fontawesome-send" 32}}
 							</span>
 						</div>
@@ -19,14 +19,14 @@
 							<details>
 								<summary><span class="flex-item-title">{{.Name}}</span></summary>
 								<p class="tw-my-1">
-									{{ctx.Locale.Tr "settings.repo_and_org_access"}}:
+									{{ctx.Locale.Tr "Repository and Organization Access"}}:
 									{{if .DisplayPublicOnly}}
-										{{ctx.Locale.Tr "settings.permissions_public_only"}}
+										{{ctx.Locale.Tr "Public only"}}
 									{{else}}
-										{{ctx.Locale.Tr "settings.permissions_access_all"}}
+										{{ctx.Locale.Tr "All (public, private, and limited)"}}
 									{{end}}
 								</p>
-								<p class="tw-my-1">{{ctx.Locale.Tr "settings.permissions_list"}}</p>
+								<p class="tw-my-1">{{ctx.Locale.Tr "Permissions:"}}</p>
 								<ul class="tw-my-1">
 								{{range .Scope.StringSlice}}
 									{{if (ne . $.AccessTokenScopePublicOnly)}}
@@ -36,13 +36,13 @@
 								</ul>
 							</details>
 							<div class="flex-item-body">
-								<i>{{ctx.Locale.Tr "settings.added_on" (DateUtils.AbsoluteShort .CreatedUnix)}} — {{svg "octicon-info"}} {{if .HasUsed}}{{ctx.Locale.Tr "settings.last_used"}} <span {{if .HasRecentActivity}}class="text green"{{end}}>{{DateUtils.AbsoluteShort .UpdatedUnix}}</span>{{else}}{{ctx.Locale.Tr "settings.no_activity"}}{{end}}</i>
+								<i>{{ctx.Locale.Tr "Added on %s" (DateUtils.AbsoluteShort .CreatedUnix)}} — {{svg "octicon-info"}} {{if .HasUsed}}{{ctx.Locale.Tr "Last used on"}} <span {{if .HasRecentActivity}}class="text green"{{end}}>{{DateUtils.AbsoluteShort .UpdatedUnix}}</span>{{else}}{{ctx.Locale.Tr "No recent activity"}}{{end}}</i>
 							</div>
 						</div>
 						<div class="flex-item-trailing">
 								<button class="ui red tiny button delete-button" data-modal-id="delete-token" data-url="{{$.Link}}/delete" data-id="{{.ID}}">
 									{{svg "octicon-trash" 16 "tw-mr-1"}}
-									{{ctx.Locale.Tr "settings.delete_token"}}
+									{{ctx.Locale.Tr "Delete"}}
 								</button>
 						</div>
 					</div>
@@ -51,37 +51,37 @@
 		</div>
 		<div class="ui bottom attached segment">
 			<details {{if or .name (not .Tokens)}}open{{end}}>
-				<summary><h4 class="ui header tw-inline-block tw-my-2">{{ctx.Locale.Tr "settings.generate_new_token"}}</h4></summary>
+				<summary><h4 class="ui header tw-inline-block tw-my-2">{{ctx.Locale.Tr "Generate New Token"}}</h4></summary>
 				<form class="ui form ignore-dirty" action="{{.Link}}" method="post">
 					{{.CsrfTokenHtml}}
 					<div class="field {{if .Err_Name}}error{{end}}">
-						<label for="name">{{ctx.Locale.Tr "settings.token_name"}}</label>
+						<label for="name">{{ctx.Locale.Tr "Token Name"}}</label>
 						<input id="name" name="name" value="{{.name}}" required maxlength="255">
 					</div>
 					<div class="field">
-						<div class="tw-my-2">{{ctx.Locale.Tr "settings.repo_and_org_access"}}</div>
+						<div class="tw-my-2">{{ctx.Locale.Tr "Repository and Organization Access"}}</div>
 						<label class="gt-checkbox">
-							<input type="radio" name="scope-public-only" value="{{$.AccessTokenScopePublicOnly}}"> {{ctx.Locale.Tr "settings.permissions_public_only"}}
+							<input type="radio" name="scope-public-only" value="{{$.AccessTokenScopePublicOnly}}"> {{ctx.Locale.Tr "Public only"}}
 						</label>
 						<label class="gt-checkbox">
-							<input type="radio" name="scope-public-only" value="" checked> {{ctx.Locale.Tr "settings.permissions_access_all"}}
+							<input type="radio" name="scope-public-only" value="" checked> {{ctx.Locale.Tr "All (public, private, and limited)"}}
 						</label>
 					</div>
 					<div>
-						<div class="tw-my-2">{{ctx.Locale.Tr "settings.access_token_desc" (HTMLFormat `href="%s/api/swagger" target="_blank"` AppSubUrl) (HTMLFormat `href="%s" target="_blank"` "https://docs.gitea.com/development/oauth2-provider#scopes")}}</div>
+						<div class="tw-my-2">{{ctx.Locale.Tr "Selected token permissions limit authorization only to the corresponding <a %s>API</a> routes. Read the <a %s>documentation</a> for more information." (HTMLFormat `href="%s/api/swagger" target="_blank"` AppSubUrl) (HTMLFormat `href="%s" target="_blank"` "https://docs.gitea.com/development/oauth2-provider#scopes")}}</div>
 						<table class="ui table unstackable tw-my-2">
 						{{range $category := .TokenCategories}}
 							<tr>
 								<td>{{$category}}</td>
-								<td><label class="gt-checkbox"><input type="radio" name="scope-{{$category}}" value="" checked> {{ctx.Locale.Tr "settings.permission_no_access"}}</label></td>
-								<td><label class="gt-checkbox"><input type="radio" name="scope-{{$category}}" value="read:{{$category}}"> {{ctx.Locale.Tr "settings.permission_read"}}</label></td>
-								<td><label class="gt-checkbox"><input type="radio" name="scope-{{$category}}" value="write:{{$category}}"> {{ctx.Locale.Tr "settings.permission_write"}}</label></td>
+								<td><label class="gt-checkbox"><input type="radio" name="scope-{{$category}}" value="" checked> {{ctx.Locale.Tr "No Access"}}</label></td>
+								<td><label class="gt-checkbox"><input type="radio" name="scope-{{$category}}" value="read:{{$category}}"> {{ctx.Locale.Tr "Read"}}</label></td>
+								<td><label class="gt-checkbox"><input type="radio" name="scope-{{$category}}" value="write:{{$category}}"> {{ctx.Locale.Tr "Read and Write"}}</label></td>
 							</tr>
 						{{end}}
 						</table>
 					</div>
 					<button class="ui primary button">
-						{{ctx.Locale.Tr "settings.generate_token"}}
+						{{ctx.Locale.Tr "Generate Token"}}
 					</button>
 				</form>
 			</details>
@@ -96,10 +96,10 @@
 <div class="ui g-modal-confirm delete modal" id="delete-token">
 	<div class="header">
 		{{svg "octicon-trash"}}
-		{{ctx.Locale.Tr "settings.access_token_deletion"}}
+		{{ctx.Locale.Tr "Delete Access Token"}}
 	</div>
 	<div class="content">
-		<p>{{ctx.Locale.Tr "settings.access_token_deletion_desc"}}</p>
+		<p>{{ctx.Locale.Tr "Deleting a token will revoke access to your account for applications using it. This cannot be undone. Continue?"}}</p>
 	</div>
 	{{template "base/modal_actions_confirm"}}
 </div>

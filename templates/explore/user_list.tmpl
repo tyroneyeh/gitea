@@ -8,7 +8,7 @@
 				<div class="flex-item-title">
 					{{template "shared/user/name" .}}
 					{{if .Visibility.IsPrivate}}
-						<span class="ui basic tiny label">{{ctx.Locale.Tr "repo.desc.private"}}</span>
+						<span class="ui basic tiny label">{{ctx.Locale.Tr "Private"}}</span>
 					{{end}}
 				</div>
 				<div class="flex-item-body">
@@ -21,13 +21,13 @@
 							<a href="mailto:{{.Email}}">{{.Email}}</a>
 						</span>
 					{{end}}
-					<span class="flex-text-inline">{{svg "octicon-calendar"}}{{ctx.Locale.Tr "user.joined_on" (DateUtils.AbsoluteShort .CreatedUnix)}}</span>
+					<span class="flex-text-inline">{{svg "octicon-calendar"}}{{ctx.Locale.Tr "Joined on %s" (DateUtils.AbsoluteShort .CreatedUnix)}}</span>
 				</div>
 			</div>
 		</div>
 	{{else}}
 		<div class="flex-item">
-			{{ctx.Locale.Tr "search.no_results"}}
+			{{ctx.Locale.Tr "No matching results found."}}
 		</div>
 	{{end}}
 </div>

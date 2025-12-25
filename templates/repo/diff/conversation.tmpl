@@ -11,23 +11,23 @@
 			<div class="resolved-placeholder">
 				<div class="flex-text-block tw-flex-wrap grey text">
 					{{svg "octicon-check"}}
-					<b>{{$resolveDoer.Name}}</b> {{ctx.Locale.Tr "repo.issues.review.resolved_by"}}
+					<b>{{$resolveDoer.Name}}</b> {{ctx.Locale.Tr "marked this conversation as resolved"}}
 					{{if $invalid}}
 						<!--
 						We only handle the case $resolved=true and $invalid=true in this template because if the comment is not resolved it has the outdated label in the comments area (not the header above).
 						The case $resolved=false and $invalid=true is handled in repo/diff/comments.tmpl
 						-->
-						<a href="{{$referenceUrl}}" class="ui label basic small tw-ml-2" data-tooltip-content="{{ctx.Locale.Tr "repo.issues.review.outdated_description"}}">
-							{{ctx.Locale.Tr "repo.issues.review.outdated"}}
+						<a href="{{$referenceUrl}}" class="ui label basic small tw-ml-2" data-tooltip-content="{{ctx.Locale.Tr "Content has changed since this comment was made"}}">
+							{{ctx.Locale.Tr "Outdated"}}
 						</a>
 					{{end}}
 				</div>
 				<div class="flex-text-block">
 					<button id="show-outdated-{{$comment.ID}}" data-comment="{{$comment.ID}}" class="btn tiny show-outdated">
-						{{svg "octicon-unfold" 16 "tw-mr-2"}}{{ctx.Locale.Tr "repo.issues.review.show_resolved"}}
+						{{svg "octicon-unfold" 16 "tw-mr-2"}}{{ctx.Locale.Tr "Show resolved"}}
 					</button>
 					<button id="hide-outdated-{{$comment.ID}}" data-comment="{{$comment.ID}}" class="btn tiny hide-outdated tw-hidden">
-						{{svg "octicon-fold" 16 "tw-mr-2"}}{{ctx.Locale.Tr "repo.issues.review.hide_resolved"}}
+						{{svg "octicon-fold" 16 "tw-mr-2"}}{{ctx.Locale.Tr "Hide resolved"}}
 					</button>
 				</div>
 			</div>
@@ -41,24 +41,24 @@
 			<div class="flex-text-block tw-mt-2 tw-flex-wrap tw-justify-end">
 				<div class="ui buttons">
 					<button class="ui icon tiny basic button previous-conversation">
-						{{svg "octicon-arrow-up" 12}} {{ctx.Locale.Tr "repo.issues.previous"}}
+						{{svg "octicon-arrow-up" 12}} {{ctx.Locale.Tr "Previous"}}
 					</button>
 					<button class="ui icon tiny basic button next-conversation">
-						{{svg "octicon-arrow-down" 12}} {{ctx.Locale.Tr "repo.issues.next"}}
+						{{svg "octicon-arrow-down" 12}} {{ctx.Locale.Tr "Next"}}
 					</button>
 				</div>
 				{{if and $.CanMarkConversation $hasReview (not $isReviewPending)}}
 					<button class="ui icon tiny basic button resolve-conversation" data-origin="diff" data-action="{{if not $resolved}}Resolve{{else}}UnResolve{{end}}" data-comment-id="{{$comment.ID}}" data-update-url="{{$.RepoLink}}/issues/resolve_conversation">
 						{{if $resolved}}
-							{{ctx.Locale.Tr "repo.issues.review.un_resolve_conversation"}}
+							{{ctx.Locale.Tr "Unresolve conversation"}}
 						{{else}}
-							{{ctx.Locale.Tr "repo.issues.review.resolve_conversation"}}
+							{{ctx.Locale.Tr "Resolve conversation"}}
 						{{end}}
 					</button>
 				{{end}}
 				{{if and $.SignedUserID (not $.Repository.IsArchived)}}
 					<button class="comment-form-reply ui primary icon tiny button">
-						{{svg "octicon-reply" 12}}{{ctx.Locale.Tr "repo.diff.comment.reply"}}
+						{{svg "octicon-reply" 12}}{{ctx.Locale.Tr "Reply"}}
 					</button>
 				{{end}}
 			</div>

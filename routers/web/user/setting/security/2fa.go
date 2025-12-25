@@ -32,13 +32,13 @@ func RegenerateScratchTwoFactor(ctx *context.Context) {
 		return
 	}
 
-	ctx.Data["Title"] = ctx.Tr("settings_title")
+	ctx.Data["Title"] = ctx.Tr("Settings")
 	ctx.Data["PageIsSettingsSecurity"] = true
 
 	t, err := auth.GetTwoFactorByUID(ctx, ctx.Doer.ID)
 	if err != nil {
 		if auth.IsErrTwoFactorNotEnrolled(err) {
-			ctx.Flash.Error(ctx.Tr("settings.twofa_not_enrolled"))
+			ctx.Flash.Error(ctx.Tr("Your account is not currently enrolled in two-factor authentication."))
 			ctx.Redirect(setting.AppSubURL + "/user/settings/security")
 		} else {
 			ctx.ServerError("SettingsTwoFactor: Failed to GetTwoFactorByUID", err)
@@ -57,7 +57,7 @@ func RegenerateScratchTwoFactor(ctx *context.Context) {
 		return
 	}
 
-	ctx.Flash.Success(ctx.Tr("settings.twofa_scratch_token_regenerated", token))
+	ctx.Flash.Success(ctx.Tr("Your single-use recovery key is now %s. Store it in a safe place, as it will not be shown again.", token))
 	ctx.Redirect(setting.AppSubURL + "/user/settings/security")
 }
 
@@ -68,13 +68,13 @@ func DisableTwoFactor(ctx *context.Context) {
 		return
 	}
 
-	ctx.Data["Title"] = ctx.Tr("settings_title")
+	ctx.Data["Title"] = ctx.Tr("Settings")
 	ctx.Data["PageIsSettingsSecurity"] = true
 
 	t, err := auth.GetTwoFactorByUID(ctx, ctx.Doer.ID)
 	if err != nil {
 		if auth.IsErrTwoFactorNotEnrolled(err) {
-			ctx.Flash.Error(ctx.Tr("settings.twofa_not_enrolled"))
+			ctx.Flash.Error(ctx.Tr("Your account is not currently enrolled in two-factor authentication."))
 			ctx.Redirect(setting.AppSubURL + "/user/settings/security")
 		} else {
 			ctx.ServerError("SettingsTwoFactor: Failed to GetTwoFactorByUID", err)
@@ -85,7 +85,7 @@ func DisableTwoFactor(ctx *context.Context) {
 	if err = auth.DeleteTwoFactorByID(ctx, t.ID, ctx.Doer.ID); err != nil {
 		if auth.IsErrTwoFactorNotEnrolled(err) {
 			// There is a potential DB race here - we must have been disabled by another request in the intervening period
-			ctx.Flash.Success(ctx.Tr("settings.twofa_disabled"))
+			ctx.Flash.Success(ctx.Tr("Two-factor authentication has been disabled."))
 			ctx.Redirect(setting.AppSubURL + "/user/settings/security")
 		} else {
 			ctx.ServerError("SettingsTwoFactor: Failed to DeleteTwoFactorByID", err)
@@ -93,7 +93,7 @@ func DisableTwoFactor(ctx *context.Context) {
 		return
 	}
 
-	ctx.Flash.Success(ctx.Tr("settings.twofa_disabled"))
+	ctx.Flash.Success(ctx.Tr("Two-factor authentication has been disabled."))
 	ctx.Redirect(setting.AppSubURL + "/user/settings/security")
 }
 
@@ -162,7 +162,7 @@ func EnrollTwoFactor(ctx *context.Context) {
 		return
 	}
 
-	ctx.Data["Title"] = ctx.Tr("settings_title")
+	ctx.Data["Title"] = ctx.Tr("Settings")
 	ctx.Data["PageIsSettingsSecurity"] = true
 	ctx.Data["ShowTwoFactorRequiredMessage"] = false
 
@@ -170,7 +170,7 @@ func EnrollTwoFactor(ctx *context.Context) {
 	if t != nil {
 		// already enrolled - we should redirect back!
 		log.Warn("Trying to re-enroll %-v in twofa when already enrolled", ctx.Doer)
-		ctx.Flash.Error(ctx.Tr("settings.twofa_is_enrolled"))
+		ctx.Flash.Error(ctx.Tr("Your account is currently <strong>enrolled</strong> in two-factor authentication."))
 		ctx.Redirect(setting.AppSubURL + "/user/settings/security")
 		return
 	}
@@ -194,14 +194,14 @@ func EnrollTwoFactorPost(ctx *context.Context) {
 	}
 
 	form := web.GetForm(ctx).(*forms.TwoFactorAuthForm)
-	ctx.Data["Title"] = ctx.Tr("settings_title")
+	ctx.Data["Title"] = ctx.Tr("Settings")
 	ctx.Data["PageIsSettingsSecurity"] = true
 	ctx.Data["ShowTwoFactorRequiredMessage"] = false
 
 	t, err := auth.GetTwoFactorByUID(ctx, ctx.Doer.ID)
 	if t != nil {
 		// already enrolled
-		ctx.Flash.Error(ctx.Tr("settings.twofa_is_enrolled"))
+		ctx.Flash.Error(ctx.Tr("Your account is currently <strong>enrolled</strong> in two-factor authentication."))
 		ctx.Redirect(setting.AppSubURL + "/user/settings/security")
 		return
 	}
@@ -220,7 +220,7 @@ func EnrollTwoFactorPost(ctx *context.Context) {
 
 	secretRaw := ctx.Session.Get("twofaSecret")
 	if secretRaw == nil {
-		ctx.Flash.Error(ctx.Tr("settings.twofa_failed_get_secret"))
+		ctx.Flash.Error(ctx.Tr("Failed to get secret."))
 		ctx.Redirect(setting.AppSubURL + "/user/settings/security/two_factor/enroll")
 		return
 	}
@@ -230,7 +230,7 @@ func EnrollTwoFactorPost(ctx *context.Context) {
 		if !twofaGenerateSecretAndQr(ctx) {
 			return
 		}
-		ctx.Flash.Error(ctx.Tr("settings.passcode_invalid"))
+		ctx.Flash.Error(ctx.Tr("The passcode is incorrect. Try again."))
 		ctx.Redirect(setting.AppSubURL + "/user/settings/security/two_factor/enroll")
 		return
 	}
@@ -275,6 +275,6 @@ func EnrollTwoFactorPost(ctx *context.Context) {
 		return
 	}
 
-	ctx.Flash.Success(ctx.Tr("settings.twofa_enrolled", token))
+	ctx.Flash.Success(ctx.Tr("Your account has been successfully enrolled. Store your single-use recovery key (%s) in a safe place, as it will not be shown again.", token))
 	ctx.Redirect(setting.AppSubURL + "/user/settings/security")
 }

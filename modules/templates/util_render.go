@@ -149,7 +149,7 @@ func (ut *RenderUtils) renderLabelWithTag(label *issues_model.Label, tagName, ta
 
 	if label.IsArchived() {
 		extraCSSClasses = "archived-label"
-		descriptionText = fmt.Sprintf("(%s) %s", locale.TrString("archived"), descriptionText)
+		descriptionText = fmt.Sprintf("(%s) %s", locale.TrString("Archived"), descriptionText)
 	}
 
 	if labelScope == "" {

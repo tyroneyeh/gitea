@@ -23,7 +23,7 @@ import (
 
 // Collaboration render a repository's collaboration page
 func Collaboration(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("repo.settings.collaboration")
+	ctx.Data["Title"] = ctx.Tr("Collaborators")
 	ctx.Data["PageIsSettingsCollaboration"] = true
 
 	users, _, err := repo_model.GetCollaborators(ctx, &repo_model.FindCollaborationOptions{RepoID: ctx.Repo.Repository.ID})
@@ -59,7 +59,7 @@ func CollaborationPost(ctx *context.Context) {
 	u, err := user_model.GetUserByName(ctx, name)
 	if err != nil {
 		if user_model.IsErrUserNotExist(err) {
-			ctx.Flash.Error(ctx.Tr("form.user_not_exist"))
+			ctx.Flash.Error(ctx.Tr("The user does not exist."))
 			ctx.Redirect(setting.AppSubURL + ctx.Req.URL.EscapedPath())
 		} else {
 			ctx.ServerError("GetUserByName", err)
@@ -68,20 +68,20 @@ func CollaborationPost(ctx *context.Context) {
 	}
 
 	if !u.IsActive {
-		ctx.Flash.Error(ctx.Tr("repo.settings.add_collaborator_inactive_user"))
+		ctx.Flash.Error(ctx.Tr("Cannot add an inactive user as a collaborator."))
 		ctx.Redirect(setting.AppSubURL + ctx.Req.URL.EscapedPath())
 		return
 	}
 
 	// Organization is not allowed to be added as a collaborator.
 	if u.IsOrganization() {
-		ctx.Flash.Error(ctx.Tr("repo.settings.org_not_allowed_to_be_collaborator"))
+		ctx.Flash.Error(ctx.Tr("Organizations cannot be added as a collaborator."))
 		ctx.Redirect(setting.AppSubURL + ctx.Req.URL.EscapedPath())
 		return
 	}
 
 	if got, err := repo_model.IsCollaborator(ctx, ctx.Repo.Repository.ID, u.ID); err == nil && got {
-		ctx.Flash.Error(ctx.Tr("repo.settings.add_collaborator_duplicate"))
+		ctx.Flash.Error(ctx.Tr("The collaborator is already added to this repository."))
 		ctx.Redirect(ctx.Repo.RepoLink + "/settings/collaboration")
 		return
 	}
@@ -93,7 +93,7 @@ func CollaborationPost(ctx *context.Context) {
 			ctx.ServerError("IsOrganizationOwner", err)
 			return
 		} else if isOwner {
-			ctx.Flash.Error(ctx.Tr("repo.settings.add_collaborator_owner"))
+			ctx.Flash.Error(ctx.Tr("Cannot add an owner as a collaborator."))
 			ctx.Redirect(setting.AppSubURL + ctx.Req.URL.EscapedPath())
 			return
 		}
@@ -101,7 +101,7 @@ func CollaborationPost(ctx *context.Context) {
 
 	if err = repo_service.AddOrUpdateCollaborator(ctx, ctx.Repo.Repository, u, perm.AccessModeWrite); err != nil {
 		if errors.Is(err, user_model.ErrBlockedUser) {
-			ctx.Flash.Error(ctx.Tr("repo.settings.add_collaborator.blocked_user"))
+			ctx.Flash.Error(ctx.Tr("The collaborator is blocked by the repository owner or vice versa."))
 			ctx.Redirect(ctx.Repo.RepoLink + "/settings/collaboration")
 		} else {
 			ctx.ServerError("AddOrUpdateCollaborator", err)
@@ -113,7 +113,7 @@ func CollaborationPost(ctx *context.Context) {
 		mailer.SendCollaboratorMail(u, ctx.Doer, ctx.Repo.Repository)
 	}
 
-	ctx.Flash.Success(ctx.Tr("repo.settings.add_collaborator_success"))
+	ctx.Flash.Success(ctx.Tr("The collaborator has been added."))
 
 	if doer := ctx.Doer; doer != nil {
 		system_model.CreateNotice(ctx, system_model.NoticePermission, "%s added user %s to %s/%s", doer.GetDisplayName(), name, ctx.Repo.Owner.Name, ctx.Repo.Repository.Name)
@@ -137,7 +137,7 @@ func ChangeCollaborationAccessMode(ctx *context.Context) {
 func DeleteCollaboration(ctx *context.Context) {
 	if collaborator, err := user_model.GetUserByID(ctx, ctx.FormInt64("id")); err != nil {
 		if user_model.IsErrUserNotExist(err) {
-			ctx.Flash.Error(ctx.Tr("form.user_not_exist"))
+			ctx.Flash.Error(ctx.Tr("The user does not exist."))
 		} else {
 			ctx.ServerError("GetUserByName", err)
 			return
@@ -146,7 +146,7 @@ func DeleteCollaboration(ctx *context.Context) {
 		if err := repo_service.DeleteCollaboration(ctx, ctx.Repo.Repository, collaborator); err != nil {
 			ctx.Flash.Error("DeleteCollaboration: " + err.Error())
 		} else {
-			ctx.Flash.Success(ctx.Tr("repo.settings.remove_collaborator_success"))
+			ctx.Flash.Success(ctx.Tr("The collaborator has been removed."))
 		}
 		if doer := ctx.Doer; doer != nil {
 			system_model.CreateNotice(ctx, system_model.NoticePermission, "%s removed user %s from %s/%s", doer.GetDisplayName(), collaborator.Name, ctx.Repo.Owner.Name, ctx.Repo.Repository.Name)
@@ -159,7 +159,7 @@ func DeleteCollaboration(ctx *context.Context) {
 // AddTeamPost response for adding a team to a repository
 func AddTeamPost(ctx *context.Context) {
 	if !ctx.Repo.Owner.RepoAdminChangeTeamAccess && !ctx.Repo.IsOwner() {
-		ctx.Flash.Error(ctx.Tr("repo.settings.change_team_access_not_allowed"))
+		ctx.Flash.Error(ctx.Tr("Changing team access for repository has been restricted to organization owner"))
 		ctx.Redirect(ctx.Repo.RepoLink + "/settings/collaboration")
 		return
 	}
@@ -173,7 +173,7 @@ func AddTeamPost(ctx *context.Context) {
 	team, err := organization.OrgFromUser(ctx.Repo.Owner).GetTeam(ctx, name)
 	if err != nil {
 		if organization.IsErrTeamNotExist(err) {
-			ctx.Flash.Error(ctx.Tr("form.team_not_exist"))
+			ctx.Flash.Error(ctx.Tr("The team does not exist."))
 			ctx.Redirect(ctx.Repo.RepoLink + "/settings/collaboration")
 		} else {
 			ctx.ServerError("GetTeam", err)
@@ -182,13 +182,13 @@ func AddTeamPost(ctx *context.Context) {
 	}
 
 	if team.OrgID != ctx.Repo.Repository.OwnerID {
-		ctx.Flash.Error(ctx.Tr("repo.settings.team_not_in_organization"))
+		ctx.Flash.Error(ctx.Tr("The team is not in the same organization as the repository"))
 		ctx.Redirect(ctx.Repo.RepoLink + "/settings/collaboration")
 		return
 	}
 
 	if organization.HasTeamRepo(ctx, ctx.Repo.Repository.OwnerID, team.ID, ctx.Repo.Repository.ID) {
-		ctx.Flash.Error(ctx.Tr("repo.settings.add_team_duplicate"))
+		ctx.Flash.Error(ctx.Tr("Team already has the repository"))
 		ctx.Redirect(ctx.Repo.RepoLink + "/settings/collaboration")
 		return
 	}
@@ -198,7 +198,7 @@ func AddTeamPost(ctx *context.Context) {
 		return
 	}
 
-	ctx.Flash.Success(ctx.Tr("repo.settings.add_team_success"))
+	ctx.Flash.Success(ctx.Tr("The team now has access to the repository."))
 
 	if doer := ctx.Doer; doer != nil {
 		system_model.CreateNotice(ctx, system_model.NoticePermission, "%s added team %s to %s/%s", doer.GetDisplayName(), name, ctx.Repo.Owner.Name, ctx.Repo.Repository.Name)
@@ -210,7 +210,7 @@ func AddTeamPost(ctx *context.Context) {
 // DeleteTeam response for deleting a team from a repository
 func DeleteTeam(ctx *context.Context) {
 	if !ctx.Repo.Owner.RepoAdminChangeTeamAccess && !ctx.Repo.IsOwner() {
-		ctx.Flash.Error(ctx.Tr("repo.settings.change_team_access_not_allowed"))
+		ctx.Flash.Error(ctx.Tr("Changing team access for repository has been restricted to organization owner"))
 		ctx.Redirect(ctx.Repo.RepoLink + "/settings/collaboration")
 		return
 	}
@@ -226,7 +226,7 @@ func DeleteTeam(ctx *context.Context) {
 		return
 	}
 
-	ctx.Flash.Success(ctx.Tr("repo.settings.remove_team_success"))
+	ctx.Flash.Success(ctx.Tr("The team's access to the repository has been removed."))
 
 	if doer := ctx.Doer; doer != nil {
 		system_model.CreateNotice(ctx, system_model.NoticePermission, "%s removed team %s from %s/%s", doer.GetDisplayName(), team.Name, ctx.Repo.Owner.Name, ctx.Repo.Repository.Name)

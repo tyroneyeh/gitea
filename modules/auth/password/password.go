@@ -124,7 +124,7 @@ func Generate(n int) (string, error) {
 // BuildComplexityError builds the error message when password complexity checks fail
 func BuildComplexityError(locale translation.Locale) template.HTML {
 	var buffer bytes.Buffer
-	buffer.WriteString(locale.TrString("form.password_complexity"))
+	buffer.WriteString(locale.TrString("Password does not pass complexity requirements:"))
 	buffer.WriteString("<ul>")
 	for _, c := range requiredList {
 		buffer.WriteString("<li>")

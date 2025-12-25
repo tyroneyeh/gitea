@@ -15,17 +15,17 @@
 						<div class="flex-item-title">
 							{{template "shared/user/name" .}}
 							{{if not $isPublic}}
-								<span class="ui basic tiny label">{{ctx.Locale.Tr "org.members.private"}}</span>
+								<span class="ui basic tiny label">{{ctx.Locale.Tr "Hidden"}}</span>
 							{{end}}
 						</div>
 						{{if not $.PublicOnly}}
 							<div class="flex-item-body">
-								{{ctx.Locale.Tr "org.members.member_role"}}
-								<strong class="flex-text-inline">{{if index $.MembersIsUserOrgOwner .ID}}{{svg "octicon-shield-lock"}} {{ctx.Locale.Tr "org.members.owner"}}{{else}}{{ctx.Locale.Tr "org.members.member"}}{{end}}</strong>
+								{{ctx.Locale.Tr "Member Role:"}}
+								<strong class="flex-text-inline">{{if index $.MembersIsUserOrgOwner .ID}}{{svg "octicon-shield-lock"}} {{ctx.Locale.Tr "Owner"}}{{else}}{{ctx.Locale.Tr "Member"}}{{end}}</strong>
 							</div>
 							{{if $.IsOrganizationOwner}}
 							<div class="flex-item-body">
-								{{ctx.Locale.Tr "admin.users.2fa"}}
+								{{ctx.Locale.Tr "2FA"}}
 								<strong>
 									{{if index $.MembersTwoFaStatus .ID}}
 										<span class="text green">{{svg "octicon-check"}}</span>
@@ -40,9 +40,9 @@
 					<div class="flex-item-trailing">
 						{{if or (eq $.SignedUser.ID .ID) $.IsOrganizationOwner}}
 							{{if $isPublic}}
-								<a class="ui tiny button link-action" href data-url="{{$.OrgLink}}/members/action/private?uid={{.ID}}">{{svg "octicon-eye-closed" 12 "icon"}}{{ctx.Locale.Tr "org.members.public_helper"}}</a>
+								<a class="ui tiny button link-action" href data-url="{{$.OrgLink}}/members/action/private?uid={{.ID}}">{{svg "octicon-eye-closed" 12 "icon"}}{{ctx.Locale.Tr "make hidden"}}</a>
 							{{else}}
-								<a class="ui tiny button link-action" href data-url="{{$.OrgLink}}/members/action/public?uid={{.ID}}">{{svg "octicon-eye" 12 "icon"}}{{ctx.Locale.Tr "org.members.private_helper"}}</a>
+								<a class="ui tiny button link-action" href data-url="{{$.OrgLink}}/members/action/public?uid={{.ID}}">{{svg "octicon-eye" 12 "icon"}}{{ctx.Locale.Tr "make visible"}}</a>
 							{{end}}
 						{{end}}
 						{{if eq $.SignedUser.ID .ID}}
@@ -50,14 +50,14 @@
 								<button class="ui red tiny button delete-button" data-modal-id="leave-organization"
 									data-url="{{$.OrgLink}}/members/action/leave" data-datauid="{{.ID}}"
 									data-name="{{.DisplayName}}"
-									data-data-organization-name="{{$.Org.DisplayName}}">{{ctx.Locale.Tr "org.members.leave"}}</button>
+									data-data-organization-name="{{$.Org.DisplayName}}">{{ctx.Locale.Tr "Leave"}}</button>
 							</form>
 						{{else if $.IsOrganizationOwner}}
 							<form>
 								<button class="ui red tiny button delete-button" data-modal-id="remove-organization-member"
 									data-url="{{$.OrgLink}}/members/action/remove" data-datauid="{{.ID}}"
 									data-name="{{.DisplayName}}"
-									data-data-organization-name="{{$.Org.DisplayName}}">{{ctx.Locale.Tr "org.members.remove"}}</button>
+									data-data-organization-name="{{$.Org.DisplayName}}">{{ctx.Locale.Tr "Remove"}}</button>
 							</form>
 						{{end}}
 					</div>
@@ -70,19 +70,19 @@
 </div>
 <div class="ui g-modal-confirm delete modal" id="leave-organization">
 	<div class="header">
-		{{ctx.Locale.Tr "org.members.leave"}}
+		{{ctx.Locale.Tr "Leave"}}
 	</div>
 	<div class="content">
-		<p>{{ctx.Locale.Tr "org.members.leave.detail" (HTMLFormat `<span class="%s"></span>` "dataOrganizationName")}}</p>
+		<p>{{ctx.Locale.Tr "Leave %s?" (HTMLFormat `<span class="%s"></span>` "dataOrganizationName")}}</p>
 	</div>
 	{{template "base/modal_actions_confirm" .}}
 </div>
 <div class="ui g-modal-confirm delete modal" id="remove-organization-member">
 	<div class="header">
-		{{ctx.Locale.Tr "org.members.remove"}}
+		{{ctx.Locale.Tr "Remove"}}
 	</div>
 	<div class="content">
-		<p>{{ctx.Locale.Tr "org.members.remove.detail" (HTMLFormat `<span class="%s"></span>` "name") (HTMLFormat `<span class="%s"></span>` "dataOrganizationName")}}</p>
+		<p>{{ctx.Locale.Tr "Remove %[1]s from %[2]s?" (HTMLFormat `<span class="%s"></span>` "name") (HTMLFormat `<span class="%s"></span>` "dataOrganizationName")}}</p>
 	</div>
 	{{template "base/modal_actions_confirm" .}}
 </div>

@@ -4,19 +4,19 @@
 		{{template "package/shared/cargo" .}}
 
 		<h4 class="ui top attached header">
-			{{ctx.Locale.Tr "packages.owner.settings.chef.title"}}
+			{{ctx.Locale.Tr "Chef Registry"}}
 		</h4>
 		<div class="ui attached segment">
 			<div class="ui form">
 				<div class="field">
-					<label>{{ctx.Locale.Tr "packages.owner.settings.chef.keypair.description"}}</label>
+					<label>{{ctx.Locale.Tr "A key pair is necessary to authenticate to the Chef registry. If you have generated a key pair before, generating a new key pair will discard the old key pair."}}</label>
 				</div>
 				<form class="field" action="{{.Link}}/chef/regenerate_keypair" method="post">
 					{{.CsrfTokenHtml}}
-					<button class="ui primary button">{{ctx.Locale.Tr "packages.owner.settings.chef.keypair"}}</button>
+					<button class="ui primary button">{{ctx.Locale.Tr "Generate key pair"}}</button>
 				</form>
 				<div class="field">
-					<label>{{ctx.Locale.Tr "packages.registry.documentation" "Chef" "https://docs.gitea.com/usage/packages/chef/"}}</label>
+					<label>{{ctx.Locale.Tr "For more information on the %s registry, see <a target=\"_blank\" rel=\"noopener noreferrer\" href=\"%s\">the documentation</a>." "Chef" "https://docs.gitea.com/usage/packages/chef/"}}</label>
 				</div>
 			</div>
 		</div>

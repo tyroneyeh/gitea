@@ -28,7 +28,7 @@ func ShowRepoFeed(ctx *context.Context, repo *repo_model.Repository, formatType 
 	}
 
 	feed := &feeds.Feed{
-		Title:       ctx.Locale.TrString("home.feed_of", repo.FullName()),
+		Title:       ctx.Locale.TrString("Feed of \"%s\"", repo.FullName()),
 		Link:        &feeds.Link{Href: repo.HTMLURL()},
 		Description: repo.Description,
 		Created:     time.Now(),

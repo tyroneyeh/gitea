@@ -2,7 +2,7 @@
 	{{template "shared/search/combo" (dict
 	"Disabled" .CodeIndexerUnavailable
 	"Value" .Keyword
-	"Placeholder" (ctx.Locale.Tr "search.code_kind")
+	"Placeholder" (ctx.Locale.Tr "Search code…")
 	"SearchModes" .SearchModes
 	"SelectedSearchMode" .SelectedSearchMode
 	)}}
@@ -12,18 +12,18 @@
 	{{template "base/alert" .}}
 	{{if .CodeIndexerUnavailable}}
 		<div class="ui error message">
-			<p>{{ctx.Locale.Tr "search.code_search_unavailable"}}</p>
+			<p>{{ctx.Locale.Tr "Code search is currently not available. Please contact the site administrator."}}</p>
 		</div>
 	{{else}}
 		{{if not .IsRepoIndexerEnabled}}
 			<div class="ui message">
-				<p>{{ctx.Locale.Tr "search.code_search_by_git_grep"}}</p>
+				<p>{{ctx.Locale.Tr "Current code search results are provided by \"git grep\". There might be better results if site administrator enables Repository Indexer."}}</p>
 			</div>
 		{{end}}
 		{{if .SearchResults}}
 			{{template "shared/search/code/results" .}}
 		{{else if .Keyword}}
-			<div>{{ctx.Locale.Tr "search.no_results"}}</div>
+			<div>{{ctx.Locale.Tr "No matching results found."}}</div>
 		{{end}}
 	{{end}}
 </div>

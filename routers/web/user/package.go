@@ -98,7 +98,7 @@ func ListPackages(ctx *context.Context) {
 		return
 	}
 
-	ctx.Data["Title"] = ctx.Tr("packages.title")
+	ctx.Data["Title"] = ctx.Tr("Packages")
 	ctx.Data["IsPackagesPage"] = true
 	ctx.Data["Query"] = query
 	ctx.Data["PackageType"] = packageType
@@ -357,7 +357,7 @@ func ListPackageVersions(ctx *context.Context) {
 	query := ctx.FormTrim("q")
 	sort := ctx.FormTrim("sort")
 
-	ctx.Data["Title"] = ctx.Tr("packages.title")
+	ctx.Data["Title"] = ctx.Tr("Packages")
 	ctx.Data["IsPackagesPage"] = true
 	ctx.Data["PackageDescriptor"] = &packages_model.PackageDescriptor{
 		Package: p,
@@ -462,11 +462,11 @@ func packageSettingsPostActionLink(ctx *context.Context, form *forms.PackageSett
 	pd := ctx.Package.Descriptor
 	if form.RepoName == "" { // remove the link
 		if err := packages_model.SetRepositoryLink(ctx, pd.Package.ID, 0); err != nil {
-			ctx.JSONError(ctx.Tr("packages.settings.unlink.error"))
+			ctx.JSONError(ctx.Tr("Failed to remove repository link."))
 			return
 		}
 
-		ctx.Flash.Success(ctx.Tr("packages.settings.unlink.success"))
+		ctx.Flash.Success(ctx.Tr("Repository link was successfully removed."))
 		ctx.JSONRedirect("")
 		return
 	}
@@ -474,7 +474,7 @@ func packageSettingsPostActionLink(ctx *context.Context, form *forms.PackageSett
 	repo, err := repo_model.GetRepositoryByName(ctx, pd.Owner.ID, form.RepoName)
 	if err != nil {
 		if repo_model.IsErrRepoNotExist(err) {
-			ctx.JSONError(ctx.Tr("packages.settings.link.repo_not_found", form.RepoName))
+			ctx.JSONError(ctx.Tr("Repository %s not found.", form.RepoName))
 		} else {
 			ctx.ServerError("GetRepositoryByOwnerAndName", err)
 		}
@@ -482,11 +482,11 @@ func packageSettingsPostActionLink(ctx *context.Context, form *forms.PackageSett
 	}
 
 	if err := packages_model.SetRepositoryLink(ctx, pd.Package.ID, repo.ID); err != nil {
-		ctx.JSONError(ctx.Tr("packages.settings.link.error"))
+		ctx.JSONError(ctx.Tr("Failed to update repository link."))
 		return
 	}
 
-	ctx.Flash.Success(ctx.Tr("packages.settings.link.success"))
+	ctx.Flash.Success(ctx.Tr("Repository link was successfully updated."))
 	ctx.JSONRedirect("")
 }
 
@@ -494,9 +494,9 @@ func packageSettingsPostActionDelete(ctx *context.Context) {
 	err := packages_service.RemovePackageVersion(ctx, ctx.Doer, ctx.Package.Descriptor.Version)
 	if err != nil {
 		log.Error("Error deleting package: %v", err)
-		ctx.Flash.Error(ctx.Tr("packages.settings.delete.error"))
+		ctx.Flash.Error(ctx.Tr("Failed to delete the package."))
 	} else {
-		ctx.Flash.Success(ctx.Tr("packages.settings.delete.success"))
+		ctx.Flash.Success(ctx.Tr("The package has been deleted."))
 	}
 
 	redirectURL := ctx.Package.Owner.HomeLink() + "/-/packages"

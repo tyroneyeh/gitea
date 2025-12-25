@@ -6,18 +6,18 @@
 	<input class="combo-value" name="label_ids" type="hidden" value="{{$data.SelectedLabelIDs}}">
 	<div class="ui dropdown full-width {{if not $pageMeta.CanModifyIssueOrPull}}disabled{{end}}">
 		<a class="fixed-text muted">
-			<strong>{{ctx.Locale.Tr "repo.issues.new.labels"}}</strong> {{if $pageMeta.CanModifyIssueOrPull}}{{svg "octicon-gear"}}{{end}}
+			<strong>{{ctx.Locale.Tr "Labels"}}</strong> {{if $pageMeta.CanModifyIssueOrPull}}{{svg "octicon-gear"}}{{end}}
 		</a>
 		<div class="menu">
 			{{if not $data.AllLabels}}
-				<div class="item disabled">{{ctx.Locale.Tr "repo.issues.new.no_items"}}</div>
+				<div class="item disabled">{{ctx.Locale.Tr "No items"}}</div>
 			{{else}}
 				<div class="ui icon search input">
 					<i class="icon">{{svg "octicon-search" 16}}</i>
-					<input type="text" placeholder="{{ctx.Locale.Tr "repo.issues.filter_labels"}}">
+					<input type="text" placeholder="{{ctx.Locale.Tr "Filter Label"}}">
 				</div>
 				<div class="scrolling menu">
-					<a class="item clear-selection" data-text="" href="#">{{ctx.Locale.Tr "repo.issues.new.clear_labels"}}</a>
+					<a class="item clear-selection" data-text="" href="#">{{ctx.Locale.Tr "Clear labels"}}</a>
 					<div class="divider"></div>
 					{{$previousExclusiveScope := "_no_scope"}}
 					{{range $data.RepoLabels}}
@@ -44,7 +44,7 @@
 	</div>
 
 	<div class="ui list labels-list">
-		<span class="item empty-list {{if $data.SelectedLabelIDs}}tw-hidden{{end}}">{{ctx.Locale.Tr "repo.issues.new.no_label"}}</span>
+		<span class="item empty-list {{if $data.SelectedLabelIDs}}tw-hidden{{end}}">{{ctx.Locale.Tr "No Label"}}</span>
 		{{range $data.AllLabels}}
 			{{if .IsChecked}}
 				<a class="item" href="{{$pageMeta.RepoLink}}/{{if $pageMeta.IsPullRequest}}pulls{{else}}issues{{end}}?labels={{.ID}}">

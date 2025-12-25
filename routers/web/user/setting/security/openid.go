@@ -23,7 +23,7 @@ func OpenIDPost(ctx *context.Context) {
 	}
 
 	form := web.GetForm(ctx).(*forms.AddOpenIDForm)
-	ctx.Data["Title"] = ctx.Tr("settings_title")
+	ctx.Data["Title"] = ctx.Tr("Settings")
 	ctx.Data["PageIsSettingsSecurity"] = true
 
 	if ctx.HasError() {
@@ -61,7 +61,7 @@ func OpenIDPost(ctx *context.Context) {
 		if obj.URI == id {
 			loadSecurityData(ctx)
 
-			ctx.RenderWithErr(ctx.Tr("form.openid_been_used", id), tplSettingsSecurity, &form)
+			ctx.RenderWithErr(ctx.Tr("The OpenID address \"%s\" is already used.", id), tplSettingsSecurity, &form)
 			return
 		}
 	}
@@ -96,14 +96,14 @@ func settingsOpenIDVerify(ctx *context.Context) {
 	oid := &user_model.UserOpenID{UID: ctx.Doer.ID, URI: id}
 	if err = user_model.AddUserOpenID(ctx, oid); err != nil {
 		if user_model.IsErrOpenIDAlreadyUsed(err) {
-			ctx.RenderWithErr(ctx.Tr("form.openid_been_used", id), tplSettingsSecurity, &forms.AddOpenIDForm{Openid: id})
+			ctx.RenderWithErr(ctx.Tr("The OpenID address \"%s\" is already used.", id), tplSettingsSecurity, &forms.AddOpenIDForm{Openid: id})
 			return
 		}
 		ctx.ServerError("AddUserOpenID", err)
 		return
 	}
 	log.Trace("Associated OpenID %s to user %s", id, ctx.Doer.Name)
-	ctx.Flash.Success(ctx.Tr("settings.add_openid_success"))
+	ctx.Flash.Success(ctx.Tr("The new OpenID address has been added."))
 
 	ctx.Redirect(setting.AppSubURL + "/user/settings/security")
 }
@@ -121,7 +121,7 @@ func DeleteOpenID(ctx *context.Context) {
 	}
 	log.Trace("OpenID address deleted: %s", ctx.Doer.Name)
 
-	ctx.Flash.Success(ctx.Tr("settings.openid_deletion_success"))
+	ctx.Flash.Success(ctx.Tr("The OpenID address has been removed."))
 	ctx.JSONRedirect(setting.AppSubURL + "/user/settings/security")
 }
 

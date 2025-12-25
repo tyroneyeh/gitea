@@ -3,14 +3,14 @@
 	<div class="ui segment sub-menu repository-menu">
 		{{if and (.Permission.CanRead ctx.Consts.RepoUnitTypeCode) (not .IsEmptyRepo)}}
 			<a class="item muted {{if .PageIsCommits}}active{{end}}" href="{{.RepoLink}}/commits/{{.RefFullName.RefWebLinkPath}}">
-				{{svg "octicon-history"}} <b>{{ctx.Locale.PrettyNumber .CommitsCount}}</b> {{ctx.Locale.TrN .CommitsCount "repo.commit" "repo.commits"}}
+				{{svg "octicon-history"}} <b>{{ctx.Locale.PrettyNumber .CommitsCount}}</b> {{ctx.Locale.TrN .CommitsCount "Commit" "Commits"}}
 			</a>
 			<a class="item muted {{if .PageIsBranches}}active{{end}}" href="{{.RepoLink}}/branches">
-				{{svg "octicon-git-branch"}} <b>{{ctx.Locale.PrettyNumber .BranchesCount}}</b> {{ctx.Locale.TrN .BranchesCount "repo.branch" "repo.branches"}}
+				{{svg "octicon-git-branch"}} <b>{{ctx.Locale.PrettyNumber .BranchesCount}}</b> {{ctx.Locale.TrN .BranchesCount "Branch" "Branches"}}
 			</a>
 			{{if $.Permission.CanRead ctx.Consts.RepoUnitTypeCode}}
 				<a class="item muted {{if .PageIsTagList}}active{{end}}" href="{{.RepoLink}}/tags">
-					{{svg "octicon-tag"}} <b>{{ctx.Locale.PrettyNumber .NumTags}}</b> {{ctx.Locale.TrN .NumTags "repo.tag" "repo.tags"}}
+					{{svg "octicon-tag"}} <b>{{ctx.Locale.PrettyNumber .NumTags}}</b> {{ctx.Locale.TrN .NumTags "Tag" "Tags"}}
 				</a>
 			{{end}}
 		{{end}}

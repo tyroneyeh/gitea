@@ -3,14 +3,14 @@
 		<div class="small-menu-items ui compact tiny menu list-header-toggle">
 			<a class="item{{if not .IsShowClosed}} active{{end}}" href="?state=open&q={{$.Keyword}}">
 				{{svg "octicon-project-symlink" 16 "tw-mr-2"}}
-				{{ctx.Locale.PrettyNumber .OpenCount}}&nbsp;{{ctx.Locale.Tr "repo.issues.open_title"}}
+				{{ctx.Locale.PrettyNumber .OpenCount}}&nbsp;{{ctx.Locale.Tr "Open"}}
 			</a>
 			<a class="item{{if .IsShowClosed}} active{{end}}" href="?state=closed&q={{$.Keyword}}">
 				{{svg "octicon-check" 16 "tw-mr-2"}}
-				{{ctx.Locale.PrettyNumber .ClosedCount}}&nbsp;{{ctx.Locale.Tr "repo.issues.closed_title"}}
+				{{ctx.Locale.PrettyNumber .ClosedCount}}&nbsp;{{ctx.Locale.Tr "Closed"}}
 			</a>
 		</div>
-		<a class="ui small primary button" href="{{$.Link}}/new">{{ctx.Locale.Tr "repo.projects.new"}}</a>
+		<a class="ui small primary button" href="{{$.Link}}/new">{{ctx.Locale.Tr "New Project"}}</a>
 	</div>
 {{end}}
 
@@ -20,22 +20,22 @@
 	<!-- Search -->
 	<form class="list-header-search ui form ignore-dirty">
 		<input type="hidden" name="state" value="{{$.State}}">
-		{{template "shared/search/combo" dict "Value" .Keyword "Placeholder" (ctx.Locale.Tr "search.project_kind")}}
+		{{template "shared/search/combo" dict "Value" .Keyword "Placeholder" (ctx.Locale.Tr "Search projects…")}}
 	</form>
 
 	<div class="list-header-filters">
 		<!-- Sort -->
 		<div class="item ui small dropdown jump">
 			<span class="text">
-				{{ctx.Locale.Tr "repo.issues.filter_sort"}}
+				{{ctx.Locale.Tr "Sort"}}
 			</span>
 			{{svg "octicon-triangle-down" 14 "dropdown icon"}}
 			<div class="menu">
-				<a class="{{if eq .SortType "oldest"}}active {{end}}item" href="?q={{$.Keyword}}&sort=oldest&state={{$.State}}">{{ctx.Locale.Tr "repo.issues.filter_sort.oldest"}}</a>
-				<a class="{{if eq .SortType "alphabetically"}}active {{end}}item" href="?q={{$.Keyword}}&sort=alphabetically&state={{$.State}}">{{ctx.Locale.Tr "repo.issues.label.filter_sort.alphabetically"}}</a>
-				<a class="{{if eq .SortType "reversealphabetically"}}active {{end}}item" href="?q={{$.Keyword}}&sort=reversealphabetically&state={{$.State}}">{{ctx.Locale.Tr "repo.issues.label.filter_sort.reverse_alphabetically"}}</a>
-				<a class="{{if eq .SortType "recentupdate"}}active {{end}}item" href="?q={{$.Keyword}}&sort=recentupdate&state={{$.State}}">{{ctx.Locale.Tr "repo.issues.filter_sort.recentupdate"}}</a>
-				<a class="{{if eq .SortType "leastupdate"}}active {{end}}item" href="?q={{$.Keyword}}&sort=leastupdate&state={{$.State}}">{{ctx.Locale.Tr "repo.issues.filter_sort.leastupdate"}}</a>
+				<a class="{{if eq .SortType "oldest"}}active {{end}}item" href="?q={{$.Keyword}}&sort=oldest&state={{$.State}}">{{ctx.Locale.Tr "Oldest"}}</a>
+				<a class="{{if eq .SortType "alphabetically"}}active {{end}}item" href="?q={{$.Keyword}}&sort=alphabetically&state={{$.State}}">{{ctx.Locale.Tr "Alphabetically"}}</a>
+				<a class="{{if eq .SortType "reversealphabetically"}}active {{end}}item" href="?q={{$.Keyword}}&sort=reversealphabetically&state={{$.State}}">{{ctx.Locale.Tr "Reverse alphabetically"}}</a>
+				<a class="{{if eq .SortType "recentupdate"}}active {{end}}item" href="?q={{$.Keyword}}&sort=recentupdate&state={{$.State}}">{{ctx.Locale.Tr "Most recently updated"}}</a>
+				<a class="{{if eq .SortType "leastupdate"}}active {{end}}item" href="?q={{$.Keyword}}&sort=leastupdate&state={{$.State}}">{{ctx.Locale.Tr "Least recently updated"}}</a>
 			</div>
 		</div>
 	</div>
@@ -52,22 +52,22 @@
 				<div class="group">
 					<div class="flex-text-block">
 						{{svg "octicon-issue-opened" 14}}
-						{{ctx.Locale.PrettyNumber .NumOpenIssues}}&nbsp;{{ctx.Locale.Tr "repo.issues.open_title"}}
+						{{ctx.Locale.PrettyNumber .NumOpenIssues}}&nbsp;{{ctx.Locale.Tr "Open"}}
 					</div>
 					<div class="flex-text-block">
 						{{svg "octicon-check" 14}}
-						{{ctx.Locale.PrettyNumber .NumClosedIssues}}&nbsp;{{ctx.Locale.Tr "repo.issues.closed_title"}}
+						{{ctx.Locale.PrettyNumber .NumClosedIssues}}&nbsp;{{ctx.Locale.Tr "Closed"}}
 					</div>
 				</div>
 				{{if and $.CanWriteProjects (not $.Repository.IsArchived)}}
 				<div class="group">
-					<a class="flex-text-inline" href="{{.Link ctx}}/edit">{{svg "octicon-pencil" 14}}{{ctx.Locale.Tr "repo.issues.label_edit"}}</a>
+					<a class="flex-text-inline" href="{{.Link ctx}}/edit">{{svg "octicon-pencil" 14}}{{ctx.Locale.Tr "Edit"}}</a>
 					{{if .IsClosed}}
-						<a class="link-action flex-text-inline" href data-url="{{.Link ctx}}/open">{{svg "octicon-check" 14}}{{ctx.Locale.Tr "repo.projects.open"}}</a>
+						<a class="link-action flex-text-inline" href data-url="{{.Link ctx}}/open">{{svg "octicon-check" 14}}{{ctx.Locale.Tr "Open"}}</a>
 					{{else}}
-						<a class="link-action flex-text-inline" href data-url="{{.Link ctx}}/close">{{svg "octicon-skip" 14}}{{ctx.Locale.Tr "repo.projects.close"}}</a>
+						<a class="link-action flex-text-inline" href data-url="{{.Link ctx}}/close">{{svg "octicon-skip" 14}}{{ctx.Locale.Tr "Close"}}</a>
 					{{end}}
-					<a class="link-action flex-text-inline text red" href data-modal-confirm="#repo-project-delete-modal" data-url="{{.Link ctx}}/delete">{{svg "octicon-trash" 14}}{{ctx.Locale.Tr "repo.issues.label_delete"}}</a>
+					<a class="link-action flex-text-inline text red" href data-modal-confirm="#repo-project-delete-modal" data-url="{{.Link ctx}}/delete">{{svg "octicon-trash" 14}}{{ctx.Locale.Tr "Delete"}}</a>
 				</div>
 				{{end}}
 			</div>
@@ -82,8 +82,8 @@
 
 {{if and $.CanWriteProjects (not $.Repository.IsArchived)}}
 <div class="ui small modal" id="repo-project-delete-modal">
-	<div class="header">{{svg "octicon-trash"}} {{ctx.Locale.Tr "repo.projects.deletion"}}</div>
-	<div class="content"><p>{{ctx.Locale.Tr "repo.projects.deletion_desc"}}</p></div>
+	<div class="header">{{svg "octicon-trash"}} {{ctx.Locale.Tr "Delete Project"}}</div>
+	<div class="content"><p>{{ctx.Locale.Tr "Deleting a project removes it from all related issues. Continue?"}}</p></div>
 	{{template "base/modal_actions_confirm" .}}
 </div>
 {{end}}

@@ -1,7 +1,7 @@
 {{template "admin/layout_head" (dict "ctxData" . "pageClass" "admin user")}}
 	<div class="admin-setting-content">
 		<h4 class="ui top attached header">
-			{{ctx.Locale.Tr "admin.emails.email_manage_panel"}} ({{ctx.Locale.Tr "admin.total" .Total}})
+			{{ctx.Locale.Tr "User Email Management"}} ({{ctx.Locale.Tr "Total: %d" .Total}})
 		</h4>
 		<div class="ui attached segment">
 			<div class="ui secondary filter menu tw-items-center tw-mx-0">
@@ -11,14 +11,14 @@
 				<!-- Sort -->
 				<div class="ui dropdown type jump item tw-mr-0">
 					<span class="text">
-						{{ctx.Locale.Tr "repo.issues.filter_sort"}}
+						{{ctx.Locale.Tr "Sort"}}
 					</span>
 					{{svg "octicon-triangle-down" 14 "dropdown icon"}}
 					<div class="menu">
-						<a class="{{if or (eq .SortType "email") (not .SortType)}}active {{end}}item" href="?sort=email&q={{$.Keyword}}">{{ctx.Locale.Tr "admin.emails.filter_sort.email"}}</a>
-						<a class="{{if eq .SortType "reverseemail"}}active {{end}}item" href="?sort=reverseemail&q={{$.Keyword}}">{{ctx.Locale.Tr "admin.emails.filter_sort.email_reverse"}}</a>
-						<a class="{{if eq .SortType "username"}}active {{end}}item" href="?sort=username&q={{$.Keyword}}">{{ctx.Locale.Tr "admin.emails.filter_sort.name"}}</a>
-						<a class="{{if eq .SortType "reverseusername"}}active {{end}}item" href="?sort=reverseusername&q={{$.Keyword}}">{{ctx.Locale.Tr "admin.emails.filter_sort.name_reverse"}}</a>
+						<a class="{{if or (eq .SortType "email") (not .SortType)}}active {{end}}item" href="?sort=email&q={{$.Keyword}}">{{ctx.Locale.Tr "Email address"}}</a>
+						<a class="{{if eq .SortType "reverseemail"}}active {{end}}item" href="?sort=reverseemail&q={{$.Keyword}}">{{ctx.Locale.Tr "Email address (reverse)"}}</a>
+						<a class="{{if eq .SortType "username"}}active {{end}}item" href="?sort=username&q={{$.Keyword}}">{{ctx.Locale.Tr "Username"}}</a>
+						<a class="{{if eq .SortType "reverseusername"}}active {{end}}item" href="?sort=reverseusername&q={{$.Keyword}}">{{ctx.Locale.Tr "Username (reverse)"}}</a>
 					</div>
 				</div>
 			</div>
@@ -28,16 +28,16 @@
 				<thead>
 					<tr>
 						<th data-sortt-asc="username" data-sortt-desc="reverseusername">
-							{{ctx.Locale.Tr "admin.users.name"}}
+							{{ctx.Locale.Tr "Username"}}
 							{{SortArrow "username" "reverseusername" $.SortType false}}
 						</th>
-						<th>{{ctx.Locale.Tr "admin.users.full_name"}}</th>
+						<th>{{ctx.Locale.Tr "Full Name"}}</th>
 						<th data-sortt-asc="email" data-sortt-desc="reverseemail" data-sortt-default="true">
-							{{ctx.Locale.Tr "email"}}
+							{{ctx.Locale.Tr "Email Address"}}
 							{{SortArrow "email" "reverseemail" $.SortType true}}
 						</th>
-						<th>{{ctx.Locale.Tr "admin.emails.primary"}}</th>
-						<th>{{ctx.Locale.Tr "admin.emails.activated"}}</th>
+						<th>{{ctx.Locale.Tr "Primary"}}</th>
+						<th>{{ctx.Locale.Tr "Activated"}}</th>
 						<th></th>
 					</tr>
 				</thead>
@@ -62,13 +62,13 @@
 							</td>
 							<td>
 								<a class="link-action negative" href data-url="{{$.Link}}/delete?id={{.ID}}&uid={{.UID}}"
-									data-modal-confirm-header="{{ctx.Locale.Tr "admin.emails.delete"}}"
-									data-modal-confirm-content="{{ctx.Locale.Tr "admin.emails.delete_desc"}}"
+									data-modal-confirm-header="{{ctx.Locale.Tr "Delete Email"}}"
+									data-modal-confirm-content="{{ctx.Locale.Tr "Are you sure you want to delete this email address?"}}"
 								>{{svg "octicon-trash"}}</a>
 							</td>
 						</tr>
 					{{else}}
-						<tr><td class="tw-text-center" colspan="6">{{ctx.Locale.Tr "no_results_found"}}</td></tr>
+						<tr><td class="tw-text-center" colspan="6">{{ctx.Locale.Tr "No results found."}}</td></tr>
 					{{end}}
 				</tbody>
 			</table>
@@ -78,10 +78,10 @@
 
 		<div class="ui g-modal-confirm modal" id="change-email-modal">
 			<div class="header">
-				{{ctx.Locale.Tr "admin.emails.change_email_header"}}
+				{{ctx.Locale.Tr "Update Email Properties"}}
 			</div>
 			<form class="content ui form" action="{{AppSubUrl}}/-/admin/emails/activate" method="post">
-				<p class="center">{{ctx.Locale.Tr "admin.emails.change_email_text"}}</p>
+				<p class="center">{{ctx.Locale.Tr "Are you sure you want to update this email address?"}}</p>
 
 				{{$.CsrfTokenHtml}}
 

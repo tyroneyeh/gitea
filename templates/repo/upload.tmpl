@@ -6,10 +6,10 @@
 	data-accepts="{{.UploadAccepts}}"
 	data-max-file="{{.UploadMaxFiles}}"
 	data-max-size="{{.UploadMaxSize}}"
-	data-default-message="{{ctx.Locale.Tr "dropzone.default_message"}}"
-	data-invalid-input-type="{{ctx.Locale.Tr "dropzone.invalid_input_type"}}"
-	data-file-too-big="{{ctx.Locale.Tr "dropzone.file_too_big"}}"
-	data-remove-file="{{ctx.Locale.Tr "dropzone.remove_file"}}"
+	data-default-message="{{ctx.Locale.Tr "Drop files or click here to upload."}}"
+	data-invalid-input-type="{{ctx.Locale.Tr "You cannot upload files of this type."}}"
+	data-file-too-big="{{ctx.Locale.Tr "File size ({{filesize}} MB) exceeds the maximum size of ({{maxFilesize}} MB)."}}"
+	data-remove-file="{{ctx.Locale.Tr "Remove file"}}"
 >
 	<div class="files"></div>
 </div>

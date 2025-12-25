@@ -43,39 +43,39 @@
 					<div class="item item-section text tw-flex-1">
 						<div class="item-section-left">
 							<h3 class="tw-mb-2">
-								{{ctx.Locale.Tr "repo.pulls.merged_success"}}
+								{{ctx.Locale.Tr "Pull request successfully merged and closed"}}
 							</h3>
 							<div class="merge-section-info">
-								{{ctx.Locale.Tr "repo.pulls.merged_info_text" (HTMLFormat "<code>%s</code>" .HeadTarget)}}
+								{{ctx.Locale.Tr "The branch %s can now be deleted." (HTMLFormat "<code>%s</code>" .HeadTarget)}}
 							</div>
 						</div>
 						<div class="item-section-right">
-							<button class="ui button link-action delete-branch-after-merge" data-url="{{.DeleteBranchLink}}">{{ctx.Locale.Tr "repo.branch.delete_html"}}</button>
+							<button class="ui button link-action delete-branch-after-merge" data-url="{{.DeleteBranchLink}}">{{ctx.Locale.Tr "Delete Branch"}}</button>
 						</div>
 					</div>
 				{{end}}
 			{{else if .Issue.IsClosed}}
 				<div class="item item-section text tw-flex-1">
 					<div class="item-section-left">
-						<h3 class="tw-mb-2">{{ctx.Locale.Tr "repo.pulls.closed"}}</h3>
+						<h3 class="tw-mb-2">{{ctx.Locale.Tr "Pull request closed"}}</h3>
 						<div class="merge-section-info">
 							{{if .IsPullRequestBroken}}
-								{{ctx.Locale.Tr "repo.pulls.cant_reopen_deleted_branch"}}
+								{{ctx.Locale.Tr "This pull request cannot be reopened because the branch was deleted."}}
 							{{else}}
-								{{ctx.Locale.Tr "repo.pulls.reopen_to_merge"}}
+								{{ctx.Locale.Tr "Please reopen this pull request to perform a merge."}}
 							{{end}}
 						</div>
 					</div>
 					{{if and .IsPullBranchDeletable (not .IsPullRequestBroken)}}
 						<div class="item-section-right">
-							<button class="ui button link-action delete-branch-after-merge" data-url="{{.DeleteBranchLink}}">{{ctx.Locale.Tr "repo.branch.delete_html"}}</button>
+							<button class="ui button link-action delete-branch-after-merge" data-url="{{.DeleteBranchLink}}">{{ctx.Locale.Tr "Delete Branch"}}</button>
 						</div>
 					{{end}}
 				</div>
 			{{else if .IsPullFilesConflicted}}
 				<div class="item">
 					{{svg "octicon-x"}}
-					{{ctx.Locale.Tr "repo.pulls.files_conflicted"}}
+					{{ctx.Locale.Tr "This pull request has changes conflicting with the target branch."}}
 				</div>
 				<ul>
 					{{range .ConflictedFiles}}
@@ -85,17 +85,17 @@
 			{{else if .IsPullRequestBroken}}
 				<div class="item">
 					{{svg "octicon-x"}}
-					{{ctx.Locale.Tr "repo.pulls.data_broken"}}
+					{{ctx.Locale.Tr "This pull request is broken due to missing fork information."}}
 				</div>
 			{{else if .IsPullWorkInProgress}}
 				<div class="item">
 					<div class="item-section-left flex-text-inline tw-flex-1">
 						{{svg "octicon-x"}}
-						{{ctx.Locale.Tr "repo.pulls.cannot_merge_work_in_progress"}}
+						{{ctx.Locale.Tr "This pull request is marked as a work in progress."}}
 					</div>
 					{{if or .HasIssuesOrPullsWritePermission .IsIssuePoster}}
 						<button class="ui compact button" data-global-init="initPullRequestWipToggle" data-title="{{.Issue.Title}}" data-wip-prefix="{{.WorkInProgressPrefix}}" data-update-url="{{.Issue.Link}}/title">
-							{{ctx.Locale.Tr "repo.pulls.remove_prefix" .WorkInProgressPrefix}}
+							{{ctx.Locale.Tr "Remove <strong>%s</strong> prefix" .WorkInProgressPrefix}}
 						</button>
 					{{end}}
 				</div>
@@ -103,42 +103,42 @@
 			{{else if .Issue.PullRequest.IsChecking}}
 				<div class="item">
 					{{svg "gitea-running" 16 "rotate-clockwise"}}
-					{{ctx.Locale.Tr "repo.pulls.is_checking"}}
+					{{ctx.Locale.Tr "Checking for merge conflicts…"}}
 				</div>
 			{{else if .Issue.PullRequest.IsAncestor}}
 				<div class="item">
 					{{svg "octicon-alert"}}
-					{{ctx.Locale.Tr "repo.pulls.is_ancestor"}}
+					{{ctx.Locale.Tr "This branch is already included in the target branch. There is nothing to merge."}}
 				</div>
 			{{else if or .Issue.PullRequest.CanAutoMerge .Issue.PullRequest.IsEmpty}}
 				{{if .IsBlockedByApprovals}}
 					<div class="item">
 						{{svg "octicon-x"}}
 						{{if .RequireApprovalsWhitelist}}
-							{{ctx.Locale.Tr "repo.pulls.blocked_by_approvals_whitelisted" .GrantedApprovals .ProtectedBranch.RequiredApprovals}}
+							{{ctx.Locale.Tr "This pull request doesn't have enough required approvals yet. %d of %d approvals granted from users or teams on the allowlist." .GrantedApprovals .ProtectedBranch.RequiredApprovals}}
 						{{else}}
-							{{ctx.Locale.Tr "repo.pulls.blocked_by_approvals" .GrantedApprovals .ProtectedBranch.RequiredApprovals}}
+							{{ctx.Locale.Tr "This pull request doesn't have enough required approvals yet. %d of %d official approvals granted." .GrantedApprovals .ProtectedBranch.RequiredApprovals}}
 						{{end}}
 					</div>
 				{{else if .IsBlockedByRejection}}
 					<div class="item">
 						{{svg "octicon-x"}}
-					{{ctx.Locale.Tr "repo.pulls.blocked_by_rejection"}}
+					{{ctx.Locale.Tr "This pull request has changes requested by an official reviewer."}}
 					</div>
 				{{else if .IsBlockedByOfficialReviewRequests}}
 					<div class="item">
 						{{svg "octicon-x"}}
-					{{ctx.Locale.Tr "repo.pulls.blocked_by_official_review_requests"}}
+					{{ctx.Locale.Tr "This pull request has official review requests."}}
 					</div>
 				{{else if .IsBlockedByOutdatedBranch}}
 					<div class="item">
 						{{svg "octicon-x"}}
-						{{ctx.Locale.Tr "repo.pulls.blocked_by_outdated_branch"}}
+						{{ctx.Locale.Tr "This pull request is blocked because it's outdated."}}
 					</div>
 				{{else if .IsBlockedByChangedProtectedFiles}}
 					<div class="item">
 						{{svg "octicon-x"}}
-						{{ctx.Locale.TrN $.ChangedProtectedFilesNum "repo.pulls.blocked_by_changed_protected_files_1" "repo.pulls.blocked_by_changed_protected_files_n"}}
+						{{ctx.Locale.TrN $.ChangedProtectedFilesNum "This pull request is blocked because it changes a protected file:" "This pull request is blocked because it changes protected files:"}}
 					</div>
 					<ul>
 						{{range .ChangedProtectedFiles}}
@@ -148,17 +148,17 @@
 				{{else if and .EnableStatusCheck (or .RequiredStatusCheckState.IsError .RequiredStatusCheckState.IsFailure)}}
 					<div class="item">
 						{{svg "octicon-x"}}
-						{{ctx.Locale.Tr "repo.pulls.required_status_check_failed"}}
+						{{ctx.Locale.Tr "Some required checks were not successful."}}
 					</div>
 				{{else if and .EnableStatusCheck (not .RequiredStatusCheckState.IsSuccess)}}
 					<div class="item">
 						{{svg "octicon-x"}}
-						{{ctx.Locale.Tr "repo.pulls.required_status_check_missing"}}
+						{{ctx.Locale.Tr "Some required checks are missing."}}
 					</div>
 				{{else if and .AllowMerge .RequireSigned (not .WillSign)}}
 					<div class="item">
 						{{svg "octicon-x"}}
-						{{ctx.Locale.Tr "repo.pulls.require_signed_wont_sign"}}
+						{{ctx.Locale.Tr "The branch requires signed commits but this merge will not be signed"}}
 					</div>
 					<div class="item">
 						{{svg "octicon-unlock"}}
@@ -176,18 +176,18 @@
 					{{if $notAllOverridableChecksOk}}
 						<div class="item">
 							{{svg "octicon-dot-fill"}}
-							{{ctx.Locale.Tr "repo.pulls.required_status_check_administrator"}}
+							{{ctx.Locale.Tr "As an administrator, you may still merge this pull request."}}
 						</div>
 					{{else}}
 						<div class="item">
 							{{svg "octicon-check"}}
-							{{ctx.Locale.Tr "repo.pulls.can_auto_merge_desc"}}
+							{{ctx.Locale.Tr "This pull request can be merged automatically."}}
 						</div>
 					{{end}}
 					{{if .WillSign}}
 						<div class="item">
 							{{svg "octicon-lock" 16 "text green"}}
-							{{ctx.Locale.Tr "repo.signing.will_sign" .SigningKeyMergeDisplay}}
+							{{ctx.Locale.Tr "This commit will be signed with key \"%s\"." .SigningKeyMergeDisplay}}
 						</div>
 					{{else if .IsSigned}}
 						<div class="item">
@@ -203,7 +203,7 @@
 					<div class="divider"></div>
 					<div class="item">
 						{{svg "octicon-alert"}}
-						{{ctx.Locale.Tr "repo.pulls.is_empty"}}
+						{{ctx.Locale.Tr "The changes on this branch are already on the target branch. This will be an empty commit."}}
 					</div>
 				{{end}}
 
@@ -213,7 +213,7 @@
 						{{$hasPendingPullRequestMergeTip := ""}}
 						{{if .HasPendingPullRequestMerge}}
 							{{$createdPRMergeStr := DateUtils.TimeSince .PendingPullRequestMerge.CreatedUnix}}
-							{{$hasPendingPullRequestMergeTip = ctx.Locale.Tr "repo.pulls.auto_merge_has_pending_schedule" .PendingPullRequestMerge.Doer.Name $createdPRMergeStr}}
+							{{$hasPendingPullRequestMergeTip = ctx.Locale.Tr "%[1]s scheduled this pull request to auto merge when all checks succeed %[2]s." .PendingPullRequestMerge.Doer.Name $createdPRMergeStr}}
 						{{end}}
 						<div class="divider"></div>
 						<script type="module">
@@ -223,14 +223,14 @@
 							const defaultSquashMergeMessage = {{.DefaultSquashMergeBody}};
 							const mergeForm = {
 								'baseLink': {{.Issue.Link}},
-								'textCancel': {{ctx.Locale.Tr "cancel"}},
-								'textDeleteBranch': {{ctx.Locale.Tr "repo.branch.delete" .HeadTarget}},
-								'textAutoMergeButtonWhenSucceed': {{ctx.Locale.Tr "repo.pulls.auto_merge_button_when_succeed"}},
-								'textAutoMergeWhenSucceed': {{ctx.Locale.Tr "repo.pulls.auto_merge_when_succeed"}},
-								'textAutoMergeCancelSchedule': {{ctx.Locale.Tr "repo.pulls.auto_merge_cancel_schedule"}},
-								'textClearMergeMessage': {{ctx.Locale.Tr "repo.pulls.clear_merge_message"}},
-								'textClearMergeMessageHint': {{ctx.Locale.Tr "repo.pulls.clear_merge_message_hint"}},
-								'textMergeCommitId': {{ctx.Locale.Tr "repo.pulls.merge_commit_id"}},
+								'textCancel': {{ctx.Locale.Tr "Cancel"}},
+								'textDeleteBranch': {{ctx.Locale.Tr "Delete Branch \"%s\"" .HeadTarget}},
+								'textAutoMergeButtonWhenSucceed': {{ctx.Locale.Tr "(When checks succeed)"}},
+								'textAutoMergeWhenSucceed': {{ctx.Locale.Tr "Auto merge when all checks succeed"}},
+								'textAutoMergeCancelSchedule': {{ctx.Locale.Tr "Cancel auto merge"}},
+								'textClearMergeMessage': {{ctx.Locale.Tr "Clear merge message"}},
+								'textClearMergeMessageHint': {{ctx.Locale.Tr "Clearing the merge message will only remove the commit message content and keep generated git trailers such as \"Co-Authored-By…\"."}},
+								'textMergeCommitId': {{ctx.Locale.Tr "The merge commit ID"}},
 
 								'canMergeNow': {{$canMergeNow}},
 								'allOverridableChecksOk': {{not $notAllOverridableChecksOk}},
@@ -239,7 +239,7 @@
 								'isPullBranchDeletable': {{.IsPullBranchDeletable}},
 								'defaultMergeStyle': {{.MergeStyle}},
 								'defaultDeleteBranchAfterMerge': {{$prUnit.PullRequestsConfig.DefaultDeleteBranchAfterMerge}},
-								'mergeMessageFieldPlaceHolder': {{ctx.Locale.Tr "repo.editor.commit_message_desc"}},
+								'mergeMessageFieldPlaceHolder': {{ctx.Locale.Tr "Add an optional extended description…"}},
 								'defaultMergeMessage': defaultMergeMessage,
 
 								'hasPendingPullRequestMerge': {{.HasPendingPullRequestMerge}},
@@ -251,7 +251,7 @@
 								{
 									'name': 'merge',
 									'allowed': {{$prUnit.PullRequestsConfig.AllowMerge}},
-									'textDoMerge': {{ctx.Locale.Tr "repo.pulls.merge_pull_request"}},
+									'textDoMerge': {{ctx.Locale.Tr "Create merge commit"}},
 									'mergeTitleFieldText': defaultMergeTitle,
 									'mergeMessageFieldText': defaultMergeMessage,
 									'hideAutoMerge': generalHideAutoMerge,
@@ -259,14 +259,14 @@
 								{
 									'name': 'rebase',
 									'allowed': {{$prUnit.PullRequestsConfig.AllowRebase}},
-									'textDoMerge': {{ctx.Locale.Tr "repo.pulls.rebase_merge_pull_request"}},
+									'textDoMerge': {{ctx.Locale.Tr "Rebase, then fast-forward"}},
 									'hideMergeMessageTexts': true,
 									'hideAutoMerge': generalHideAutoMerge,
 								},
 								{
 									'name': 'rebase-merge',
 									'allowed': {{$prUnit.PullRequestsConfig.AllowRebaseMerge}},
-									'textDoMerge': {{ctx.Locale.Tr "repo.pulls.rebase_merge_commit_pull_request"}},
+									'textDoMerge': {{ctx.Locale.Tr "Rebase, then create merge commit"}},
 									'mergeTitleFieldText': defaultMergeTitle,
 									'mergeMessageFieldText': defaultMergeMessage,
 									'hideAutoMerge': generalHideAutoMerge,
@@ -274,7 +274,7 @@
 								{
 									'name': 'squash',
 									'allowed': {{$prUnit.PullRequestsConfig.AllowSquash}},
-									'textDoMerge': {{ctx.Locale.Tr "repo.pulls.squash_merge_pull_request"}},
+									'textDoMerge': {{ctx.Locale.Tr "Create squash commit"}},
 									'mergeTitleFieldText': defaultSquashMergeTitle,
 									'mergeMessageFieldText': {{.GetCommitMessages}} + defaultSquashMergeMessage,
 									'hideAutoMerge': generalHideAutoMerge,
@@ -282,14 +282,14 @@
 								{
 									'name': 'fast-forward-only',
 									'allowed': {{and $prUnit.PullRequestsConfig.AllowFastForwardOnly (eq .Issue.PullRequest.CommitsBehind 0)}},
-									'textDoMerge': {{ctx.Locale.Tr "repo.pulls.fast_forward_only_merge_pull_request"}},
+									'textDoMerge': {{ctx.Locale.Tr "Fast-forward only"}},
 									'hideMergeMessageTexts': true,
 									'hideAutoMerge': generalHideAutoMerge,
 								},
 								{
 									'name': 'manually-merged',
 									'allowed': {{$prUnit.PullRequestsConfig.AllowManualMerge}},
-									'textDoMerge': {{ctx.Locale.Tr "repo.pulls.merge_manually"}},
+									'textDoMerge': {{ctx.Locale.Tr "Manually merged"}},
 									'hideMergeMessageTexts': true,
 									'hideAutoMerge': true,
 								}
@@ -304,11 +304,11 @@
 						<div class="divider"></div>
 						<div class="item text red">
 							{{svg "octicon-x"}}
-							{{ctx.Locale.Tr "repo.pulls.no_merge_desc"}}
+							{{ctx.Locale.Tr "This pull request cannot be merged because all repository merge options are disabled."}}
 						</div>
 						<div class="item">
 							{{svg "octicon-info"}}
-							{{ctx.Locale.Tr "repo.pulls.no_merge_helper"}}
+							{{ctx.Locale.Tr "Enable merge options in the repository settings or merge the pull request manually."}}
 						</div>
 					{{end}} {{/* end if the repo was set to use any merge style */}}
 				{{else}}
@@ -316,7 +316,7 @@
 					<div class="divider"></div>
 					<div class="item">
 						{{svg "octicon-info"}}
-						{{ctx.Locale.Tr "repo.pulls.no_merge_access"}}
+						{{ctx.Locale.Tr "You are not authorized to merge this pull request."}}
 					</div>
 				{{end}} {{/* end if user is allowed to merge or not */}}
 			{{else}}
@@ -324,27 +324,27 @@
 				{{if .IsBlockedByApprovals}}
 					<div class="item text red">
 						{{svg "octicon-x"}}
-						{{ctx.Locale.Tr "repo.pulls.blocked_by_approvals" .GrantedApprovals .ProtectedBranch.RequiredApprovals}}
+						{{ctx.Locale.Tr "This pull request doesn't have enough required approvals yet. %d of %d official approvals granted." .GrantedApprovals .ProtectedBranch.RequiredApprovals}}
 					</div>
 				{{else if .IsBlockedByRejection}}
 					<div class="item text red">
 						{{svg "octicon-x"}}
-						{{ctx.Locale.Tr "repo.pulls.blocked_by_rejection"}}
+						{{ctx.Locale.Tr "This pull request has changes requested by an official reviewer."}}
 					</div>
 				{{else if .IsBlockedByOfficialReviewRequests}}
 					<div class="item text red">
 						{{svg "octicon-x"}}
-						{{ctx.Locale.Tr "repo.pulls.blocked_by_official_review_requests"}}
+						{{ctx.Locale.Tr "This pull request has official review requests."}}
 					</div>
 				{{else if .IsBlockedByOutdatedBranch}}
 					<div class="item text red">
 						{{svg "octicon-x"}}
-						{{ctx.Locale.Tr "repo.pulls.blocked_by_outdated_branch"}}
+						{{ctx.Locale.Tr "This pull request is blocked because it's outdated."}}
 					</div>
 				{{else if .IsBlockedByChangedProtectedFiles}}
 					<div class="item text red">
 						{{svg "octicon-x"}}
-						{{ctx.Locale.TrN $.ChangedProtectedFilesNum "repo.pulls.blocked_by_changed_protected_files_1" "repo.pulls.blocked_by_changed_protected_files_n"}}
+						{{ctx.Locale.TrN $.ChangedProtectedFilesNum "This pull request is blocked because it changes a protected file:" "This pull request is blocked because it changes protected files:"}}
 					</div>
 					<ul>
 						{{range .ChangedProtectedFiles}}
@@ -354,21 +354,21 @@
 				{{else if and .EnableStatusCheck (not .RequiredStatusCheckState.IsSuccess)}}
 					<div class="item text red">
 						{{svg "octicon-x"}}
-						{{ctx.Locale.Tr "repo.pulls.required_status_check_failed"}}
+						{{ctx.Locale.Tr "Some required checks were not successful."}}
 					</div>
 				{{else if and .RequireSigned (not .WillSign)}}
 					<div class="item text red">
 						{{svg "octicon-x"}}
-						{{ctx.Locale.Tr "repo.pulls.require_signed_wont_sign"}}
+						{{ctx.Locale.Tr "The branch requires signed commits but this merge will not be signed"}}
 					</div>
 				{{else}}
 					<div class="item text red">
 						{{svg "octicon-x"}}
-						{{ctx.Locale.Tr "repo.pulls.cannot_auto_merge_desc"}}
+						{{ctx.Locale.Tr "This pull request cannot be merged automatically due to conflicts."}}
 					</div>
 					<div class="item">
 						{{svg "octicon-info"}}
-						{{ctx.Locale.Tr "repo.pulls.cannot_auto_merge_helper"}}
+						{{ctx.Locale.Tr "Merge manually to resolve the conflicts."}}
 					</div>
 				{{end}}
 			{{end}}{{/* end if: pull request status */}}
@@ -386,10 +386,10 @@
 				<form class="ui form form-fetch-action" action="{{.Issue.Link}}/merge" method="post">{{/* another similar form is in PullRequestMergeForm.vue*/}}
 					{{.CsrfTokenHtml}}
 					<div class="field">
-						<input type="text" name="merge_commit_id" placeholder="{{ctx.Locale.Tr "repo.pulls.merge_commit_id"}}">
+						<input type="text" name="merge_commit_id" placeholder="{{ctx.Locale.Tr "The merge commit ID"}}">
 					</div>
 					<button class="ui red button" type="submit" name="do" value="manually-merged">
-						{{ctx.Locale.Tr "repo.pulls.merge_manually"}}
+						{{ctx.Locale.Tr "Manually merged"}}
 					</button>
 				</form>
 			{{end}}

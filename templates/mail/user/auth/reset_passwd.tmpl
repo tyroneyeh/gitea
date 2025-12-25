@@ -3,14 +3,14 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<meta name="format-detection" content="telephone=no,date=no,address=no,email=no,url=no">
-	<title>{{.locale.Tr "mail.reset_password.title" (.DisplayName|DotEscape)}}</title>
+	<title>{{.locale.Tr "%s, you have requested to recover your account" (.DisplayName|DotEscape)}}</title>
 </head>
 
 {{$recover_url := printf "%suser/recover_account?code=%s" AppUrl (QueryEscape .Code)}}
 <body>
-	<p>{{.locale.Tr "mail.hi_user_x" (.DisplayName|DotEscape)}}</p><br>
-	<p>{{.locale.Tr "mail.reset_password.text" .ResetPwdCodeLives}}</p><p><a href="{{$recover_url}}">{{$recover_url}}</a></p><br>
-	<p>{{.locale.Tr "mail.link_not_working_do_paste"}}</p>
+	<p>{{.locale.Tr "Hi <b>%s</b>," (.DisplayName|DotEscape)}}</p><br>
+	<p>{{.locale.Tr "Please click the following link to recover your account within <b>%s</b>:" .ResetPwdCodeLives}}</p><p><a href="{{$recover_url}}">{{$recover_url}}</a></p><br>
+	<p>{{.locale.Tr "Not working? Try copying and pasting it to your browser."}}</p>
 
 	<p>© <a href="{{AppUrl}}">{{AppName}}</a></p>
 </body>

@@ -1,36 +1,36 @@
 <h4 class="ui top attached header">
-	{{ctx.Locale.Tr "settings.twofa"}}
+	{{ctx.Locale.Tr "Two-Factor Authentication (TOTP)"}}
 </h4>
 <div class="ui attached segment">
-	<p>{{ctx.Locale.Tr "settings.twofa_desc"}}</p>
+	<p>{{ctx.Locale.Tr "To protect your account against password theft, you can use a smartphone or another device for receiving time-based one-time passwords (\"TOTP\")."}}</p>
 	{{if .TOTPEnrolled}}
-	<p>{{ctx.Locale.Tr "settings.twofa_is_enrolled"}}</p>
+	<p>{{ctx.Locale.Tr "Your account is currently <strong>enrolled</strong> in two-factor authentication."}}</p>
 	<form class="ui form" action="{{AppSubUrl}}/user/settings/security/two_factor/regenerate_scratch" method="post" enctype="multipart/form-data">
 		{{.CsrfTokenHtml}}
-		<p>{{ctx.Locale.Tr "settings.regenerate_scratch_token_desc"}}</p>
-		<button class="ui primary button">{{ctx.Locale.Tr "settings.twofa_scratch_token_regenerate"}}</button>
+		<p>{{ctx.Locale.Tr "If you misplaced your recovery key or have already used it to sign in, you can reset it here."}}</p>
+		<button class="ui primary button">{{ctx.Locale.Tr "Regenerate Single-Use Recovery Key"}}</button>
 	</form>
 	<form class="ui form" action="{{AppSubUrl}}/user/settings/security/two_factor/disable" method="post" enctype="multipart/form-data" id="disable-form">
 		{{.CsrfTokenHtml}}
-		<p>{{ctx.Locale.Tr "settings.twofa_disable_note"}}</p>
-		<button class="ui red button delete-button" data-modal-id="disable-twofa" data-type="form" data-form="#disable-form">{{ctx.Locale.Tr "settings.twofa_disable"}}</button>
+		<p>{{ctx.Locale.Tr "You can disable two-factor authentication if needed."}}</p>
+		<button class="ui red button delete-button" data-modal-id="disable-twofa" data-type="form" data-form="#disable-form">{{ctx.Locale.Tr "Disable Two-Factor Authentication"}}</button>
 	</form>
 	{{else}}
 	{{/* The recovery tip is there as a means of encouraging a user to enroll */}}
-	<p>{{ctx.Locale.Tr "settings.twofa_recovery_tip"}}</p>
-	<p>{{ctx.Locale.Tr "settings.twofa_not_enrolled"}}</p>
+	<p>{{ctx.Locale.Tr "If you lose your device, you will be able to use a single-use recovery key to regain access to your account."}}</p>
+	<p>{{ctx.Locale.Tr "Your account is not currently enrolled in two-factor authentication."}}</p>
 	<div class="inline field">
-		<a class="ui primary button" href="{{AppSubUrl}}/user/settings/security/two_factor/enroll">{{ctx.Locale.Tr "settings.twofa_enroll"}}</a>
+		<a class="ui primary button" href="{{AppSubUrl}}/user/settings/security/two_factor/enroll">{{ctx.Locale.Tr "Enroll in Two-Factor Authentication"}}</a>
 	</div>
 	{{end}}
 
 	<div class="ui g-modal-confirm delete modal" id="disable-twofa">
 		<div class="header">
 			{{svg "octicon-trash"}}
-			{{ctx.Locale.Tr "settings.twofa_disable"}}
+			{{ctx.Locale.Tr "Disable Two-Factor Authentication"}}
 		</div>
 		<div class="content">
-			<p>{{ctx.Locale.Tr "settings.twofa_disable_desc"}}</p>
+			<p>{{ctx.Locale.Tr "Disabling two-factor authentication will make your account less secure. Continue?"}}</p>
 		</div>
 		{{template "base/modal_actions_confirm" .}}
 	</div>

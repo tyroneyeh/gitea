@@ -5,10 +5,10 @@
 	<meta name="format-detection" content="telephone=no,date=no,address=no,email=no,url=no">
 </head>
 <body>
-	<p>{{.locale.Tr "mail.team_invite.text_1" (DotEscape .Inviter.DisplayName) (DotEscape .Team.Name) (DotEscape .Organization.DisplayName)}}</p>
-	<p>{{.locale.Tr "mail.team_invite.text_2"}}</p><p><a href="{{.InviteURL}}">{{.InviteURL}}</a></p>
-	<p>{{.locale.Tr "mail.link_not_working_do_paste"}}</p>
-	<p>{{.locale.Tr "mail.team_invite.text_3" .Invite.Email}}</p>
+	<p>{{.locale.Tr "%[1]s has invited you to join team %[2]s in organization %[3]s." (DotEscape .Inviter.DisplayName) (DotEscape .Team.Name) (DotEscape .Organization.DisplayName)}}</p>
+	<p>{{.locale.Tr "Please click the following link to join the team:"}}</p><p><a href="{{.InviteURL}}">{{.InviteURL}}</a></p>
+	<p>{{.locale.Tr "Not working? Try copying and pasting it to your browser."}}</p>
+	<p>{{.locale.Tr "Note: This invitation was intended for %[1]s. If you were not expecting this invitation, you can ignore this email." .Invite.Email}}</p>
 
 	<p>© <a href="{{AppUrl}}">{{AppName}}</a></p>
 </body>

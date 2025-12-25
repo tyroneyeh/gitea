@@ -41,42 +41,42 @@ func editorHandleFileOperationError(ctx *context_service.Context, targetBranchNa
 	if errAs := util.ErrorAsTranslatable(err); errAs != nil {
 		ctx.JSONError(errAs.Translate(ctx.Locale))
 	} else if errAs, ok := errorAs[git.ErrNotExist](err); ok {
-		ctx.JSONError(ctx.Tr("repo.editor.file_modifying_no_longer_exists", errAs.RelPath))
+		ctx.JSONError(ctx.Tr("The file being modified, \"%s\", no longer exists in this repository.", errAs.RelPath))
 	} else if errAs, ok := errorAs[git_model.ErrLFSFileLocked](err); ok {
-		ctx.JSONError(ctx.Tr("repo.editor.upload_file_is_locked", errAs.Path, errAs.UserName))
+		ctx.JSONError(ctx.Tr("File \"%s\" is locked by %s.", errAs.Path, errAs.UserName))
 	} else if errAs, ok := errorAs[files_service.ErrFilenameInvalid](err); ok {
-		ctx.JSONError(ctx.Tr("repo.editor.filename_is_invalid", errAs.Path))
+		ctx.JSONError(ctx.Tr("The filename is invalid: \"%s\".", errAs.Path))
 	} else if errAs, ok := errorAs[files_service.ErrFilePathInvalid](err); ok {
 		switch errAs.Type {
 		case git.EntryModeSymlink:
-			ctx.JSONError(ctx.Tr("repo.editor.file_is_a_symlink", errAs.Path))
+			ctx.JSONError(ctx.Tr("\"%s\" is a symbolic link. Symbolic links cannot be edited in the web editor.", errAs.Path))
 		case git.EntryModeTree:
-			ctx.JSONError(ctx.Tr("repo.editor.filename_is_a_directory", errAs.Path))
+			ctx.JSONError(ctx.Tr("Filename \"%s\" is already used as a directory name in this repository.", errAs.Path))
 		case git.EntryModeBlob:
-			ctx.JSONError(ctx.Tr("repo.editor.directory_is_a_file", errAs.Path))
+			ctx.JSONError(ctx.Tr("Directory name \"%s\" is already used as a filename in this repository.", errAs.Path))
 		default:
-			ctx.JSONError(ctx.Tr("repo.editor.filename_is_invalid", errAs.Path))
+			ctx.JSONError(ctx.Tr("The filename is invalid: \"%s\".", errAs.Path))
 		}
 	} else if errAs, ok := errorAs[files_service.ErrRepoFileAlreadyExists](err); ok {
-		ctx.JSONError(ctx.Tr("repo.editor.file_already_exists", errAs.Path))
+		ctx.JSONError(ctx.Tr("A file named \"%s\" already exists in this repository.", errAs.Path))
 	} else if errAs, ok := errorAs[git.ErrBranchNotExist](err); ok {
-		ctx.JSONError(ctx.Tr("repo.editor.branch_does_not_exist", errAs.Name))
+		ctx.JSONError(ctx.Tr("Branch \"%s\" does not exist in this repository.", errAs.Name))
 	} else if errAs, ok := errorAs[git_model.ErrBranchAlreadyExists](err); ok {
-		ctx.JSONError(ctx.Tr("repo.editor.branch_already_exists", errAs.BranchName))
+		ctx.JSONError(ctx.Tr("Branch \"%s\" already exists in this repository.", errAs.BranchName))
 	} else if files_service.IsErrCommitIDDoesNotMatch(err) {
-		ctx.JSONError(ctx.Tr("repo.editor.commit_id_not_matching"))
+		ctx.JSONError(ctx.Tr("The Commit ID does not match the ID when you began editing. Commit into a patch branch and then merge."))
 	} else if files_service.IsErrCommitIDDoesNotMatch(err) || git.IsErrPushOutOfDate(err) {
-		ctx.JSONError(ctx.Tr("repo.editor.file_changed_while_editing", ctx.Repo.RepoLink+"/compare/"+util.PathEscapeSegments(ctx.Repo.CommitID)+"..."+util.PathEscapeSegments(targetBranchName)))
+		ctx.JSONError(ctx.Tr("The file contents have changed since you started editing. <a target=\"_blank\" rel=\"noopener noreferrer\" href=\"%s\">Click here</a> to see them or <strong>Commit Changes again</strong> to overwrite them.", ctx.Repo.RepoLink+"/compare/"+util.PathEscapeSegments(ctx.Repo.CommitID)+"..."+util.PathEscapeSegments(targetBranchName)))
 	} else if errAs, ok := errorAs[*git.ErrPushRejected](err); ok {
 		if errAs.Message == "" {
-			ctx.JSONError(ctx.Tr("repo.editor.push_rejected_no_message"))
+			ctx.JSONError(ctx.Tr("The change was rejected by the server without a message. Please check Git Hooks."))
 		} else {
-			editorHandleFileOperationErrorRender(ctx, ctx.Locale.TrString("repo.editor.push_rejected"), ctx.Locale.TrString("repo.editor.push_rejected_summary"), errAs.Message)
+			editorHandleFileOperationErrorRender(ctx, ctx.Locale.TrString("The change was rejected by the server. Please check Git Hooks."), ctx.Locale.TrString("Full Rejection Message:"), errAs.Message)
 		}
 	} else if errors.Is(err, util.ErrNotExist) {
-		ctx.JSONError(ctx.Tr("error.not_found"))
+		ctx.JSONError(ctx.Tr("The target couldn't be found."))
 	} else {
 		setting.PanicInDevOrTesting("unclear err %T: %v", err, err)
-		editorHandleFileOperationErrorRender(ctx, ctx.Locale.TrString("repo.editor.failed_to_commit"), ctx.Locale.TrString("repo.editor.failed_to_commit_summary"), err.Error())
+		editorHandleFileOperationErrorRender(ctx, ctx.Locale.TrString("Failed to commit changes."), ctx.Locale.TrString("Error Message:"), err.Error())
 	}
 }

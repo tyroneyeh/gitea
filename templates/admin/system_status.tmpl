@@ -1,62 +1,62 @@
 <dl class="admin-dl-horizontal">
-	<dt>{{ctx.Locale.Tr "admin.dashboard.server_uptime"}}</dt>
+	<dt>{{ctx.Locale.Tr "Server Uptime"}}</dt>
 	<dd><relative-time format="duration" datetime="{{.SysStatus.StartTime}}">{{.SysStatus.StartTime}}</relative-time></dd>
-	<dt>{{ctx.Locale.Tr "admin.dashboard.current_goroutine"}}</dt>
+	<dt>{{ctx.Locale.Tr "Current Goroutines"}}</dt>
 	<dd>{{.SysStatus.NumGoroutine}}</dd>
 	<div class="divider"></div>
-	<dt>{{ctx.Locale.Tr "admin.dashboard.current_memory_usage"}}</dt>
+	<dt>{{ctx.Locale.Tr "Current Memory Usage"}}</dt>
 	<dd>{{.SysStatus.MemAllocated}}</dd>
-	<dt>{{ctx.Locale.Tr "admin.dashboard.total_memory_allocated"}}</dt>
+	<dt>{{ctx.Locale.Tr "Total Memory Allocated"}}</dt>
 	<dd>{{.SysStatus.MemTotal}}</dd>
-	<dt>{{ctx.Locale.Tr "admin.dashboard.memory_obtained"}}</dt>
+	<dt>{{ctx.Locale.Tr "Memory Obtained"}}</dt>
 	<dd>{{.SysStatus.MemSys}}</dd>
-	<dt>{{ctx.Locale.Tr "admin.dashboard.pointer_lookup_times"}}</dt>
+	<dt>{{ctx.Locale.Tr "Pointer Lookup Times"}}</dt>
 	<dd>{{.SysStatus.Lookups}}</dd>
-	<dt>{{ctx.Locale.Tr "admin.dashboard.memory_allocate_times"}}</dt>
+	<dt>{{ctx.Locale.Tr "Memory Allocations"}}</dt>
 	<dd>{{.SysStatus.MemMallocs}}</dd>
-	<dt>{{ctx.Locale.Tr "admin.dashboard.memory_free_times"}}</dt>
+	<dt>{{ctx.Locale.Tr "Memory Frees"}}</dt>
 	<dd>{{.SysStatus.MemFrees}}</dd>
 	<div class="divider"></div>
-	<dt>{{ctx.Locale.Tr "admin.dashboard.current_heap_usage"}}</dt>
+	<dt>{{ctx.Locale.Tr "Current Heap Usage"}}</dt>
 	<dd>{{.SysStatus.HeapAlloc}}</dd>
-	<dt>{{ctx.Locale.Tr "admin.dashboard.heap_memory_obtained"}}</dt>
+	<dt>{{ctx.Locale.Tr "Heap Memory Obtained"}}</dt>
 	<dd>{{.SysStatus.HeapSys}}</dd>
-	<dt>{{ctx.Locale.Tr "admin.dashboard.heap_memory_idle"}}</dt>
+	<dt>{{ctx.Locale.Tr "Heap Memory Idle"}}</dt>
 	<dd>{{.SysStatus.HeapIdle}}</dd>
-	<dt>{{ctx.Locale.Tr "admin.dashboard.heap_memory_in_use"}}</dt>
+	<dt>{{ctx.Locale.Tr "Heap Memory In Use"}}</dt>
 	<dd>{{.SysStatus.HeapInuse}}</dd>
-	<dt>{{ctx.Locale.Tr "admin.dashboard.heap_memory_released"}}</dt>
+	<dt>{{ctx.Locale.Tr "Heap Memory Released"}}</dt>
 	<dd>{{.SysStatus.HeapReleased}}</dd>
-	<dt>{{ctx.Locale.Tr "admin.dashboard.heap_objects"}}</dt>
+	<dt>{{ctx.Locale.Tr "Heap Objects"}}</dt>
 	<dd>{{.SysStatus.HeapObjects}}</dd>
 	<div class="divider"></div>
-	<dt>{{ctx.Locale.Tr "admin.dashboard.bootstrap_stack_usage"}}</dt>
+	<dt>{{ctx.Locale.Tr "Bootstrap Stack Usage"}}</dt>
 	<dd>{{.SysStatus.StackInuse}}</dd>
-	<dt>{{ctx.Locale.Tr "admin.dashboard.stack_memory_obtained"}}</dt>
+	<dt>{{ctx.Locale.Tr "Stack Memory Obtained"}}</dt>
 	<dd>{{.SysStatus.StackSys}}</dd>
-	<dt>{{ctx.Locale.Tr "admin.dashboard.mspan_structures_usage"}}</dt>
+	<dt>{{ctx.Locale.Tr "MSpan Structures Usage"}}</dt>
 	<dd>{{.SysStatus.MSpanInuse}}</dd>
-	<dt>{{ctx.Locale.Tr "admin.dashboard.mspan_structures_obtained"}}</dt>
+	<dt>{{ctx.Locale.Tr "MSpan Structures Obtained"}}</dt>
 	<dd>{{.SysStatus.MSpanSys}}</dd>
-	<dt>{{ctx.Locale.Tr "admin.dashboard.mcache_structures_usage"}}</dt>
+	<dt>{{ctx.Locale.Tr "MCache Structures Usage"}}</dt>
 	<dd>{{.SysStatus.MCacheInuse}}</dd>
-	<dt>{{ctx.Locale.Tr "admin.dashboard.mcache_structures_obtained"}}</dt>
+	<dt>{{ctx.Locale.Tr "MCache Structures Obtained"}}</dt>
 	<dd>{{.SysStatus.MCacheSys}}</dd>
-	<dt>{{ctx.Locale.Tr "admin.dashboard.profiling_bucket_hash_table_obtained"}}</dt>
+	<dt>{{ctx.Locale.Tr "Profiling Bucket Hash Table Obtained"}}</dt>
 	<dd>{{.SysStatus.BuckHashSys}}</dd>
-	<dt>{{ctx.Locale.Tr "admin.dashboard.gc_metadata_obtained"}}</dt>
+	<dt>{{ctx.Locale.Tr "GC Metadata Obtained"}}</dt>
 	<dd>{{.SysStatus.GCSys}}</dd>
-	<dt>{{ctx.Locale.Tr "admin.dashboard.other_system_allocation_obtained"}}</dt>
+	<dt>{{ctx.Locale.Tr "Other System Allocation Obtained"}}</dt>
 	<dd>{{.SysStatus.OtherSys}}</dd>
 	<div class="divider"></div>
-	<dt>{{ctx.Locale.Tr "admin.dashboard.next_gc_recycle"}}</dt>
+	<dt>{{ctx.Locale.Tr "Next GC Recycle"}}</dt>
 	<dd>{{.SysStatus.NextGC}}</dd>
-	<dt>{{ctx.Locale.Tr "admin.dashboard.last_gc_time"}}</dt>
+	<dt>{{ctx.Locale.Tr "Since Last GC Time"}}</dt>
 	<dd><relative-time format="duration" datetime="{{.SysStatus.LastGCTime}}">{{.SysStatus.LastGCTime}}</relative-time></dd>
-	<dt>{{ctx.Locale.Tr "admin.dashboard.total_gc_pause"}}</dt>
+	<dt>{{ctx.Locale.Tr "Total GC Pause"}}</dt>
 	<dd>{{.SysStatus.PauseTotalNs}}</dd>
-	<dt>{{ctx.Locale.Tr "admin.dashboard.last_gc_pause"}}</dt>
+	<dt>{{ctx.Locale.Tr "Last GC Pause"}}</dt>
 	<dd>{{.SysStatus.PauseNs}}</dd>
-	<dt>{{ctx.Locale.Tr "admin.dashboard.gc_times"}}</dt>
+	<dt>{{ctx.Locale.Tr "GC Times"}}</dt>
 	<dd>{{.SysStatus.NumGC}}</dd>
 </dl>

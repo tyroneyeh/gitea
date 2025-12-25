@@ -51,7 +51,7 @@ const (
 // SettingsCtxData is a middleware that sets all the general context data for the
 // settings template.
 func SettingsCtxData(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("repo.settings.options")
+	ctx.Data["Title"] = ctx.Tr("Repository")
 	ctx.Data["PageIsSettingsOptions"] = true
 	ctx.Data["ForcePrivate"] = setting.Repository.ForcePrivate
 	ctx.Data["MirrorsEnabled"] = setting.Mirror.Enabled
@@ -175,23 +175,23 @@ func handleSettingsPostUpdate(ctx *context.Context) {
 			ctx.Data["Err_RepoName"] = true
 			switch {
 			case repo_model.IsErrRepoAlreadyExist(err):
-				ctx.RenderWithErr(ctx.Tr("form.repo_name_been_taken"), tplSettingsOptions, &form)
+				ctx.RenderWithErr(ctx.Tr("The repository name is already used."), tplSettingsOptions, &form)
 			case db.IsErrNameReserved(err):
-				ctx.RenderWithErr(ctx.Tr("repo.form.name_reserved", err.(db.ErrNameReserved).Name), tplSettingsOptions, &form)
+				ctx.RenderWithErr(ctx.Tr("The repository name \"%s\" is reserved.", err.(db.ErrNameReserved).Name), tplSettingsOptions, &form)
 			case repo_model.IsErrRepoFilesAlreadyExist(err):
 				ctx.Data["Err_RepoName"] = true
 				switch {
 				case ctx.IsUserSiteAdmin() || (setting.Repository.AllowAdoptionOfUnadoptedRepositories && setting.Repository.AllowDeleteOfUnadoptedRepositories):
-					ctx.RenderWithErr(ctx.Tr("form.repository_files_already_exist.adopt_or_delete"), tplSettingsOptions, form)
+					ctx.RenderWithErr(ctx.Tr("Files already exist for this repository. Either adopt them or delete them."), tplSettingsOptions, form)
 				case setting.Repository.AllowAdoptionOfUnadoptedRepositories:
-					ctx.RenderWithErr(ctx.Tr("form.repository_files_already_exist.adopt"), tplSettingsOptions, form)
+					ctx.RenderWithErr(ctx.Tr("Files already exist for this repository and can only be adopted."), tplSettingsOptions, form)
 				case setting.Repository.AllowDeleteOfUnadoptedRepositories:
-					ctx.RenderWithErr(ctx.Tr("form.repository_files_already_exist.delete"), tplSettingsOptions, form)
+					ctx.RenderWithErr(ctx.Tr("Files already exist for this repository. You must delete them."), tplSettingsOptions, form)
 				default:
-					ctx.RenderWithErr(ctx.Tr("form.repository_files_already_exist"), tplSettingsOptions, form)
+					ctx.RenderWithErr(ctx.Tr("Files already exist for this repository. Contact the system administrator."), tplSettingsOptions, form)
 				}
 			case db.IsErrNamePatternNotAllowed(err):
-				ctx.RenderWithErr(ctx.Tr("repo.form.name_pattern_not_allowed", err.(db.ErrNamePatternNotAllowed).Pattern), tplSettingsOptions, &form)
+				ctx.RenderWithErr(ctx.Tr("The pattern \"%s\" is not allowed in a repository name.", err.(db.ErrNamePatternNotAllowed).Pattern), tplSettingsOptions, &form)
 			default:
 				ctx.ServerError("ChangeRepositoryName", err)
 			}
@@ -213,7 +213,7 @@ func handleSettingsPostUpdate(ctx *context.Context) {
 	}
 	log.Trace("Repository basic settings updated: %s/%s", ctx.Repo.Owner.Name, repo.Name)
 
-	ctx.Flash.Success(ctx.Tr("repo.settings.update_settings_success"))
+	ctx.Flash.Success(ctx.Tr("The repository settings have been updated."))
 	ctx.Redirect(repo.Link() + "/settings")
 }
 
@@ -241,7 +241,7 @@ func handleSettingsPostMirror(ctx *context.Context) {
 	interval, err := time.ParseDuration(form.Interval)
 	if err != nil || (interval != 0 && interval < setting.Mirror.MinInterval) {
 		ctx.Data["Err_Interval"] = true
-		ctx.RenderWithErr(ctx.Tr("repo.mirror_interval_invalid"), tplSettingsOptions, &form)
+		ctx.RenderWithErr(ctx.Tr("The mirror interval is not valid."), tplSettingsOptions, &form)
 		return
 	}
 
@@ -292,7 +292,7 @@ func handleSettingsPostMirror(ctx *context.Context) {
 		ep := lfs.DetermineEndpoint("", form.LFSEndpoint)
 		if ep == nil {
 			ctx.Data["Err_LFSEndpoint"] = true
-			ctx.RenderWithErr(ctx.Tr("repo.migrate.invalid_lfs_endpoint"), tplSettingsOptions, &form)
+			ctx.RenderWithErr(ctx.Tr("The LFS endpoint is not valid."), tplSettingsOptions, &form)
 			return
 		}
 		err = migrations.IsMigrateURLAllowed(ep.String(), ctx.Doer)
@@ -310,7 +310,7 @@ func handleSettingsPostMirror(ctx *context.Context) {
 		return
 	}
 
-	ctx.Flash.Success(ctx.Tr("repo.settings.update_settings_success"))
+	ctx.Flash.Success(ctx.Tr("The repository settings have been updated."))
 	ctx.Redirect(repo.Link() + "/settings")
 }
 
@@ -323,7 +323,7 @@ func handleSettingsPostMirrorSync(ctx *context.Context) {
 
 	mirror_service.AddPullMirrorToQueue(repo.ID)
 
-	ctx.Flash.Info(ctx.Tr("repo.settings.pull_mirror_sync_in_progress", repo.OriginalURL))
+	ctx.Flash.Info(ctx.Tr("Pulling changes from the remote %s at the moment.", repo.OriginalURL))
 	ctx.Redirect(repo.Link() + "/settings")
 }
 
@@ -344,7 +344,7 @@ func handleSettingsPostPushMirrorSync(ctx *context.Context) {
 
 	mirror_service.AddPushMirrorToQueue(m.ID)
 
-	ctx.Flash.Info(ctx.Tr("repo.settings.push_mirror_sync_in_progress", m.RemoteAddress))
+	ctx.Flash.Info(ctx.Tr("Pushing changes to the remote %s at the moment.", m.RemoteAddress))
 	ctx.Redirect(repo.Link() + "/settings")
 }
 
@@ -363,7 +363,7 @@ func handleSettingsPostPushMirrorUpdate(ctx *context.Context) {
 
 	interval, err := time.ParseDuration(form.PushMirrorInterval)
 	if err != nil || (interval != 0 && interval < setting.Mirror.MinInterval) {
-		ctx.RenderWithErr(ctx.Tr("repo.mirror_interval_invalid"), tplSettingsOptions, &forms.RepoSettingForm{})
+		ctx.RenderWithErr(ctx.Tr("The mirror interval is not valid."), tplSettingsOptions, &forms.RepoSettingForm{})
 		return
 	}
 
@@ -386,7 +386,7 @@ func handleSettingsPostPushMirrorUpdate(ctx *context.Context) {
 		// push_mirror_defer_sync is mainly for testing purpose, we do not really want to sync the push mirror immediately
 		mirror_service.AddPushMirrorToQueue(m.ID)
 	}
-	ctx.Flash.Success(ctx.Tr("repo.settings.update_settings_success"))
+	ctx.Flash.Success(ctx.Tr("The repository settings have been updated."))
 	ctx.Redirect(repo.Link() + "/settings")
 }
 
@@ -419,7 +419,7 @@ func handleSettingsPostPushMirrorRemove(ctx *context.Context) {
 		return
 	}
 
-	ctx.Flash.Success(ctx.Tr("repo.settings.update_settings_success"))
+	ctx.Flash.Success(ctx.Tr("The repository settings have been updated."))
 	ctx.Redirect(repo.Link() + "/settings")
 }
 
@@ -439,7 +439,7 @@ func handleSettingsPostPushMirrorAdd(ctx *context.Context) {
 	interval, err := time.ParseDuration(form.PushMirrorInterval)
 	if err != nil || (interval != 0 && interval < setting.Mirror.MinInterval) {
 		ctx.Data["Err_PushMirrorInterval"] = true
-		ctx.RenderWithErr(ctx.Tr("repo.mirror_interval_invalid"), tplSettingsOptions, &form)
+		ctx.RenderWithErr(ctx.Tr("The mirror interval is not valid."), tplSettingsOptions, &form)
 		return
 	}
 
@@ -487,7 +487,7 @@ func handleSettingsPostPushMirrorAdd(ctx *context.Context) {
 		return
 	}
 
-	ctx.Flash.Success(ctx.Tr("repo.settings.update_settings_success"))
+	ctx.Flash.Success(ctx.Tr("The repository settings have been updated."))
 	ctx.Redirect(repo.Link() + "/settings")
 }
 
@@ -526,7 +526,7 @@ func handleSettingsPostAdvanced(ctx *context.Context) {
 
 	if form.EnableWiki && form.EnableExternalWiki && !unit_model.TypeExternalWiki.UnitGlobalDisabled() {
 		if !validation.IsValidExternalURL(form.ExternalWikiURL) {
-			ctx.Flash.Error(ctx.Tr("repo.settings.external_wiki_url_error"))
+			ctx.Flash.Error(ctx.Tr("The external wiki URL is not a valid URL."))
 			ctx.Redirect(repo.Link() + "/settings")
 			return
 		}
@@ -550,18 +550,18 @@ func handleSettingsPostAdvanced(ctx *context.Context) {
 	if form.DefaultWikiBranch != "" {
 		if err := wiki_service.ChangeDefaultWikiBranch(ctx, repo, form.DefaultWikiBranch); err != nil {
 			log.Error("ChangeDefaultWikiBranch failed, err: %v", err)
-			ctx.Flash.Warning(ctx.Tr("repo.settings.failed_to_change_default_wiki_branch"))
+			ctx.Flash.Warning(ctx.Tr("Failed to change the default wiki branch."))
 		}
 	}
 
 	if form.EnableIssues && form.EnableExternalTracker && !unit_model.TypeExternalTracker.UnitGlobalDisabled() {
 		if !validation.IsValidExternalURL(form.ExternalTrackerURL) {
-			ctx.Flash.Error(ctx.Tr("repo.settings.external_tracker_url_error"))
+			ctx.Flash.Error(ctx.Tr("The external issue tracker URL is not a valid URL."))
 			ctx.Redirect(repo.Link() + "/settings")
 			return
 		}
 		if len(form.TrackerURLFormat) != 0 && !validation.IsValidExternalTrackerURLFormat(form.TrackerURLFormat) {
-			ctx.Flash.Error(ctx.Tr("repo.settings.tracker_url_format_error"))
+			ctx.Flash.Error(ctx.Tr("The external issue tracker URL format is not a valid URL."))
 			ctx.Redirect(repo.Link() + "/settings")
 			return
 		}
@@ -628,7 +628,7 @@ func handleSettingsPostAdvanced(ctx *context.Context) {
 	}
 
 	if len(units) == 0 {
-		ctx.Flash.Error(ctx.Tr("repo.settings.update_settings_no_unit"))
+		ctx.Flash.Error(ctx.Tr("The repository should allow at least some sort of interaction."))
 		ctx.Redirect(ctx.Repo.RepoLink + "/settings")
 		return
 	}
@@ -645,7 +645,7 @@ func handleSettingsPostAdvanced(ctx *context.Context) {
 	}
 	log.Trace("Repository advanced settings updated: %s/%s", ctx.Repo.Owner.Name, repo.Name)
 
-	ctx.Flash.Success(ctx.Tr("repo.settings.update_settings_success"))
+	ctx.Flash.Success(ctx.Tr("The repository settings have been updated."))
 	ctx.Redirect(ctx.Repo.RepoLink + "/settings")
 }
 
@@ -662,7 +662,7 @@ func handleSettingsPostSigning(ctx *context.Context) {
 		log.Trace("Repository signing settings updated: %s/%s", ctx.Repo.Owner.Name, repo.Name)
 	}
 
-	ctx.Flash.Success(ctx.Tr("repo.settings.update_settings_success"))
+	ctx.Flash.Success(ctx.Tr("The repository settings have been updated."))
 	ctx.Redirect(ctx.Repo.RepoLink + "/settings")
 }
 
@@ -683,7 +683,7 @@ func handleSettingsPostAdmin(ctx *context.Context) {
 		log.Trace("Repository admin settings updated: %s/%s", ctx.Repo.Owner.Name, repo.Name)
 	}
 
-	ctx.Flash.Success(ctx.Tr("repo.settings.update_settings_success"))
+	ctx.Flash.Success(ctx.Tr("The repository settings have been updated."))
 	ctx.Redirect(ctx.Repo.RepoLink + "/settings")
 }
 
@@ -714,7 +714,7 @@ func handleSettingsPostAdminIndex(ctx *context.Context) {
 
 	log.Trace("Repository reindex for %s requested: %s/%s", form.RequestReindexType, ctx.Repo.Owner.Name, repo.Name)
 
-	ctx.Flash.Success(ctx.Tr("repo.settings.reindex_requested"))
+	ctx.Flash.Success(ctx.Tr("Reindex Requested"))
 	ctx.Redirect(ctx.Repo.RepoLink + "/settings")
 }
 
@@ -726,7 +726,7 @@ func handleSettingsPostConvert(ctx *context.Context) {
 		return
 	}
 	if repo.Name != form.RepoName {
-		ctx.RenderWithErr(ctx.Tr("form.enterred_invalid_repo_name"), tplSettingsOptions, nil)
+		ctx.RenderWithErr(ctx.Tr("The repository name you entered is incorrect."), tplSettingsOptions, nil)
 		return
 	}
 
@@ -744,7 +744,7 @@ func handleSettingsPostConvert(ctx *context.Context) {
 		return
 	}
 	log.Trace("Repository converted from mirror to regular: %s", repo.FullName())
-	ctx.Flash.Success(ctx.Tr("repo.settings.convert_succeed"))
+	ctx.Flash.Success(ctx.Tr("The mirror has been converted into a regular repository."))
 	ctx.Redirect(repo.Link())
 }
 
@@ -760,7 +760,7 @@ func handleSettingsPostConvertFork(ctx *context.Context) {
 		return
 	}
 	if repo.Name != form.RepoName {
-		ctx.RenderWithErr(ctx.Tr("form.enterred_invalid_repo_name"), tplSettingsOptions, nil)
+		ctx.RenderWithErr(ctx.Tr("The repository name you entered is incorrect."), tplSettingsOptions, nil)
 		return
 	}
 
@@ -771,7 +771,7 @@ func handleSettingsPostConvertFork(ctx *context.Context) {
 
 	if !ctx.Doer.CanForkRepoIn(ctx.Repo.Owner) {
 		maxCreationLimit := ctx.Repo.Owner.MaxCreationLimit()
-		msg := ctx.TrN(maxCreationLimit, "repo.form.reach_limit_of_creation_1", "repo.form.reach_limit_of_creation_n", maxCreationLimit)
+		msg := ctx.TrN(maxCreationLimit, "The owner has already reached the limit of %d repository.", "The owner has already reached the limit of %d repositories.", maxCreationLimit)
 		ctx.Flash.Error(msg)
 		ctx.Redirect(repo.Link() + "/settings")
 		return
@@ -784,7 +784,7 @@ func handleSettingsPostConvertFork(ctx *context.Context) {
 	}
 
 	log.Trace("Repository converted from fork to regular: %s", repo.FullName())
-	ctx.Flash.Success(ctx.Tr("repo.settings.convert_fork_succeed"))
+	ctx.Flash.Success(ctx.Tr("The fork has been converted into a regular repository."))
 	ctx.Redirect(repo.Link())
 }
 
@@ -796,14 +796,14 @@ func handleSettingsPostTransfer(ctx *context.Context) {
 		return
 	}
 	if repo.Name != form.RepoName {
-		ctx.RenderWithErr(ctx.Tr("form.enterred_invalid_repo_name"), tplSettingsOptions, nil)
+		ctx.RenderWithErr(ctx.Tr("The repository name you entered is incorrect."), tplSettingsOptions, nil)
 		return
 	}
 
 	newOwner, err := user_model.GetUserByName(ctx, ctx.FormString("new_owner_name"))
 	if err != nil {
 		if user_model.IsErrUserNotExist(err) {
-			ctx.RenderWithErr(ctx.Tr("form.enterred_invalid_owner_name"), tplSettingsOptions, nil)
+			ctx.RenderWithErr(ctx.Tr("The new owner name is not valid."), tplSettingsOptions, nil)
 			return
 		}
 		ctx.ServerError("IsUserExist", err)
@@ -813,7 +813,7 @@ func handleSettingsPostTransfer(ctx *context.Context) {
 	if newOwner.Type == user_model.UserTypeOrganization {
 		if !ctx.Doer.IsAdmin && newOwner.Visibility == structs.VisibleTypePrivate && !organization.OrgFromUser(newOwner).HasMemberWithUserID(ctx, ctx.Doer.ID) {
 			// The user shouldn't know about this organization
-			ctx.RenderWithErr(ctx.Tr("form.enterred_invalid_owner_name"), tplSettingsOptions, nil)
+			ctx.RenderWithErr(ctx.Tr("The new owner name is not valid."), tplSettingsOptions, nil)
 			return
 		}
 	}
@@ -827,14 +827,14 @@ func handleSettingsPostTransfer(ctx *context.Context) {
 	oldFullname := repo.FullName()
 	if err := repo_service.StartRepositoryTransfer(ctx, ctx.Doer, newOwner, repo, nil); err != nil {
 		if repo_model.IsErrRepoAlreadyExist(err) {
-			ctx.RenderWithErr(ctx.Tr("repo.settings.new_owner_has_same_repo"), tplSettingsOptions, nil)
+			ctx.RenderWithErr(ctx.Tr("The new owner already has a repository with same name. Please choose another name."), tplSettingsOptions, nil)
 		} else if repo_model.IsErrRepoTransferInProgress(err) {
-			ctx.RenderWithErr(ctx.Tr("repo.settings.transfer_in_progress"), tplSettingsOptions, nil)
+			ctx.RenderWithErr(ctx.Tr("There is currently an ongoing transfer. Please cancel it if you would like to transfer this repository to another user."), tplSettingsOptions, nil)
 		} else if repo_service.IsRepositoryLimitReached(err) {
 			limit := err.(repo_service.LimitReachedError).Limit
-			ctx.RenderWithErr(ctx.TrN(limit, "repo.form.reach_limit_of_creation_1", "repo.form.reach_limit_of_creation_n", limit), tplSettingsOptions, nil)
+			ctx.RenderWithErr(ctx.TrN(limit, "The owner has already reached the limit of %d repository.", "The owner has already reached the limit of %d repositories.", limit), tplSettingsOptions, nil)
 		} else if errors.Is(err, user_model.ErrBlockedUser) {
-			ctx.RenderWithErr(ctx.Tr("repo.settings.transfer.blocked_user"), tplSettingsOptions, nil)
+			ctx.RenderWithErr(ctx.Tr("Cannot transfer repository because you are blocked by the new owner."), tplSettingsOptions, nil)
 		} else {
 			ctx.ServerError("TransferOwnership", err)
 		}
@@ -844,10 +844,10 @@ func handleSettingsPostTransfer(ctx *context.Context) {
 
 	if ctx.Repo.Repository.Status == repo_model.RepositoryPendingTransfer {
 		log.Trace("Repository transfer process was started: %s/%s -> %s", ctx.Repo.Owner.Name, repo.Name, newOwner)
-		ctx.Flash.Success(ctx.Tr("repo.settings.transfer_started", newOwner.DisplayName()))
+		ctx.Flash.Success(ctx.Tr("This repository has been marked for transfer and awaits confirmation from \"%s\"", newOwner.DisplayName()))
 	} else {
 		log.Trace("Repository transferred: %s -> %s", oldFullname, ctx.Repo.Repository.FullName())
-		ctx.Flash.Success(ctx.Tr("repo.settings.transfer_succeed"))
+		ctx.Flash.Success(ctx.Tr("The repository has been transferred."))
 	}
 	ctx.Redirect(repo.Link() + "/settings")
 }
@@ -876,7 +876,7 @@ func handleSettingsPostCancelTransfer(ctx *context.Context) {
 	}
 
 	log.Trace("Repository transfer process was cancelled: %s/%s ", ctx.Repo.Owner.Name, repo.Name)
-	ctx.Flash.Success(ctx.Tr("repo.settings.transfer_abort_success", repoTransfer.Recipient.Name))
+	ctx.Flash.Success(ctx.Tr("The repository transfer to %s was successfully canceled.", repoTransfer.Recipient.Name))
 	ctx.Redirect(repo.Link() + "/settings")
 }
 
@@ -888,7 +888,7 @@ func handleSettingsPostDelete(ctx *context.Context) {
 		return
 	}
 	if repo.Name != form.RepoName {
-		ctx.RenderWithErr(ctx.Tr("form.enterred_invalid_repo_name"), tplSettingsOptions, nil)
+		ctx.RenderWithErr(ctx.Tr("The repository name you entered is incorrect."), tplSettingsOptions, nil)
 		return
 	}
 
@@ -903,7 +903,7 @@ func handleSettingsPostDelete(ctx *context.Context) {
 	}
 	log.Trace("Repository deleted: %s/%s", ctx.Repo.Owner.Name, repo.Name)
 
-	ctx.Flash.Success(ctx.Tr("repo.settings.deletion_success"))
+	ctx.Flash.Success(ctx.Tr("The repository has been deleted."))
 	ctx.Redirect(ctx.Repo.Owner.DashboardLink())
 }
 
@@ -915,7 +915,7 @@ func handleSettingsPostDeleteWiki(ctx *context.Context) {
 		return
 	}
 	if repo.Name != form.RepoName {
-		ctx.RenderWithErr(ctx.Tr("form.enterred_invalid_repo_name"), tplSettingsOptions, nil)
+		ctx.RenderWithErr(ctx.Tr("The repository name you entered is incorrect."), tplSettingsOptions, nil)
 		return
 	}
 
@@ -925,7 +925,7 @@ func handleSettingsPostDeleteWiki(ctx *context.Context) {
 	}
 	log.Trace("Repository wiki deleted: %s/%s", ctx.Repo.Owner.Name, repo.Name)
 
-	ctx.Flash.Success(ctx.Tr("repo.settings.wiki_deletion_success"))
+	ctx.Flash.Success(ctx.Tr("The repository wiki data has been deleted."))
 	ctx.Redirect(ctx.Repo.RepoLink + "/settings")
 }
 
@@ -937,14 +937,14 @@ func handleSettingsPostArchive(ctx *context.Context) {
 	}
 
 	if repo.IsMirror {
-		ctx.Flash.Error(ctx.Tr("repo.settings.archive.error_ismirror"))
+		ctx.Flash.Error(ctx.Tr("You cannot archive a mirrored repo."))
 		ctx.Redirect(ctx.Repo.RepoLink + "/settings")
 		return
 	}
 
 	if err := repo_model.SetArchiveRepoState(ctx, repo, true); err != nil {
 		log.Error("Tried to archive a repo: %s", err)
-		ctx.Flash.Error(ctx.Tr("repo.settings.archive.error"))
+		ctx.Flash.Error(ctx.Tr("An error occurred while trying to archive the repo. See the log for more details."))
 		ctx.Redirect(ctx.Repo.RepoLink + "/settings")
 		return
 	}
@@ -956,7 +956,7 @@ func handleSettingsPostArchive(ctx *context.Context) {
 	// update issue indexer
 	issue_indexer.UpdateRepoIndexer(ctx, repo.ID)
 
-	ctx.Flash.Success(ctx.Tr("repo.settings.archive.success"))
+	ctx.Flash.Success(ctx.Tr("The repo was successfully archived."))
 
 	log.Trace("Repository was archived: %s/%s", ctx.Repo.Owner.Name, repo.Name)
 	ctx.Redirect(ctx.Repo.RepoLink + "/settings")
@@ -971,7 +971,7 @@ func handleSettingsPostUnarchive(ctx *context.Context) {
 
 	if err := repo_model.SetArchiveRepoState(ctx, repo, false); err != nil {
 		log.Error("Tried to unarchive a repo: %s", err)
-		ctx.Flash.Error(ctx.Tr("repo.settings.unarchive.error"))
+		ctx.Flash.Error(ctx.Tr("An error occurred while trying to unarchive the repo. See the log for more details."))
 		ctx.Redirect(ctx.Repo.RepoLink + "/settings")
 		return
 	}
@@ -985,7 +985,7 @@ func handleSettingsPostUnarchive(ctx *context.Context) {
 	// update issue indexer
 	issue_indexer.UpdateRepoIndexer(ctx, repo.ID)
 
-	ctx.Flash.Success(ctx.Tr("repo.settings.unarchive.success"))
+	ctx.Flash.Success(ctx.Tr("The repo was successfully unarchived."))
 
 	log.Trace("Repository was un-archived: %s/%s", ctx.Repo.Owner.Name, repo.Name)
 	ctx.Redirect(ctx.Repo.RepoLink + "/settings")
@@ -995,7 +995,7 @@ func handleSettingsPostVisibility(ctx *context.Context) {
 	form := web.GetForm(ctx).(*forms.RepoSettingForm)
 	repo := ctx.Repo.Repository
 	if repo.IsFork {
-		ctx.Flash.Error(ctx.Tr("repo.settings.visibility.fork_error"))
+		ctx.Flash.Error(ctx.Tr("Can't change the visibility of a forked repo."))
 		ctx.Redirect(ctx.Repo.RepoLink + "/settings")
 		return
 	}
@@ -1004,7 +1004,7 @@ func handleSettingsPostVisibility(ctx *context.Context) {
 
 	// when ForcePrivate enabled, you could change public repo to private, but only admin users can change private to public
 	if setting.Repository.ForcePrivate && repo.IsPrivate && !ctx.Doer.IsAdmin {
-		ctx.RenderWithErr(ctx.Tr("form.repository_force_private"), tplSettingsOptions, form)
+		ctx.RenderWithErr(ctx.Tr("Force Private is enabled: private repositories cannot be made public."), tplSettingsOptions, form)
 		return
 	}
 
@@ -1016,12 +1016,12 @@ func handleSettingsPostVisibility(ctx *context.Context) {
 
 	if err != nil {
 		log.Error("Tried to change the visibility of the repo: %s", err)
-		ctx.Flash.Error(ctx.Tr("repo.settings.visibility.error"))
+		ctx.Flash.Error(ctx.Tr("An error occurred while trying to change the repo visibility."))
 		ctx.Redirect(ctx.Repo.RepoLink + "/settings")
 		return
 	}
 
-	ctx.Flash.Success(ctx.Tr("repo.settings.visibility.success"))
+	ctx.Flash.Success(ctx.Tr("Repository visibility changed."))
 
 	log.Trace("Repository visibility changed: %s/%s", ctx.Repo.Owner.Name, repo.Name)
 	ctx.Redirect(ctx.Repo.RepoLink + "/settings")
@@ -1032,21 +1032,21 @@ func handleSettingRemoteAddrError(ctx *context.Context, err error, form *forms.R
 		addrErr := err.(*git.ErrInvalidCloneAddr)
 		switch {
 		case addrErr.IsProtocolInvalid:
-			ctx.RenderWithErr(ctx.Tr("repo.mirror_address_protocol_invalid"), tplSettingsOptions, form)
+			ctx.RenderWithErr(ctx.Tr("The provided URL is invalid. Only http(s):// or git:// locations can be used for mirroring."), tplSettingsOptions, form)
 		case addrErr.IsURLError:
-			ctx.RenderWithErr(ctx.Tr("form.url_error", addrErr.Host), tplSettingsOptions, form)
+			ctx.RenderWithErr(ctx.Tr("\"%s\" is not a valid URL.", addrErr.Host), tplSettingsOptions, form)
 		case addrErr.IsPermissionDenied:
 			if addrErr.LocalPath {
-				ctx.RenderWithErr(ctx.Tr("repo.migrate.permission_denied"), tplSettingsOptions, form)
+				ctx.RenderWithErr(ctx.Tr("You are not allowed to import local repositories."), tplSettingsOptions, form)
 			} else {
-				ctx.RenderWithErr(ctx.Tr("repo.migrate.permission_denied_blocked"), tplSettingsOptions, form)
+				ctx.RenderWithErr(ctx.Tr("You cannot import from disallowed hosts. Please ask the admin to check ALLOWED_DOMAINS/ALLOW_LOCALNETWORKS/BLOCKED_DOMAINS settings."), tplSettingsOptions, form)
 			}
 		case addrErr.IsInvalidPath:
-			ctx.RenderWithErr(ctx.Tr("repo.migrate.invalid_local_path"), tplSettingsOptions, form)
+			ctx.RenderWithErr(ctx.Tr("The local path is invalid. It doesn't exist or is not a directory."), tplSettingsOptions, form)
 		default:
 			ctx.ServerError("Unknown error", err)
 		}
 		return
 	}
-	ctx.RenderWithErr(ctx.Tr("repo.mirror_address_url_invalid"), tplSettingsOptions, form)
+	ctx.RenderWithErr(ctx.Tr("The provided URL is invalid. Make sure all components of the URL are escaped correctly."), tplSettingsOptions, form)
 }

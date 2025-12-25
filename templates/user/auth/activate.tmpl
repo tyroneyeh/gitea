@@ -5,31 +5,31 @@
 			<form class="ui form ignore-dirty tw-max-w-2xl tw-m-auto" action="{{AppSubUrl}}/user/activate" method="post">
 				{{.CsrfTokenHtml}}
 				<h2 class="ui top attached header">
-					{{ctx.Locale.Tr "auth.active_your_account"}}
+					{{ctx.Locale.Tr "Activate Your Account"}}
 				</h2>
 				<div class="ui attached segment">
 					{{template "base/alert" .}}
 					{{if .NeedVerifyLocalPassword}}
 						<div class="required field">
-							<label for="verify-password">{{ctx.Locale.Tr "password"}}</label>
+							<label for="verify-password">{{ctx.Locale.Tr "Password"}}</label>
 							<input id="verify-password" name="password" type="password" autocomplete="off" required>
 						</div>
 						<div class="inline field">
-							<button class="ui primary button">{{ctx.Locale.Tr "install.confirm_password"}}</button>
+							<button class="ui primary button">{{ctx.Locale.Tr "Confirm Password"}}</button>
 						</div>
 						<input name="code" type="hidden" value="{{.ActivationCode}}">
 					{{else}}
-						<p>{{ctx.Locale.Tr "auth.has_unconfirmed_mail" .SignedUser.Name .SignedUser.Email}}</p>
+						<p>{{ctx.Locale.Tr "Hi %s, you have an unconfirmed email address (<b>%s</b>). If you haven't received a confirmation email or need to resend a new one, please click on the button below." .SignedUser.Name .SignedUser.Email}}</p>
 						<details>
-							<summary>{{ctx.Locale.Tr "auth.change_unconfirmed_mail_address"}}</summary>
+							<summary>{{ctx.Locale.Tr "If your registration email address is incorrect, you can change it here and resend a new confirmation email."}}</summary>
 							<div class="tw-py-2">
-								<label for="change-email">{{ctx.Locale.Tr "email"}}</label>
+								<label for="change-email">{{ctx.Locale.Tr "Email Address"}}</label>
 								<input id="change-email" name="change_email" type="email" value="{{.SignedUser.Email}}">
 							</div>
 						</details>
 						<div class="divider"></div>
 						<div class="text">
-							<button class="ui primary button">{{ctx.Locale.Tr "auth.resend_mail"}}</button>
+							<button class="ui primary button">{{ctx.Locale.Tr "Click here to resend your activation email"}}</button>
 						</div>
 					{{end}}
 				</div>

@@ -1,13 +1,13 @@
 <div id="webauthn-error" class="ui negative message tw-hidden">
-	<div class="header">{{ctx.Locale.Tr "webauthn_error"}}</div>
+	<div class="header">{{ctx.Locale.Tr "Could not read your security key."}}</div>
 	<div id="webauthn-error-msg" class="tw-pt-2"></div>
 	<div class="tw-hidden">
-		<div data-webauthn-error-msg="browser">{{ctx.Locale.Tr "webauthn_unsupported_browser"}}</div>
-		<div data-webauthn-error-msg="unknown">{{ctx.Locale.Tr "webauthn_error_unknown"}}</div>
-		<div data-webauthn-error-msg="insecure">{{ctx.Locale.Tr "webauthn_error_insecure"}}</div>
-		<div data-webauthn-error-msg="unable-to-process">{{ctx.Locale.Tr "webauthn_error_unable_to_process"}}</div>
-		<div data-webauthn-error-msg="duplicated">{{ctx.Locale.Tr "webauthn_error_duplicated"}}</div>
-		<div data-webauthn-error-msg="empty">{{ctx.Locale.Tr "webauthn_error_empty"}}</div>
-		<div data-webauthn-error-msg="timeout">{{ctx.Locale.Tr "webauthn_error_timeout"}}</div>
+		<div data-webauthn-error-msg="browser">{{ctx.Locale.Tr "Your browser does not currently support WebAuthn."}}</div>
+		<div data-webauthn-error-msg="unknown">{{ctx.Locale.Tr "An unknown error occurred. Please retry."}}</div>
+		<div data-webauthn-error-msg="insecure">{{ctx.Locale.Tr "WebAuthn only supports secure connections. For testing over HTTP, you can use the origin \"localhost\" or \"127.0.0.1\"."}}</div>
+		<div data-webauthn-error-msg="unable-to-process">{{ctx.Locale.Tr "The server could not process your request."}}</div>
+		<div data-webauthn-error-msg="duplicated">{{ctx.Locale.Tr "The security key is not permitted for this request. Please make sure that the key is not already registered."}}</div>
+		<div data-webauthn-error-msg="empty">{{ctx.Locale.Tr "You must set a name for this key."}}</div>
+		<div data-webauthn-error-msg="timeout">{{ctx.Locale.Tr "Timeout reached before your key could be read. Please reload this page and retry."}}</div>
 	</div>
 </div>

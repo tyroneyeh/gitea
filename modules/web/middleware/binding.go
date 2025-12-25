@@ -88,7 +88,7 @@ func Validate(errs binding.Errors, data map[string]any, f Form, l translation.Lo
 	// If the field with name errs[0].FieldNames[0] is not found in form
 	// somehow, some code later on will panic on Data["ErrorMsg"].(string).
 	// So initialize it to some default.
-	data["ErrorMsg"] = l.Tr("form.unknown_error")
+	data["ErrorMsg"] = l.Tr("Unknown error:")
 	AssignForm(f, data)
 
 	typ := reflect.TypeOf(f)
@@ -111,33 +111,33 @@ func Validate(errs binding.Errors, data map[string]any, f Form, l translation.Lo
 
 			switch errs[0].Classification {
 			case binding.ERR_REQUIRED:
-				data["ErrorMsg"] = trName + l.TrString("form.require_error")
+				data["ErrorMsg"] = trName + l.TrString(" cannot be empty.")
 			case binding.ERR_ALPHA_DASH:
-				data["ErrorMsg"] = trName + l.TrString("form.alpha_dash_error")
+				data["ErrorMsg"] = trName + l.TrString(" should contain only alphanumeric, dash ('-') and underscore ('_') characters.")
 			case binding.ERR_ALPHA_DASH_DOT:
-				data["ErrorMsg"] = trName + l.TrString("form.alpha_dash_dot_error")
+				data["ErrorMsg"] = trName + l.TrString(" should contain only alphanumeric, dash ('-'), underscore ('_') and dot ('.') characters.")
 			case validation.ErrGitRefName:
-				data["ErrorMsg"] = trName + l.TrString("form.git_ref_name_error")
+				data["ErrorMsg"] = trName + l.TrString(" must be a well-formed Git reference name.")
 			case binding.ERR_SIZE:
-				data["ErrorMsg"] = trName + l.TrString("form.size_error", GetSize(field))
+				data["ErrorMsg"] = trName + l.TrString(" must be size %s.", GetSize(field))
 			case binding.ERR_MIN_SIZE:
-				data["ErrorMsg"] = trName + l.TrString("form.min_size_error", GetMinSize(field))
+				data["ErrorMsg"] = trName + l.TrString(" must contain at least %s characters.", GetMinSize(field))
 			case binding.ERR_MAX_SIZE:
-				data["ErrorMsg"] = trName + l.TrString("form.max_size_error", GetMaxSize(field))
+				data["ErrorMsg"] = trName + l.TrString(" must contain at most %s characters.", GetMaxSize(field))
 			case binding.ERR_EMAIL:
-				data["ErrorMsg"] = trName + l.TrString("form.email_error")
+				data["ErrorMsg"] = trName + l.TrString(" is not a valid email address.")
 			case binding.ERR_URL:
-				data["ErrorMsg"] = trName + l.TrString("form.url_error", errs[0].Message)
+				data["ErrorMsg"] = trName + l.TrString("\"%s\" is not a valid URL.", errs[0].Message)
 			case binding.ERR_INCLUDE:
-				data["ErrorMsg"] = trName + l.TrString("form.include_error", GetInclude(field))
+				data["ErrorMsg"] = trName + l.TrString(" must contain substring \"%s\".", GetInclude(field))
 			case validation.ErrGlobPattern:
-				data["ErrorMsg"] = trName + l.TrString("form.glob_pattern_error", errs[0].Message)
+				data["ErrorMsg"] = trName + l.TrString(" glob pattern is invalid: %s.", errs[0].Message)
 			case validation.ErrRegexPattern:
-				data["ErrorMsg"] = trName + l.TrString("form.regex_pattern_error", errs[0].Message)
+				data["ErrorMsg"] = trName + l.TrString(" regex pattern is invalid: %s.", errs[0].Message)
 			case validation.ErrUsername:
-				data["ErrorMsg"] = trName + l.TrString("form.username_error")
+				data["ErrorMsg"] = trName + l.TrString(" can only contain alphanumeric characters ('0-9','a-z','A-Z'), dash ('-'), underscore ('_') and dot ('.'). It cannot begin or end with non-alphanumeric characters, and consecutive non-alphanumeric characters are also forbidden.")
 			case validation.ErrInvalidGroupTeamMap:
-				data["ErrorMsg"] = trName + l.TrString("form.invalid_group_team_map_error", errs[0].Message)
+				data["ErrorMsg"] = trName + l.TrString(" mapping is invalid: %s", errs[0].Message)
 			default:
 				msg := errs[0].Classification
 				if msg != "" && errs[0].Message != "" {
@@ -146,7 +146,7 @@ func Validate(errs binding.Errors, data map[string]any, f Form, l translation.Lo
 
 				msg += errs[0].Message
 				if msg == "" {
-					msg = l.TrString("form.unknown_error")
+					msg = l.TrString("Unknown error:")
 				}
 				data["ErrorMsg"] = trName + ": " + msg
 			}

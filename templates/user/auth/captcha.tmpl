@@ -3,7 +3,7 @@
 		{{.Captcha.CreateHTML}}
 	</div>
 	<div class="required field {{if .Err_Captcha}}error{{end}}">
-		<label for="captcha">{{ctx.Locale.Tr "captcha"}}</label>
+		<label for="captcha">{{ctx.Locale.Tr "CAPTCHA"}}</label>
 		<input id="captcha" name="captcha" value="{{.captcha}}" autocomplete="off">
 	</div>
 {{else if eq .CaptchaType "recaptcha"}}

@@ -26,7 +26,7 @@ func createTOCNode(toc []Header, lang string, detailsAttrs map[string]string) as
 		details.SetAttributeString(k, []byte(v))
 	}
 
-	summary.AppendChild(summary, ast.NewString([]byte(translation.NewLocale(lang).TrString("toc"))))
+	summary.AppendChild(summary, ast.NewString([]byte(translation.NewLocale(lang).TrString("Table of Contents"))))
 	details.AppendChild(details, summary)
 	ul := ast.NewList('-')
 	details.AppendChild(details, ul)

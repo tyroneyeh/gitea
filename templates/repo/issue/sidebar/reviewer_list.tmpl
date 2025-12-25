@@ -8,20 +8,20 @@
 	<input type="hidden" class="combo-value" name="reviewer_ids">{{/* match CreateIssueForm */}}
 	<div class="ui dropdown full-width {{if or (not $hasCandidates) (not $data.CanChooseReviewer)}}disabled{{end}}">
 		<a class="fixed-text muted">
-			<strong>{{ctx.Locale.Tr "repo.issues.review.reviewers"}}</strong> {{if $data.CanChooseReviewer}}{{svg "octicon-gear"}}{{end}}
+			<strong>{{ctx.Locale.Tr "Reviewers"}}</strong> {{if $data.CanChooseReviewer}}{{svg "octicon-gear"}}{{end}}
 		</a>
 		<div class="menu flex-items-menu">
 			{{if $hasCandidates}}
 				<div class="ui icon search input">
 					<i class="icon">{{svg "octicon-search"}}</i>
-					<input type="text" placeholder="{{ctx.Locale.Tr "repo.issues.filter_reviewers"}}">
+					<input type="text" placeholder="{{ctx.Locale.Tr "Filter Reviewer"}}">
 				</div>
 			{{end}}
 			<div class="scrolling menu flex-items-menu">
 				{{range $data.Reviewers}}
 					{{if .User}}
 						<a class="item muted {{if .Requested}}checked{{end}}" href="{{.User.HomeLink}}" data-value="{{.ItemID}}" data-can-change="{{.CanChange}}"
-							{{if not .CanChange}}data-tooltip-content="{{ctx.Locale.Tr "repo.issues.remove_request_review_block"}}"{{end}}>
+							{{if not .CanChange}}data-tooltip-content="{{ctx.Locale.Tr "Can't remove review request"}}"{{end}}>
 							<span class="item-check-mark">{{svg "octicon-check"}}</span>
 							{{ctx.AvatarUtils.Avatar .User 20}} {{template "repo/search_name" .User}}
 						</a>
@@ -32,7 +32,7 @@
 					{{range $data.TeamReviewers}}
 						{{if .Team}}
 							<a class="item muted {{if .Requested}}checked{{end}}" href="#" data-value="{{.ItemID}}" data-can-change="{{.CanChange}}"
-								{{if not .CanChange}} data-tooltip-content="{{ctx.Locale.Tr "repo.issues.remove_request_review_block"}}"{{end}}>
+								{{if not .CanChange}} data-tooltip-content="{{ctx.Locale.Tr "Can't remove review request"}}"{{end}}>
 								<span class="item-check-mark">{{svg "octicon-check"}}</span>
 								{{svg "octicon-people" 20}} {{$repoOwnerName}}/{{.Team.Name}}
 							</a>
@@ -45,7 +45,7 @@
 
 	<div class="ui relaxed list flex-items-block">
 		<span class="item empty-list {{if or $data.OriginalReviews $data.CurrentPullReviewers}}tw-hidden{{end}}">
-			{{ctx.Locale.Tr "repo.issues.new.no_reviewers"}}
+			{{ctx.Locale.Tr "No Reviewers"}}
 		</span>
 		{{range $data.CurrentPullReviewers}}
 			<div class="item">
@@ -58,24 +58,24 @@
 				</div>
 				<div class="flex-text-inline">
 					{{if .CanBeDismissed}}
-						<a href="#" class="ui muted icon show-modal" data-tooltip-content="{{ctx.Locale.Tr "repo.issues.dismiss_review"}}"
+						<a href="#" class="ui muted icon show-modal" data-tooltip-content="{{ctx.Locale.Tr "Dismiss Review"}}"
 							data-modal="#issue-sidebar-dismiss-review-modal" data-modal-reviewer-id="{{.Review.ID}}">
 							{{svg "octicon-x" 20}}
 						</a>
 					{{end}}
 					{{if .Review.Stale}}
-						<span data-tooltip-content="{{ctx.Locale.Tr "repo.issues.is_stale"}}">{{svg "octicon-hourglass" 16}}</span>
+						<span data-tooltip-content="{{ctx.Locale.Tr "There have been changes to this PR since this review"}}">{{svg "octicon-hourglass" 16}}</span>
 					{{end}}
 					{{if and .CanChange $data.CanChooseReviewer}}
 						{{if .Requested}}
 							<a href="#" class="ui muted icon link-action"
-								data-tooltip-content="{{ctx.Locale.Tr "repo.issues.remove_request_review"}}"
+								data-tooltip-content="{{ctx.Locale.Tr "Remove review request"}}"
 								data-url="{{$pageMeta.RepoLink}}/issues/request_review?action=detach&issue_ids={{$pageMeta.Issue.ID}}&id={{.ItemID}}">
 								{{svg "octicon-trash"}}
 							</a>
 						{{else}}
 							<a href="#" class="ui muted icon link-action"
-								data-tooltip-content="{{ctx.Locale.Tr "repo.issues.re_request_review"}}"
+								data-tooltip-content="{{ctx.Locale.Tr "Re-request review"}}"
 								data-url="{{$pageMeta.RepoLink}}/issues/request_review?action=attach&issue_ids={{$pageMeta.Issue.ID}}&id={{.ItemID}}">
 								{{svg "octicon-sync"}}
 							</a>
@@ -92,7 +92,7 @@
 				<div class="flex-text-inline tw-flex-1">
 					{{$originalURLHostname := $pageMeta.Repository.GetOriginalURLHostname}}
 					{{$originalURL := $pageMeta.Repository.OriginalURL}}
-					<a class="muted flex-text-inline tw-gap-2" href="{{$originalURL}}" data-tooltip-content="{{ctx.Locale.Tr "repo.migrated_from_fake" $originalURLHostname}}">
+					<a class="muted flex-text-inline tw-gap-2" href="{{$originalURL}}" data-tooltip-content="{{ctx.Locale.Tr "Migrated From %[1]s" $originalURLHostname}}">
 						{{svg (MigrationIcon $originalURLHostname) 20}} {{.OriginalAuthor}}
 					</a>
 				</div>
@@ -108,22 +108,22 @@
 	{{if $data.CurrentPullReviewers}}
 	<div class="ui small modal" id="issue-sidebar-dismiss-review-modal">
 		<div class="header">
-			{{ctx.Locale.Tr "repo.issues.dismiss_review"}}
+			{{ctx.Locale.Tr "Dismiss Review"}}
 		</div>
 		<div class="content">
 			<div class="ui warning message">
-				{{ctx.Locale.Tr "repo.issues.dismiss_review_warning"}}
+				{{ctx.Locale.Tr "Are you sure you want to dismiss this review?"}}
 			</div>
 			<form class="ui form" action="{{$pageMeta.RepoLink}}/issues/dismiss_review" method="post">
 				{{ctx.RootData.CsrfTokenHtml}}
 				<input type="hidden" class="reviewer-id" name="review_id">
 				<div class="field">
-					<label for="issue-sidebar-dismiss-review-message">{{ctx.Locale.Tr "action.review_dismissed_reason"}}</label>
+					<label for="issue-sidebar-dismiss-review-message">{{ctx.Locale.Tr "Reason:"}}</label>
 					<input id="issue-sidebar-dismiss-review-message" name="message">
 				</div>
 				<div class="actions">
-					<button class="ui cancel button">{{ctx.Locale.Tr "settings.cancel"}}</button>
-					<button class="ui red button" type="submit">{{ctx.Locale.Tr "ok"}}</button>
+					<button class="ui cancel button">{{ctx.Locale.Tr "Cancel"}}</button>
+					<button class="ui red button" type="submit">{{ctx.Locale.Tr "OK"}}</button>
 				</div>
 			</form>
 		</div>

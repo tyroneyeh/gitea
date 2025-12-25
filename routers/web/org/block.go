@@ -16,7 +16,7 @@ const (
 )
 
 func BlockedUsers(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("user.block.list")
+	ctx.Data["Title"] = ctx.Tr("Blocked users")
 	ctx.Data["PageIsOrgSettings"] = true
 	ctx.Data["PageIsSettingsBlockedUsers"] = true
 

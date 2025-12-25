@@ -1,7 +1,7 @@
 {{template "admin/layout_head" (dict "ctxData" . "pageClass" "admin new authentication")}}
 	<div class="admin-setting-content">
 		<h4 class="ui top attached header">
-			{{ctx.Locale.Tr "admin.auths.new"}}
+			{{ctx.Locale.Tr "Add Authentication Source"}}
 		</h4>
 		<div class="ui attached segment">
 			<form class="ui form" action="{{.Link}}" method="post">
@@ -9,7 +9,7 @@
 				{{.CsrfTokenHtml}}
 				<!-- Types and name -->
 				<div class="inline required field {{if .Err_Type}}error{{end}}">
-					<label>{{ctx.Locale.Tr "admin.auths.auth_type"}}</label>
+					<label>{{ctx.Locale.Tr "Authentication Type"}}</label>
 					<div class="ui selection type dropdown">
 						<input type="hidden" id="auth_type" name="type" value="{{.type}}">
 						<div class="text">{{.CurrentTypeName}}</div>
@@ -22,7 +22,7 @@
 					</div>
 				</div>
 				<div class="required inline field {{if .Err_Name}}error{{end}}">
-					<label for="auth_name">{{ctx.Locale.Tr "admin.auths.auth_name"}}</label>
+					<label for="auth_name">{{ctx.Locale.Tr "Authentication Name"}}</label>
 					<input id="auth_name" name="name" value="{{.name}}" autofocus required>
 				</div>
 
@@ -34,16 +34,16 @@
 
 				<!-- PAM -->
 				<div class="pam required field {{if not (eq .type 4)}}tw-hidden{{end}}">
-					<label for="pam_service_name">{{ctx.Locale.Tr "admin.auths.pam_service_name"}}</label>
+					<label for="pam_service_name">{{ctx.Locale.Tr "PAM Service Name"}}</label>
 					<input id="pam_service_name" name="pam_service_name" value="{{.pam_service_name}}">
-					<label for="pam_email_domain">{{ctx.Locale.Tr "admin.auths.pam_email_domain"}}</label>
+					<label for="pam_email_domain">{{ctx.Locale.Tr "PAM Email Domain (optional)"}}</label>
 					<input id="pam_email_domain" name="pam_email_domain" value="{{.pam_email_domain}}">
 				</div>
 				<div class="pam optional field {{if not (eq .type 4)}}tw-hidden{{end}}">
 					<div class="ui checkbox">
-						<label for="skip_local_two_fa"><strong>{{ctx.Locale.Tr "admin.auths.skip_local_two_fa"}}</strong></label>
+						<label for="skip_local_two_fa"><strong>{{ctx.Locale.Tr "Skip local 2FA"}}</strong></label>
 						<input id="skip_local_two_fa" name="skip_local_two_fa" type="checkbox" {{if .skip_local_two_fa}}checked{{end}}>
-						<p class="help">{{ctx.Locale.Tr "admin.auths.skip_local_two_fa_helper"}}</p>
+						<p class="help">{{ctx.Locale.Tr "Leaving unset means local users with 2FA set will still have to pass 2FA to log on"}}</p>
 					</div>
 				</div>
 
@@ -55,67 +55,67 @@
 
 				<div class="ldap field">
 					<div class="ui checkbox">
-						<label><strong>{{ctx.Locale.Tr "admin.auths.attributes_in_bind"}}</strong></label>
+						<label><strong>{{ctx.Locale.Tr "Fetch Attributes in Bind DN Context"}}</strong></label>
 						<input name="attributes_in_bind" type="checkbox" {{if .attributes_in_bind}}checked{{end}}>
 					</div>
 				</div>
 				<div class="oauth2 ldap inline field {{if not (or (eq .type 2) (eq .type 6))}}tw-hidden{{end}}">
 					<div class="ui checkbox">
-						<label><strong>{{ctx.Locale.Tr "admin.auths.syncenabled"}}</strong></label>
+						<label><strong>{{ctx.Locale.Tr "Enable User Synchronization"}}</strong></label>
 						<input name="is_sync_enabled" type="checkbox" {{if .is_sync_enabled}}checked{{end}}>
 					</div>
 				</div>
 				<div class="inline field">
 					<div class="ui checkbox">
-						<label><strong>{{ctx.Locale.Tr "admin.auths.activated"}}</strong></label>
+						<label><strong>{{ctx.Locale.Tr "This Authentication Source is Activated"}}</strong></label>
 						<input name="is_active" type="checkbox" {{if .is_active}}checked{{end}}>
 					</div>
 				</div>
 
 				<div class="field">
-					<button class="ui primary button">{{ctx.Locale.Tr "admin.auths.new"}}</button>
+					<button class="ui primary button">{{ctx.Locale.Tr "Add Authentication Source"}}</button>
 				</div>
 			</form>
 		</div>
 
 		<h4 class="ui top attached header">
-			{{ctx.Locale.Tr "admin.auths.tips"}}
+			{{ctx.Locale.Tr "Tips"}}
 		</h4>
 		<div class="ui attached segment">
 			<h5>GMail Settings:</h5>
 			<p>Host: smtp.gmail.com, Port: 587, Enable TLS Encryption: true</p>
 
-			<h5 class="oauth2">{{ctx.Locale.Tr "admin.auths.tips.oauth2.general"}}:</h5>
-			<p class="oauth2">{{ctx.Locale.Tr "admin.auths.tips.oauth2.general.tip"}} <b id="oauth2-callback-url"></b></p>
+			<h5 class="oauth2">{{ctx.Locale.Tr "OAuth2 Authentication"}}:</h5>
+			<p class="oauth2">{{ctx.Locale.Tr "When registering a new OAuth2 authentication, the callback/redirect URL should be:"}} <b id="oauth2-callback-url"></b></p>
 
-			<h5 class="ui top attached header">{{ctx.Locale.Tr "admin.auths.tip.oauth2_provider"}}</h5>
+			<h5 class="ui top attached header">{{ctx.Locale.Tr "OAuth2 Provider"}}</h5>
 			<div class="ui attached segment">
 				<li>Bitbucket</li>
-				<span>{{ctx.Locale.Tr "admin.auths.tip.bitbucket" "https://bitbucket.org/account/user/{your-username}/oauth-consumers/new"}}</span>
+				<span>{{ctx.Locale.Tr "Register a new OAuth consumer on %s and add the permission 'Account' - 'Read'" "https://bitbucket.org/account/user/{your-username}/oauth-consumers/new"}}</span>
 				<li>Dropbox</li>
-				<span>{{ctx.Locale.Tr "admin.auths.tip.dropbox" "https://www.dropbox.com/developers/apps"}}</span>
+				<span>{{ctx.Locale.Tr "Create a new application at %s" "https://www.dropbox.com/developers/apps"}}</span>
 				<li>Facebook</li>
-				<span>{{ctx.Locale.Tr "admin.auths.tip.facebook" "https://developers.facebook.com/apps"}}</span>
+				<span>{{ctx.Locale.Tr "Register a new application at %s and add the product \"Facebook Login\"" "https://developers.facebook.com/apps"}}</span>
 				<li>GitHub</li>
-				<span>{{ctx.Locale.Tr "admin.auths.tip.github" "https://github.com/settings/applications/new"}}</span>
+				<span>{{ctx.Locale.Tr "Register a new OAuth application on %s" "https://github.com/settings/applications/new"}}</span>
 				<li>GitLab</li>
-				<span>{{ctx.Locale.Tr "admin.auths.tip.gitlab_new" "https://gitlab.com/-/profile/applications"}}</span>
+				<span>{{ctx.Locale.Tr "Register a new application on %s" "https://gitlab.com/-/profile/applications"}}</span>
 				<li>Google</li>
-				<span>{{ctx.Locale.Tr "admin.auths.tip.google_plus" "https://console.developers.google.com/"}}</span>
+				<span>{{ctx.Locale.Tr "Obtain OAuth2 client credentials from the Google API console at %s" "https://console.developers.google.com/"}}</span>
 				<li>OpenID Connect</li>
-				<span>{{ctx.Locale.Tr "admin.auths.tip.openid_connect"}}</span>
+				<span>{{ctx.Locale.Tr "Use the OpenID Connect Discovery URL \"https://{server}/.well-known/openid-configuration\" to specify the endpoints"}}</span>
 				<li>Twitter</li>
-				<span>{{ctx.Locale.Tr "admin.auths.tip.twitter" "https://dev.twitter.com/apps"}}</span>
+				<span>{{ctx.Locale.Tr "Go to %s, create an application and ensure that the “Allow this application to be used to Sign in with Twitter” option is enabled" "https://dev.twitter.com/apps"}}</span>
 				<li>Discord</li>
-				<span>{{ctx.Locale.Tr "admin.auths.tip.discord" "https://discordapp.com/developers/applications/me"}}</span>
+				<span>{{ctx.Locale.Tr "Register a new application on %s" "https://discordapp.com/developers/applications/me"}}</span>
 				<li>Gitea</li>
-				<span>{{ctx.Locale.Tr "admin.auths.tip.gitea" "https://docs.gitea.com/development/oauth2-provider"}}</span>
+				<span>{{ctx.Locale.Tr "Register a new OAuth2 application. Guide can be found at %s" "https://docs.gitea.com/development/oauth2-provider"}}</span>
 				<li>Nextcloud</li>
-				<span>{{ctx.Locale.Tr "admin.auths.tip.nextcloud"}}</span>
+				<span>{{ctx.Locale.Tr "Register a new OAuth consumer on your instance by selecting \"Settings -> Security -> OAuth 2.0 client\" in the menu"}}</span>
 				<li>Yandex</li>
-				<span>{{ctx.Locale.Tr "admin.auths.tip.yandex" "https://oauth.yandex.com/client/new"}}</span>
+				<span>{{ctx.Locale.Tr "Create a new application at %s. Select following permissions from the \"Yandex.Passport API\" section: \"Access to email address\", \"Access to user avatar\" and \"Access to username, first name and surname, gender\"" "https://oauth.yandex.com/client/new"}}</span>
 				<li>Mastodon</li>
-				<span>{{ctx.Locale.Tr "admin.auths.tip.mastodon"}}</span>
+				<span>{{ctx.Locale.Tr "Input a custom instance URL for the mastodon instance you want to authenticate with (or use the default one)"}}</span>
 			</div>
 		</div>
 	</div>

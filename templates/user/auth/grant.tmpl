@@ -2,20 +2,20 @@
 <div role="main" aria-label="{{.Title}}" class="page-content oauth2-authorize-application-box">
 	<div class="ui container tw-max-w-[500px]">
 		<h3 class="ui top attached header">
-			{{ctx.Locale.Tr "auth.authorize_title" .Application.Name}}
+			{{ctx.Locale.Tr "Authorize \"%s\" to access your account?" .Application.Name}}
 		</h3>
 		<div class="ui attached segment">
 			{{template "base/alert" .}}
 			<p>
 				{{if not .AdditionalScopes}}
-				<b>{{ctx.Locale.Tr "auth.authorize_application_description"}}</b><br>
+				<b>{{ctx.Locale.Tr "If you grant access, it will be able to access and write to all your account information, including private repos and organizations."}}</b><br>
 				{{end}}
-				{{ctx.Locale.Tr "auth.authorize_application_created_by" .ApplicationCreatorLinkHTML}}<br>
-				{{ctx.Locale.Tr "auth.authorize_application_with_scopes" (HTMLFormat "<b>%s</b>" .Scope)}}
+				{{ctx.Locale.Tr "This application was created by %s." .ApplicationCreatorLinkHTML}}<br>
+				{{ctx.Locale.Tr "With scopes: %s" (HTMLFormat "<b>%s</b>" .Scope)}}
 			</p>
 		</div>
 		<div class="ui attached segment">
-			<p>{{ctx.Locale.Tr "auth.authorize_redirect_notice" .ApplicationRedirectDomainHTML}}</p>
+			<p>{{ctx.Locale.Tr "You will be redirected to %s if you authorize this application." .ApplicationRedirectDomainHTML}}</p>
 		</div>
 		<div class="ui attached segment tw-text-center">
 			<form method="post" action="{{AppSubUrl}}/login/oauth/grant">
@@ -25,8 +25,8 @@
 				<input type="hidden" name="scope" value="{{.Scope}}">
 				<input type="hidden" name="nonce" value="{{.Nonce}}">
 				<input type="hidden" name="redirect_uri" value="{{.RedirectURI}}">
-				<button type="submit" id="authorize-app" name="granted" value="true" class="ui red inline button">{{ctx.Locale.Tr "auth.authorize_application"}}</button>
-				<button type="submit" name="granted" value="false" class="ui basic primary inline button">{{ctx.Locale.Tr "cancel"}}</button>
+				<button type="submit" id="authorize-app" name="granted" value="true" class="ui red inline button">{{ctx.Locale.Tr "Authorize Application"}}</button>
+				<button type="submit" name="granted" value="false" class="ui basic primary inline button">{{ctx.Locale.Tr "Cancel"}}</button>
 			</form>
 		</div>
 	</div>

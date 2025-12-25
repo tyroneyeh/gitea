@@ -1,15 +1,15 @@
 <h4 class="ui top attached header">
-	{{ctx.Locale.Tr "actions.variables.management"}}
+	{{ctx.Locale.Tr "Variables Management"}}
 	<div class="ui right">
 		<button class="ui primary tiny button show-modal"
 			data-modal="#edit-variable-modal"
 			data-modal-form.action="{{.Link}}/new"
-			data-modal-header="{{ctx.Locale.Tr "actions.variables.creation"}}"
+			data-modal-header="{{ctx.Locale.Tr "Add Variable"}}"
 			data-modal-dialog-variable-name=""
 			data-modal-dialog-variable-data=""
 			data-modal-dialog-variable-description=""
 		>
-			{{ctx.Locale.Tr "actions.variables.creation"}}
+			{{ctx.Locale.Tr "Add Variable"}}
 		</button>
 	</div>
 </h4>
@@ -34,13 +34,13 @@
 			</div>
 			<div class="flex-item-trailing">
 				<span class="color-text-light-2">
-					{{ctx.Locale.Tr "settings.added_on" (DateUtils.AbsoluteShort .CreatedUnix)}}
+					{{ctx.Locale.Tr "Added on %s" (DateUtils.AbsoluteShort .CreatedUnix)}}
 				</span>
 				<button class="btn interact-bg tw-p-2 show-modal"
-					data-tooltip-content="{{ctx.Locale.Tr "actions.variables.edit"}}"
+					data-tooltip-content="{{ctx.Locale.Tr "Edit Variable"}}"
 					data-modal="#edit-variable-modal"
 					data-modal-form.action="{{$.Link}}/{{.ID}}/edit"
-					data-modal-header="{{ctx.Locale.Tr "actions.variables.edit"}}"
+					data-modal-header="{{ctx.Locale.Tr "Edit Variable"}}"
 					data-modal-dialog-variable-name="{{.Name}}"
 					data-modal-dialog-variable-data="{{.Data}}"
 					data-modal-dialog-variable-description="{{.Description}}"
@@ -48,9 +48,9 @@
 					{{svg "octicon-pencil"}}
 				</button>
 				<button class="btn interact-bg tw-p-2 link-action"
-					data-tooltip-content="{{ctx.Locale.Tr "actions.variables.deletion"}}"
+					data-tooltip-content="{{ctx.Locale.Tr "Remove variable"}}"
 					data-url="{{$.Link}}/{{.ID}}/delete"
-					data-modal-confirm="{{ctx.Locale.Tr "actions.variables.deletion.description"}}"
+					data-modal-confirm="{{ctx.Locale.Tr "Removing a variable is permanent and cannot be undone. Continue?"}}"
 				>
 					{{svg "octicon-trash"}}
 				</button>
@@ -59,7 +59,7 @@
 		{{end}}
 	</div>
 	{{else}}
-		{{ctx.Locale.Tr "actions.variables.none"}}
+		{{ctx.Locale.Tr "There are no variables yet."}}
 	{{end}}
 </div>
 
@@ -70,35 +70,35 @@
 		<div class="content">
 			{{.CsrfTokenHtml}}
 			<div class="field">
-				{{ctx.Locale.Tr "actions.variables.description"}}
+				{{ctx.Locale.Tr "Variables will be passed to certain actions and cannot be read otherwise."}}
 			</div>
 			<div class="field">
-				<label for="dialog-variable-name">{{ctx.Locale.Tr "name"}}</label>
+				<label for="dialog-variable-name">{{ctx.Locale.Tr "Name"}}</label>
 				<input autofocus required
 					name="name"
 					id="dialog-variable-name"
 					value="{{.name}}"
 					pattern="^(?!GITEA_|GITHUB_)[a-zA-Z_][a-zA-Z0-9_]*$"
-					placeholder="{{ctx.Locale.Tr "secrets.creation.name_placeholder"}}"
+					placeholder="{{ctx.Locale.Tr "case-insensitive, alphanumeric characters or underscores only, cannot start with GITEA_ or GITHUB_"}}"
 				>
 			</div>
 			<div class="field">
-				<label for="dialog-variable-data">{{ctx.Locale.Tr "value"}}</label>
+				<label for="dialog-variable-data">{{ctx.Locale.Tr "Value"}}</label>
 				<textarea required
 					name="data"
 					id="dialog-variable-data"
 					maxlength="{{.DataMaxLength}}"
-					placeholder="{{ctx.Locale.Tr "secrets.creation.value_placeholder"}}"
+					placeholder="{{ctx.Locale.Tr "Input any content. Whitespace at the start and end will be omitted."}}"
 				></textarea>
 			</div>
 			<div class="field">
-				<label for="dialog-variable-description">{{ctx.Locale.Tr "secrets.creation.description"}}</label>
+				<label for="dialog-variable-description">{{ctx.Locale.Tr "Description"}}</label>
 				<textarea
 					name="description"
 					id="dialog-variable-description"
 					rows="2"
 					maxlength="{{.DescriptionMaxLength}}"
-					placeholder="{{ctx.Locale.Tr "secrets.creation.description_placeholder"}}"
+					placeholder="{{ctx.Locale.Tr "Enter short description (optional)."}}"
 				></textarea>
 			</div>
 		</div>

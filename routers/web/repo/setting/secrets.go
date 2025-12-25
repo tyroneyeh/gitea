@@ -71,7 +71,7 @@ func getSecretsCtx(ctx *context.Context) (*secretsCtx, error) {
 }
 
 func Secrets(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("actions.actions")
+	ctx.Data["Title"] = ctx.Tr("Actions")
 	ctx.Data["PageType"] = "secrets"
 	ctx.Data["PageIsSharedSettingsSecrets"] = true
 	ctx.Data["UserDisabledFeatures"] = user_model.DisabledFeaturesWithLoginType(ctx.Doer)

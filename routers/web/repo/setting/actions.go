@@ -20,7 +20,7 @@ import (
 const tplRepoActionsGeneralSettings templates.TplName = "repo/settings/actions"
 
 func ActionsGeneralSettings(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("actions.general")
+	ctx.Data["Title"] = ctx.Tr("General")
 	ctx.Data["PageType"] = "general"
 	ctx.Data["PageIsActionsSettingsGeneral"] = true
 
@@ -64,7 +64,7 @@ func ActionsUnitPost(ctx *context.Context) {
 		return
 	}
 
-	ctx.Flash.Success(ctx.Tr("repo.settings.update_settings_success"))
+	ctx.Flash.Success(ctx.Tr("The repository settings have been updated."))
 	ctx.Redirect(redirectURL)
 }
 
@@ -74,7 +74,7 @@ func AddCollaborativeOwner(ctx *context.Context) {
 	ownerID, err := user_model.GetUserOrOrgIDByName(ctx, name)
 	if err != nil {
 		if errors.Is(err, util.ErrNotExist) {
-			ctx.Flash.Error(ctx.Tr("form.user_not_exist"))
+			ctx.Flash.Error(ctx.Tr("The user does not exist."))
 			ctx.JSONErrorNotFound()
 		} else {
 			ctx.ServerError("GetUserOrOrgIDByName", err)
@@ -107,7 +107,7 @@ func DeleteCollaborativeOwner(ctx *context.Context) {
 	}
 	actionsCfg := actionsUnit.ActionsConfig()
 	if !actionsCfg.IsCollaborativeOwner(ownerID) {
-		ctx.Flash.Error(ctx.Tr("actions.general.collaborative_owner_not_exist"))
+		ctx.Flash.Error(ctx.Tr("The collaborative owner does not exist."))
 		ctx.JSONErrorNotFound()
 		return
 	}

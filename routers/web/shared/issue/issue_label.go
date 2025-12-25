@@ -27,7 +27,7 @@ func PrepareFilterIssueLabels(ctx *context.Context, repoID int64, owner *user_mo
 		var err error
 		ret.SelectedLabelIDs, err = base.StringsToInt64s(strings.Split(selectLabels, ","))
 		if err != nil {
-			ctx.Flash.Error(ctx.Tr("invalid_data", selectLabels), true)
+			ctx.Flash.Error(ctx.Tr("Invalid data: %v", selectLabels), true)
 		}
 	}
 

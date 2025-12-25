@@ -793,7 +793,7 @@ func verifyAuthWithOptions(options *common.VerifyOptions) func(ctx *context.APIC
 		// Check prohibit login users.
 		if ctx.IsSigned {
 			if !ctx.Doer.IsActive && setting.Service.RegisterEmailConfirm {
-				ctx.Data["Title"] = ctx.Tr("auth.active_your_account")
+				ctx.Data["Title"] = ctx.Tr("Activate Your Account")
 				ctx.JSON(http.StatusForbidden, map[string]string{
 					"message": "This account is not activated.",
 				})
@@ -801,7 +801,7 @@ func verifyAuthWithOptions(options *common.VerifyOptions) func(ctx *context.APIC
 			}
 			if !ctx.Doer.IsActive || ctx.Doer.ProhibitLogin {
 				log.Info("Failed authentication attempt for %s from %s", ctx.Doer.Name, ctx.RemoteAddr())
-				ctx.Data["Title"] = ctx.Tr("auth.prohibit_login")
+				ctx.Data["Title"] = ctx.Tr("Sign-In Prohibited")
 				ctx.JSON(http.StatusForbidden, map[string]string{
 					"message": "This account is prohibited from signing in, please contact your site administrator.",
 				})
@@ -830,7 +830,7 @@ func verifyAuthWithOptions(options *common.VerifyOptions) func(ctx *context.APIC
 				})
 				return
 			} else if !ctx.Doer.IsActive && setting.Service.RegisterEmailConfirm {
-				ctx.Data["Title"] = ctx.Tr("auth.active_your_account")
+				ctx.Data["Title"] = ctx.Tr("Activate Your Account")
 				ctx.JSON(http.StatusForbidden, map[string]string{
 					"message": "This account is not activated.",
 				})

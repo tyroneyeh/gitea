@@ -2,7 +2,7 @@
 <div role="main" aria-label="{{.Title}}" class="page-content repository new-repo">
 	<div class="ui container medium-width">
 		<h3 class="ui top attached header">
-			{{ctx.Locale.Tr "new_repo"}}
+			{{ctx.Locale.Tr "New Repository"}}
 		</h3>
 		<div class="ui attached segment">
 			{{template "base/alert" .}}
@@ -11,7 +11,7 @@
 				{{.CsrfTokenHtml}}
 				<div id="create-repo-error-message" class="ui negative message tw-text-center tw-hidden"></div>
 				<div class="inline required field {{if .Err_Owner}}error{{end}}">
-					<label>{{ctx.Locale.Tr "repo.owner"}}</label>
+					<label>{{ctx.Locale.Tr "Owner"}}</label>
 					<div class="ui selection dropdown ellipsis-text-items" id="repo_owner_dropdown">
 						<input type="hidden" name="uid" value="{{.ContextUser.ID}}">
 						<span class="text"></span>
@@ -19,7 +19,7 @@
 						<div class="menu">
 							<div class="item" data-value="{{.SignedUser.ID}}" title="{{.SignedUser.Name}}"
 								{{if not .CanCreateRepoInDoer}}
-									data-create-repo-disallowed-prompt="{{ctx.Locale.TrN .MaxCreationLimit "repo.form.reach_limit_of_creation_1" "repo.form.reach_limit_of_creation_n" .MaxCreationLimitOfDoer}}"
+									data-create-repo-disallowed-prompt="{{ctx.Locale.TrN .MaxCreationLimit "The owner has already reached the limit of %d repository." "The owner has already reached the limit of %d repositories." .MaxCreationLimitOfDoer}}"
 								{{end}}
 							>
 								{{ctx.AvatarUtils.Avatar .SignedUser 28 "mini"}}
@@ -33,36 +33,36 @@
 							{{end}}
 						</div>
 					</div>
-					<span class="help">{{ctx.Locale.Tr "repo.owner_helper"}}</span>
+					<span class="help">{{ctx.Locale.Tr "Some organizations may not show up in the dropdown due to a maximum repository count limit."}}</span>
 				</div>
 
 				<div class="inline required field {{if .Err_RepoName}}error{{end}}">
-					<label for="repo_name">{{ctx.Locale.Tr "repo.repo_name"}}</label>
+					<label for="repo_name">{{ctx.Locale.Tr "Repository Name"}}</label>
 					<input id="repo_name" name="repo_name" value="{{.repo_name}}" autofocus required maxlength="100">
-					<span class="help" data-help-for-repo-name>{{ctx.Locale.Tr "repo.repo_name_helper"}}</span>
-					<span class="help tw-hidden" data-help-for-repo-name=".profile">{{ctx.Locale.Tr "repo.repo_name_profile_public_hint"}}</span>
-					<span class="help tw-hidden" data-help-for-repo-name=".profile-private">{{ctx.Locale.Tr "repo.repo_name_profile_private_hint"}}</span>
+					<span class="help" data-help-for-repo-name>{{ctx.Locale.Tr "Good repository names use short, memorable and unique keywords. A repository named \".profile\" or \".profile-private\" could be used to add a README.md for the user/organization profile."}}</span>
+					<span class="help tw-hidden" data-help-for-repo-name=".profile">{{ctx.Locale.Tr ".profile is a special repository that you can use to add README.md to your public organization profile, visible to anyone. Make sure it's public and initialize it with a README in the profile directory to get started."}}</span>
+					<span class="help tw-hidden" data-help-for-repo-name=".profile-private">{{ctx.Locale.Tr ".profile-private is a special repository that you can use to add a README.md to your organization member profile, visible only to organization members. Make sure it's private and initialize it with a README in the profile directory to get started."}}</span>
 				</div>
 
 				<div class="inline field">
-					<label>{{ctx.Locale.Tr "repo.visibility"}}</label>
+					<label>{{ctx.Locale.Tr "Visibility"}}</label>
 					<div class="ui checkbox">
 						{{if .IsForcedPrivate}}
 							<input name="private" type="checkbox" checked disabled>
-							<label>{{ctx.Locale.Tr "repo.visibility_helper_forced"}}</label>
+							<label>{{ctx.Locale.Tr "Your site administrator forces new repositories to be private."}}</label>
 						{{else}}
 							<input name="private" type="checkbox" {{if .private}}checked{{end}}>
-							<label>{{ctx.Locale.Tr "repo.visibility_helper"}}</label>
+							<label>{{ctx.Locale.Tr "Make repository private"}}</label>
 						{{end}}
 					</div>
-					<span class="help">{{ctx.Locale.Tr "repo.visibility_description"}}</span>
+					<span class="help">{{ctx.Locale.Tr "Only the owner or the organization members if they have rights, will be able to see it."}}</span>
 				</div>
 				<div class="inline field {{if .Err_Description}}error{{end}}">
-					<label for="description">{{ctx.Locale.Tr "repo.repo_desc"}}</label>
-					<textarea id="description" rows="2" name="description" placeholder="{{ctx.Locale.Tr "repo.repo_desc_helper"}}" maxlength="2048">{{.description}}</textarea>
+					<label for="description">{{ctx.Locale.Tr "Description"}}</label>
+					<textarea id="description" rows="2" name="description" placeholder="{{ctx.Locale.Tr "Enter short description (optional)"}}" maxlength="2048">{{.description}}</textarea>
 				</div>
 				<div class="inline field">
-					<label>{{ctx.Locale.Tr "repo.template"}}</label>
+					<label>{{ctx.Locale.Tr "Template"}}</label>
 					<div id="repo_template_search" class="ui search selection dropdown">
 						<input type="hidden" id="repo_template" name="repo_template" value="{{or .repo_template ""}}">
 						<div class="default text">{{.repo_template_name}}</div>
@@ -73,55 +73,55 @@
 
 				<div id="template_units" class="tw-hidden">
 					<div class="inline field">
-						<label>{{ctx.Locale.Tr "repo.template.items"}}</label>
+						<label>{{ctx.Locale.Tr "Template Items"}}</label>
 						<div class="ui checkbox">
 							<input name="git_content" type="checkbox" {{if .git_content}}checked{{end}}>
-							<label>{{ctx.Locale.Tr "repo.template.git_content"}}</label>
+							<label>{{ctx.Locale.Tr "Git Content (Default Branch)"}}</label>
 						</div>
-						<div class="ui checkbox" {{if not .SignedUser.CanEditGitHook}}data-tooltip-content="{{ctx.Locale.Tr "repo.template.git_hooks_tooltip"}}"{{end}}>
+						<div class="ui checkbox" {{if not .SignedUser.CanEditGitHook}}data-tooltip-content="{{ctx.Locale.Tr "You are currently unable to modify or remove Git Hooks once added. Select this only if you trust the template repository."}}"{{end}}>
 							<input name="git_hooks" type="checkbox" {{if .git_hooks}}checked{{end}}>
-							<label>{{ctx.Locale.Tr "repo.template.git_hooks"}}</label>
+							<label>{{ctx.Locale.Tr "Git Hooks"}}</label>
 						</div>
 					</div>
 					<div class="inline field">
 						<label></label>
 						<div class="ui checkbox">
 							<input name="webhooks" type="checkbox" {{if .webhooks}}checked{{end}}>
-							<label>{{ctx.Locale.Tr "repo.template.webhooks"}}</label>
+							<label>{{ctx.Locale.Tr "Webhooks"}}</label>
 						</div>
 						<div class="ui checkbox">
 							<input name="topics" type="checkbox" {{if .topics}}checked{{end}}>
-							<label>{{ctx.Locale.Tr "repo.template.topics"}}</label>
+							<label>{{ctx.Locale.Tr "Topics"}}</label>
 						</div>
 					</div>
 					<div class="inline field">
 						<label></label>
 						<div class="ui checkbox">
 							<input name="avatar" type="checkbox" {{if .avatar}}checked{{end}}>
-							<label>{{ctx.Locale.Tr "repo.template.avatar"}}</label>
+							<label>{{ctx.Locale.Tr "Avatar"}}</label>
 						</div>
 						<div class="ui checkbox">
 							<input name="labels" type="checkbox" {{if .labels}}checked{{end}}>
-							<label>{{ctx.Locale.Tr "repo.template.issue_labels"}}</label>
+							<label>{{ctx.Locale.Tr "Issue Labels"}}</label>
 						</div>
 					</div>
 					<div class="inline field">
 						<label></label>
 						<div class="ui checkbox">
 							<input name="protected_branch" type="checkbox" {{if .protected_branch}}checked{{end}}>
-							<label>{{ctx.Locale.Tr "repo.settings.protected_branch"}}</label>
+							<label>{{ctx.Locale.Tr "Branch Protection"}}</label>
 						</div>
 					</div>
 				</div>
 
 				<div id="non_template">
 					<div class="inline field">
-						<label>{{ctx.Locale.Tr "repo.issue_labels"}}</label>
+						<label>{{ctx.Locale.Tr "Issue Labels"}}</label>
 						<div class="ui search selection dropdown">
 							<input type="hidden" name="issue_labels" value="{{.issueLabels}}">
-							<div class="default text">{{ctx.Locale.Tr "repo.issue_labels_helper"}}</div>
+							<div class="default text">{{ctx.Locale.Tr "Select an issue label set."}}</div>
 							<div class="menu">
-								<div class="item" data-value="">{{ctx.Locale.Tr "repo.issue_labels_helper"}}</div>
+								<div class="item" data-value="">{{ctx.Locale.Tr "Select an issue label set."}}</div>
 								{{range .LabelTemplateFiles}}
 									<div class="item" data-value="{{.DisplayName}}">{{.DisplayName}}<br><i>({{.Description}})</i></div>
 								{{end}}
@@ -135,57 +135,57 @@
 						<label>.gitignore</label>
 						<div class="ui multiple search selection dropdown">
 							<input type="hidden" name="gitignores" value="{{.gitignores}}">
-							<div class="default text">{{ctx.Locale.Tr "repo.repo_gitignore_helper"}}</div>
+							<div class="default text">{{ctx.Locale.Tr "Select .gitignore templates."}}</div>
 							<div class="menu">
 								{{range .Gitignores}}
 									<div class="item" data-value="{{.}}">{{.}}</div>
 								{{end}}
 							</div>
 						</div>
-						<span class="help">{{ctx.Locale.Tr "repo.repo_gitignore_helper_desc"}}</span>
+						<span class="help">{{ctx.Locale.Tr "Choose which files not to track from a list of templates for common languages. Typical artifacts generated by each language's build tools are included on .gitignore by default."}}</span>
 					</div>
 					<div class="inline field">
-						<label>{{ctx.Locale.Tr "repo.license"}}</label>
+						<label>{{ctx.Locale.Tr "License"}}</label>
 						<div class="ui search selection dropdown">
 							<input type="hidden" name="license" value="{{.license}}">
-							<div class="default text">{{ctx.Locale.Tr "repo.license_helper"}}</div>
+							<div class="default text">{{ctx.Locale.Tr "Select a license file."}}</div>
 							<div class="menu">
-								<div class="item" data-value="">{{ctx.Locale.Tr "repo.license_helper"}}</div>
+								<div class="item" data-value="">{{ctx.Locale.Tr "Select a license file."}}</div>
 								{{range .Licenses}}
 									<div class="item" data-value="{{.}}">{{.}}</div>
 								{{end}}
 							</div>
 						</div>
-						<span class="help">{{ctx.Locale.Tr "repo.license_helper_desc" "https://choosealicense.com/"}}</span>
+						<span class="help">{{ctx.Locale.Tr "A license governs what others can and can't do with your code. Not sure which one is right for your project? See <a target=\"_blank\" rel=\"noopener noreferrer\" href=\"%s\">Choose a license.</a>" "https://choosealicense.com/"}}</span>
 					</div>
 
 					<div class="inline field">
-						<label>{{ctx.Locale.Tr "repo.readme"}}</label>
+						<label>{{ctx.Locale.Tr "README"}}</label>
 						<div class="ui selection dropdown">
 							<input type="hidden" name="readme" value="{{.readme}}">
-							<div class="default text">{{ctx.Locale.Tr "repo.readme_helper"}}</div>
+							<div class="default text">{{ctx.Locale.Tr "Select a README file template."}}</div>
 							<div class="menu">
 								{{range .Readmes}}
 									<div class="item" data-value="{{.}}">{{.}}</div>
 								{{end}}
 							</div>
 						</div>
-						<span class="help">{{ctx.Locale.Tr "repo.readme_helper_desc"}}</span>
+						<span class="help">{{ctx.Locale.Tr "This is the place where you can write a complete description for your project."}}</span>
 					</div>
 					<div class="inline field">
 						<label></label>
 						<div class="ui checkbox" id="auto-init">
 							<input name="auto_init" type="checkbox" {{if .auto_init}}checked{{end}}>
-							<label>{{ctx.Locale.Tr "repo.auto_init"}}</label>
+							<label>{{ctx.Locale.Tr "Initialize Repository (Adds .gitignore, License and README)"}}</label>
 						</div>
 					</div>
 					<div class="inline field">
-						<label for="default_branch">{{ctx.Locale.Tr "repo.default_branch"}}</label>
+						<label for="default_branch">{{ctx.Locale.Tr "Default Branch"}}</label>
 						<input id="default_branch" name="default_branch" value="{{.default_branch}}" placeholder="{{.default_branch}}">
-						<span class="help">{{ctx.Locale.Tr "repo.default_branch_helper"}}</span>
+						<span class="help">{{ctx.Locale.Tr "The default branch is the base branch for pull requests and code commits."}}</span>
 					</div>
 					<div class="inline field">
-						<label>{{ctx.Locale.Tr "repo.object_format"}}</label>
+						<label>{{ctx.Locale.Tr "Object Format"}}</label>
 						<div class="ui selection owner dropdown">
 							<input type="hidden" id="object_format_name" name="object_format_name" value="{{or .object_format_name .DefaultObjectFormat.Name}}" required>
 							<div class="default text">{{.DefaultObjectFormat.Name}}</div>
@@ -195,13 +195,13 @@
 								{{end}}
 							</div>
 						</div>
-						<span class="help">{{ctx.Locale.Tr "repo.object_format_helper"}}</span>
+						<span class="help">{{ctx.Locale.Tr "Object format of the repository. Cannot be changed later. SHA1 is most compatible."}}</span>
 					</div>
 					<div class="inline field">
-						<label>{{ctx.Locale.Tr "repo.template"}}</label>
+						<label>{{ctx.Locale.Tr "Template"}}</label>
 						<div class="ui checkbox">
 							<input name="template" type="checkbox">
-							<label>{{ctx.Locale.Tr "repo.template_helper"}}</label>
+							<label>{{ctx.Locale.Tr "Make repository a template"}}</label>
 						</div>
 					</div>
 				</div>
@@ -209,7 +209,7 @@
 				<div class="inline field">
 					<label></label>
 					<button class="ui primary button">
-						{{ctx.Locale.Tr "repo.create_repo"}}
+						{{ctx.Locale.Tr "Create Repository"}}
 					</button>
 				</div>
 			</form>

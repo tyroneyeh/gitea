@@ -17,14 +17,14 @@
 					<span class="file tw-flex-1">
 						<a rel="nofollow" href="{{$repo.Link}}">{{$repo.FullName}}</a>
 						{{if $repo.IsArchived}}
-							<span class="ui basic label">{{ctx.Locale.Tr "repo.desc.archived"}}</span>
+							<span class="ui basic label">{{ctx.Locale.Tr "Archived"}}</span>
 						{{end}}
 						- {{.Filename}}
 					</span>
 				{{else}}
 					<span class="file tw-flex-1">{{.Filename}}</span>
 				{{end}}
-				<a role="button" class="ui basic tiny button" rel="nofollow" href="{{$repo.Link}}/src/commit/{{$result.CommitID | PathEscape}}/{{.Filename | PathEscapeSegments}}">{{ctx.Locale.Tr "repo.diff.view_file"}}</a>
+				<a role="button" class="ui basic tiny button" rel="nofollow" href="{{$repo.Link}}/src/commit/{{$result.CommitID | PathEscape}}/{{.Filename | PathEscapeSegments}}">{{ctx.Locale.Tr "View File"}}</a>
 			</h4>
 			<div class="ui attached table segment">
 				{{template "shared/searchfile" dict "RepoLink" $repo.Link "SearchResult" .}}

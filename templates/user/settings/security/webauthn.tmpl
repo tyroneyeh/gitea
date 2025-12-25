@@ -1,7 +1,7 @@
-<h4 class="ui top attached header">{{ctx.Locale.Tr "settings.webauthn"}}</h4>
+<h4 class="ui top attached header">{{ctx.Locale.Tr "Two-Factor Authentication (Security Keys)"}}</h4>
 <div class="ui attached segment">
-	<p>{{ctx.Locale.Tr "settings.webauthn_desc" "https://w3c.github.io/webauthn/#webauthn-authenticator"}}</p>
-	<p>{{ctx.Locale.Tr "settings.webauthn_key_loss_warning"}} {{ctx.Locale.Tr "settings.webauthn_alternative_tip"}}</p>
+	<p>{{ctx.Locale.Tr "Security keys are hardware devices containing cryptographic keys. They can be used for two-factor authentication. Security keys must support the <a rel=\"noreferrer\" target=\"_blank\" href=\"%s\">WebAuthn Authenticator</a> standard." "https://w3c.github.io/webauthn/#webauthn-authenticator"}}</p>
+	<p>{{ctx.Locale.Tr "If you lose your security keys, you will lose access to your account."}} {{ctx.Locale.Tr "You may want to configure an additional authentication method."}}</p>
 	{{template "user/auth/webauthn_error" .}}
 	<div class="flex-list">
 		{{range .WebAuthnCredentials}}
@@ -12,12 +12,12 @@
 				<div class="flex-item-main">
 					<div class="flex-item-title">{{.Name}}</div>
 					<div class="flex-item-body">
-						<i>{{ctx.Locale.Tr "settings.added_on" (DateUtils.AbsoluteShort .CreatedUnix)}}</i>
+						<i>{{ctx.Locale.Tr "Added on %s" (DateUtils.AbsoluteShort .CreatedUnix)}}</i>
 					</div>
 				</div>
 				<div class="flex-item-trailing">
 					<button class="ui red tiny button delete-button" data-modal-id="delete-registration" data-url="{{$.Link}}/webauthn/delete" data-id="{{.ID}}">
-					{{ctx.Locale.Tr "settings.delete_key"}}
+					{{ctx.Locale.Tr "Remove"}}
 					</button>
 				</div>
 			</div>
@@ -25,18 +25,18 @@
 	</div>
 	<div class="ui form">
 		<div class="required field">
-			<label for="nickname">{{ctx.Locale.Tr "settings.webauthn_nickname"}}</label>
+			<label for="nickname">{{ctx.Locale.Tr "Nickname"}}</label>
 			<input id="nickname" name="nickname" type="text" required>
 		</div>
-		<button id="register-webauthn" class="ui primary button">{{svg "octicon-key"}} {{ctx.Locale.Tr "settings.webauthn_register_key"}}</button>
+		<button id="register-webauthn" class="ui primary button">{{svg "octicon-key"}} {{ctx.Locale.Tr "Add Security Key"}}</button>
 	</div>
 	<div class="ui g-modal-confirm delete modal" id="delete-registration">
 		<div class="header">
 			{{svg "octicon-trash"}}
-			{{ctx.Locale.Tr "settings.webauthn_delete_key"}}
+			{{ctx.Locale.Tr "Remove Security Key"}}
 		</div>
 		<div class="content">
-			<p>{{ctx.Locale.Tr "settings.webauthn_delete_key_desc"}}</p>
+			<p>{{ctx.Locale.Tr "If you remove a security key, you can no longer sign in with it. Continue?"}}</p>
 		</div>
 		{{template "base/modal_actions_confirm" .}}
 	</div>

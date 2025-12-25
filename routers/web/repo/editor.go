@@ -69,7 +69,7 @@ func prepareEditorPageFormOptions(ctx *context.Context, editorAction string) *co
 	}
 
 	if commitFormOptions.WillSubmitToFork && !commitFormOptions.TargetRepo.CanEnableEditor() {
-		ctx.Data["NotFoundPrompt"] = ctx.Locale.Tr("repo.editor.fork_not_editable")
+		ctx.Data["NotFoundPrompt"] = ctx.Locale.Tr("You have forked this repository but your fork is not editable.")
 		ctx.NotFound(nil)
 	}
 
@@ -131,7 +131,7 @@ func prepareEditorCommitSubmittedForm[T forms.CommitCommonFormInterface](ctx *co
 	}
 	if commitFormOptions.NeedFork {
 		// It shouldn't happen, because we should have done the checks in the "GET" request. But just in case.
-		ctx.JSONError(ctx.Locale.TrString("error.not_found"))
+		ctx.JSONError(ctx.Locale.TrString("The target couldn't be found."))
 		return nil
 	}
 
@@ -140,7 +140,7 @@ func prepareEditorCommitSubmittedForm[T forms.CommitCommonFormInterface](ctx *co
 	commitToNewBranch := commonForm.CommitChoice == editorCommitChoiceNewBranch || fromBaseBranch != ""
 	targetBranchName := util.Iif(commitToNewBranch, commonForm.NewBranchName, ctx.Repo.BranchName)
 	if targetBranchName == ctx.Repo.BranchName && !commitFormOptions.CanCommitToBranch {
-		ctx.JSONError(ctx.Tr("repo.editor.cannot_commit_to_protected_branch", targetBranchName))
+		ctx.JSONError(ctx.Tr("Cannot commit to protected branch \"%s\".", targetBranchName))
 		return nil
 	}
 
@@ -152,7 +152,7 @@ func prepareEditorCommitSubmittedForm[T forms.CommitCommonFormInterface](ctx *co
 	// Committer user info
 	gitCommitter, valid := WebGitOperationGetCommitChosenEmailIdentity(ctx, commonForm.CommitEmail)
 	if !valid {
-		ctx.JSONError(ctx.Tr("repo.editor.invalid_commit_email"))
+		ctx.JSONError(ctx.Tr("The email address for the commit is invalid."))
 		return nil
 	}
 
@@ -164,9 +164,9 @@ func prepareEditorCommitSubmittedForm[T forms.CommitCommonFormInterface](ctx *co
 			return nil
 		} else if targetBranchExists {
 			if fromBaseBranch != "" {
-				ctx.JSONError(ctx.Tr("repo.editor.fork_branch_exists", targetBranchName))
+				ctx.JSONError(ctx.Tr("Branch \"%s\" already exists in your fork. Please choose a new branch name.", targetBranchName))
 			} else {
-				ctx.JSONError(ctx.Tr("repo.editor.branch_already_exists", targetBranchName))
+				ctx.JSONError(ctx.Tr("Branch \"%s\" already exists in this repository.", targetBranchName))
 			}
 			return nil
 		}
@@ -177,7 +177,7 @@ func prepareEditorCommitSubmittedForm[T forms.CommitCommonFormInterface](ctx *co
 		err = editorPushBranchToForkedRepository(ctx, ctx.Doer, ctx.Repo.Repository.BaseRepo, fromBaseBranch, commitFormOptions.TargetRepo, targetBranchName)
 		if err != nil {
 			log.Error("Unable to editorPushBranchToForkedRepository: %v", err)
-			ctx.JSONError(ctx.Tr("repo.editor.fork_failed_to_push_branch", targetBranchName))
+			ctx.JSONError(ctx.Tr("Failed to push branch %s to your repository.", targetBranchName))
 			return nil
 		}
 		// we have pushed the base branch as the new branch, now we need to commit the changes directly to the new branch
@@ -304,11 +304,11 @@ func EditFile(ctx *context.Context) {
 
 		// Only some file types are editable online as text.
 		if fInfo.isLFSFile() {
-			ctx.Data["NotEditableReason"] = ctx.Tr("repo.editor.cannot_edit_lfs_files")
+			ctx.Data["NotEditableReason"] = ctx.Tr("LFS files cannot be edited in the web interface.")
 		} else if !fInfo.st.IsRepresentableAsText() {
-			ctx.Data["NotEditableReason"] = ctx.Tr("repo.editor.cannot_edit_non_text_files")
+			ctx.Data["NotEditableReason"] = ctx.Tr("Binary files cannot be edited in the web interface.")
 		} else if fInfo.blobOrLfsSize >= setting.UI.MaxDisplayFileSize {
-			ctx.Data["NotEditableReason"] = ctx.Tr("repo.editor.cannot_edit_too_large_file")
+			ctx.Data["NotEditableReason"] = ctx.Tr("The file is too large to be edited.")
 		}
 
 		if ctx.Data["NotEditableReason"] == nil {
@@ -333,7 +333,7 @@ func EditFilePost(ctx *context.Context) {
 		return
 	}
 
-	defaultCommitMessage := util.Iif(isNewFile, ctx.Locale.TrString("repo.editor.add", parsed.form.TreePath), ctx.Locale.TrString("repo.editor.update", parsed.form.TreePath))
+	defaultCommitMessage := util.Iif(isNewFile, ctx.Locale.TrString("Add %s", parsed.form.TreePath), ctx.Locale.TrString("Update %s", parsed.form.TreePath))
 
 	var operation string
 	if isNewFile {
@@ -346,7 +346,7 @@ func EditFilePost(ctx *context.Context) {
 		operation = "rename"
 	} else {
 		// It should never happen, just in case
-		ctx.JSONError(ctx.Tr("error.occurred"))
+		ctx.JSONError(ctx.Tr("An error occurred"))
 		return
 	}
 
@@ -408,9 +408,9 @@ func DeleteFilePost(ctx *context.Context) {
 
 	var commitMessage string
 	if entry.IsDir() {
-		commitMessage = parsed.GetCommitMessage(ctx.Locale.TrString("repo.editor.delete_directory", treePath))
+		commitMessage = parsed.GetCommitMessage(ctx.Locale.TrString("Delete directory '%s'", treePath))
 	} else {
-		commitMessage = parsed.GetCommitMessage(ctx.Locale.TrString("repo.editor.delete", treePath))
+		commitMessage = parsed.GetCommitMessage(ctx.Locale.TrString("Delete %s", treePath))
 	}
 
 	_, err = files_service.ChangeRepoFiles(ctx, ctx.Repo.Repository, ctx.Doer, &files_service.ChangeRepoFilesOptions{
@@ -435,9 +435,9 @@ func DeleteFilePost(ctx *context.Context) {
 	}
 
 	if entry.IsDir() {
-		ctx.Flash.Success(ctx.Tr("repo.editor.directory_delete_success", treePath))
+		ctx.Flash.Success(ctx.Tr("Directory \"%s\" has been deleted.", treePath))
 	} else {
-		ctx.Flash.Success(ctx.Tr("repo.editor.file_delete_success", treePath))
+		ctx.Flash.Success(ctx.Tr("File \"%s\" has been deleted.", treePath))
 	}
 	redirectTreePath := getClosestParentWithFiles(ctx.Repo.GitRepo, parsed.NewBranchName, treePath)
 	redirectForCommitChoice(ctx, parsed, redirectTreePath)
@@ -461,7 +461,7 @@ func UploadFilePost(ctx *context.Context) {
 		return
 	}
 
-	defaultCommitMessage := ctx.Locale.TrString("repo.editor.upload_files_to_dir", util.IfZero(parsed.form.TreePath, "/"))
+	defaultCommitMessage := ctx.Locale.TrString("Upload files to \"%s\"", util.IfZero(parsed.form.TreePath, "/"))
 	err := files_service.UploadRepoFiles(ctx, ctx.Repo.Repository, ctx.Doer, &files_service.UploadRepoFileOptions{
 		LastCommitID: parsed.form.LastCommit,
 		OldBranch:    parsed.OldBranchName,

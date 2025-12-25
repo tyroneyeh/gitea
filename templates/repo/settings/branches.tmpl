@@ -2,15 +2,15 @@
 	<div class="repo-setting-content">
 		{{if .Repository.IsArchived}}
 			<div class="ui warning message tw-text-center">
-				{{ctx.Locale.Tr "repo.settings.archive.branchsettings_unavailable"}}
+				{{ctx.Locale.Tr "Branch settings are not available if the repo is archived."}}
 			</div>
 		{{else}}
 			<h4 class="ui top attached header">
-				{{ctx.Locale.Tr "repo.default_branch"}}
+				{{ctx.Locale.Tr "Default Branch"}}
 			</h4>
 			<div class="ui attached segment">
 				<p>
-					{{ctx.Locale.Tr "repo.settings.default_branch_desc"}}
+					{{ctx.Locale.Tr "Select a default repository branch for pull requests and code commits:"}}
 				</p>
 				<form class="tw-flex" action="{{.Link}}" method="post">
 					{{.CsrfTokenHtml}}
@@ -25,14 +25,14 @@
 							{{end}}
 						</div>
 					</div>
-					<button class="ui primary button"{{if .Repository.IsEmpty}} disabled{{end}}>{{ctx.Locale.Tr "repo.settings.branches.update_default_branch"}}</button>
+					<button class="ui primary button"{{if .Repository.IsEmpty}} disabled{{end}}>{{ctx.Locale.Tr "Update Default Branch"}}</button>
 				</form>
 			</div>
 
 			<h4 class="ui top attached header">
-				{{ctx.Locale.Tr "repo.settings.protected_branch"}}
+				{{ctx.Locale.Tr "Branch Protection"}}
 				<div class="ui right">
-					<a class="ui primary tiny button" href="{{$.Repository.Link}}/settings/branches/edit">{{ctx.Locale.Tr "repo.settings.branches.add_new_rule"}}</a>
+					<a class="ui primary tiny button" href="{{$.Repository.Link}}/settings/branches/edit">{{ctx.Locale.Tr "Add New Rule"}}</a>
 				</div>
 			</h4>
 
@@ -49,15 +49,15 @@
 								</div>
 							</div>
 							<div class="flex-item-trailing">
-								<a class="ui tiny button" href="{{$.Repository.Link}}/settings/branches/edit?rule_name={{.RuleName}}">{{ctx.Locale.Tr "repo.settings.edit_protected_branch"}}</a>
+								<a class="ui tiny button" href="{{$.Repository.Link}}/settings/branches/edit?rule_name={{.RuleName}}">{{ctx.Locale.Tr "Edit"}}</a>
 								<button class="ui red tiny button link-action" data-modal-confirm="#repo-branch-protection-delete-modal" data-url="{{$.Repository.Link}}/settings/branches/{{.ID}}/delete?id={{.ID}}">
-									{{ctx.Locale.Tr "repo.settings.protected_branch.delete_rule"}}
+									{{ctx.Locale.Tr "Delete Rule"}}
 								</button>
 							</div>
 						</div>
 					{{else}}
 						<div class="flex-item tw-text-center">
-							{{ctx.Locale.Tr "repo.settings.no_protected_branch"}}
+							{{ctx.Locale.Tr "There are no protected branches."}}
 						</div>
 					{{end}}
 				</div>
@@ -66,8 +66,8 @@
 	</div>
 
 <div class="ui small modal" id="repo-branch-protection-delete-modal">
-	<div class="header">{{svg "octicon-trash"}} {{ctx.Locale.Tr "repo.settings.protected_branch_deletion"}}</div>
-	<div class="content"><p>{{ctx.Locale.Tr "repo.settings.protected_branch_deletion_desc"}}</p></div>
+	<div class="header">{{svg "octicon-trash"}} {{ctx.Locale.Tr "Delete Branch Protection"}}</div>
+	<div class="content"><p>{{ctx.Locale.Tr "Disabling branch protection allows users with write permission to push to the branch. Continue?"}}</p></div>
 	{{template "base/modal_actions_confirm" .}}
 </div>
 

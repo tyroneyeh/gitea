@@ -1,10 +1,10 @@
-<footer class="page-footer" role="group" aria-label="{{ctx.Locale.Tr "aria.footer"}}">
-	<div class="left-links" role="contentinfo" aria-label="{{ctx.Locale.Tr "aria.footer.software"}}">
+<footer class="page-footer" role="group" aria-label="{{ctx.Locale.Tr "Footer"}}">
+	<div class="left-links" role="contentinfo" aria-label="{{ctx.Locale.Tr "About Software"}}">
 		{{if ShowFooterPoweredBy}}
-			<a target="_blank" rel="noopener noreferrer" href="https://about.gitea.com">{{ctx.Locale.Tr "powered_by" "Gitea"}}</a>
+			<a target="_blank" rel="noopener noreferrer" href="https://about.gitea.com">{{ctx.Locale.Tr "Powered by %s" "Gitea"}}</a>
 		{{end}}
 		{{if (or .ShowFooterVersion .PageIsAdmin)}}
-			{{ctx.Locale.Tr "version"}}:
+			{{ctx.Locale.Tr "Version"}}:
 			{{if .IsAdmin}}
 				<a href="{{AppSubUrl}}/-/admin/config">{{AppVer}}</a>
 			{{else}}
@@ -12,11 +12,11 @@
 			{{end}}
 		{{end}}
 		{{if and .TemplateLoadTimes ShowFooterTemplateLoadTime}}
-			{{ctx.Locale.Tr "page"}}: <strong>{{LoadTimes .PageStartTime}}</strong>
-			{{ctx.Locale.Tr "template"}}{{if .TemplateName}} {{.TemplateName}}{{end}}: <strong>{{call .TemplateLoadTimes}}</strong>
+			{{ctx.Locale.Tr "Page"}}: <strong>{{LoadTimes .PageStartTime}}</strong>
+			{{ctx.Locale.Tr "Template"}}{{if .TemplateName}} {{.TemplateName}}{{end}}: <strong>{{call .TemplateLoadTimes}}</strong>
 		{{end}}
 	</div>
-	<div class="right-links" role="group" aria-label="{{ctx.Locale.Tr "aria.footer.links"}}">
+	<div class="right-links" role="group" aria-label="{{ctx.Locale.Tr "Links"}}">
 		<div class="ui dropdown custom" id="footer-theme-selector">
 			<span class="default-text">{{ctx.RenderUtils.RenderThemeItem ctx.CurrentWebTheme 16}}</span>
 			<div class="menu theme-menu"></div>
@@ -29,7 +29,7 @@
 				{{end -}}
 			</div>
 		</div>
-		<a href="{{AssetUrlPrefix}}/licenses.txt">{{ctx.Locale.Tr "licenses"}}</a>
+		<a href="{{AssetUrlPrefix}}/licenses.txt">{{ctx.Locale.Tr "Licenses"}}</a>
 		{{if .EnableSwagger}}<a href="{{AppSubUrl}}/api/swagger">API</a>{{end}}
 		{{template "custom/extra_links_footer" .}}
 	</div>

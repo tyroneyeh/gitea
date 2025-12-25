@@ -8,11 +8,11 @@
 				<div class="ui segment content tw-my-0 avatar-content-left-arrow">
 					<div class="field">
 						<input name="title" data-global-init="initInputAutoFocusEnd" id="issue_title" required maxlength="255" autocomplete="off"
-								placeholder="{{ctx.Locale.Tr "repo.milestones.title"}}"
+								placeholder="{{ctx.Locale.Tr "Title"}}"
 								value="{{if .TitleQuery}}{{.TitleQuery}}{{else if .IssueTemplateTitle}}{{.IssueTemplateTitle}}{{else}}{{.title}}{{end}}"
 						>
 						{{if .PageIsComparePull}}
-							<div class="title_wip_desc" data-wip-prefixes="{{JsonUtils.EncodeToString .PullRequestWorkInProgressPrefixes}}">{{ctx.Locale.Tr "repo.pulls.title_wip_desc" (index .PullRequestWorkInProgressPrefixes 0)}}</div>
+							<div class="title_wip_desc" data-wip-prefixes="{{JsonUtils.EncodeToString .PullRequestWorkInProgressPrefixes}}">{{ctx.Locale.Tr "<a href=\"#\">Start the title with <strong>%s</strong></a> to prevent the pull request from being merged accidentally." (index .PullRequestWorkInProgressPrefixes 0)}}</div>
 						{{end}}
 					</div>
 					{{if .Fields}}
@@ -36,9 +36,9 @@
 					<div class="flex-text-block tw-justify-end">
 						<button class="ui primary button">
 							{{if .PageIsComparePull}}
-								{{ctx.Locale.Tr "repo.pulls.create"}}
+								{{ctx.Locale.Tr "Create Pull Request"}}
 							{{else}}
-								{{ctx.Locale.Tr "repo.issues.create"}}
+								{{ctx.Locale.Tr "Create Issue"}}
 							{{end}}
 						</button>
 					</div>
@@ -65,7 +65,7 @@
 		{{if and .PageIsComparePull (not (eq .HeadRepo.FullName .BaseCompareRepo.FullName)) .CanWriteToHeadRepo}}
 			<div class="divider"></div>
 			<div class="ui checkbox">
-				<label data-tooltip-content="{{ctx.Locale.Tr "repo.pulls.allow_edits_from_maintainers_desc"}}"><strong>{{ctx.Locale.Tr "repo.pulls.allow_edits_from_maintainers"}}</strong></label>
+				<label data-tooltip-content="{{ctx.Locale.Tr "Users with write access to the base branch can also push to this branch"}}"><strong>{{ctx.Locale.Tr "Allow edits from maintainers"}}</strong></label>
 				<input name="allow_maintainer_edit" type="checkbox" {{if .AllowMaintainerEdit}}checked{{end}}>
 			</div>
 		{{end}}

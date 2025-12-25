@@ -40,7 +40,7 @@ func Account(ctx *context.Context) {
 		return
 	}
 
-	ctx.Data["Title"] = ctx.Tr("settings.account")
+	ctx.Data["Title"] = ctx.Tr("Account")
 	ctx.Data["PageIsSettingsAccount"] = true
 	ctx.Data["Email"] = ctx.Doer.Email
 
@@ -57,7 +57,7 @@ func AccountPost(ctx *context.Context) {
 	}
 
 	form := web.GetForm(ctx).(*forms.ChangePasswordForm)
-	ctx.Data["Title"] = ctx.Tr("settings_title")
+	ctx.Data["Title"] = ctx.Tr("Settings")
 	ctx.Data["PageIsSettingsAccount"] = true
 	ctx.Data["Email"] = ctx.Doer.Email
 
@@ -69,9 +69,9 @@ func AccountPost(ctx *context.Context) {
 	}
 
 	if ctx.Doer.IsPasswordSet() && !ctx.Doer.ValidatePassword(form.OldPassword) {
-		ctx.Flash.Error(ctx.Tr("settings.password_incorrect"))
+		ctx.Flash.Error(ctx.Tr("The current password is incorrect."))
 	} else if form.Password != form.Retype {
-		ctx.Flash.Error(ctx.Tr("form.password_not_match"))
+		ctx.Flash.Error(ctx.Tr("The passwords do not match."))
 	} else {
 		opts := &user.UpdateAuthOptions{
 			Password:           optional.Some(form.Password),
@@ -80,19 +80,19 @@ func AccountPost(ctx *context.Context) {
 		if err := user.UpdateAuth(ctx, ctx.Doer, opts); err != nil {
 			switch {
 			case errors.Is(err, password.ErrMinLength):
-				ctx.Flash.Error(ctx.Tr("auth.password_too_short", setting.MinPasswordLength))
+				ctx.Flash.Error(ctx.Tr("Password length cannot be less than %d characters.", setting.MinPasswordLength))
 			case errors.Is(err, password.ErrComplexity):
 				ctx.Flash.Error(password.BuildComplexityError(ctx.Locale))
 			case errors.Is(err, password.ErrIsPwned):
-				ctx.Flash.Error(ctx.Tr("auth.password_pwned", "https://haveibeenpwned.com/Passwords"))
+				ctx.Flash.Error(ctx.Tr("The password you chose is on a <a target=\"_blank\" rel=\"noopener noreferrer\" href=\"%s\">list of stolen passwords</a> previously exposed in public data breaches. Please try again with a different password and consider changing this password elsewhere too.", "https://haveibeenpwned.com/Passwords"))
 			case password.IsErrIsPwnedRequest(err):
-				ctx.Flash.Error(ctx.Tr("auth.password_pwned_err"))
+				ctx.Flash.Error(ctx.Tr("Could not complete request to HaveIBeenPwned"))
 			default:
 				ctx.ServerError("UpdateAuth", err)
 				return
 			}
 		} else {
-			ctx.Flash.Success(ctx.Tr("settings.change_password_success"))
+			ctx.Flash.Success(ctx.Tr("Your password has been updated. Sign in using your new password from now on."))
 		}
 	}
 
@@ -107,7 +107,7 @@ func EmailPost(ctx *context.Context) {
 	}
 
 	form := web.GetForm(ctx).(*forms.AddEmailForm)
-	ctx.Data["Title"] = ctx.Tr("settings_title")
+	ctx.Data["Title"] = ctx.Tr("Settings")
 	ctx.Data["PageIsSettingsAccount"] = true
 	ctx.Data["Email"] = ctx.Doer.Email
 
@@ -165,7 +165,7 @@ func EmailPost(ctx *context.Context) {
 			log.Error("Set cache(MailResendLimit) fail: %v", err)
 		}
 
-		ctx.Flash.Info(ctx.Tr("settings.add_email_confirmation_sent", address, timeutil.MinutesToFriendly(setting.Service.ActiveCodeLives, ctx.Locale)))
+		ctx.Flash.Info(ctx.Tr("A confirmation email has been sent to \"%s\". Please check your inbox within the next %s to confirm your email address.", address, timeutil.MinutesToFriendly(setting.Service.ActiveCodeLives, ctx.Locale)))
 		ctx.Redirect(setting.AppSubURL + "/user/settings/account")
 		return
 	}
@@ -181,11 +181,11 @@ func EmailPost(ctx *context.Context) {
 		if user_model.IsErrEmailAlreadyUsed(err) {
 			loadAccountData(ctx)
 
-			ctx.RenderWithErr(ctx.Tr("form.email_been_used"), tplSettingsAccount, &form)
+			ctx.RenderWithErr(ctx.Tr("The email address is already used."), tplSettingsAccount, &form)
 		} else if user_model.IsErrEmailCharIsNotSupported(err) || user_model.IsErrEmailInvalid(err) {
 			loadAccountData(ctx)
 
-			ctx.RenderWithErr(ctx.Tr("form.email_invalid"), tplSettingsAccount, &form)
+			ctx.RenderWithErr(ctx.Tr("The email address is invalid."), tplSettingsAccount, &form)
 		} else {
 			ctx.ServerError("AddEmailAddresses", err)
 		}
@@ -199,9 +199,9 @@ func EmailPost(ctx *context.Context) {
 			log.Error("Set cache(MailResendLimit) fail: %v", err)
 		}
 
-		ctx.Flash.Info(ctx.Tr("settings.add_email_confirmation_sent", form.Email, timeutil.MinutesToFriendly(setting.Service.ActiveCodeLives, ctx.Locale)))
+		ctx.Flash.Info(ctx.Tr("A confirmation email has been sent to \"%s\". Please check your inbox within the next %s to confirm your email address.", form.Email, timeutil.MinutesToFriendly(setting.Service.ActiveCodeLives, ctx.Locale)))
 	} else {
-		ctx.Flash.Success(ctx.Tr("settings.add_email_success"))
+		ctx.Flash.Success(ctx.Tr("The new email address has been added."))
 	}
 
 	log.Trace("Email address added: %s", form.Email)
@@ -226,7 +226,7 @@ func DeleteEmail(ctx *context.Context) {
 	}
 	log.Trace("Email address deleted: %s", ctx.Doer.Name)
 
-	ctx.Flash.Success(ctx.Tr("settings.email_deletion_success"))
+	ctx.Flash.Success(ctx.Tr("The email address has been removed."))
 	ctx.JSONRedirect(setting.AppSubURL + "/user/settings/account")
 }
 
@@ -237,7 +237,7 @@ func DeleteAccount(ctx *context.Context) {
 		return
 	}
 
-	ctx.Data["Title"] = ctx.Tr("settings_title")
+	ctx.Data["Title"] = ctx.Tr("Settings")
 	ctx.Data["PageIsSettingsAccount"] = true
 	ctx.Data["Email"] = ctx.Doer.Email
 
@@ -246,19 +246,19 @@ func DeleteAccount(ctx *context.Context) {
 		case user_model.IsErrUserNotExist(err):
 			loadAccountData(ctx)
 
-			ctx.RenderWithErr(ctx.Tr("form.user_not_exist"), tplSettingsAccount, nil)
+			ctx.RenderWithErr(ctx.Tr("The user does not exist."), tplSettingsAccount, nil)
 		case errors.Is(err, smtp.ErrUnsupportedLoginType):
 			loadAccountData(ctx)
 
-			ctx.RenderWithErr(ctx.Tr("form.unsupported_login_type"), tplSettingsAccount, nil)
+			ctx.RenderWithErr(ctx.Tr("The login type is not supported to delete account."), tplSettingsAccount, nil)
 		case errors.As(err, &db.ErrUserPasswordNotSet{}):
 			loadAccountData(ctx)
 
-			ctx.RenderWithErr(ctx.Tr("form.unset_password"), tplSettingsAccount, nil)
+			ctx.RenderWithErr(ctx.Tr("The login user has not set the password."), tplSettingsAccount, nil)
 		case errors.As(err, &db.ErrUserPasswordInvalid{}):
 			loadAccountData(ctx)
 
-			ctx.RenderWithErr(ctx.Tr("form.enterred_invalid_password"), tplSettingsAccount, nil)
+			ctx.RenderWithErr(ctx.Tr("The password you entered is incorrect."), tplSettingsAccount, nil)
 		default:
 			ctx.ServerError("UserSignIn", err)
 		}
@@ -267,7 +267,7 @@ func DeleteAccount(ctx *context.Context) {
 
 	// admin should not delete themself
 	if ctx.Doer.IsAdmin {
-		ctx.Flash.Error(ctx.Tr("form.admin_cannot_delete_self"))
+		ctx.Flash.Error(ctx.Tr("You cannot delete yourself when you are an admin. Please remove your admin privileges first."))
 		ctx.Redirect(setting.AppSubURL + "/user/settings/account")
 		return
 	}
@@ -275,16 +275,16 @@ func DeleteAccount(ctx *context.Context) {
 	if err := user.DeleteUser(ctx, ctx.Doer, false); err != nil {
 		switch {
 		case repo_model.IsErrUserOwnRepos(err):
-			ctx.Flash.Error(ctx.Tr("form.still_own_repo"))
+			ctx.Flash.Error(ctx.Tr("Your account owns one or more repositories. Delete or transfer them first."))
 			ctx.Redirect(setting.AppSubURL + "/user/settings/account")
 		case org_model.IsErrUserHasOrgs(err):
-			ctx.Flash.Error(ctx.Tr("form.still_has_org"))
+			ctx.Flash.Error(ctx.Tr("Your account is a member of one or more organizations. Leave them first."))
 			ctx.Redirect(setting.AppSubURL + "/user/settings/account")
 		case packages_model.IsErrUserOwnPackages(err):
-			ctx.Flash.Error(ctx.Tr("form.still_own_packages"))
+			ctx.Flash.Error(ctx.Tr("Your account owns one or more packages. Delete them first."))
 			ctx.Redirect(setting.AppSubURL + "/user/settings/account")
 		case user_model.IsErrDeleteLastAdminUser(err):
-			ctx.Flash.Error(ctx.Tr("auth.last_admin"))
+			ctx.Flash.Error(ctx.Tr("You cannot remove the last admin. There must be at least one admin."))
 			ctx.Redirect(setting.AppSubURL + "/user/settings/account")
 		default:
 			ctx.ServerError("DeleteUser", err)

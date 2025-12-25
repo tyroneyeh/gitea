@@ -1,18 +1,18 @@
 <h4 class="ui top attached header">
-	{{ctx.Locale.Tr "admin.config.picture_config"}}
+	{{ctx.Locale.Tr "Picture and Avatar Configuration"}}
 </h4>
 <div class="ui attached table segment">
 	<dl class="admin-dl-horizontal">
-		<dt>{{ctx.Locale.Tr "admin.config.disable_gravatar"}}</dt>
+		<dt>{{ctx.Locale.Tr "Disable Gravatar"}}</dt>
 		<dd>
-			<div class="ui toggle checkbox" data-tooltip-content="{{ctx.Locale.Tr "admin.config.disable_gravatar"}}">
+			<div class="ui toggle checkbox" data-tooltip-content="{{ctx.Locale.Tr "Disable Gravatar"}}">
 				<input type="checkbox" data-config-dyn-key="picture.disable_gravatar" {{if .SystemConfig.Picture.DisableGravatar.Value ctx}}checked{{end}}><label></label>
 			</div>
 		</dd>
 		<div class="divider"></div>
-		<dt>{{ctx.Locale.Tr "admin.config.enable_federated_avatar"}}</dt>
+		<dt>{{ctx.Locale.Tr "Enable Federated Avatars"}}</dt>
 		<dd>
-			<div class="ui toggle checkbox" data-tooltip-content="{{ctx.Locale.Tr "admin.config.enable_federated_avatar"}}">
+			<div class="ui toggle checkbox" data-tooltip-content="{{ctx.Locale.Tr "Enable Federated Avatars"}}">
 				<input type="checkbox" data-config-dyn-key="picture.enable_federated_avatar" {{if .SystemConfig.Picture.EnableFederatedAvatar.Value ctx}}checked{{end}}><label></label>
 			</div>
 		</dd>

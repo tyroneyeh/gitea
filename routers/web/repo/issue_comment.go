@@ -63,7 +63,7 @@ func NewComment(ctx *context.Context) {
 	}
 
 	if issue.IsLocked && !ctx.Repo.CanWriteIssuesOrPulls(issue.IsPull) && !ctx.Doer.IsAdmin {
-		ctx.JSONError(ctx.Tr("repo.issues.comment_on_locked"))
+		ctx.JSONError(ctx.Tr("You cannot comment on a locked issue."))
 		return
 	}
 
@@ -92,7 +92,7 @@ func NewComment(ctx *context.Context) {
 				pr, err = issues_model.GetUnmergedPullRequest(ctx, pull.HeadRepoID, pull.BaseRepoID, pull.HeadBranch, pull.BaseBranch, pull.Flow)
 				if err != nil {
 					if !issues_model.IsErrPullRequestNotExist(err) {
-						ctx.JSONError(ctx.Tr("repo.issues.dependency.pr_close_blocked"))
+						ctx.JSONError(ctx.Tr("You need to close all issues that are blocking this pull request before you can merge it."))
 						return
 					}
 				}
@@ -156,16 +156,16 @@ func NewComment(ctx *context.Context) {
 			}
 
 			if pr != nil {
-				ctx.Flash.Info(ctx.Tr("repo.pulls.open_unmerged_pull_exists", pr.Index))
+				ctx.Flash.Info(ctx.Tr("You cannot perform a reopen operation because there is a pending pull request (#%d) with identical properties.", pr.Index))
 			} else {
 				if form.Status == "close" && !issue.IsClosed {
 					if err := issue_service.CloseIssue(ctx, issue, ctx.Doer, ""); err != nil {
 						log.Error("CloseIssue: %v", err)
 						if issues_model.IsErrDependenciesLeft(err) {
 							if issue.IsPull {
-								ctx.JSONError(ctx.Tr("repo.issues.dependency.pr_close_blocked"))
+								ctx.JSONError(ctx.Tr("You need to close all issues that are blocking this pull request before you can merge it."))
 							} else {
-								ctx.JSONError(ctx.Tr("repo.issues.dependency.issue_close_blocked"))
+								ctx.JSONError(ctx.Tr("You need to close all issues that are blocking this issue before you can close it."))
 							}
 							return
 						}
@@ -204,7 +204,7 @@ func NewComment(ctx *context.Context) {
 	comment, err := issue_service.CreateIssueComment(ctx, ctx.Doer, ctx.Repo.Repository, issue, form.Content, attachments)
 	if err != nil {
 		if errors.Is(err, user_model.ErrBlockedUser) {
-			ctx.JSONError(ctx.Tr("repo.issues.comment.blocked_user"))
+			ctx.JSONError(ctx.Tr("Cannot create or edit comment because you are blocked by the poster or repository owner."))
 		} else {
 			ctx.ServerError("CreateIssueComment", err)
 		}
@@ -245,7 +245,7 @@ func UpdateCommentContent(ctx *context.Context) {
 	newContent := ctx.FormString("content")
 	contentVersion := ctx.FormInt("content_version")
 	if contentVersion != comment.ContentVersion {
-		ctx.JSONError(ctx.Tr("repo.comments.edit.already_changed"))
+		ctx.JSONError(ctx.Tr("Unable to save changes to the comment. It appears the content has already been changed by another user. Please refresh the page and try editing again to avoid overwriting their changes"))
 		return
 	}
 
@@ -256,9 +256,9 @@ func UpdateCommentContent(ctx *context.Context) {
 
 		if err = issue_service.UpdateComment(ctx, comment, contentVersion, ctx.Doer, oldContent); err != nil {
 			if errors.Is(err, user_model.ErrBlockedUser) {
-				ctx.JSONError(ctx.Tr("repo.issues.comment.blocked_user"))
+				ctx.JSONError(ctx.Tr("Cannot create or edit comment because you are blocked by the poster or repository owner."))
 			} else if errors.Is(err, issues_model.ErrCommentAlreadyChanged) {
-				ctx.JSONError(ctx.Tr("repo.comments.edit.already_changed"))
+				ctx.JSONError(ctx.Tr("Unable to save changes to the comment. It appears the content has already been changed by another user. Please refresh the page and try editing again to avoid overwriting their changes"))
 			} else {
 				ctx.ServerError("UpdateComment", err)
 			}
@@ -292,7 +292,7 @@ func UpdateCommentContent(ctx *context.Context) {
 	}
 
 	if strings.TrimSpace(string(renderedContent)) == "" {
-		renderedContent = htmlutil.HTMLFormat(`<span class="no-content">%s</span>`, ctx.Tr("repo.issues.no_content"))
+		renderedContent = htmlutil.HTMLFormat(`<span class="no-content">%s</span>`, ctx.Tr("No description provided."))
 	}
 
 	ctx.JSON(http.StatusOK, map[string]any{

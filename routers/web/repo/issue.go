@@ -82,7 +82,7 @@ func MustAllowUserComment(ctx *context.Context) {
 	}
 
 	if issue.IsLocked && !ctx.Repo.CanWriteIssuesOrPulls(issue.IsPull) && !ctx.Doer.IsAdmin {
-		ctx.Flash.Error(ctx.Tr("repo.issues.comment_on_locked"))
+		ctx.Flash.Error(ctx.Tr("You cannot comment on a locked issue."))
 		ctx.Redirect(issue.Link())
 		return
 	}
@@ -343,12 +343,12 @@ func UpdateIssueContent(ctx *context.Context) {
 
 	if err := issue_service.ChangeContent(ctx, issue, ctx.Doer, ctx.Req.FormValue("content"), ctx.FormInt("content_version")); err != nil {
 		if errors.Is(err, user_model.ErrBlockedUser) {
-			ctx.JSONError(ctx.Tr("repo.issues.edit.blocked_user"))
+			ctx.JSONError(ctx.Tr("Cannot edit content because you are blocked by the poster or repository owner."))
 		} else if errors.Is(err, issues_model.ErrIssueAlreadyChanged) {
 			if issue.IsPull {
-				ctx.JSONError(ctx.Tr("repo.pulls.edit.already_changed"))
+				ctx.JSONError(ctx.Tr("Unable to save changes to the pull request. It appears the content has already been changed by another user. Please refresh the page and try editing again to avoid overwriting their changes."))
 			} else {
-				ctx.JSONError(ctx.Tr("repo.issues.edit.already_changed"))
+				ctx.JSONError(ctx.Tr("Unable to save changes to the issue. It appears the content has already been changed by another user. Please refresh the page and try editing again to avoid overwriting their changes."))
 			}
 		} else {
 			ctx.ServerError("ChangeContent", err)

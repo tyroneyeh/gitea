@@ -7,14 +7,14 @@
 				{{ctx.AvatarUtils.Avatar .Organization 140}}
 			</div>
 			<div class="content">
-				<div class="header">{{ctx.Locale.Tr "org.teams.invite.title" .Team.Name .Organization.Name}}</div>
-				<div class="meta">{{ctx.Locale.Tr "org.teams.invite.by" .Inviter.Name}}</div>
-				<div class="description">{{ctx.Locale.Tr "org.teams.invite.description"}}</div>
+				<div class="header">{{ctx.Locale.Tr "You have been invited to join team <strong>%s</strong> in organization <strong>%s</strong>." .Team.Name .Organization.Name}}</div>
+				<div class="meta">{{ctx.Locale.Tr "Invited by %s" .Inviter.Name}}</div>
+				<div class="description">{{ctx.Locale.Tr "Please click the button below to join the team."}}</div>
 			</div>
 			<div class="extra content">
 				<form class="ui form" action="" method="post">
 					{{.CsrfTokenHtml}}
-					<button class="fluid ui primary button">{{ctx.Locale.Tr "org.teams.join"}}</button>
+					<button class="fluid ui primary button">{{ctx.Locale.Tr "Join"}}</button>
 				</form>
 			</div>
 		</div>

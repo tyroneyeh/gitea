@@ -1,8 +1,8 @@
 <div class="empty-placeholder">
 	{{svg "octicon-no-entry" 48}}
-	<h2>{{ctx.Locale.Tr "actions.runs.no_workflows"}}</h2>
+	<h2>{{ctx.Locale.Tr "There are no workflows yet."}}</h2>
 	{{if and .CanWriteCode .CanWriteActions}}
-		<p>{{ctx.Locale.Tr "actions.runs.no_workflows.quick_start" "https://docs.gitea.com/usage/actions/quickstart/"}}</p>
+		<p>{{ctx.Locale.Tr "Don't know how to start with Gitea Actions? See <a target=\"_blank\" rel=\"noopener noreferrer\" href=\"%s\">the quick start guide</a>." "https://docs.gitea.com/usage/actions/quickstart/"}}</p>
 	{{end}}
-	<p>{{ctx.Locale.Tr "actions.runs.no_workflows.documentation" "https://docs.gitea.com/usage/actions/overview/"}}</p>
+	<p>{{ctx.Locale.Tr "For more information on Gitea Actions, see <a target=\"_blank\" rel=\"noopener noreferrer\" href=\"%s\">the documentation</a>." "https://docs.gitea.com/usage/actions/overview/"}}</p>
 </div>

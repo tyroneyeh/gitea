@@ -20,7 +20,7 @@ const (
 
 // Activity render the page to show repository latest changes
 func Activity(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("repo.activity")
+	ctx.Data["Title"] = ctx.Tr("Activity")
 	ctx.Data["PageIsActivity"] = true
 
 	ctx.Data["PageIsPulse"] = true
@@ -53,7 +53,7 @@ func Activity(ctx *context.Context) {
 		// GetActivityStats needs to read the default branch to get some information
 		branchExist, _ := git_model.IsBranchExist(ctx, ctx.Repo.Repository.ID, ctx.Repo.Repository.DefaultBranch)
 		if !branchExist {
-			ctx.Data["NotFoundPrompt"] = ctx.Tr("repo.branch.default_branch_not_exist", ctx.Repo.Repository.DefaultBranch)
+			ctx.Data["NotFoundPrompt"] = ctx.Tr("Default branch \"%s\" does not exist.", ctx.Repo.Repository.DefaultBranch)
 			ctx.NotFound(nil)
 			return
 		}

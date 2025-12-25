@@ -24,7 +24,7 @@ var tplWebAuthn templates.TplName = "user/auth/webauthn"
 
 // WebAuthn shows the WebAuthn login page
 func WebAuthn(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("twofa")
+	ctx.Data["Title"] = ctx.Tr("Two-Factor Authentication")
 
 	if CheckAutoLogin(ctx) {
 		return

@@ -297,7 +297,7 @@ func ViewPost(ctx *context_module.Context) {
 	resp.State.CurrentJob.Title = current.Name
 	resp.State.CurrentJob.Detail = current.Status.LocaleString(ctx.Locale)
 	if run.NeedApproval {
-		resp.State.CurrentJob.Detail = ctx.Locale.TrString("actions.need_approval_desc")
+		resp.State.CurrentJob.Detail = ctx.Locale.TrString("Need approval to run workflows for fork pull request.")
 	}
 	resp.State.CurrentJob.Steps = make([]*ViewJobStep, 0) // marshal to '[]' instead fo 'null' in json
 	resp.Logs.StepsLog = make([]*ViewStepLog, 0)          // marshal to '[]' instead fo 'null' in json
@@ -344,7 +344,7 @@ func convertToViewModel(ctx *context_module.Context, cursors []LogCursor, task *
 					Lines: []*ViewStepLogLine{
 						{
 							Index:   1,
-							Message: ctx.Locale.TrString("actions.runs.expire_log_message"),
+							Message: ctx.Locale.TrString("Logs have been purged because they were too old."),
 							// Timestamp doesn't mean anything when the log is expired.
 							// Set it to the task's updated time since it's probably the time when the log has expired.
 							Timestamp: float64(task.Updated.AsTime().UnixNano()) / float64(time.Second),
@@ -414,7 +414,7 @@ func Rerun(ctx *context_module.Context) {
 
 	// rerun is not allowed if the run is not done
 	if !run.Status.IsDone() {
-		ctx.JSONError(ctx.Locale.Tr("actions.runs.not_done"))
+		ctx.JSONError(ctx.Locale.Tr("This workflow run is not done."))
 		return
 	}
 
@@ -422,7 +422,7 @@ func Rerun(ctx *context_module.Context) {
 	cfgUnit := ctx.Repo.Repository.MustGetUnit(ctx, unit.TypeActions)
 	cfg := cfgUnit.ActionsConfig()
 	if cfg.IsWorkflowDisabled(run.WorkflowID) {
-		ctx.JSONError(ctx.Locale.Tr("actions.workflow.disabled"))
+		ctx.JSONError(ctx.Locale.Tr("Workflow is disabled."))
 		return
 	}
 
@@ -695,7 +695,7 @@ func Delete(ctx *context_module.Context) {
 	}
 
 	if !run.Status.IsDone() {
-		ctx.JSONError(ctx.Tr("actions.runs.not_done"))
+		ctx.JSONError(ctx.Tr("This workflow run is not done."))
 		return
 	}
 
@@ -872,7 +872,7 @@ func ApproveAllChecks(ctx *context_module.Context) {
 		return
 	}
 
-	ctx.Flash.Success(ctx.Tr("actions.approve_all_success"))
+	ctx.Flash.Success(ctx.Tr("All workflow runs are approved successfully."))
 	ctx.JSONOK()
 }
 
@@ -906,9 +906,9 @@ func disableOrEnableWorkflowFile(ctx *context_module.Context, isEnable bool) {
 	}
 
 	if isEnable {
-		ctx.Flash.Success(ctx.Tr("actions.workflow.enable_success", workflow))
+		ctx.Flash.Success(ctx.Tr("Workflow '%s' enabled successfully.", workflow))
 	} else {
-		ctx.Flash.Success(ctx.Tr("actions.workflow.disable_success", workflow))
+		ctx.Flash.Success(ctx.Tr("Workflow '%s' disabled successfully.", workflow))
 	}
 
 	redirectURL := fmt.Sprintf("%s/actions?workflow=%s&actor=%s&status=%s", ctx.Repo.RepoLink, url.QueryEscape(workflow),
@@ -954,6 +954,6 @@ func Run(ctx *context_module.Context) {
 		return
 	}
 
-	ctx.Flash.Success(ctx.Tr("actions.workflow.run_success", workflowID))
+	ctx.Flash.Success(ctx.Tr("Workflow '%s' run successfully.", workflowID))
 	ctx.Redirect(redirectURL)
 }

@@ -241,18 +241,18 @@ func (r *Review) TooltipContent() string {
 	switch r.Type {
 	case ReviewTypeApprove:
 		if r.Stale {
-			return "repo.issues.review.stale"
+			return "Updated since approval"
 		}
 		if !r.Official {
-			return "repo.issues.review.unofficial"
+			return "Uncounted approval"
 		}
-		return "repo.issues.review.official"
+		return "Approved"
 	case ReviewTypeComment:
-		return "repo.issues.review.commented"
+		return "Comment"
 	case ReviewTypeReject:
-		return "repo.issues.review.rejected"
+		return "Changes requested"
 	case ReviewTypeRequest:
-		return "repo.issues.review.requested"
+		return "Review pending"
 	}
 	return ""
 }

@@ -173,7 +173,7 @@ func (e *escapeStreamer) ambiguousRune(r, c rune) error {
 		Val: "ambiguous-code-point",
 	}, html.Attribute{
 		Key: "data-tooltip-content",
-		Val: e.locale.TrString("repo.ambiguous_character", r, c),
+		Val: e.locale.TrString("%[1]c [U+%04[1]X] can be confused with %[2]c [U+%04[2]X]", r, c),
 	}); err != nil {
 		return err
 	}

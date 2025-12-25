@@ -140,13 +140,13 @@ func verifyAuthWithOptions(options *common.VerifyOptions) func(ctx *context.Cont
 		// Check prohibit login users.
 		if ctx.IsSigned {
 			if !ctx.Doer.IsActive && setting.Service.RegisterEmailConfirm {
-				ctx.Data["Title"] = ctx.Tr("auth.active_your_account")
+				ctx.Data["Title"] = ctx.Tr("Activate Your Account")
 				ctx.HTML(http.StatusOK, "user/auth/activate")
 				return
 			}
 			if !ctx.Doer.IsActive || ctx.Doer.ProhibitLogin {
 				log.Info("Failed authentication attempt for %s from %s", ctx.Doer.Name, ctx.RemoteAddr())
-				ctx.Data["Title"] = ctx.Tr("auth.prohibit_login")
+				ctx.Data["Title"] = ctx.Tr("Sign-In Prohibited")
 				ctx.HTML(http.StatusOK, "user/auth/prohibit_login")
 				return
 			}
@@ -154,10 +154,10 @@ func verifyAuthWithOptions(options *common.VerifyOptions) func(ctx *context.Cont
 			if ctx.Doer.MustChangePassword {
 				if ctx.Req.URL.Path != "/user/settings/change_password" {
 					if strings.HasPrefix(ctx.Req.UserAgent(), "git") {
-						ctx.HTTPError(http.StatusUnauthorized, ctx.Locale.TrString("auth.must_change_password"))
+						ctx.HTTPError(http.StatusUnauthorized, ctx.Locale.TrString("Update your password"))
 						return
 					}
-					ctx.Data["Title"] = ctx.Tr("auth.must_change_password")
+					ctx.Data["Title"] = ctx.Tr("Update your password")
 					ctx.Data["ChangePasscodeLink"] = setting.AppSubURL + "/user/change_password"
 					if ctx.Req.URL.Path != "/user/events" {
 						middleware.SetRedirectToCookie(ctx.Resp, setting.AppSubURL+ctx.Req.URL.RequestURI())
@@ -193,7 +193,7 @@ func verifyAuthWithOptions(options *common.VerifyOptions) func(ctx *context.Cont
 				ctx.Redirect(setting.AppSubURL + "/user/login")
 				return
 			} else if !ctx.Doer.IsActive && setting.Service.RegisterEmailConfirm {
-				ctx.Data["Title"] = ctx.Tr("auth.active_your_account")
+				ctx.Data["Title"] = ctx.Tr("Activate Your Account")
 				ctx.HTML(http.StatusOK, "user/auth/activate")
 				return
 			}

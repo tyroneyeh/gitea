@@ -31,7 +31,7 @@ func Security(ctx *context.Context) {
 		return
 	}
 
-	ctx.Data["Title"] = ctx.Tr("settings.security")
+	ctx.Data["Title"] = ctx.Tr("Security")
 	ctx.Data["PageIsSettingsSecurity"] = true
 
 	if ctx.FormString("openid.return_to") != "" {
@@ -58,7 +58,7 @@ func DeleteAccountLink(ctx *context.Context) {
 		if _, err := user_model.RemoveAccountLink(ctx, ctx.Doer, id); err != nil {
 			ctx.Flash.Error("RemoveAccountLink: " + err.Error())
 		} else {
-			ctx.Flash.Success(ctx.Tr("settings.remove_account_link_success"))
+			ctx.Flash.Success(ctx.Tr("The linked account has been removed."))
 		}
 	}
 

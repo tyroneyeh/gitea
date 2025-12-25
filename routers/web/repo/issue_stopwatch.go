@@ -26,9 +26,9 @@ func IssueStartStopwatch(c *context.Context) {
 		c.ServerError("CreateIssueStopwatch", err)
 		return
 	} else if !ok {
-		c.Flash.Warning(c.Tr("repo.issues.stopwatch_already_created"))
+		c.Flash.Warning(c.Tr("The timer for this issue already exists"))
 	} else {
-		c.Flash.Success(c.Tr("repo.issues.tracker_auto_close"))
+		c.Flash.Success(c.Tr("Timer will be stopped automatically when this issue gets closed"))
 	}
 	c.JSONRedirect("")
 }
@@ -49,7 +49,7 @@ func IssueStopStopwatch(c *context.Context) {
 		c.ServerError("FinishIssueStopwatch", err)
 		return
 	} else if !ok {
-		c.Flash.Warning(c.Tr("repo.issues.stopwatch_already_stopped"))
+		c.Flash.Warning(c.Tr("The timer for this issue is already stopped"))
 	}
 	c.JSONRedirect("")
 }

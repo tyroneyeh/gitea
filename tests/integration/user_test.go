@@ -158,7 +158,7 @@ func TestRenameInvalidUsername(t *testing.T) {
 		htmlDoc := NewHTMLParser(t, resp.Body)
 		assert.Contains(t,
 			htmlDoc.doc.Find(".ui.negative.message").Text(),
-			translation.NewLocale("en-US").TrString("form.username_error"),
+			translation.NewLocale("en-US").TrString(" can only contain alphanumeric characters ('0-9','a-z','A-Z'), dash ('-'), underscore ('_') and dot ('.'). It cannot begin or end with non-alphanumeric characters, and consecutive non-alphanumeric characters are also forbidden."),
 		)
 
 		unittest.AssertNotExistsBean(t, &user_model.User{Name: invalidUsername})
@@ -189,9 +189,9 @@ func TestRenameReservedUsername(t *testing.T) {
 		resp = session.MakeRequest(t, req, http.StatusOK)
 		htmlDoc := NewHTMLParser(t, resp.Body)
 		actualMsg := strings.TrimSpace(htmlDoc.doc.Find(".ui.negative.message").Text())
-		expectedMsg := locale.TrString("user.form.name_reserved", reservedUsername)
+		expectedMsg := locale.TrString("The username \"%s\" is reserved.", reservedUsername)
 		if strings.Contains(reservedUsername, ".") {
-			expectedMsg = locale.TrString("user.form.name_pattern_not_allowed", reservedUsername)
+			expectedMsg = locale.TrString("The pattern \"%s\" is not allowed in a username.", reservedUsername)
 		}
 		assert.Equal(t, expectedMsg, actualMsg)
 		unittest.AssertNotExistsBean(t, &user_model.User{Name: reservedUsername})

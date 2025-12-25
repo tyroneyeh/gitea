@@ -43,7 +43,7 @@ var (
 
 // Authentications show authentication config page
 func Authentications(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("admin.authentication")
+	ctx.Data["Title"] = ctx.Tr("Authentication Sources")
 	ctx.Data["PageIsAdminAuthentications"] = true
 
 	var err error
@@ -85,7 +85,7 @@ var (
 
 // NewAuthSource render adding a new auth source page
 func NewAuthSource(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("admin.auths.new")
+	ctx.Data["Title"] = ctx.Tr("Add Authentication Source")
 	ctx.Data["PageIsAdminAuthentications"] = true
 
 	ctx.Data["type"] = auth.LDAP.Int()
@@ -210,16 +210,16 @@ func parseOAuth2Config(form forms.AuthenticationForm) *oauth2.Source {
 func parseSSPIConfig(ctx *context.Context, form forms.AuthenticationForm) (*sspi.Source, error) {
 	if util.IsEmptyString(form.SSPISeparatorReplacement) {
 		ctx.Data["Err_SSPISeparatorReplacement"] = true
-		return nil, errors.New(ctx.Locale.TrString("form.SSPISeparatorReplacement") + ctx.Locale.TrString("form.require_error"))
+		return nil, errors.New(ctx.Locale.TrString("Separator") + ctx.Locale.TrString(" cannot be empty."))
 	}
 	if separatorAntiPattern.MatchString(form.SSPISeparatorReplacement) {
 		ctx.Data["Err_SSPISeparatorReplacement"] = true
-		return nil, errors.New(ctx.Locale.TrString("form.SSPISeparatorReplacement") + ctx.Locale.TrString("form.alpha_dash_dot_error"))
+		return nil, errors.New(ctx.Locale.TrString("Separator") + ctx.Locale.TrString(" should contain only alphanumeric, dash ('-'), underscore ('_') and dot ('.') characters."))
 	}
 
 	if form.SSPIDefaultLanguage != "" && !langCodePattern.MatchString(form.SSPIDefaultLanguage) {
 		ctx.Data["Err_SSPIDefaultLanguage"] = true
-		return nil, errors.New(ctx.Locale.TrString("form.lang_select_error"))
+		return nil, errors.New(ctx.Locale.TrString("Select a language from the list."))
 	}
 
 	return &sspi.Source{
@@ -234,7 +234,7 @@ func parseSSPIConfig(ctx *context.Context, form forms.AuthenticationForm) (*sspi
 // NewAuthSourcePost response for adding an auth source
 func NewAuthSourcePost(ctx *context.Context) {
 	form := *web.GetForm(ctx).(*forms.AuthenticationForm)
-	ctx.Data["Title"] = ctx.Tr("admin.auths.new")
+	ctx.Data["Title"] = ctx.Tr("Add Authentication Source")
 	ctx.Data["PageIsAdminAuthentications"] = true
 
 	ctx.Data["CurrentTypeName"] = auth.Type(form.Type).String()
@@ -272,7 +272,7 @@ func NewAuthSourcePost(ctx *context.Context) {
 			discoveryURL, err := url.Parse(oauth2Config.OpenIDConnectAutoDiscoveryURL)
 			if err != nil || (discoveryURL.Scheme != "http" && discoveryURL.Scheme != "https") {
 				ctx.Data["Err_DiscoveryURL"] = true
-				ctx.RenderWithErr(ctx.Tr("admin.auths.invalid_openIdConnectAutoDiscoveryURL"), tplAuthNew, form)
+				ctx.RenderWithErr(ctx.Tr("Invalid Auto Discovery URL (this must be a valid URL starting with http:// or https://)"), tplAuthNew, form)
 				return
 			}
 		}
@@ -286,7 +286,7 @@ func NewAuthSourcePost(ctx *context.Context) {
 		existing, err := db.Find[auth.Source](ctx, auth.FindSourcesOptions{LoginType: auth.SSPI})
 		if err != nil || len(existing) > 0 {
 			ctx.Data["Err_Type"] = true
-			ctx.RenderWithErr(ctx.Tr("admin.auths.login_source_of_type_exist"), tplAuthNew, form)
+			ctx.RenderWithErr(ctx.Tr("An authentication source of this type already exists."), tplAuthNew, form)
 			return
 		}
 	default:
@@ -310,11 +310,11 @@ func NewAuthSourcePost(ctx *context.Context) {
 	}); err != nil {
 		if auth.IsErrSourceAlreadyExist(err) {
 			ctx.Data["Err_Name"] = true
-			ctx.RenderWithErr(ctx.Tr("admin.auths.login_source_exist", err.(auth.ErrSourceAlreadyExist).Name), tplAuthNew, form)
+			ctx.RenderWithErr(ctx.Tr("The authentication source \"%s\" already exists.", err.(auth.ErrSourceAlreadyExist).Name), tplAuthNew, form)
 		} else if oauth2.IsErrOpenIDConnectInitialize(err) {
 			ctx.Data["Err_DiscoveryURL"] = true
 			unwrapped := err.(oauth2.ErrOpenIDConnectInitialize).Unwrap()
-			ctx.RenderWithErr(ctx.Tr("admin.auths.unable_to_initialize_openid", unwrapped), tplAuthNew, form)
+			ctx.RenderWithErr(ctx.Tr("Unable to initialize OpenID Connect Provider: %s", unwrapped), tplAuthNew, form)
 		} else {
 			ctx.ServerError("auth.CreateSource", err)
 		}
@@ -323,13 +323,13 @@ func NewAuthSourcePost(ctx *context.Context) {
 
 	log.Trace("Authentication created by admin(%s): %s", ctx.Doer.Name, form.Name)
 
-	ctx.Flash.Success(ctx.Tr("admin.auths.new_success", form.Name))
+	ctx.Flash.Success(ctx.Tr("The authentication \"%s\" has been added.", form.Name))
 	ctx.Redirect(setting.AppSubURL + "/-/admin/auths")
 }
 
 // EditAuthSource render editing auth source page
 func EditAuthSource(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("admin.auths.edit")
+	ctx.Data["Title"] = ctx.Tr("Edit Authentication Source")
 	ctx.Data["PageIsAdminAuthentications"] = true
 
 	ctx.Data["SecurityProtocols"] = securityProtocols
@@ -364,7 +364,7 @@ func EditAuthSource(ctx *context.Context) {
 // EditAuthSourcePost response for editing auth source
 func EditAuthSourcePost(ctx *context.Context) {
 	form := *web.GetForm(ctx).(*forms.AuthenticationForm)
-	ctx.Data["Title"] = ctx.Tr("admin.auths.edit")
+	ctx.Data["Title"] = ctx.Tr("Edit Authentication Source")
 	ctx.Data["PageIsAdminAuthentications"] = true
 
 	ctx.Data["SMTPAuths"] = smtp.Authenticators
@@ -402,7 +402,7 @@ func EditAuthSourcePost(ctx *context.Context) {
 			discoveryURL, err := url.Parse(oauth2Config.OpenIDConnectAutoDiscoveryURL)
 			if err != nil || (discoveryURL.Scheme != "http" && discoveryURL.Scheme != "https") {
 				ctx.Data["Err_DiscoveryURL"] = true
-				ctx.RenderWithErr(ctx.Tr("admin.auths.invalid_openIdConnectAutoDiscoveryURL"), tplAuthEdit, form)
+				ctx.RenderWithErr(ctx.Tr("Invalid Auto Discovery URL (this must be a valid URL starting with http:// or https://)"), tplAuthEdit, form)
 				return
 			}
 		}
@@ -425,7 +425,7 @@ func EditAuthSourcePost(ctx *context.Context) {
 	if err := auth.UpdateSource(ctx, source); err != nil {
 		if auth.IsErrSourceAlreadyExist(err) {
 			ctx.Data["Err_Name"] = true
-			ctx.RenderWithErr(ctx.Tr("admin.auths.login_source_exist", err.(auth.ErrSourceAlreadyExist).Name), tplAuthEdit, form)
+			ctx.RenderWithErr(ctx.Tr("The authentication source \"%s\" already exists.", err.(auth.ErrSourceAlreadyExist).Name), tplAuthEdit, form)
 		} else if oauth2.IsErrOpenIDConnectInitialize(err) {
 			ctx.Flash.Error(err.Error(), true)
 			ctx.Data["Err_DiscoveryURL"] = true
@@ -437,7 +437,7 @@ func EditAuthSourcePost(ctx *context.Context) {
 	}
 	log.Trace("Authentication changed by admin(%s): %d", ctx.Doer.Name, source.ID)
 
-	ctx.Flash.Success(ctx.Tr("admin.auths.update_success"))
+	ctx.Flash.Success(ctx.Tr("The authentication source has been updated."))
 	ctx.Redirect(setting.AppSubURL + "/-/admin/auths/" + strconv.FormatInt(form.ID, 10))
 }
 
@@ -451,7 +451,7 @@ func DeleteAuthSource(ctx *context.Context) {
 
 	if err = auth_service.DeleteSource(ctx, source); err != nil {
 		if auth.IsErrSourceInUse(err) {
-			ctx.Flash.Error(ctx.Tr("admin.auths.still_in_used"))
+			ctx.Flash.Error(ctx.Tr("The authentication source is still in use. Convert or delete any users using this authentication source first."))
 		} else {
 			ctx.Flash.Error(fmt.Sprintf("auth_service.DeleteSource: %v", err))
 		}
@@ -460,6 +460,6 @@ func DeleteAuthSource(ctx *context.Context) {
 	}
 	log.Trace("Authentication deleted by admin(%s): %d", ctx.Doer.Name, source.ID)
 
-	ctx.Flash.Success(ctx.Tr("admin.auths.deletion_success"))
+	ctx.Flash.Success(ctx.Tr("The authentication source has been deleted."))
 	ctx.JSONRedirect(setting.AppSubURL + "/-/admin/auths")
 }

@@ -326,7 +326,7 @@ func TestLDAPUserSyncWithGroupFilter(t *testing.T) {
 	// all groups the user is a member of, the user filter is modified accordingly inside
 	// the addAuthSourceLDAP based on the value of the groupFilter
 	u := te.otherLDAPUsers[0]
-	testLoginFailed(t, u.UserName, u.Password, translation.NewLocale("en-US").TrString("form.username_password_incorrect"))
+	testLoginFailed(t, u.UserName, u.Password, translation.NewLocale("en-US").TrString("Username or password is incorrect."))
 
 	require.NoError(t, auth.SyncExternalUsers(t.Context(), true))
 
@@ -380,7 +380,7 @@ func TestLDAPUserSigninFailed(t *testing.T) {
 	te.addAuthSource(t)
 
 	u := te.otherLDAPUsers[0]
-	testLoginFailed(t, u.UserName, u.Password, translation.NewLocale("en-US").TrString("form.username_password_incorrect"))
+	testLoginFailed(t, u.UserName, u.Password, translation.NewLocale("en-US").TrString("Username or password is incorrect."))
 }
 
 func TestLDAPUserSSHKeySync(t *testing.T) {

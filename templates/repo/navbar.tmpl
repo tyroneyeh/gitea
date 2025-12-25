@@ -3,17 +3,17 @@
 <div class="ui fluid vertical menu">
 	{{/* the default activity page "pulse" could work with any permission: code, issue, pr, release*/}}
 	<a class="{{if .PageIsPulse}}active {{end}}item" href="{{.RepoLink}}/activity">
-		{{ctx.Locale.Tr "repo.activity.navbar.pulse"}}
+		{{ctx.Locale.Tr "Pulse"}}
 	</a>
 	{{if $canReadCode}}
 		<a class="{{if .PageIsContributors}}active {{end}}item" href="{{.RepoLink}}/activity/contributors">
-			{{ctx.Locale.Tr "repo.activity.navbar.contributors"}}
+			{{ctx.Locale.Tr "Contributors"}}
 		</a>
 		<a class="{{if .PageIsCodeFrequency}}active{{end}} item" href="{{.RepoLink}}/activity/code-frequency">
-			{{ctx.Locale.Tr "repo.activity.navbar.code_frequency"}}
+			{{ctx.Locale.Tr "Code Frequency"}}
 		</a>
 		<a class="{{if .PageIsRecentCommits}}active{{end}} item" href="{{.RepoLink}}/activity/recent-commits">
-			{{ctx.Locale.Tr "repo.activity.navbar.recent_commits"}}
+			{{ctx.Locale.Tr "Recent Commits"}}
 		</a>
 	{{end}}
 </div>

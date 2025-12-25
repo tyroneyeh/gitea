@@ -44,7 +44,7 @@ const UserSearchDefaultAdminSort = "alphabetically"
 
 // Users show all the users
 func Users(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("admin.users")
+	ctx.Data["Title"] = ctx.Tr("User Accounts")
 	ctx.Data["PageIsAdminUsers"] = true
 
 	statusFilterKeys := []string{"is_active", "is_admin", "is_restricted", "is_2fa_enabled", "is_prohibit_login"}
@@ -83,7 +83,7 @@ func Users(ctx *context.Context) {
 
 // NewUser render adding a new user page
 func NewUser(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("admin.users.new_account")
+	ctx.Data["Title"] = ctx.Tr("Create User Account")
 	ctx.Data["PageIsAdminUsers"] = true
 	ctx.Data["DefaultUserVisibilityMode"] = setting.Service.DefaultUserVisibilityMode
 	ctx.Data["AllowedUserVisibilityModes"] = setting.Service.AllowedUserVisibilityModesSlice.ToVisibleTypeSlice()
@@ -106,7 +106,7 @@ func NewUser(ctx *context.Context) {
 // NewUserPost response for adding a new user
 func NewUserPost(ctx *context.Context) {
 	form := web.GetForm(ctx).(*forms.AdminCreateUserForm)
-	ctx.Data["Title"] = ctx.Tr("admin.users.new_account")
+	ctx.Data["Title"] = ctx.Tr("Create User Account")
 	ctx.Data["PageIsAdminUsers"] = true
 	ctx.Data["DefaultUserVisibilityMode"] = setting.Service.DefaultUserVisibilityMode
 	ctx.Data["AllowedUserVisibilityModes"] = setting.Service.AllowedUserVisibilityModesSlice.ToVisibleTypeSlice()
@@ -151,7 +151,7 @@ func NewUserPost(ctx *context.Context) {
 	if u.LoginType == auth.NoType || u.LoginType == auth.Plain {
 		if len(form.Password) < setting.MinPasswordLength {
 			ctx.Data["Err_Password"] = true
-			ctx.RenderWithErr(ctx.Tr("auth.password_too_short", setting.MinPasswordLength), tplUserNew, &form)
+			ctx.RenderWithErr(ctx.Tr("Password length cannot be less than %d characters.", setting.MinPasswordLength), tplUserNew, &form)
 			return
 		}
 		if !password.IsComplexEnough(form.Password) {
@@ -161,10 +161,10 @@ func NewUserPost(ctx *context.Context) {
 		}
 		if err := password.IsPwned(ctx, form.Password); err != nil {
 			ctx.Data["Err_Password"] = true
-			errMsg := ctx.Tr("auth.password_pwned", "https://haveibeenpwned.com/Passwords")
+			errMsg := ctx.Tr("The password you chose is on a <a target=\"_blank\" rel=\"noopener noreferrer\" href=\"%s\">list of stolen passwords</a> previously exposed in public data breaches. Please try again with a different password and consider changing this password elsewhere too.", "https://haveibeenpwned.com/Passwords")
 			if password.IsErrIsPwnedRequest(err) {
 				log.Error(err.Error())
-				errMsg = ctx.Tr("auth.password_pwned_err")
+				errMsg = ctx.Tr("Could not complete request to HaveIBeenPwned")
 			}
 			ctx.RenderWithErr(errMsg, tplUserNew, &form)
 			return
@@ -176,22 +176,22 @@ func NewUserPost(ctx *context.Context) {
 		switch {
 		case user_model.IsErrUserAlreadyExist(err):
 			ctx.Data["Err_UserName"] = true
-			ctx.RenderWithErr(ctx.Tr("form.username_been_taken"), tplUserNew, &form)
+			ctx.RenderWithErr(ctx.Tr("The username is already taken."), tplUserNew, &form)
 		case user_model.IsErrEmailAlreadyUsed(err):
 			ctx.Data["Err_Email"] = true
-			ctx.RenderWithErr(ctx.Tr("form.email_been_used"), tplUserNew, &form)
+			ctx.RenderWithErr(ctx.Tr("The email address is already used."), tplUserNew, &form)
 		case user_model.IsErrEmailInvalid(err), user_model.IsErrEmailCharIsNotSupported(err):
 			ctx.Data["Err_Email"] = true
-			ctx.RenderWithErr(ctx.Tr("form.email_invalid"), tplUserNew, &form)
+			ctx.RenderWithErr(ctx.Tr("The email address is invalid."), tplUserNew, &form)
 		case db.IsErrNameReserved(err):
 			ctx.Data["Err_UserName"] = true
-			ctx.RenderWithErr(ctx.Tr("user.form.name_reserved", err.(db.ErrNameReserved).Name), tplUserNew, &form)
+			ctx.RenderWithErr(ctx.Tr("The username \"%s\" is reserved.", err.(db.ErrNameReserved).Name), tplUserNew, &form)
 		case db.IsErrNamePatternNotAllowed(err):
 			ctx.Data["Err_UserName"] = true
-			ctx.RenderWithErr(ctx.Tr("user.form.name_pattern_not_allowed", err.(db.ErrNamePatternNotAllowed).Pattern), tplUserNew, &form)
+			ctx.RenderWithErr(ctx.Tr("The pattern \"%s\" is not allowed in a username.", err.(db.ErrNamePatternNotAllowed).Pattern), tplUserNew, &form)
 		case db.IsErrNameCharsNotAllowed(err):
 			ctx.Data["Err_UserName"] = true
-			ctx.RenderWithErr(ctx.Tr("user.form.name_chars_not_allowed", err.(db.ErrNameCharsNotAllowed).Name), tplUserNew, &form)
+			ctx.RenderWithErr(ctx.Tr("Username \"%s\" contains invalid characters.", err.(db.ErrNameCharsNotAllowed).Name), tplUserNew, &form)
 		default:
 			ctx.ServerError("CreateUser", err)
 		}
@@ -199,7 +199,7 @@ func NewUserPost(ctx *context.Context) {
 	}
 
 	if !user_model.IsEmailDomainAllowed(u.Email) {
-		ctx.Flash.Warning(ctx.Tr("form.email_domain_is_not_allowed", u.Email))
+		ctx.Flash.Warning(ctx.Tr("The domain of user email address <b>%s</b> conflicts with EMAIL_DOMAIN_ALLOWLIST or EMAIL_DOMAIN_BLOCKLIST. Please ensure your operation is expected.", u.Email))
 	}
 
 	log.Trace("Account created by admin (%s): %s", ctx.Doer.Name, u.Name)
@@ -209,7 +209,7 @@ func NewUserPost(ctx *context.Context) {
 		mailer.SendRegisterNotifyMail(u)
 	}
 
-	ctx.Flash.Success(ctx.Tr("admin.users.new_success", u.Name))
+	ctx.Flash.Success(ctx.Tr("The user account \"%s\" has been created.", u.Name))
 	ctx.Redirect(setting.AppSubURL + "/-/admin/users/" + strconv.FormatInt(u.ID, 10))
 }
 
@@ -258,7 +258,7 @@ func prepareUserInfo(ctx *context.Context) *user_model.User {
 }
 
 func ViewUser(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("admin.users.details")
+	ctx.Data["Title"] = ctx.Tr("User Details")
 	ctx.Data["PageIsAdminUsers"] = true
 	ctx.Data["DisableRegularOrgCreation"] = setting.Admin.DisableRegularOrgCreation
 	ctx.Data["DisableMigrations"] = setting.Repository.DisableMigrations
@@ -309,7 +309,7 @@ func ViewUser(ctx *context.Context) {
 }
 
 func editUserCommon(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("admin.users.edit_account")
+	ctx.Data["Title"] = ctx.Tr("Edit User Account")
 	ctx.Data["PageIsAdminUsers"] = true
 	ctx.Data["DisableRegularOrgCreation"] = setting.Admin.DisableRegularOrgCreation
 	ctx.Data["DisableMigrations"] = setting.Repository.DisableMigrations
@@ -349,19 +349,19 @@ func EditUserPost(ctx *context.Context) {
 			switch {
 			case user_model.IsErrUserIsNotLocal(err):
 				ctx.Data["Err_UserName"] = true
-				ctx.RenderWithErr(ctx.Tr("form.username_change_not_local_user"), tplUserEdit, &form)
+				ctx.RenderWithErr(ctx.Tr("Non-local users are not allowed to change their username."), tplUserEdit, &form)
 			case user_model.IsErrUserAlreadyExist(err):
 				ctx.Data["Err_UserName"] = true
-				ctx.RenderWithErr(ctx.Tr("form.username_been_taken"), tplUserEdit, &form)
+				ctx.RenderWithErr(ctx.Tr("The username is already taken."), tplUserEdit, &form)
 			case db.IsErrNameReserved(err):
 				ctx.Data["Err_UserName"] = true
-				ctx.RenderWithErr(ctx.Tr("user.form.name_reserved", form.UserName), tplUserEdit, &form)
+				ctx.RenderWithErr(ctx.Tr("The username \"%s\" is reserved.", form.UserName), tplUserEdit, &form)
 			case db.IsErrNamePatternNotAllowed(err):
 				ctx.Data["Err_UserName"] = true
-				ctx.RenderWithErr(ctx.Tr("user.form.name_pattern_not_allowed", form.UserName), tplUserEdit, &form)
+				ctx.RenderWithErr(ctx.Tr("The pattern \"%s\" is not allowed in a username.", form.UserName), tplUserEdit, &form)
 			case db.IsErrNameCharsNotAllowed(err):
 				ctx.Data["Err_UserName"] = true
-				ctx.RenderWithErr(ctx.Tr("user.form.name_chars_not_allowed", form.UserName), tplUserEdit, &form)
+				ctx.RenderWithErr(ctx.Tr("Username \"%s\" contains invalid characters.", form.UserName), tplUserEdit, &form)
 			default:
 				ctx.ServerError("RenameUser", err)
 			}
@@ -392,16 +392,16 @@ func EditUserPost(ctx *context.Context) {
 		switch {
 		case errors.Is(err, password.ErrMinLength):
 			ctx.Data["Err_Password"] = true
-			ctx.RenderWithErr(ctx.Tr("auth.password_too_short", setting.MinPasswordLength), tplUserEdit, &form)
+			ctx.RenderWithErr(ctx.Tr("Password length cannot be less than %d characters.", setting.MinPasswordLength), tplUserEdit, &form)
 		case errors.Is(err, password.ErrComplexity):
 			ctx.Data["Err_Password"] = true
 			ctx.RenderWithErr(password.BuildComplexityError(ctx.Locale), tplUserEdit, &form)
 		case errors.Is(err, password.ErrIsPwned):
 			ctx.Data["Err_Password"] = true
-			ctx.RenderWithErr(ctx.Tr("auth.password_pwned", "https://haveibeenpwned.com/Passwords"), tplUserEdit, &form)
+			ctx.RenderWithErr(ctx.Tr("The password you chose is on a <a target=\"_blank\" rel=\"noopener noreferrer\" href=\"%s\">list of stolen passwords</a> previously exposed in public data breaches. Please try again with a different password and consider changing this password elsewhere too.", "https://haveibeenpwned.com/Passwords"), tplUserEdit, &form)
 		case password.IsErrIsPwnedRequest(err):
 			ctx.Data["Err_Password"] = true
-			ctx.RenderWithErr(ctx.Tr("auth.password_pwned_err"), tplUserEdit, &form)
+			ctx.RenderWithErr(ctx.Tr("Could not complete request to HaveIBeenPwned"), tplUserEdit, &form)
 		default:
 			ctx.ServerError("UpdateUser", err)
 		}
@@ -413,17 +413,17 @@ func EditUserPost(ctx *context.Context) {
 			switch {
 			case user_model.IsErrEmailCharIsNotSupported(err), user_model.IsErrEmailInvalid(err):
 				ctx.Data["Err_Email"] = true
-				ctx.RenderWithErr(ctx.Tr("form.email_invalid"), tplUserEdit, &form)
+				ctx.RenderWithErr(ctx.Tr("The email address is invalid."), tplUserEdit, &form)
 			case user_model.IsErrEmailAlreadyUsed(err):
 				ctx.Data["Err_Email"] = true
-				ctx.RenderWithErr(ctx.Tr("form.email_been_used"), tplUserEdit, &form)
+				ctx.RenderWithErr(ctx.Tr("The email address is already used."), tplUserEdit, &form)
 			default:
 				ctx.ServerError("AddOrSetPrimaryEmailAddress", err)
 			}
 			return
 		}
 		if !user_model.IsEmailDomainAllowed(form.Email) {
-			ctx.Flash.Warning(ctx.Tr("form.email_domain_is_not_allowed", form.Email))
+			ctx.Flash.Warning(ctx.Tr("The domain of user email address <b>%s</b> conflicts with EMAIL_DOMAIN_ALLOWLIST or EMAIL_DOMAIN_BLOCKLIST. Please ensure your operation is expected.", form.Email))
 		}
 	}
 
@@ -444,7 +444,7 @@ func EditUserPost(ctx *context.Context) {
 
 	if err := user_service.UpdateUser(ctx, u, opts); err != nil {
 		if user_model.IsErrDeleteLastAdminUser(err) {
-			ctx.RenderWithErr(ctx.Tr("auth.last_admin"), tplUserEdit, &form)
+			ctx.RenderWithErr(ctx.Tr("You cannot remove the last admin. There must be at least one admin."), tplUserEdit, &form)
 		} else {
 			ctx.ServerError("UpdateUser", err)
 		}
@@ -477,7 +477,7 @@ func EditUserPost(ctx *context.Context) {
 		}
 	}
 
-	ctx.Flash.Success(ctx.Tr("admin.users.update_profile_success"))
+	ctx.Flash.Success(ctx.Tr("The user account has been updated."))
 	ctx.Redirect(setting.AppSubURL + "/-/admin/users/" + url.PathEscape(ctx.PathParam("userid")))
 }
 
@@ -491,7 +491,7 @@ func DeleteUser(ctx *context.Context) {
 
 	// admin should not delete themself
 	if u.ID == ctx.Doer.ID {
-		ctx.Flash.Error(ctx.Tr("admin.users.cannot_delete_self"))
+		ctx.Flash.Error(ctx.Tr("You cannot delete yourself"))
 		ctx.Redirect(setting.AppSubURL + "/-/admin/users/" + url.PathEscape(ctx.PathParam("userid")))
 		return
 	}
@@ -499,16 +499,16 @@ func DeleteUser(ctx *context.Context) {
 	if err = user_service.DeleteUser(ctx, u, ctx.FormBool("purge")); err != nil {
 		switch {
 		case repo_model.IsErrUserOwnRepos(err):
-			ctx.Flash.Error(ctx.Tr("admin.users.still_own_repo"))
+			ctx.Flash.Error(ctx.Tr("This user still owns one or more repositories. Delete or transfer these repositories first."))
 			ctx.Redirect(setting.AppSubURL + "/-/admin/users/" + url.PathEscape(ctx.PathParam("userid")))
 		case org_model.IsErrUserHasOrgs(err):
-			ctx.Flash.Error(ctx.Tr("admin.users.still_has_org"))
+			ctx.Flash.Error(ctx.Tr("This user is a member of an organization. Remove the user from any organizations first."))
 			ctx.Redirect(setting.AppSubURL + "/-/admin/users/" + url.PathEscape(ctx.PathParam("userid")))
 		case packages_model.IsErrUserOwnPackages(err):
-			ctx.Flash.Error(ctx.Tr("admin.users.still_own_packages"))
+			ctx.Flash.Error(ctx.Tr("This user still owns one or more packages. Delete these packages first."))
 			ctx.Redirect(setting.AppSubURL + "/-/admin/users/" + url.PathEscape(ctx.PathParam("userid")))
 		case user_model.IsErrDeleteLastAdminUser(err):
-			ctx.Flash.Error(ctx.Tr("auth.last_admin"))
+			ctx.Flash.Error(ctx.Tr("You cannot remove the last admin. There must be at least one admin."))
 			ctx.Redirect(setting.AppSubURL + "/-/admin/users/" + url.PathEscape(ctx.PathParam("userid")))
 		default:
 			ctx.ServerError("DeleteUser", err)
@@ -517,7 +517,7 @@ func DeleteUser(ctx *context.Context) {
 	}
 	log.Trace("Account deleted by admin (%s): %s", ctx.Doer.Name, u.Name)
 
-	ctx.Flash.Success(ctx.Tr("admin.users.deletion_success"))
+	ctx.Flash.Success(ctx.Tr("The user account has been deleted."))
 	ctx.Redirect(setting.AppSubURL + "/-/admin/users")
 }
 
@@ -532,7 +532,7 @@ func AvatarPost(ctx *context.Context) {
 	if err := user_setting.UpdateAvatarSetting(ctx, form, u); err != nil {
 		ctx.Flash.Error(err.Error())
 	} else {
-		ctx.Flash.Success(ctx.Tr("settings.update_user_avatar_success"))
+		ctx.Flash.Success(ctx.Tr("The user's avatar has been updated."))
 	}
 
 	ctx.Redirect(setting.AppSubURL + "/-/admin/users/" + strconv.FormatInt(u.ID, 10))

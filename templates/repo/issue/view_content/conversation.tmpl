@@ -15,8 +15,8 @@ The variables in "ctx.Data" are different in each case, making this template fra
 			<div class="tw-flex tw-items-center">
 				<a href="{{$comment.CodeCommentLink ctx}}" class="file-comment tw-ml-2 tw-break-anywhere">{{$comment.TreePath}}</a>
 				{{if $invalid}}
-					<span class="ui label basic small tw-ml-2" data-tooltip-content="{{ctx.Locale.Tr "repo.issues.review.outdated_description"}}">
-						{{ctx.Locale.Tr "repo.issues.review.outdated"}}
+					<span class="ui label basic small tw-ml-2" data-tooltip-content="{{ctx.Locale.Tr "Content has changed since this comment was made"}}">
+						{{ctx.Locale.Tr "Outdated"}}
 					</span>
 				{{end}}
 			</div>
@@ -25,17 +25,17 @@ The variables in "ctx.Data" are different in each case, making this template fra
 					<button id="show-outdated-{{$comment.ID}}" data-comment="{{$comment.ID}}" class="{{if not $resolved}}tw-hidden{{end}} btn tiny show-outdated">
 						{{svg "octicon-unfold" 16 "tw-mr-2"}}
 						{{if $resolved}}
-							{{ctx.Locale.Tr "repo.issues.review.show_resolved"}}
+							{{ctx.Locale.Tr "Show resolved"}}
 						{{else}}
-							{{ctx.Locale.Tr "repo.issues.review.show_outdated"}}
+							{{ctx.Locale.Tr "Show outdated"}}
 						{{end}}
 					</button>
 					<button id="hide-outdated-{{$comment.ID}}" data-comment="{{$comment.ID}}" class="{{if $resolved}}tw-hidden {{end}} btn tiny hide-outdated">
 						{{svg "octicon-fold" 16 "tw-mr-2"}}
 						{{if $resolved}}
-							{{ctx.Locale.Tr "repo.issues.review.hide_resolved"}}
+							{{ctx.Locale.Tr "Hide resolved"}}
 						{{else}}
-							{{ctx.Locale.Tr "repo.issues.review.hide_outdated"}}
+							{{ctx.Locale.Tr "Hide outdated"}}
 						{{end}}
 					</button>
 				{{end}}
@@ -76,12 +76,12 @@ The variables in "ctx.Data" are different in each case, making this template fra
 												{{.OriginalAuthor}}
 											</span>
 											{{if $.Repository.OriginalURL}}
-											<span class="migrate">({{ctx.Locale.Tr "repo.migrated_from" $.Repository.OriginalURL $.Repository.GetOriginalURLHostname}})</span>
+											<span class="migrate">({{ctx.Locale.Tr "Migrated from <a href=\"%[1]s\">%[2]s</a>" $.Repository.OriginalURL $.Repository.GetOriginalURLHostname}})</span>
 											{{end}}
 										{{else}}
 											{{template "shared/user/authorlink" .Poster}}
 										{{end}}
-										{{ctx.Locale.Tr "repo.issues.commented_at" .HashTag $createdSubStr}}
+										{{ctx.Locale.Tr "commented <a href=\"#%s\">%s</a>" .HashTag $createdSubStr}}
 									</span>
 								</div>
 								<div class="comment-header-right">
@@ -97,7 +97,7 @@ The variables in "ctx.Data" are different in each case, making this template fra
 								{{if .RenderedContent}}
 									{{.RenderedContent}}
 								{{else}}
-									<span class="no-content">{{ctx.Locale.Tr "repo.issues.no_content"}}</span>
+									<span class="no-content">{{ctx.Locale.Tr "No description provided."}}</span>
 								{{end}}
 								</div>
 								<div id="issuecomment-{{.ID}}-raw" class="raw-content tw-hidden">{{.Content}}</div>
@@ -119,7 +119,7 @@ The variables in "ctx.Data" are different in each case, making this template fra
 					{{if $resolved}}
 						<div class="ui grey text">
 							{{svg "octicon-check" 16 "tw-mr-1"}}
-							<b>{{$resolveDoer.Name}}</b> {{ctx.Locale.Tr "repo.issues.review.resolved_by"}}
+							<b>{{$resolveDoer.Name}}</b> {{ctx.Locale.Tr "marked this conversation as resolved"}}
 						</div>
 					{{end}}
 				</div>
@@ -127,15 +127,15 @@ The variables in "ctx.Data" are different in each case, making this template fra
 					{{if and $.CanMarkConversation $hasReview (not $isReviewPending)}}
 						<button class="ui tiny basic button resolve-conversation" data-origin="timeline" data-action="{{if not $resolved}}Resolve{{else}}UnResolve{{end}}" data-comment-id="{{$comment.ID}}" data-update-url="{{$.RepoLink}}/issues/resolve_conversation">
 							{{if $resolved}}
-								{{ctx.Locale.Tr "repo.issues.review.un_resolve_conversation"}}
+								{{ctx.Locale.Tr "Unresolve conversation"}}
 							{{else}}
-								{{ctx.Locale.Tr "repo.issues.review.resolve_conversation"}}
+								{{ctx.Locale.Tr "Resolve conversation"}}
 							{{end}}
 						</button>
 					{{end}}
 					{{if and $.SignedUserID (not $.Repository.IsArchived)}}
 						<button class="comment-form-reply ui primary icon tiny button">
-							{{svg "octicon-reply" 12}}{{ctx.Locale.Tr "repo.diff.comment.reply"}}
+							{{svg "octicon-reply" 12}}{{ctx.Locale.Tr "Reply"}}
 						</button>
 					{{end}}
 				</div>

@@ -2,7 +2,7 @@
 	{{.Title}}
 	<div class="ui right">
 		<div class="ui jump dropdown">
-			<div class="ui primary tiny button">{{ctx.Locale.Tr "repo.settings.add_webhook"}}</div>
+			<div class="ui primary tiny button">{{ctx.Locale.Tr "Add Webhook"}}</div>
 			{{template "repo/settings/webhook/link_menu" .}}
 		</div>
 	</div>
@@ -19,7 +19,7 @@
 				<a class="muted tw-p-2" href="{{$.BaseLink}}/{{.ID}}">{{svg "octicon-pencil"}}</a>
 				<a class="text red tw-p-2 link-action"
 					data-url="{{$.Link}}/delete?id={{.ID}}"
-					data-modal-confirm="{{ctx.Locale.Tr "repo.settings.webhook_deletion_desc"}}"
+					data-modal-confirm="{{ctx.Locale.Tr "Removing a webhook deletes its settings and delivery history. Continue?"}}"
 				>{{svg "octicon-trash"}}</a>
 			</div>
 		{{end}}

@@ -2,13 +2,13 @@
 	<div class="user-main-content twelve wide column content repository file list">
 		<div class="tab-size-8 non-diff-file-content">
 			<h4 class="ui top attached header">
-				<a href="{{.LFSFilesLink}}">{{ctx.Locale.Tr "repo.settings.lfs"}}</a> / <span class="truncate sha">{{.LFSFile.Oid}}</span>
+				<a href="{{.LFSFilesLink}}">{{ctx.Locale.Tr "LFS"}}</a> / <span class="truncate sha">{{.LFSFile.Oid}}</span>
 				<div class="ui right">
 					{{if .EscapeStatus.Escaped}}
-						<a class="ui tiny basic button unescape-button tw-hidden">{{ctx.Locale.Tr "repo.unescape_control_characters"}}</a>
-						<a class="ui tiny basic button escape-button">{{ctx.Locale.Tr "repo.escape_control_characters"}}</a>
+						<a class="ui tiny basic button unescape-button tw-hidden">{{ctx.Locale.Tr "Unescape"}}</a>
+						<a class="ui tiny basic button escape-button">{{ctx.Locale.Tr "Escape"}}</a>
 					{{end}}
-					<a class="ui primary tiny button" href="{{.LFSFilesLink}}/find?oid={{.LFSFile.Oid}}&size={{.LFSFile.Size}}">{{ctx.Locale.Tr "repo.settings.lfs_findcommits"}}</a>
+					<a class="ui primary tiny button" href="{{.LFSFilesLink}}/find?oid={{.LFSFile.Oid}}&size={{.LFSFile.Size}}">{{ctx.Locale.Tr "Find commits"}}</a>
 				</div>
 			</h4>
 			<div class="ui bottom attached table unstackable segment">
@@ -24,14 +24,14 @@
 								<img loading="lazy" alt="{{$.RawFileLink}}" src="{{$.RawFileLink}}">
 							{{else if .IsVideoFile}}
 								<video controls src="{{$.RawFileLink}}">
-									<strong>{{ctx.Locale.Tr "repo.video_not_supported_in_browser"}}</strong>
+									<strong>{{ctx.Locale.Tr "Your browser does not support the HTML5 'video' tag."}}</strong>
 								</video>
 							{{else if .IsAudioFile}}
 								<audio controls src="{{$.RawFileLink}}">
-									<strong>{{ctx.Locale.Tr "repo.audio_not_supported_in_browser"}}</strong>
+									<strong>{{ctx.Locale.Tr "Your browser does not support the HTML5 'audio' tag."}}</strong>
 								</audio>
 							{{else}}
-								<a href="{{$.RawFileLink}}" rel="nofollow" class="tw-p-4">{{ctx.Locale.Tr "repo.file_view_raw"}}</a>
+								<a href="{{$.RawFileLink}}" rel="nofollow" class="tw-p-4">{{ctx.Locale.Tr "View Raw"}}</a>
 							{{end}}
 						</div>
 					{{else if .FileSize}}

@@ -1,18 +1,18 @@
 {{template "admin/layout_head" (dict "ctxData" . "pageClass" "admin monitor")}}
 <div class="admin-setting-content">
 	<h4 class="ui top attached header">
-		{{ctx.Locale.Tr "admin.monitor.queues"}}
+		{{ctx.Locale.Tr "Queues"}}
 	</h4>
 	<div class="ui attached table segment">
 		<table class="ui very basic striped table unstackable">
 			<thead>
 			<tr>
-				<th>{{ctx.Locale.Tr "admin.monitor.queue.name"}}</th>
-				<th>{{ctx.Locale.Tr "admin.monitor.queue.type"}}</th>
-				<th>{{ctx.Locale.Tr "admin.monitor.queue.exemplar"}}</th>
-				<th>{{ctx.Locale.Tr "admin.monitor.queue.numberworkers"}}</th>
-				<th>{{ctx.Locale.Tr "admin.monitor.queue.activeworkers"}}</th>
-				<th>{{ctx.Locale.Tr "admin.monitor.queue.numberinqueue"}}</th>
+				<th>{{ctx.Locale.Tr "Name"}}</th>
+				<th>{{ctx.Locale.Tr "Type"}}</th>
+				<th>{{ctx.Locale.Tr "Exemplar Type"}}</th>
+				<th>{{ctx.Locale.Tr "Number of Workers"}}</th>
+				<th>{{ctx.Locale.Tr "Active Workers"}}</th>
+				<th>{{ctx.Locale.Tr "Number in Queue"}}</th>
 				<th></th>
 			</tr>
 			</thead>
@@ -25,7 +25,7 @@
 				<td>{{$q.GetWorkerNumber}}</td>
 				<td>{{$q.GetWorkerActiveNumber}}</td>
 				<td>{{$sum := $q.GetQueueItemNumber}}{{if lt $sum 0}}-{{else}}{{$sum}}{{end}}</td>
-				<td><a href="{{$.Link}}/{{$qid}}" class="button">{{ctx.Locale.Tr "admin.monitor.queue.review_add"}}</a></td>
+				<td><a href="{{$.Link}}/{{$qid}}" class="button">{{ctx.Locale.Tr "Review / Add Workers"}}</a></td>
 			</tr>
 			{{end}}
 			</tbody>

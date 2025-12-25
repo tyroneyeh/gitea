@@ -1,22 +1,22 @@
 <div class="ui small modal" id="block-user-modal">
-	<div class="header">{{ctx.Locale.Tr "user.block.title"}}</div>
+	<div class="header">{{ctx.Locale.Tr "Block a user"}}</div>
 	<div class="content">
-		<div class="ui warning message">{{ctx.Locale.Tr "user.block.info"}}</div>
+		<div class="ui warning message">{{ctx.Locale.Tr "Blocking a user prevents them from interacting with repositories, such as opening or commenting on pull requests or issues. Learn more about blocking a user."}}</div>
 		<form class="ui form modal-form" method="post">
 			{{.CsrfTokenHtml}}
 			<input type="hidden" name="action" value="block" />
 			<input type="hidden" name="blockee" class="modal-blockee" />
 			<div class="field">
-				<label>{{ctx.Locale.Tr "user.block.user_to_block"}}: <span class="text red modal-blockee-name"></span></label>
+				<label>{{ctx.Locale.Tr "User to block"}}: <span class="text red modal-blockee-name"></span></label>
 			</div>
 			<div class="field">
-				<label for="block-note">{{ctx.Locale.Tr "user.block.note.title"}}</label>
+				<label for="block-note">{{ctx.Locale.Tr "Optional note:"}}</label>
 				<input id="block-note" name="note">
-				<p class="help">{{ctx.Locale.Tr "user.block.note.info"}}</p>
+				<p class="help">{{ctx.Locale.Tr "The note is not visible to the blocked user."}}</p>
 			</div>
 			<div class="actions">
-				<button class="ui cancel button">{{ctx.Locale.Tr "cancel"}}</button>
-				<button class="ui red button">{{ctx.Locale.Tr "user.block.block"}}</button>
+				<button class="ui cancel button">{{ctx.Locale.Tr "Cancel"}}</button>
+				<button class="ui red button">{{ctx.Locale.Tr "Block"}}</button>
 			</div>
 		</form>
 	</div>

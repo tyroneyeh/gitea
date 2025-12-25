@@ -21,7 +21,7 @@ const (
 )
 
 func Packages(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("packages.title")
+	ctx.Data["Title"] = ctx.Tr("Packages")
 	ctx.Data["PageIsOrgSettings"] = true
 	ctx.Data["PageIsSettingsPackages"] = true
 
@@ -36,7 +36,7 @@ func Packages(ctx *context.Context) {
 }
 
 func PackagesRuleAdd(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("packages.title")
+	ctx.Data["Title"] = ctx.Tr("Packages")
 	ctx.Data["PageIsOrgSettings"] = true
 	ctx.Data["PageIsSettingsPackages"] = true
 
@@ -51,7 +51,7 @@ func PackagesRuleAdd(ctx *context.Context) {
 }
 
 func PackagesRuleEdit(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("packages.title")
+	ctx.Data["Title"] = ctx.Tr("Packages")
 	ctx.Data["PageIsOrgSettings"] = true
 	ctx.Data["PageIsSettingsPackages"] = true
 
@@ -66,7 +66,7 @@ func PackagesRuleEdit(ctx *context.Context) {
 }
 
 func PackagesRuleAddPost(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("packages.title")
+	ctx.Data["Title"] = ctx.Tr("Packages")
 	ctx.Data["PageIsOrgSettings"] = true
 	ctx.Data["PageIsSettingsPackages"] = true
 
@@ -79,7 +79,7 @@ func PackagesRuleAddPost(ctx *context.Context) {
 }
 
 func PackagesRuleEditPost(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("packages.title")
+	ctx.Data["Title"] = ctx.Tr("Packages")
 	ctx.Data["PageIsOrgSettings"] = true
 	ctx.Data["PageIsSettingsPackages"] = true
 
@@ -92,7 +92,7 @@ func PackagesRuleEditPost(ctx *context.Context) {
 }
 
 func PackagesRulePreview(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("packages.title")
+	ctx.Data["Title"] = ctx.Tr("Packages")
 	ctx.Data["PageIsOrgSettings"] = true
 	ctx.Data["PageIsSettingsPackages"] = true
 
@@ -107,7 +107,7 @@ func PackagesRulePreview(ctx *context.Context) {
 }
 
 func InitializeCargoIndex(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("packages.title")
+	ctx.Data["Title"] = ctx.Tr("Packages")
 	ctx.Data["PageIsOrgSettings"] = true
 	ctx.Data["PageIsSettingsPackages"] = true
 
@@ -117,7 +117,7 @@ func InitializeCargoIndex(ctx *context.Context) {
 }
 
 func RebuildCargoIndex(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("packages.title")
+	ctx.Data["Title"] = ctx.Tr("Packages")
 	ctx.Data["PageIsOrgSettings"] = true
 	ctx.Data["PageIsSettingsPackages"] = true
 

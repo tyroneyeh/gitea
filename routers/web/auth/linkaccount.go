@@ -28,7 +28,7 @@ var tplLinkAccount templates.TplName = "user/auth/link_account"
 func LinkAccount(ctx *context.Context) {
 	// FIXME: these common template variables should be prepared in one common function, but not just copy-paste again and again.
 	ctx.Data["DisablePassword"] = !setting.Service.RequireExternalRegistrationPassword || setting.Service.AllowOnlyExternalRegistration
-	ctx.Data["Title"] = ctx.Tr("link_account")
+	ctx.Data["Title"] = ctx.Tr("Link Account")
 	ctx.Data["LinkAccountMode"] = true
 	ctx.Data["EnableCaptcha"] = setting.Service.EnableCaptcha && setting.Service.RequireExternalRegistrationCaptcha
 	ctx.Data["Captcha"] = context.GetImageCaptcha()
@@ -62,7 +62,7 @@ func LinkAccount(ctx *context.Context) {
 	}
 
 	if missingFields, ok := linkAccountData.GothUser.RawData["__giteaAutoRegMissingFields"].([]string); ok {
-		ctx.Data["AutoRegistrationFailedPrompt"] = ctx.Tr("auth.oauth_callback_unable_auto_reg", linkAccountData.GothUser.Provider, strings.Join(missingFields, ","))
+		ctx.Data["AutoRegistrationFailedPrompt"] = ctx.Tr("Auto Registration is enabled, but OAuth2 Provider %[1]s returned missing fields: %[2]s, unable to create an account automatically. Please create or link to an account, or contact the site administrator.", linkAccountData.GothUser.Provider, strings.Join(missingFields, ","))
 	}
 
 	uname, err := extractUserNameFromOAuth2(&linkAccountData.GothUser)
@@ -99,23 +99,23 @@ func LinkAccount(ctx *context.Context) {
 
 func handleSignInError(ctx *context.Context, userName string, ptrForm any, tmpl templates.TplName, invoker string, err error) {
 	if errors.Is(err, util.ErrNotExist) {
-		ctx.RenderWithErr(ctx.Tr("form.username_password_incorrect"), tmpl, ptrForm)
+		ctx.RenderWithErr(ctx.Tr("Username or password is incorrect."), tmpl, ptrForm)
 	} else if errors.Is(err, util.ErrInvalidArgument) {
 		ctx.Data["user_exists"] = true
-		ctx.RenderWithErr(ctx.Tr("form.username_password_incorrect"), tmpl, ptrForm)
+		ctx.RenderWithErr(ctx.Tr("Username or password is incorrect."), tmpl, ptrForm)
 	} else if user_model.IsErrUserProhibitLogin(err) {
 		ctx.Data["user_exists"] = true
 		log.Info("Failed authentication attempt for %s from %s: %v", userName, ctx.RemoteAddr(), err)
-		ctx.Data["Title"] = ctx.Tr("auth.prohibit_login")
+		ctx.Data["Title"] = ctx.Tr("Sign-In Prohibited")
 		ctx.HTML(http.StatusOK, "user/auth/prohibit_login")
 	} else if user_model.IsErrUserInactive(err) {
 		ctx.Data["user_exists"] = true
 		if setting.Service.RegisterEmailConfirm {
-			ctx.Data["Title"] = ctx.Tr("auth.active_your_account")
+			ctx.Data["Title"] = ctx.Tr("Activate Your Account")
 			ctx.HTML(http.StatusOK, TplActivate)
 		} else {
 			log.Info("Failed authentication attempt for %s from %s: %v", userName, ctx.RemoteAddr(), err)
-			ctx.Data["Title"] = ctx.Tr("auth.prohibit_login")
+			ctx.Data["Title"] = ctx.Tr("Sign-In Prohibited")
 			ctx.HTML(http.StatusOK, "user/auth/prohibit_login")
 		}
 	} else {
@@ -127,7 +127,7 @@ func handleSignInError(ctx *context.Context, userName string, ptrForm any, tmpl 
 func LinkAccountPostSignIn(ctx *context.Context) {
 	signInForm := web.GetForm(ctx).(*forms.SignInForm)
 	ctx.Data["DisablePassword"] = !setting.Service.RequireExternalRegistrationPassword || setting.Service.AllowOnlyExternalRegistration
-	ctx.Data["Title"] = ctx.Tr("link_account")
+	ctx.Data["Title"] = ctx.Tr("Link Account")
 	ctx.Data["LinkAccountMode"] = true
 	ctx.Data["LinkAccountModeSignIn"] = true
 	ctx.Data["EnableCaptcha"] = setting.Service.EnableCaptcha && setting.Service.RequireExternalRegistrationCaptcha
@@ -221,7 +221,7 @@ func LinkAccountPostRegister(ctx *context.Context) {
 	// TODO Make insecure passwords optional for local accounts also,
 	//      once email-based Second-Factor Auth is available
 	ctx.Data["DisablePassword"] = !setting.Service.RequireExternalRegistrationPassword || setting.Service.AllowOnlyExternalRegistration
-	ctx.Data["Title"] = ctx.Tr("link_account")
+	ctx.Data["Title"] = ctx.Tr("Link Account")
 	ctx.Data["LinkAccountMode"] = true
 	ctx.Data["LinkAccountModeRegister"] = true
 	ctx.Data["EnableCaptcha"] = setting.Service.EnableCaptcha && setting.Service.RequireExternalRegistrationCaptcha
@@ -266,7 +266,7 @@ func LinkAccountPostRegister(ctx *context.Context) {
 	}
 
 	if !form.IsEmailDomainAllowed() {
-		ctx.RenderWithErr(ctx.Tr("auth.email_domain_blacklisted"), tplLinkAccount, &form)
+		ctx.RenderWithErr(ctx.Tr("You cannot register with your email address."), tplLinkAccount, &form)
 		return
 	}
 
@@ -280,12 +280,12 @@ func LinkAccountPostRegister(ctx *context.Context) {
 	} else {
 		if (len(strings.TrimSpace(form.Password)) > 0 || len(strings.TrimSpace(form.Retype)) > 0) && form.Password != form.Retype {
 			ctx.Data["Err_Password"] = true
-			ctx.RenderWithErr(ctx.Tr("form.password_not_match"), tplLinkAccount, &form)
+			ctx.RenderWithErr(ctx.Tr("The passwords do not match."), tplLinkAccount, &form)
 			return
 		}
 		if len(strings.TrimSpace(form.Password)) > 0 && len(form.Password) < setting.MinPasswordLength {
 			ctx.Data["Err_Password"] = true
-			ctx.RenderWithErr(ctx.Tr("auth.password_too_short", setting.MinPasswordLength), tplLinkAccount, &form)
+			ctx.RenderWithErr(ctx.Tr("Password length cannot be less than %d characters.", setting.MinPasswordLength), tplLinkAccount, &form)
 			return
 		}
 	}

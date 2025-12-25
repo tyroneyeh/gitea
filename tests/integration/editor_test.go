@@ -209,7 +209,7 @@ func testEditorWebGitCommitEmail(t *testing.T) {
 		if expectedUserName == "" {
 			require.Equal(t, lastCommit.ID.String(), newCommit.ID.String())
 			respErr := test.ParseJSONError(resp.Body.Bytes())
-			assert.Equal(t, translation.NewLocale("en-US").TrString("repo.editor.invalid_commit_email"), respErr.ErrorMessage)
+			assert.Equal(t, translation.NewLocale("en-US").TrString("The email address for the commit is invalid."), respErr.ErrorMessage)
 		} else {
 			require.NotEqual(t, lastCommit.ID.String(), newCommit.ID.String())
 			assert.Equal(t, expectedUserName, newCommit.Author.Name)

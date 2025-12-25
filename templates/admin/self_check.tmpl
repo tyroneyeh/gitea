@@ -2,13 +2,13 @@
 
 <div class="admin-setting-content">
 	<h4 class="ui top attached header">
-		{{ctx.Locale.Tr "admin.self_check"}}
+		{{ctx.Locale.Tr "Self Check"}}
 	</h4>
 
 	{{if .StartupProblems}}
 	<div class="ui attached segment self-check-problem">
 		<div class="ui warning message">
-			<div>{{ctx.Locale.Tr "admin.self_check.startup_warnings"}}</div>
+			<div>{{ctx.Locale.Tr "Startup warnings:"}}</div>
 			<ul class="tw-w-full">{{range .StartupProblems}}<li>{{.}}</li>{{end}}</ul>
 		</div>
 	</div>
@@ -19,20 +19,20 @@
 	{{if .DatabaseCheckHasProblems}}
 		<div class="ui attached segment self-check-problem">
 			{{if .DatabaseType.IsMySQL}}
-				<div class="tw-p-2">{{ctx.Locale.Tr "admin.self_check.database_fix_mysql"}}</div>
+				<div class="tw-p-2">{{ctx.Locale.Tr "For MySQL/MariaDB users, you could use the \"gitea doctor convert\" command to fix the collation problems, or you could also fix the problem manually with \"ALTER ... COLLATE ...\" SQL queries."}}</div>
 			{{else if .DatabaseType.IsMSSQL}}
-				<div class="tw-p-2">{{ctx.Locale.Tr "admin.self_check.database_fix_mssql"}}</div>
+				<div class="tw-p-2">{{ctx.Locale.Tr "For MSSQL users, you could only fix the problem manually with \"ALTER ... COLLATE ...\" SQL queries at the moment."}}</div>
 			{{end}}
 			{{if .DatabaseCheckCollationMismatch}}
-				<div class="ui red message">{{ctx.Locale.Tr "admin.self_check.database_collation_mismatch" .DatabaseCheckResult.ExpectedCollation}}</div>
+				<div class="ui red message">{{ctx.Locale.Tr "Expect database to use collation: %s" .DatabaseCheckResult.ExpectedCollation}}</div>
 			{{end}}
 			{{if .DatabaseCheckCollationCaseInsensitive}}
-				<div class="ui warning message">{{ctx.Locale.Tr "admin.self_check.database_collation_case_insensitive" .DatabaseCheckResult.DatabaseCollation}}</div>
+				<div class="ui warning message">{{ctx.Locale.Tr "Database is using collation %s, which is a case-insensitive collation. Although Gitea could work with it, there might be some rare cases which don't work as expected." .DatabaseCheckResult.DatabaseCollation}}</div>
 			{{end}}
 			{{if .DatabaseCheckInconsistentCollationColumns}}
 				<div class="ui red message">
 					<details>
-						<summary>{{ctx.Locale.Tr "admin.self_check.database_inconsistent_collation_columns" .DatabaseCheckResult.DatabaseCollation}}</summary>
+						<summary>{{ctx.Locale.Tr "Database is using collation %s, but these columns are using mismatched collations. This might cause some unexpected problems." .DatabaseCheckResult.DatabaseCollation}}</summary>
 						<ul class="tw-w-full">
 						{{range .DatabaseCheckInconsistentCollationColumns}}
 							<li>{{.}}</li>
@@ -45,15 +45,15 @@
 	{{end}}
 
 	{{if .CacheError}}
-		<div class="ui red message">{{ctx.Locale.Tr "admin.config.cache_test_failed" .CacheError}}</div>
+		<div class="ui red message">{{ctx.Locale.Tr "Failed to probe the cache: %v." .CacheError}}</div>
 	{{end}}
 	{{if .CacheSlow}}
-		<div class="ui warning message">{{ctx.Locale.Tr "admin.config.cache_test_slow" .CacheSlow}}</div>
+		<div class="ui warning message">{{ctx.Locale.Tr "Cache test successful, but response is slow: %s." .CacheSlow}}</div>
 	{{end}}
 
 	{{/* only shown when there is no visible "self-check-problem" */}}
 	<div class="ui attached segment tw-hidden self-check-no-problem">
-		{{ctx.Locale.Tr "admin.self_check.no_problem_found"}}
+		{{ctx.Locale.Tr "No problem found yet."}}
 	</div>
 </div>
 

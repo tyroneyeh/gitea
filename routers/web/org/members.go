@@ -106,19 +106,19 @@ func MembersAction(ctx *context.Context) {
 		}
 		err = org_service.RemoveOrgUser(ctx, org, member)
 		if organization.IsErrLastOrgOwner(err) {
-			ctx.Flash.Error(ctx.Tr("form.last_org_owner"))
+			ctx.Flash.Error(ctx.Tr("You cannot remove the last user from the 'owners' team. There must be at least one owner for an organization."))
 			ctx.JSONRedirect(ctx.Org.OrgLink + "/members")
 			return
 		}
 	case "leave":
 		err = org_service.RemoveOrgUser(ctx, org, ctx.Doer)
 		if err == nil {
-			ctx.Flash.Success(ctx.Tr("form.organization_leave_success", org.DisplayName()))
+			ctx.Flash.Success(ctx.Tr("You have successfully left the organization %s.", org.DisplayName()))
 			ctx.JSON(http.StatusOK, map[string]any{
 				"redirect": "", // keep the user stay on current page, in case they want to do other operations.
 			})
 		} else if organization.IsErrLastOrgOwner(err) {
-			ctx.Flash.Error(ctx.Tr("form.last_org_owner"))
+			ctx.Flash.Error(ctx.Tr("You cannot remove the last user from the 'owners' team. There must be at least one owner for an organization."))
 			ctx.JSONRedirect(ctx.Org.OrgLink + "/members")
 		} else {
 			log.Error("RemoveOrgUser(%d,%d): %v", org.ID, ctx.Doer.ID, err)

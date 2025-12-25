@@ -23,7 +23,7 @@ const (
 )
 
 func Packages(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("packages.title")
+	ctx.Data["Title"] = ctx.Tr("Packages")
 	ctx.Data["PageIsSettingsPackages"] = true
 	ctx.Data["UserDisabledFeatures"] = user_model.DisabledFeaturesWithLoginType(ctx.Doer)
 
@@ -33,7 +33,7 @@ func Packages(ctx *context.Context) {
 }
 
 func PackagesRuleAdd(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("packages.title")
+	ctx.Data["Title"] = ctx.Tr("Packages")
 	ctx.Data["PageIsSettingsPackages"] = true
 	ctx.Data["UserDisabledFeatures"] = user_model.DisabledFeaturesWithLoginType(ctx.Doer)
 
@@ -43,7 +43,7 @@ func PackagesRuleAdd(ctx *context.Context) {
 }
 
 func PackagesRuleEdit(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("packages.title")
+	ctx.Data["Title"] = ctx.Tr("Packages")
 	ctx.Data["PageIsSettingsPackages"] = true
 	ctx.Data["UserDisabledFeatures"] = user_model.DisabledFeaturesWithLoginType(ctx.Doer)
 
@@ -53,7 +53,7 @@ func PackagesRuleEdit(ctx *context.Context) {
 }
 
 func PackagesRuleAddPost(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("settings_title")
+	ctx.Data["Title"] = ctx.Tr("Settings")
 	ctx.Data["PageIsSettingsPackages"] = true
 	ctx.Data["UserDisabledFeatures"] = user_model.DisabledFeaturesWithLoginType(ctx.Doer)
 
@@ -66,7 +66,7 @@ func PackagesRuleAddPost(ctx *context.Context) {
 }
 
 func PackagesRuleEditPost(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("packages.title")
+	ctx.Data["Title"] = ctx.Tr("Packages")
 	ctx.Data["PageIsSettingsPackages"] = true
 	ctx.Data["UserDisabledFeatures"] = user_model.DisabledFeaturesWithLoginType(ctx.Doer)
 
@@ -79,7 +79,7 @@ func PackagesRuleEditPost(ctx *context.Context) {
 }
 
 func PackagesRulePreview(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("packages.title")
+	ctx.Data["Title"] = ctx.Tr("Packages")
 	ctx.Data["PageIsSettingsPackages"] = true
 	ctx.Data["UserDisabledFeatures"] = user_model.DisabledFeaturesWithLoginType(ctx.Doer)
 
@@ -89,7 +89,7 @@ func PackagesRulePreview(ctx *context.Context) {
 }
 
 func InitializeCargoIndex(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("packages.title")
+	ctx.Data["Title"] = ctx.Tr("Packages")
 	ctx.Data["PageIsSettingsPackages"] = true
 
 	shared.InitializeCargoIndex(ctx, ctx.Doer)
@@ -98,7 +98,7 @@ func InitializeCargoIndex(ctx *context.Context) {
 }
 
 func RebuildCargoIndex(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("packages.title")
+	ctx.Data["Title"] = ctx.Tr("Packages")
 	ctx.Data["PageIsSettingsPackages"] = true
 
 	shared.RebuildCargoIndex(ctx, ctx.Doer)

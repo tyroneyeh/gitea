@@ -41,11 +41,11 @@ const (
 
 // Webhooks render web hooks list page
 func Webhooks(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("repo.settings.hooks")
+	ctx.Data["Title"] = ctx.Tr("Webhooks")
 	ctx.Data["PageIsSettingsHooks"] = true
 	ctx.Data["BaseLink"] = ctx.Repo.RepoLink + "/settings/hooks"
 	ctx.Data["BaseLinkNew"] = ctx.Repo.RepoLink + "/settings/hooks"
-	ctx.Data["Description"] = ctx.Tr("repo.settings.hooks_desc", "https://docs.gitea.com/usage/webhooks")
+	ctx.Data["Description"] = ctx.Tr("Webhooks automatically make HTTP POST requests to a server when certain Gitea events trigger. Read more in the <a target=\"_blank\" rel=\"noopener noreferrer\" href=\"%s\">webhooks guide</a>.", "https://docs.gitea.com/usage/webhooks")
 
 	ws, err := db.Find[webhook.Webhook](ctx, webhook.ListWebhookOptions{RepoID: ctx.Repo.Repository.ID})
 	if err != nil {
@@ -120,7 +120,7 @@ func checkHookType(ctx *context.Context) string {
 
 // WebhooksNew render creating webhook page
 func WebhooksNew(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("repo.settings.add_webhook")
+	ctx.Data["Title"] = ctx.Tr("Add Webhook")
 	ctx.Data["Webhook"] = webhook.Webhook{HookEvent: &webhook_module.HookEvent{}}
 
 	orCtx, err := getOwnerRepoCtx(ctx)
@@ -204,7 +204,7 @@ type webhookParams struct {
 }
 
 func createWebhook(ctx *context.Context, params webhookParams) {
-	ctx.Data["Title"] = ctx.Tr("repo.settings.add_webhook")
+	ctx.Data["Title"] = ctx.Tr("Add Webhook")
 	ctx.Data["PageIsSettingsHooks"] = true
 	ctx.Data["PageIsSettingsHooksNew"] = true
 	ctx.Data["Webhook"] = webhook.Webhook{HookEvent: &webhook_module.HookEvent{}}
@@ -257,12 +257,12 @@ func createWebhook(ctx *context.Context, params webhookParams) {
 		return
 	}
 
-	ctx.Flash.Success(ctx.Tr("repo.settings.add_hook_success"))
+	ctx.Flash.Success(ctx.Tr("The webhook has been added."))
 	ctx.Redirect(orCtx.Link)
 }
 
 func editWebhook(ctx *context.Context, params webhookParams) {
-	ctx.Data["Title"] = ctx.Tr("repo.settings.update_webhook")
+	ctx.Data["Title"] = ctx.Tr("Update Webhook")
 	ctx.Data["PageIsSettingsHooks"] = true
 	ctx.Data["PageIsSettingsHooksEdit"] = true
 
@@ -309,7 +309,7 @@ func editWebhook(ctx *context.Context, params webhookParams) {
 		return
 	}
 
-	ctx.Flash.Success(ctx.Tr("repo.settings.update_hook_success"))
+	ctx.Flash.Success(ctx.Tr("The webhook has been updated."))
 	ctx.Redirect(fmt.Sprintf("%s/%d", orCtx.Link, w.ID))
 }
 
@@ -630,7 +630,7 @@ func checkWebhook(ctx *context.Context) (*ownerRepoCtx, *webhook.Webhook) {
 
 // WebHooksEdit render editing web hook page
 func WebHooksEdit(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("repo.settings.update_webhook")
+	ctx.Data["Title"] = ctx.Tr("Update Webhook")
 	ctx.Data["PageIsSettingsHooks"] = true
 	ctx.Data["PageIsSettingsHooksEdit"] = true
 
@@ -701,7 +701,7 @@ func TestWebhook(ctx *context.Context) {
 		ctx.Flash.Error("PrepareWebhook: " + err.Error())
 		ctx.Status(http.StatusInternalServerError)
 	} else {
-		ctx.Flash.Info(ctx.Tr("repo.settings.webhook.delivery.success"))
+		ctx.Flash.Info(ctx.Tr("An event has been added to the delivery queue. It may take few seconds before it shows up in the delivery history."))
 		ctx.Status(http.StatusOK)
 	}
 }
@@ -724,7 +724,7 @@ func ReplayWebhook(ctx *context.Context) {
 		return
 	}
 
-	ctx.Flash.Success(ctx.Tr("repo.settings.webhook.delivery.success"))
+	ctx.Flash.Success(ctx.Tr("An event has been added to the delivery queue. It may take few seconds before it shows up in the delivery history."))
 	ctx.Redirect(fmt.Sprintf("%s/%d", orCtx.Link, w.ID))
 }
 
@@ -733,7 +733,7 @@ func DeleteWebhook(ctx *context.Context) {
 	if err := webhook.DeleteWebhookByRepoID(ctx, ctx.Repo.Repository.ID, ctx.FormInt64("id")); err != nil {
 		ctx.Flash.Error("DeleteWebhookByRepoID: " + err.Error())
 	} else {
-		ctx.Flash.Success(ctx.Tr("repo.settings.webhook_deletion_success"))
+		ctx.Flash.Success(ctx.Tr("The webhook has been removed."))
 	}
 
 	ctx.JSONRedirect(ctx.Repo.RepoLink + "/settings/hooks")

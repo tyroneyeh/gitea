@@ -112,7 +112,7 @@ func TestNewWiki(t *testing.T) {
 	contexttest.LoadRepo(t, ctx, 1)
 	NewWiki(ctx)
 	assert.Equal(t, http.StatusOK, ctx.Resp.WrittenStatus())
-	assert.EqualValues(t, ctx.Tr("repo.wiki.new_page"), ctx.Data["Title"])
+	assert.EqualValues(t, ctx.Tr("Page"), ctx.Data["Title"])
 }
 
 func TestNewWikiPost(t *testing.T) {
@@ -150,7 +150,7 @@ func TestNewWikiPost_ReservedName(t *testing.T) {
 	})
 	NewWikiPost(ctx)
 	assert.Equal(t, http.StatusOK, ctx.Resp.WrittenStatus())
-	assert.EqualValues(t, ctx.Tr("repo.wiki.reserved_page", "_edit"), ctx.Flash.ErrorMsg)
+	assert.EqualValues(t, ctx.Tr("The wiki page name \"%s\" is reserved.", "_edit"), ctx.Flash.ErrorMsg)
 	assertWikiNotExists(t, ctx.Repo.Repository, "_edit")
 }
 

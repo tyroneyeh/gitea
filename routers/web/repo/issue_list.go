@@ -422,7 +422,7 @@ func UpdateIssueStatus(ctx *context.Context) {
 			if err := issue_service.CloseIssue(ctx, issue, ctx.Doer, ""); err != nil {
 				if issues_model.IsErrDependenciesLeft(err) {
 					ctx.JSON(http.StatusPreconditionFailed, map[string]any{
-						"error": ctx.Tr("repo.issues.dependency.issue_batch_close_blocked", issue.Index),
+						"error": ctx.Tr("Cannot batch close issues that you choose, because issue #%d still has open dependencies", issue.Index),
 					})
 					return
 				}
@@ -746,7 +746,7 @@ func Issues(ctx *context.Context) {
 		if ctx.Written() {
 			return
 		}
-		ctx.Data["Title"] = ctx.Tr("repo.pulls")
+		ctx.Data["Title"] = ctx.Tr("Pull Requests")
 		ctx.Data["PageIsPullList"] = true
 		prepareRecentlyPushedNewBranches(ctx)
 		if ctx.Written() {
@@ -757,7 +757,7 @@ func Issues(ctx *context.Context) {
 		if ctx.Written() {
 			return
 		}
-		ctx.Data["Title"] = ctx.Tr("repo.issues")
+		ctx.Data["Title"] = ctx.Tr("Issues")
 		ctx.Data["PageIsIssueList"] = true
 		ctx.Data["NewIssueChooseTemplate"] = issue_service.HasTemplatesOrContactLinks(ctx.Repo.Repository, ctx.Repo.GitRepo)
 	}

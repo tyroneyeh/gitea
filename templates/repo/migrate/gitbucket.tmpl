@@ -2,7 +2,7 @@
 <div role="main" aria-label="{{.Title}}" class="page-content repository new migrate">
 	<div class="ui container medium-width">
 		<h3 class="ui top attached header">
-			{{ctx.Locale.Tr "repo.migrate.migrate" .service.Title}}
+			{{ctx.Locale.Tr "Migrate From %s" .service.Title}}
 		</h3>
 		<div class="ui attached segment">
 			{{template "base/alert" .}}
@@ -13,61 +13,61 @@
 				<input id="service_type" type="hidden" name="service" value="{{.service}}">
 
 				<div class="inline required field {{if .Err_CloneAddr}}error{{end}}">
-					<label for="clone_addr">{{ctx.Locale.Tr "repo.migrate.clone_address"}}</label>
+					<label for="clone_addr">{{ctx.Locale.Tr "Migrate / Clone From URL"}}</label>
 					<input id="clone_addr" name="clone_addr" value="{{.clone_addr}}" autofocus required>
 					<span class="help">
-					{{ctx.Locale.Tr "repo.migrate.clone_address_desc"}}{{if .ContextUser.CanImportLocal}} {{ctx.Locale.Tr "repo.migrate.clone_local_path"}}{{end}}
+					{{ctx.Locale.Tr "The HTTP(S) or Git 'clone' URL of an existing repository"}}{{if .ContextUser.CanImportLocal}} {{ctx.Locale.Tr "or a local server path"}}{{end}}
 					</span>
 				</div>
 
 				<div class="inline field {{if .Err_Auth}}error{{end}}">
-					<label for="auth_username">{{ctx.Locale.Tr "username"}}</label>
+					<label for="auth_username">{{ctx.Locale.Tr "Username"}}</label>
 					<input id="auth_username" name="auth_username" value="{{.auth_username}}" {{if not .auth_username}}data-need-clear="true"{{end}}>
 				</div>
 				<div class="inline field {{if .Err_Auth}}error{{end}}">
-					<label for="auth_password">{{ctx.Locale.Tr "password"}}</label>
+					<label for="auth_password">{{ctx.Locale.Tr "Password"}}</label>
 					<input id="auth_password" name="auth_password" type="password" value="{{.auth_password}}">
 				</div>
 
 				{{template "repo/migrate/options" .}}
 
 				<div class="inline field">
-					<label>{{ctx.Locale.Tr "repo.migrate_items"}}</label>
+					<label>{{ctx.Locale.Tr "Migration Items"}}</label>
 					<div class="ui checkbox">
 						<input name="wiki" type="checkbox" {{if .wiki}}checked{{end}}>
-						<label>{{ctx.Locale.Tr "repo.migrate_items_wiki"}}</label>
+						<label>{{ctx.Locale.Tr "Wiki"}}</label>
 					</div>
 				</div>
 
 				<div id="migrate_items" class="inline field">
-					<span class="help">{{ctx.Locale.Tr "repo.migrate.migrate_items_options"}}</span>
+					<span class="help">{{ctx.Locale.Tr "Access Token is required to migrate additional items"}}</span>
 					<div class="inline field">
 						<label></label>
 						<div class="ui checkbox">
 							<input name="labels" type="checkbox" {{if .labels}}checked{{end}}>
-							<label>{{ctx.Locale.Tr "repo.migrate_items_labels"}}</label>
+							<label>{{ctx.Locale.Tr "Labels"}}</label>
 						</div>
 						<div class="ui checkbox">
 							<input name="issues" type="checkbox" {{if .issues}}checked{{end}}>
-							<label>{{ctx.Locale.Tr "repo.migrate_items_issues"}}</label>
+							<label>{{ctx.Locale.Tr "Issues"}}</label>
 						</div>
 					</div>
 					<div class="inline field">
 						<label></label>
 						<div class="ui checkbox">
 							<input name="pull_requests" type="checkbox" {{if .pull_requests}}checked{{end}}>
-							<label>{{ctx.Locale.Tr "repo.migrate_items_pullrequests"}}</label>
+							<label>{{ctx.Locale.Tr "Pull Requests"}}</label>
 						</div>
 						<div class="ui checkbox">
 							<input name="releases" type="checkbox" {{if .releases}}checked{{end}}>
-							<label>{{ctx.Locale.Tr "repo.migrate_items_releases"}}</label>
+							<label>{{ctx.Locale.Tr "Releases"}}</label>
 						</div>
 					</div>
 					<div class="inline field">
 						<label></label>
 						<div class="ui checkbox">
 							<input name="milestones" type="checkbox" {{if .milestones}}checked{{end}}>
-							<label>{{ctx.Locale.Tr "repo.migrate_items_milestones"}}</label>
+							<label>{{ctx.Locale.Tr "Milestones"}}</label>
 						</div>
 					</div>
 				</div>
@@ -75,7 +75,7 @@
 				<div class="divider"></div>
 
 				<div class="inline required field {{if .Err_Owner}}error{{end}}">
-					<label>{{ctx.Locale.Tr "repo.owner"}}</label>
+					<label>{{ctx.Locale.Tr "Owner"}}</label>
 					<div class="ui selection owner dropdown ellipsis-text-items">
 						<input type="hidden" id="uid" name="uid" value="{{.ContextUser.ID}}" required>
 						<span class="text" title="{{.ContextUser.Name}}">
@@ -99,30 +99,30 @@
 				</div>
 
 				<div class="inline required field {{if .Err_RepoName}}error{{end}}">
-					<label for="repo_name">{{ctx.Locale.Tr "repo.repo_name"}}</label>
+					<label for="repo_name">{{ctx.Locale.Tr "Repository Name"}}</label>
 					<input id="repo_name" name="repo_name" value="{{.repo_name}}" required maxlength="100">
 				</div>
 				<div class="inline field">
-					<label>{{ctx.Locale.Tr "repo.visibility"}}</label>
+					<label>{{ctx.Locale.Tr "Visibility"}}</label>
 					<div class="ui checkbox">
 						{{if .IsForcedPrivate}}
 							<input name="private" type="checkbox" checked disabled>
-							<label>{{ctx.Locale.Tr "repo.visibility_helper_forced"}}</label>
+							<label>{{ctx.Locale.Tr "Your site administrator forces new repositories to be private."}}</label>
 						{{else}}
 							<input name="private" type="checkbox" {{if .private}}checked{{end}}>
-							<label>{{ctx.Locale.Tr "repo.visibility_helper"}}</label>
+							<label>{{ctx.Locale.Tr "Make repository private"}}</label>
 						{{end}}
 					</div>
 				</div>
 				<div class="inline field {{if .Err_Description}}error{{end}}">
-					<label for="description">{{ctx.Locale.Tr "repo.repo_desc"}}</label>
+					<label for="description">{{ctx.Locale.Tr "Description"}}</label>
 					<textarea id="description" name="description" maxlength="2048">{{.description}}</textarea>
 				</div>
 
 				<div class="inline field">
 					<label></label>
 					<button class="ui primary button">
-						{{ctx.Locale.Tr "repo.migrate_repo"}}
+						{{ctx.Locale.Tr "Migrate Repository"}}
 					</button>
 				</div>
 			</form>

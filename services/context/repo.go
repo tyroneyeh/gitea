@@ -85,7 +85,7 @@ func (r *Repository) GetObjectFormat() git.ObjectFormat {
 func RepoMustNotBeArchived() func(ctx *Context) {
 	return func(ctx *Context) {
 		if ctx.Repo.Repository.IsArchived {
-			ctx.NotFound(errors.New(ctx.Locale.TrString("repo.archive.title")))
+			ctx.NotFound(errors.New(ctx.Locale.TrString("This repo is archived. You can view files and clone it. You cannot open issues or pull requests or push a commit.")))
 		}
 	}
 }
@@ -892,7 +892,7 @@ func RepoRefByType(detectRefType git.RefType) func(*Context) {
 			isRenamedBranch, has := ctx.Data["IsRenamedBranch"].(bool)
 			if isRenamedBranch && has {
 				renamedBranchName := ctx.Data["RenamedBranchName"].(string)
-				ctx.Flash.Info(ctx.Tr("repo.branch.renamed", refShortName, renamedBranchName))
+				ctx.Flash.Info(ctx.Tr("Branch %s was renamed to %s.", refShortName, renamedBranchName))
 				link := setting.AppSubURL + strings.Replace(ctx.Req.URL.EscapedPath(), util.PathEscapeSegments(refShortName), util.PathEscapeSegments(renamedBranchName), 1)
 				ctx.Redirect(link)
 				return

@@ -1,11 +1,11 @@
 {{template "repo/settings/layout_head" (dict "ctxData" . "pageClass" "repository settings")}}
 <div class="repo-setting-content">
 	<h4 class="ui top attached header">
-		{{ctx.Locale.Tr "repo.settings.public_access"}}
+		{{ctx.Locale.Tr "Public Access"}}
 	</h4>
 	<div class="ui attached segment">
 		<p>
-			{{ctx.Locale.Tr "repo.settings.public_access_desc"}}
+			{{ctx.Locale.Tr "Configure public visitor's access permissions to override the defaults of this repository."}}
 		</p>
 		{{$paNotSet := "not-set"}}
 		{{$paAnonymousRead := "anonymous-read"}}
@@ -16,11 +16,11 @@
 			<table class="ui table unstackable tw-my-2">
 				<thead>
 					<tr>
-						<th>{{ctx.Locale.Tr "units.unit"}}</th>
-						<th class="tw-text-center">{{ctx.Locale.Tr "settings.permission_not_set"}}</th>
-						<th class="tw-text-center">{{ctx.Locale.Tr "settings.permission_anonymous_read"}}</th>
-						<th class="tw-text-center">{{ctx.Locale.Tr "settings.permission_everyone_read"}}</th>
-						<th class="tw-text-center">{{ctx.Locale.Tr "settings.permission_everyone_write"}}</th>
+						<th>{{ctx.Locale.Tr "Unit"}}</th>
+						<th class="tw-text-center">{{ctx.Locale.Tr "Not set"}}</th>
+						<th class="tw-text-center">{{ctx.Locale.Tr "Anonymous Read"}}</th>
+						<th class="tw-text-center">{{ctx.Locale.Tr "Everyone Read"}}</th>
+						<th class="tw-text-center">{{ctx.Locale.Tr "Everyone Write"}}</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -42,12 +42,12 @@
 				</tbody>
 			</table>
 			<ul class="tw-my-3 tw-pl-5 tw-flex tw-flex-col tw-gap-3">
-				<li>{{ctx.Locale.Tr "repo.settings.public_access.docs.not_set"}}</li>
-				<li>{{ctx.Locale.Tr "repo.settings.public_access.docs.anonymous_read"}}</li>
-				<li>{{ctx.Locale.Tr "repo.settings.public_access.docs.everyone_read"}}</li>
-				<li>{{ctx.Locale.Tr "repo.settings.public_access.docs.everyone_write"}}</li>
+				<li>{{ctx.Locale.Tr "Not Set: no extra public access permission. The visitor's permission follows the repository's visibility and member permissions."}}</li>
+				<li>{{ctx.Locale.Tr "Anonymous Read: users who are not logged in can access the unit with read permission."}}</li>
+				<li>{{ctx.Locale.Tr "Everyone Read: all logged-in users can access the unit with read permission. Read permission of issue/pull-request units also means users can create new issues/pull requests."}}</li>
+				<li>{{ctx.Locale.Tr "Everyone Write: all logged-in users have write permission to the unit. Only Wiki unit supports this permission."}}</li>
 			</ul>
-			<button class="ui primary button {{if .GlobalForcePrivate}}disabled{{end}}">{{ctx.Locale.Tr "repo.settings.update_settings"}}</button>
+			<button class="ui primary button {{if .GlobalForcePrivate}}disabled{{end}}">{{ctx.Locale.Tr "Update Settings"}}</button>
 		</form>
 	</div>
 </div>

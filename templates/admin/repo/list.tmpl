@@ -1,9 +1,9 @@
 {{template "admin/layout_head" (dict "ctxData" . "pageClass" "admin")}}
 	<div class="admin-setting-content">
 		<h4 class="ui top attached header">
-			{{ctx.Locale.Tr "admin.repos.repo_manage_panel"}} ({{ctx.Locale.Tr "admin.total" .Total}})
+			{{ctx.Locale.Tr "Repository Management"}} ({{ctx.Locale.Tr "Total: %d" .Total}})
 			<div class="ui right">
-				<a class="ui primary tiny button" href="{{AppSubUrl}}/-/admin/repos/unadopted">{{ctx.Locale.Tr "admin.repos.unadopted"}}</a>
+				<a class="ui primary tiny button" href="{{AppSubUrl}}/-/admin/repos/unadopted">{{ctx.Locale.Tr "Unadopted Repositories"}}</a>
 			</div>
 		</h4>
 		<div class="ui attached segment">
@@ -14,32 +14,32 @@
 				<thead>
 					<tr>
 						<th data-sortt-asc="oldest" data-sortt-desc="newest">ID{{SortArrow "oldest" "newest" $.SortType false}}</th>
-						<th>{{ctx.Locale.Tr "admin.repos.owner"}}</th>
+						<th>{{ctx.Locale.Tr "Owner"}}</th>
 						<th data-sortt-asc="alphabetically" data-sortt-desc="reversealphabetically">
-							{{ctx.Locale.Tr "admin.repos.name"}}
+							{{ctx.Locale.Tr "Name"}}
 							{{SortArrow "alphabetically" "reversealphabetically" $.SortType false}}
 						</th>
-						<th>{{ctx.Locale.Tr "repo.watchers"}}</th>
+						<th>{{ctx.Locale.Tr "Watchers"}}</th>
 						<th  data-sortt-asc="moststars" data-sortt-desc="feweststars">
-							{{ctx.Locale.Tr "repo.stars"}}
+							{{ctx.Locale.Tr "Stars"}}
 							{{SortArrow "moststars" "feweststars" $.SortType false}}
 						</th>
 						<th  data-sortt-asc="mostforks" data-sortt-desc="fewestforks">
-							{{ctx.Locale.Tr "repo.forks"}}
+							{{ctx.Locale.Tr "Forks"}}
 							{{SortArrow "mostforks" "fewestforks" $.SortType false}}
 						</th>
-						<th>{{ctx.Locale.Tr "admin.repos.issues"}}</th>
+						<th>{{ctx.Locale.Tr "Issues"}}</th>
 						<th  data-sortt-asc="gitsize" data-sortt-desc="reversegitsize">
-							{{ctx.Locale.Tr "admin.repos.size"}}
+							{{ctx.Locale.Tr "Size"}}
 							{{SortArrow "gitsize" "reversegitsize" $.SortType false}}
 						</th>
 						<th  data-sortt-asc="lfssize" data-sortt-desc="reverselfssize">
-							{{ctx.Locale.Tr "admin.repos.lfs_size"}}
+							{{ctx.Locale.Tr "LFS Size"}}
 							{{SortArrow "lfssize" "reverselfssize" $.SortType false}}
 						</th>
-						<th>{{ctx.Locale.Tr "admin.auths.updated"}}</th>
-						<th>{{ctx.Locale.Tr "admin.users.created"}}</th>
-						<th>{{ctx.Locale.Tr "admin.notices.op"}}</th>
+						<th>{{ctx.Locale.Tr "Updated"}}</th>
+						<th>{{ctx.Locale.Tr "Created"}}</th>
+						<th>{{ctx.Locale.Tr "Op."}}</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -55,20 +55,20 @@
 							<td>
 								<a class="tw-break-anywhere" href="{{.Link}}">{{.Name}}</a>
 								{{if .IsArchived}}
-									<span class="ui basic label">{{ctx.Locale.Tr "repo.desc.archived"}}</span>
+									<span class="ui basic label">{{ctx.Locale.Tr "Archived"}}</span>
 								{{end}}
 								{{if .IsPrivate}}
-									<span class="ui basic label">{{ctx.Locale.Tr "repo.desc.private"}}</span>
+									<span class="ui basic label">{{ctx.Locale.Tr "Private"}}</span>
 								{{else}}
 									{{if .Owner.Visibility.IsPrivate}}
-										<span class="ui basic label">{{ctx.Locale.Tr "repo.desc.internal"}}</span>
+										<span class="ui basic label">{{ctx.Locale.Tr "Internal"}}</span>
 									{{end}}
 								{{end}}
 								{{if .IsTemplate}}
-									<span class="ui basic label">{{ctx.Locale.Tr "repo.desc.template"}}</span>
+									<span class="ui basic label">{{ctx.Locale.Tr "Template"}}</span>
 								{{end}}
 								{{if eq .ObjectFormatName "sha256"}}
-									<span class="ui basic label">{{ctx.Locale.Tr "repo.desc.sha256"}}</span>
+									<span class="ui basic label">{{ctx.Locale.Tr "SHA256"}}</span>
 								{{end}}
 								{{if .IsMirror}}
 									{{svg "octicon-mirror"}}
@@ -92,7 +92,7 @@
 							</td>
 						</tr>
 					{{else}}
-						<tr><td class="tw-text-center" colspan="12">{{ctx.Locale.Tr "no_results_found"}}</td></tr>
+						<tr><td class="tw-text-center" colspan="12">{{ctx.Locale.Tr "No results found."}}</td></tr>
 					{{end}}
 				</tbody>
 			</table>
@@ -103,11 +103,11 @@
 
 <form class="ui small modal form-fetch-action" id="admin-repo-delete-modal" method="post">
 	{{.CsrfTokenHtml}}
-	<div class="header">{{svg "octicon-trash"}} {{ctx.Locale.Tr "repo.settings.delete"}}</div>
+	<div class="header">{{svg "octicon-trash"}} {{ctx.Locale.Tr "Delete This Repository"}}</div>
 	<div class="content">
-		<p>{{ctx.Locale.Tr "repo.settings.delete_desc"}}</p>
-		{{ctx.Locale.Tr "repo.settings.delete_notices_2" (HTMLFormat `<span class="%s"></span>` "repo-name")}}<br>
-		{{ctx.Locale.Tr "repo.settings.delete_notices_fork_1"}}<br>
+		<p>{{ctx.Locale.Tr "Deleting a repository is permanent and cannot be undone."}}</p>
+		{{ctx.Locale.Tr "- This operation will permanently delete the <strong>%s</strong> repository, including code, issues, comments, wiki data and collaborator settings." (HTMLFormat `<span class="%s"></span>` "repo-name")}}<br>
+		{{ctx.Locale.Tr "- Forks of this repository will become independent after deletion."}}<br>
 	</div>
 	{{template "base/modal_actions_confirm" .}}
 </form>

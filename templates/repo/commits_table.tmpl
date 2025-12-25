@@ -1,11 +1,11 @@
 <h4 class="ui top attached header commits-table tw-flex tw-items-center tw-justify-between">
 	<div class="commits-table-left tw-flex tw-items-center">
 		{{if or .PageIsCommits (gt .CommitCount 0)}}
-			{{.CommitCount}} {{ctx.Locale.Tr "repo.commits.commits"}}
+			{{.CommitCount}} {{ctx.Locale.Tr "Commits"}}
 		{{else if .IsNothingToCompare}}
-			{{ctx.Locale.Tr "repo.commits.nothing_to_compare"}}
+			{{ctx.Locale.Tr "These branches are equal."}}
 		{{else}}
-			{{ctx.Locale.Tr "repo.commits.no_commits" $.BaseBranch $.HeadBranch}}
+			{{ctx.Locale.Tr "No commits in common. \"%s\" and \"%s\" have entirely different histories." $.BaseBranch $.HeadBranch}}
 		{{end}}
 	</div>
 	{{if .IsDiffCompare}}
@@ -21,9 +21,9 @@
 	<div class="ui attached segment">
 		<form class="ignore-dirty" action="{{.RepoLink}}/commits/{{.RefTypeNameSubURL}}/search">
 			<div class="ui small fluid action input">
-				{{template "shared/search/input" dict "Value" .Keyword "Placeholder" (ctx.Locale.Tr "search.commit_kind")}}
+				{{template "shared/search/input" dict "Value" .Keyword "Placeholder" (ctx.Locale.Tr "Search commits…")}}
 				{{template "repo/commits_search_dropdown" .}}
-				{{template "shared/search/button" dict "Tooltip" (ctx.Locale.Tr "repo.commits.search.tooltip")}}
+				{{template "shared/search/button" dict "Tooltip" (ctx.Locale.Tr "You can prefix keywords with \"author:\", \"committer:\", \"after:\", or \"before:\", e.g. \"revert author:Alice before:2019-01-13\".")}}
 			</div>
 		</form>
 	</div>

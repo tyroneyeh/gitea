@@ -3,14 +3,14 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<meta name="format-detection" content="telephone=no,date=no,address=no,email=no,url=no">
-	<title>{{.locale.Tr "mail.activate_account.title" (.DisplayName|DotEscape)}}</title>
+	<title>{{.locale.Tr "%s, please activate your account" (.DisplayName|DotEscape)}}</title>
 </head>
 
 {{$activate_url := printf "%suser/activate?code=%s" AppUrl (QueryEscape .Code)}}
 <body>
-	<p>{{.locale.Tr "mail.activate_account.text_1" (.DisplayName|DotEscape) AppName}}</p><br>
-	<p>{{.locale.Tr "mail.activate_account.text_2" .ActiveCodeLives}}</p><p><a href="{{$activate_url}}">{{$activate_url}}</a></p><br>
-	<p>{{.locale.Tr "mail.link_not_working_do_paste"}}</p>
+	<p>{{.locale.Tr "Hi <b>%[1]s</b>, thanks for registering at %[2]s!" (.DisplayName|DotEscape) AppName}}</p><br>
+	<p>{{.locale.Tr "Please click the following link to activate your account within <b>%s</b>:" .ActiveCodeLives}}</p><p><a href="{{$activate_url}}">{{$activate_url}}</a></p><br>
+	<p>{{.locale.Tr "Not working? Try copying and pasting it to your browser."}}</p>
 
 	<p>© <a href="{{AppUrl}}">{{AppName}}</a></p>
 </body>

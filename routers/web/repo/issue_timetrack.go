@@ -37,7 +37,7 @@ func AddTimeManually(c *context.Context) {
 	total := time.Duration(form.Hours)*time.Hour + time.Duration(form.Minutes)*time.Minute
 
 	if total <= 0 {
-		c.JSONError(c.Tr("repo.issues.add_time_sum_to_small"))
+		c.JSONError(c.Tr("No time was entered."))
 		return
 	}
 
@@ -81,7 +81,7 @@ func DeleteTime(c *context.Context) {
 		return
 	}
 
-	c.Flash.Success(c.Tr("repo.issues.del_time_history", util.SecToHours(t.Time)))
+	c.Flash.Success(c.Tr("deleted spent time %s", util.SecToHours(t.Time)))
 	c.JSONRedirect("")
 }
 
@@ -100,7 +100,7 @@ func UpdateIssueTimeEstimate(ctx *context.Context) {
 
 	total, err := util.TimeEstimateParse(timeStr)
 	if err != nil {
-		ctx.JSONError(ctx.Tr("repo.issues.time_estimate_invalid"))
+		ctx.JSONError(ctx.Tr("Time estimate format is invalid"))
 		return
 	}
 

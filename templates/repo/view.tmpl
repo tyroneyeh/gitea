@@ -7,9 +7,9 @@
 		{{if .Repository.IsArchived}}
 			<div class="ui warning message tw-text-center">
 				{{if .Repository.ArchivedUnix.IsZero}}
-					{{ctx.Locale.Tr "repo.archive.title"}}
+					{{ctx.Locale.Tr "This repo is archived. You can view files and clone it. You cannot open issues or pull requests or push a commit."}}
 				{{else}}
-					{{ctx.Locale.Tr "repo.archive.title_date" (DateUtils.AbsoluteLong .Repository.ArchivedUnix)}}
+					{{ctx.Locale.Tr "This repository has been archived on %s. You can view files and clone it. You cannot open issues or pull requests or push a commit." (DateUtils.AbsoluteLong .Repository.ArchivedUnix)}}
 				{{end}}
 			</div>
 		{{end}}

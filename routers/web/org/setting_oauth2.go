@@ -32,7 +32,7 @@ func newOAuth2CommonHandlers(org *context.Organization) *user_setting.OAuth2Comm
 
 // Applications render org applications page (for org, at the moment, there are only OAuth2 applications)
 func Applications(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("settings.applications")
+	ctx.Data["Title"] = ctx.Tr("Applications")
 	ctx.Data["PageIsOrgSettings"] = true
 	ctx.Data["PageIsSettingsApplications"] = true
 
@@ -55,7 +55,7 @@ func Applications(ctx *context.Context) {
 
 // OAuthApplicationsPost response for adding an oauth2 application
 func OAuthApplicationsPost(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("settings.applications")
+	ctx.Data["Title"] = ctx.Tr("Applications")
 	ctx.Data["PageIsOrgSettings"] = true
 	ctx.Data["PageIsSettingsApplications"] = true
 
@@ -74,7 +74,7 @@ func OAuth2ApplicationShow(ctx *context.Context) {
 
 // OAuth2ApplicationEdit response for editing oauth2 application
 func OAuth2ApplicationEdit(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("settings.applications")
+	ctx.Data["Title"] = ctx.Tr("Applications")
 	ctx.Data["PageIsOrgSettings"] = true
 	ctx.Data["PageIsSettingsApplications"] = true
 
@@ -84,7 +84,7 @@ func OAuth2ApplicationEdit(ctx *context.Context) {
 
 // OAuthApplicationsRegenerateSecret handles the post request for regenerating the secret
 func OAuthApplicationsRegenerateSecret(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("settings_title")
+	ctx.Data["Title"] = ctx.Tr("Settings")
 	ctx.Data["PageIsOrgSettings"] = true
 	ctx.Data["PageIsSettingsApplications"] = true
 

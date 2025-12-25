@@ -1,13 +1,13 @@
 {{if and (eq .PackageDescriptor.Package.Type "maven") (not .PackageDescriptor.Metadata)}}
-	<h4 class="ui top attached header">{{ctx.Locale.Tr "packages.installation"}}</h4>
-	<div class="ui attached segment">{{ctx.Locale.Tr "packages.no_metadata"}}</div>
+	<h4 class="ui top attached header">{{ctx.Locale.Tr "Installation"}}</h4>
+	<div class="ui attached segment">{{ctx.Locale.Tr "No metadata."}}</div>
 {{end}}
 {{if and (eq .PackageDescriptor.Package.Type "maven") .PackageDescriptor.Metadata}}
-	<h4 class="ui top attached header">{{ctx.Locale.Tr "packages.installation"}}</h4>
+	<h4 class="ui top attached header">{{ctx.Locale.Tr "Installation"}}</h4>
 	<div class="ui attached segment">
 		<div class="ui form">
 			<div class="field">
-				<label>{{svg "octicon-code"}} {{ctx.Locale.Tr "packages.maven.registry"}}</label>
+				<label>{{svg "octicon-code"}} {{ctx.Locale.Tr "Set up this registry in your project <code>pom.xml</code> file:"}}</label>
 				<div class="markup"><pre class="code-block"><code>&lt;repositories&gt;
 	&lt;repository&gt;
 		&lt;id&gt;gitea&lt;/id&gt;
@@ -28,7 +28,7 @@
 &lt;/distributionManagement&gt;</code></pre></div>
 			</div>
 			<div class="field">
-				<label>{{svg "octicon-code"}} {{ctx.Locale.Tr "packages.maven.install"}}</label>
+				<label>{{svg "octicon-code"}} {{ctx.Locale.Tr "To use the package, include the following in the <code>dependencies</code> block in the <code>pom.xml</code> file:"}}</label>
 				<div class="markup"><pre class="code-block"><code>&lt;dependency&gt;
 	&lt;groupId&gt;{{.PackageDescriptor.Metadata.GroupID}}&lt;/groupId&gt;
 	&lt;artifactId&gt;{{.PackageDescriptor.Metadata.ArtifactID}}&lt;/artifactId&gt;
@@ -36,28 +36,28 @@
 &lt;/dependency&gt;</code></pre></div>
 			</div>
 			<div class="field">
-				<label>{{svg "octicon-terminal"}} {{ctx.Locale.Tr "packages.maven.install2"}}</label>
+				<label>{{svg "octicon-terminal"}} {{ctx.Locale.Tr "Run via command line:"}}</label>
 				<div class="markup"><pre class="code-block"><code>mvn install</code></pre></div>
 			</div>
 			<div class="field">
-				<label>{{svg "octicon-terminal"}} {{ctx.Locale.Tr "packages.maven.download"}}</label>
+				<label>{{svg "octicon-terminal"}} {{ctx.Locale.Tr "To download the dependency, run via command line:"}}</label>
 				<div class="markup"><pre class="code-block"><code>mvn dependency:get -DremoteRepositories=<origin-url data-url="{{AppSubUrl}}/api/packages/{{.PackageDescriptor.Owner.Name}}/maven"></origin-url> -Dartifact={{.PackageDescriptor.Metadata.GroupID}}:{{.PackageDescriptor.Metadata.ArtifactID}}:{{.PackageDescriptor.Version.Version}}</code></pre></div>
 			</div>
 			<div class="field">
-				<label>{{ctx.Locale.Tr "packages.registry.documentation" "Maven" "https://docs.gitea.com/usage/packages/maven/"}}</label>
+				<label>{{ctx.Locale.Tr "For more information on the %s registry, see <a target=\"_blank\" rel=\"noopener noreferrer\" href=\"%s\">the documentation</a>." "Maven" "https://docs.gitea.com/usage/packages/maven/"}}</label>
 			</div>
 		</div>
 	</div>
 
 	{{if .PackageDescriptor.Metadata.Description}}
-		<h4 class="ui top attached header">{{ctx.Locale.Tr "packages.about"}}</h4>
+		<h4 class="ui top attached header">{{ctx.Locale.Tr "About this package"}}</h4>
 		<div class="ui attached segment">
 			{{.PackageDescriptor.Metadata.Description}}
 		</div>
 	{{end}}
 
 	{{if .PackageDescriptor.Metadata.Dependencies}}
-		<h4 class="ui top attached header">{{ctx.Locale.Tr "packages.dependencies"}}</h4>
+		<h4 class="ui top attached header">{{ctx.Locale.Tr "Dependencies"}}</h4>
 		<div class="ui attached segment">
 			<div class="ui list">
 				{{range .PackageDescriptor.Metadata.Dependencies}}

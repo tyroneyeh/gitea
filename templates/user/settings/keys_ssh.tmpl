@@ -1,8 +1,8 @@
 <h4 class="ui top attached header">
-	{{ctx.Locale.Tr "settings.manage_ssh_keys"}}
+	{{ctx.Locale.Tr "Manage SSH Keys"}}
 	<div class="ui right">
 		<button id="add-ssh-button" class="ui primary tiny show-panel toggle button" data-panel="#add-ssh-key-panel">
-			{{ctx.Locale.Tr "settings.add_key"}}
+			{{ctx.Locale.Tr "Add Key"}}
 		</button>
 	</div>
 </h4>
@@ -11,73 +11,73 @@
 		<form class="ui form" action="{{.Link}}" method="post">
 			{{.CsrfTokenHtml}}
 			<div class="field {{if .Err_Title}}error{{end}}">
-				<label for="ssh-key-title">{{ctx.Locale.Tr "settings.key_name"}}</label>
+				<label for="ssh-key-title">{{ctx.Locale.Tr "Key Name"}}</label>
 				<input id="ssh-key-title" name="title" value="{{.title}}" autofocus required maxlength="50">
 			</div>
 			<div class="field {{if .Err_Content}}error{{end}}">
-				<label for="ssh-key-content">{{ctx.Locale.Tr "settings.key_content"}}</label>
-				<textarea id="ssh-key-content" name="content" placeholder="{{ctx.Locale.Tr "settings.key_content_ssh_placeholder"}}" required>{{.content}}</textarea>
+				<label for="ssh-key-content">{{ctx.Locale.Tr "Content"}}</label>
+				<textarea id="ssh-key-content" name="content" placeholder="{{ctx.Locale.Tr "Begins with 'ssh-ed25519', 'ssh-rsa', 'ecdsa-sha2-nistp256', 'ecdsa-sha2-nistp384', 'ecdsa-sha2-nistp521', 'sk-ecdsa-sha2-nistp256@openssh.com', or 'sk-ssh-ed25519@openssh.com'"}}" required>{{.content}}</textarea>
 			</div>
 			<input name="type" type="hidden" value="ssh">
 			<button class="ui primary button">
-				{{ctx.Locale.Tr "settings.add_key"}}
+				{{ctx.Locale.Tr "Add Key"}}
 			</button>
 			<button id="cancel-ssh-button" class="ui hide-panel button" data-panel="#add-ssh-key-panel">
-				{{ctx.Locale.Tr "cancel"}}
+				{{ctx.Locale.Tr "Cancel"}}
 			</button>
 		</form>
 	</div>
 	<div id="keys-ssh" class="flex-list">
 		<div class="flex-item">
 			<p>
-				{{ctx.Locale.Tr "settings.ssh_desc"}}<br>
-				{{ctx.Locale.Tr "settings.ssh_helper" "https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/connecting-to-github-with-ssh" "https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/troubleshooting-ssh"}}
+				{{ctx.Locale.Tr "These public SSH keys are associated with your account. The corresponding private keys allow full access to your repositories."}}<br>
+				{{ctx.Locale.Tr "<strong>Need help?</strong> Have a look at GitHub's guide to <a href=\"%s\">create your own SSH keys</a> or solve <a href=\"%s\">common problems</a> you may encounter using SSH." "https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/connecting-to-github-with-ssh" "https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/troubleshooting-ssh"}}
 			</p>
 		</div>
 		{{if .DisableSSH}}
 			<div class="flex-item">
-				{{ctx.Locale.Tr "settings.ssh_signonly"}}
+				{{ctx.Locale.Tr "SSH is currently disabled so these keys are only used for commit signature verification."}}
 			</div>
 		{{end}}
 		{{range $index, $key := .Keys}}
 			<div class="flex-item">
 				<div class="flex-item-leading">
-					<span class="text {{if .HasRecentActivity}}green{{end}}" {{if .HasRecentActivity}}data-tooltip-content="{{ctx.Locale.Tr "settings.key_state_desc"}}"{{end}}>{{svg "octicon-key" 32}}</span>
+					<span class="text {{if .HasRecentActivity}}green{{end}}" {{if .HasRecentActivity}}data-tooltip-content="{{ctx.Locale.Tr "This key has been used in the last 7 days"}}"{{end}}>{{svg "octicon-key" 32}}</span>
 				</div>
 				<div class="flex-item-main">
 						{{if .Verified}}
-							<div class="flex-item-title flex-text-block" data-tooltip-content="{{ctx.Locale.Tr "settings.ssh_key_verified_long"}}">{{svg "octicon-verified"}}{{ctx.Locale.Tr "settings.ssh_key_verified"}}</div>
+							<div class="flex-item-title flex-text-block" data-tooltip-content="{{ctx.Locale.Tr "Key has been verified with a token and can be used to verify commits matching any activated email addresses for this user."}}">{{svg "octicon-verified"}}{{ctx.Locale.Tr "Verified Key"}}</div>
 						{{end}}
 						<div class="flex-item-title">{{.Name}}</div>
 						<div class="flex-item-body">
 								{{.Fingerprint}}
 						</div>
 						<div class="flex-item-body">
-								<i>{{ctx.Locale.Tr "settings.added_on" (DateUtils.AbsoluteShort .CreatedUnix)}} —	{{svg "octicon-info"}} {{if .HasUsed}}{{ctx.Locale.Tr "settings.last_used"}} <span {{if .HasRecentActivity}}class="text green"{{end}}>{{DateUtils.AbsoluteShort .UpdatedUnix}}</span>{{else}}{{ctx.Locale.Tr "settings.no_activity"}}{{end}}</i>
+								<i>{{ctx.Locale.Tr "Added on %s" (DateUtils.AbsoluteShort .CreatedUnix)}} —	{{svg "octicon-info"}} {{if .HasUsed}}{{ctx.Locale.Tr "Last used on"}} <span {{if .HasRecentActivity}}class="text green"{{end}}>{{DateUtils.AbsoluteShort .UpdatedUnix}}</span>{{else}}{{ctx.Locale.Tr "No recent activity"}}{{end}}</i>
 						</div>
 				</div>
 				<div class="flex-item-trailing">
-					<button class="ui red tiny button delete-button{{if index $.ExternalKeys $index}} disabled{{end}}" data-modal-id="delete-ssh" data-url="{{$.Link}}/delete?type=ssh" data-id="{{.ID}}"{{if index $.ExternalKeys $index}} title="{{ctx.Locale.Tr "settings.ssh_externally_managed"}}"{{end}}>
-						{{ctx.Locale.Tr "settings.delete_key"}}
+					<button class="ui red tiny button delete-button{{if index $.ExternalKeys $index}} disabled{{end}}" data-modal-id="delete-ssh" data-url="{{$.Link}}/delete?type=ssh" data-id="{{.ID}}"{{if index $.ExternalKeys $index}} title="{{ctx.Locale.Tr "This SSH key is externally managed for this user"}}"{{end}}>
+						{{ctx.Locale.Tr "Remove"}}
 					</button>
 					{{if and (not .Verified) (ne $.VerifyingFingerprint .Fingerprint)}}
-						<a class="ui primary tiny button" href="?verify_ssh={{.Fingerprint}}">{{ctx.Locale.Tr "settings.ssh_key_verify"}}</a>
+						<a class="ui primary tiny button" href="?verify_ssh={{.Fingerprint}}">{{ctx.Locale.Tr "Verify"}}</a>
 					{{end}}
 				</div>
 			</div>
 			{{if and (not .Verified) (eq $.VerifyingFingerprint .Fingerprint)}}
 				<div class="ui segment">
-					<h4>{{ctx.Locale.Tr "settings.ssh_token_required"}}</h4>
+					<h4>{{ctx.Locale.Tr "You must provide a signature for the below token"}}</h4>
 					<form class="ui form{{if $.HasSSHVerifyError}} error{{end}}" action="{{$.Link}}" method="post">
 						{{$.CsrfTokenHtml}}
 						<input type="hidden" name="title" value="none">
 						<input type="hidden" name="content" value="{{.Content}}">
 						<input type="hidden" name="fingerprint" value="{{.Fingerprint}}">
 						<div class="field">
-							<label for="token">{{ctx.Locale.Tr "settings.ssh_token"}}</label>
+							<label for="token">{{ctx.Locale.Tr "Token"}}</label>
 							<input readonly="" value="{{$.TokenToSign}}">
 							<div class="help">
-								{{ctx.Locale.Tr "settings.ssh_token_help"}}
+								{{ctx.Locale.Tr "You can generate a signature using:"}}
 								<pre class="command-block">echo -n '{{$.TokenToSign}}' | ssh-keygen -Y sign -n gitea -f /path_to_PrivateKey_or_RelatedPublicKey</pre>
 								<details>
 									<summary>Windows PowerShell</summary>
@@ -91,15 +91,15 @@
 							<br>
 						</div>
 						<div class="field">
-							<label for="signature">{{ctx.Locale.Tr "settings.ssh_token_signature"}}</label>
-							<textarea id="ssh-key-signature" name="signature" placeholder="{{ctx.Locale.Tr "settings.key_signature_ssh_placeholder"}}" required>{{$.signature}}</textarea>
+							<label for="signature">{{ctx.Locale.Tr "Armored SSH signature"}}</label>
+							<textarea id="ssh-key-signature" name="signature" placeholder="{{ctx.Locale.Tr "Begins with '-----BEGIN SSH SIGNATURE-----'"}}" required>{{$.signature}}</textarea>
 						</div>
 						<input name="type" type="hidden" value="verify_ssh">
 						<button class="ui primary button">
-							{{ctx.Locale.Tr "settings.ssh_key_verify"}}
+							{{ctx.Locale.Tr "Verify"}}
 						</button>
 						<a class="ui red button" href="{{$.Link}}">
-							{{ctx.Locale.Tr "settings.cancel"}}
+							{{ctx.Locale.Tr "Cancel"}}
 						</a>
 					</form>
 				</div>
@@ -109,10 +109,10 @@
 	<div class="ui g-modal-confirm delete modal" id="delete-ssh">
 		<div class="header">
 			{{svg "octicon-trash"}}
-			{{ctx.Locale.Tr "settings.ssh_key_deletion"}}
+			{{ctx.Locale.Tr "Remove SSH Key"}}
 		</div>
 		<div class="content">
-			<p>{{ctx.Locale.Tr "settings.ssh_key_deletion_desc"}}</p>
+			<p>{{ctx.Locale.Tr "Removing an SSH key revokes its access to your account. Continue?"}}</p>
 		</div>
 		{{template "base/modal_actions_confirm" .}}
 	</div>

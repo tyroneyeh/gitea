@@ -170,7 +170,7 @@ func prepareFileView(ctx *context.Context, entry *git.TreeEntry) {
 
 	blob := entry.Blob()
 
-	ctx.Data["Title"] = ctx.Tr("repo.file.title", ctx.Repo.Repository.Name+"/"+ctx.Repo.TreePath, ctx.Repo.RefFullName.ShortName())
+	ctx.Data["Title"] = ctx.Tr("%s at %s", ctx.Repo.Repository.Name+"/"+ctx.Repo.TreePath, ctx.Repo.RefFullName.ShortName())
 	ctx.Data["FileIsSymlink"] = entry.IsLink()
 	ctx.Data["FileTreePath"] = ctx.Repo.TreePath
 	ctx.Data["RawFileLink"] = ctx.Repo.RepoLink + "/raw/" + ctx.Repo.RefTypeNameSubURL() + "/" + util.PathEscapeSegments(ctx.Repo.TreePath)
@@ -195,7 +195,7 @@ func prepareFileView(ctx *context.Context, entry *git.TreeEntry) {
 		}
 		_, workFlowErr := model.ReadWorkflow(bytes.NewReader(content))
 		if workFlowErr != nil {
-			ctx.Data["FileError"] = ctx.Locale.Tr("actions.runs.invalid_workflow_helper", workFlowErr.Error())
+			ctx.Data["FileError"] = ctx.Locale.Tr("Workflow config file is invalid. Please check your config file: %s", workFlowErr.Error())
 		}
 	} else if issue_service.IsCodeOwnerFile(ctx.Repo.TreePath) {
 		if data, err := blob.GetBlobContent(setting.UI.MaxDisplayFileSize); err == nil {
@@ -271,16 +271,16 @@ func prepareFileViewEditorButtons(ctx *context.Context) bool {
 
 	// The buttons should not be shown if it's not a branch
 	if !ctx.Repo.RefFullName.IsBranch() {
-		ctx.Data["EditFileTooltip"] = ctx.Tr("repo.editor.must_be_on_a_branch")
-		ctx.Data["DeleteFileTooltip"] = ctx.Tr("repo.editor.must_be_on_a_branch")
+		ctx.Data["EditFileTooltip"] = ctx.Tr("You must be on a branch to make or propose changes to this file.")
+		ctx.Data["DeleteFileTooltip"] = ctx.Tr("You must be on a branch to make or propose changes to this file.")
 		return true
 	}
 
 	if !ctx.Repo.CanWriteToBranch(ctx, ctx.Doer, ctx.Repo.BranchName) {
 		ctx.Data["CanEditFile"] = true
-		ctx.Data["EditFileTooltip"] = ctx.Tr("repo.editor.fork_before_edit")
+		ctx.Data["EditFileTooltip"] = ctx.Tr("You must fork this repository to make or propose changes to this file.")
 		ctx.Data["CanDeleteFile"] = true
-		ctx.Data["DeleteFileTooltip"] = ctx.Tr("repo.editor.must_have_write_access")
+		ctx.Data["DeleteFileTooltip"] = ctx.Tr("You must have write access to make or propose changes to this file.")
 		return true
 	}
 
@@ -298,14 +298,14 @@ func prepareFileViewEditorButtons(ctx *context.Context) bool {
 		}
 		ctx.Data["LFSLockOwner"] = u.Name
 		ctx.Data["LFSLockOwnerHomeLink"] = u.HomeLink()
-		ctx.Data["LFSLockHint"] = ctx.Tr("repo.editor.this_file_locked")
+		ctx.Data["LFSLockHint"] = ctx.Tr("File is locked")
 	}
 
 	// it's a lfs file and the user is not the owner of the lock
 	isLFSLocked := lfsLock != nil && lfsLock.OwnerID != ctx.Doer.ID
 	ctx.Data["CanEditFile"] = !isLFSLocked
-	ctx.Data["EditFileTooltip"] = util.Iif(isLFSLocked, ctx.Tr("repo.editor.this_file_locked"), ctx.Tr("repo.editor.edit_this_file"))
+	ctx.Data["EditFileTooltip"] = util.Iif(isLFSLocked, ctx.Tr("File is locked"), ctx.Tr("Edit File"))
 	ctx.Data["CanDeleteFile"] = !isLFSLocked
-	ctx.Data["DeleteFileTooltip"] = util.Iif(isLFSLocked, ctx.Tr("repo.editor.this_file_locked"), ctx.Tr("repo.editor.delete_this_file"))
+	ctx.Data["DeleteFileTooltip"] = util.Iif(isLFSLocked, ctx.Tr("File is locked"), ctx.Tr("Delete File"))
 	return true
 }

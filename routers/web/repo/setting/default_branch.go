@@ -16,7 +16,7 @@ import (
 
 // SetDefaultBranchPost set default branch
 func SetDefaultBranchPost(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("repo.settings.branches.update_default_branch")
+	ctx.Data["Title"] = ctx.Tr("Update Default Branch")
 	ctx.Data["PageIsSettingsBranches"] = true
 
 	repo.PrepareBranchList(ctx)
@@ -46,7 +46,7 @@ func SetDefaultBranchPost(ctx *context.Context) {
 
 		log.Trace("Repository basic settings updated: %s/%s", ctx.Repo.Owner.Name, repo.Name)
 
-		ctx.Flash.Success(ctx.Tr("repo.settings.update_settings_success"))
+		ctx.Flash.Success(ctx.Tr("The repository settings have been updated."))
 		ctx.Redirect(setting.AppSubURL + ctx.Req.URL.EscapedPath())
 	default:
 		ctx.NotFound(nil)

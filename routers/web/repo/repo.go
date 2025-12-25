@@ -143,7 +143,7 @@ func getRepoPrivate(ctx *context.Context) bool {
 }
 
 func createCommon(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("new_repo")
+	ctx.Data["Title"] = ctx.Tr("New Repository")
 	ctx.Data["Gitignores"] = repo_module.Gitignores
 	ctx.Data["LabelTemplateFiles"] = repo_module.LabelTemplateFiles
 	ctx.Data["Licenses"] = repo_module.Licenses
@@ -167,7 +167,7 @@ func Create(ctx *context.Context) {
 	ctx.Data["readme"] = "Default"
 	ctx.Data["private"] = getRepoPrivate(ctx)
 	ctx.Data["default_branch"] = setting.Repository.DefaultBranch
-	ctx.Data["repo_template_name"] = ctx.Tr("repo.template_select")
+	ctx.Data["repo_template_name"] = ctx.Tr("Select a template.")
 
 	templateID := ctx.FormInt64("template_id")
 	if templateID > 0 {
@@ -185,29 +185,29 @@ func handleCreateError(ctx *context.Context, owner *user_model.User, err error, 
 	switch {
 	case repo_model.IsErrReachLimitOfRepo(err):
 		maxCreationLimit := owner.MaxCreationLimit()
-		msg := ctx.TrN(maxCreationLimit, "repo.form.reach_limit_of_creation_1", "repo.form.reach_limit_of_creation_n", maxCreationLimit)
+		msg := ctx.TrN(maxCreationLimit, "The owner has already reached the limit of %d repository.", "The owner has already reached the limit of %d repositories.", maxCreationLimit)
 		ctx.RenderWithErr(msg, tpl, form)
 	case repo_model.IsErrRepoAlreadyExist(err):
 		ctx.Data["Err_RepoName"] = true
-		ctx.RenderWithErr(ctx.Tr("form.repo_name_been_taken"), tpl, form)
+		ctx.RenderWithErr(ctx.Tr("The repository name is already used."), tpl, form)
 	case repo_model.IsErrRepoFilesAlreadyExist(err):
 		ctx.Data["Err_RepoName"] = true
 		switch {
 		case ctx.IsUserSiteAdmin() || (setting.Repository.AllowAdoptionOfUnadoptedRepositories && setting.Repository.AllowDeleteOfUnadoptedRepositories):
-			ctx.RenderWithErr(ctx.Tr("form.repository_files_already_exist.adopt_or_delete"), tpl, form)
+			ctx.RenderWithErr(ctx.Tr("Files already exist for this repository. Either adopt them or delete them."), tpl, form)
 		case setting.Repository.AllowAdoptionOfUnadoptedRepositories:
-			ctx.RenderWithErr(ctx.Tr("form.repository_files_already_exist.adopt"), tpl, form)
+			ctx.RenderWithErr(ctx.Tr("Files already exist for this repository and can only be adopted."), tpl, form)
 		case setting.Repository.AllowDeleteOfUnadoptedRepositories:
-			ctx.RenderWithErr(ctx.Tr("form.repository_files_already_exist.delete"), tpl, form)
+			ctx.RenderWithErr(ctx.Tr("Files already exist for this repository. You must delete them."), tpl, form)
 		default:
-			ctx.RenderWithErr(ctx.Tr("form.repository_files_already_exist"), tpl, form)
+			ctx.RenderWithErr(ctx.Tr("Files already exist for this repository. Contact the system administrator."), tpl, form)
 		}
 	case db.IsErrNameReserved(err):
 		ctx.Data["Err_RepoName"] = true
-		ctx.RenderWithErr(ctx.Tr("repo.form.name_reserved", err.(db.ErrNameReserved).Name), tpl, form)
+		ctx.RenderWithErr(ctx.Tr("The repository name \"%s\" is reserved.", err.(db.ErrNameReserved).Name), tpl, form)
 	case db.IsErrNamePatternNotAllowed(err):
 		ctx.Data["Err_RepoName"] = true
-		ctx.RenderWithErr(ctx.Tr("repo.form.name_pattern_not_allowed", err.(db.ErrNamePatternNotAllowed).Pattern), tpl, form)
+		ctx.RenderWithErr(ctx.Tr("The pattern \"%s\" is not allowed in a repository name.", err.(db.ErrNamePatternNotAllowed).Pattern), tpl, form)
 	default:
 		ctx.ServerError(name, err)
 	}
@@ -254,7 +254,7 @@ func CreatePost(ctx *context.Context) {
 		}
 
 		if !opts.IsValid() {
-			ctx.RenderWithErr(ctx.Tr("repo.template.one_item"), tplCreate, form)
+			ctx.RenderWithErr(ctx.Tr("Must select at least one template item"), tplCreate, form)
 			return
 		}
 
@@ -264,7 +264,7 @@ func CreatePost(ctx *context.Context) {
 		}
 
 		if !templateRepo.IsTemplate {
-			ctx.RenderWithErr(ctx.Tr("repo.template.invalid"), tplCreate, form)
+			ctx.RenderWithErr(ctx.Tr("Must select a template repository"), tplCreate, form)
 			return
 		}
 
@@ -302,10 +302,10 @@ func CreatePost(ctx *context.Context) {
 func handleActionError(ctx *context.Context, err error) {
 	switch {
 	case errors.Is(err, user_model.ErrBlockedUser):
-		ctx.Flash.Error(ctx.Tr("repo.action.blocked_user"))
+		ctx.Flash.Error(ctx.Tr("Cannot perform action because you are blocked by the repository owner."))
 	case repo_service.IsRepositoryLimitReached(err):
 		limit := err.(repo_service.LimitReachedError).Limit
-		ctx.Flash.Error(ctx.TrN(limit, "repo.form.reach_limit_of_creation_1", "repo.form.reach_limit_of_creation_n", limit))
+		ctx.Flash.Error(ctx.TrN(limit, "The owner has already reached the limit of %d repository.", "The owner has already reached the limit of %d repositories.", limit))
 	case errors.Is(err, util.ErrPermissionDenied):
 		ctx.HTTPError(http.StatusNotFound)
 	default:

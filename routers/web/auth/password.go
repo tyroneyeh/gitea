@@ -32,7 +32,7 @@ var (
 
 // ForgotPasswd render the forget password page
 func ForgotPasswd(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("auth.forgot_password_title")
+	ctx.Data["Title"] = ctx.Tr("Forgot Password")
 
 	if setting.MailService == nil {
 		log.Warn("no mail service configured")
@@ -49,7 +49,7 @@ func ForgotPasswd(ctx *context.Context) {
 
 // ForgotPasswdPost response for forget password request
 func ForgotPasswdPost(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("auth.forgot_password_title")
+	ctx.Data["Title"] = ctx.Tr("Forgot Password")
 
 	if setting.MailService == nil {
 		ctx.NotFound(nil)
@@ -75,7 +75,7 @@ func ForgotPasswdPost(ctx *context.Context) {
 
 	if !u.IsLocal() && !u.IsOAuth2() {
 		ctx.Data["Err_Email"] = true
-		ctx.RenderWithErr(ctx.Tr("auth.non_local_account"), tplForgotPassword, nil)
+		ctx.RenderWithErr(ctx.Tr("Non-local users cannot update their password through the Gitea web interface."), tplForgotPassword, nil)
 		return
 	}
 
@@ -99,7 +99,7 @@ func ForgotPasswdPost(ctx *context.Context) {
 func commonResetPassword(ctx *context.Context) (*user_model.User, *auth.TwoFactor) {
 	code := ctx.FormString("code")
 
-	ctx.Data["Title"] = ctx.Tr("auth.reset_password")
+	ctx.Data["Title"] = ctx.Tr("Account Recovery")
 	ctx.Data["Code"] = code
 
 	if nil != ctx.Doer {
@@ -107,14 +107,14 @@ func commonResetPassword(ctx *context.Context) (*user_model.User, *auth.TwoFacto
 	}
 
 	if len(code) == 0 {
-		ctx.Flash.Error(ctx.Tr("auth.invalid_code_forgot_password", setting.AppSubURL+"/user/forgot_password"), true)
+		ctx.Flash.Error(ctx.Tr("Your confirmation code is invalid or has expired. Click <a href=\"%s\">here</a> to start a new session.", setting.AppSubURL+"/user/forgot_password"), true)
 		return nil, nil
 	}
 
 	// Fail early, don't frustrate the user
 	u := user_model.VerifyUserTimeLimitCode(ctx, &user_model.TimeLimitCodeOptions{Purpose: user_model.TimeLimitCodeResetPassword}, code)
 	if u == nil {
-		ctx.Flash.Error(ctx.Tr("auth.invalid_code_forgot_password", setting.AppSubURL+"/user/forgot_password"), true)
+		ctx.Flash.Error(ctx.Tr("Your confirmation code is invalid or has expired. Click <a href=\"%s\">here</a> to start a new session.", setting.AppSubURL+"/user/forgot_password"), true)
 		return nil, nil
 	}
 
@@ -133,7 +133,7 @@ func commonResetPassword(ctx *context.Context) (*user_model.User, *auth.TwoFacto
 	ctx.Data["user_email"] = u.Email
 
 	if nil != ctx.Doer && u.ID != ctx.Doer.ID {
-		ctx.Flash.Error(ctx.Tr("auth.reset_password_wrong_user", ctx.Doer.Email, u.Email), true)
+		ctx.Flash.Error(ctx.Tr("You are signed in as %s, but the account recovery link is meant for %s", ctx.Doer.Email, u.Email), true)
 		return nil, nil
 	}
 
@@ -172,7 +172,7 @@ func ResetPasswdPost(ctx *context.Context) {
 			if !twofa.VerifyScratchToken(ctx.FormString("token")) {
 				ctx.Data["IsResetForm"] = true
 				ctx.Data["Err_Token"] = true
-				ctx.RenderWithErr(ctx.Tr("auth.twofa_scratch_token_incorrect"), tplResetPassword, nil)
+				ctx.RenderWithErr(ctx.Tr("Your scratch code is incorrect."), tplResetPassword, nil)
 				return
 			}
 			regenerateScratchToken = true
@@ -186,7 +186,7 @@ func ResetPasswdPost(ctx *context.Context) {
 			if !ok || twofa.LastUsedPasscode == passcode {
 				ctx.Data["IsResetForm"] = true
 				ctx.Data["Err_Passcode"] = true
-				ctx.RenderWithErr(ctx.Tr("auth.twofa_passcode_incorrect"), tplResetPassword, nil)
+				ctx.RenderWithErr(ctx.Tr("Your passcode is incorrect. If you misplaced your device, use your scratch code to sign in."), tplResetPassword, nil)
 				return
 			}
 
@@ -207,13 +207,13 @@ func ResetPasswdPost(ctx *context.Context) {
 		ctx.Data["Err_Password"] = true
 		switch {
 		case errors.Is(err, password.ErrMinLength):
-			ctx.RenderWithErr(ctx.Tr("auth.password_too_short", setting.MinPasswordLength), tplResetPassword, nil)
+			ctx.RenderWithErr(ctx.Tr("Password length cannot be less than %d characters.", setting.MinPasswordLength), tplResetPassword, nil)
 		case errors.Is(err, password.ErrComplexity):
 			ctx.RenderWithErr(password.BuildComplexityError(ctx.Locale), tplResetPassword, nil)
 		case errors.Is(err, password.ErrIsPwned):
-			ctx.RenderWithErr(ctx.Tr("auth.password_pwned", "https://haveibeenpwned.com/Passwords"), tplResetPassword, nil)
+			ctx.RenderWithErr(ctx.Tr("The password you chose is on a <a target=\"_blank\" rel=\"noopener noreferrer\" href=\"%s\">list of stolen passwords</a> previously exposed in public data breaches. Please try again with a different password and consider changing this password elsewhere too.", "https://haveibeenpwned.com/Passwords"), tplResetPassword, nil)
 		case password.IsErrIsPwnedRequest(err):
-			ctx.RenderWithErr(ctx.Tr("auth.password_pwned_err"), tplResetPassword, nil)
+			ctx.RenderWithErr(ctx.Tr("Could not complete request to HaveIBeenPwned"), tplResetPassword, nil)
 		default:
 			ctx.ServerError("UpdateAuth", err)
 		}
@@ -240,7 +240,7 @@ func ResetPasswdPost(ctx *context.Context) {
 		if ctx.Written() {
 			return
 		}
-		ctx.Flash.Info(ctx.Tr("auth.twofa_scratch_used"))
+		ctx.Flash.Info(ctx.Tr("You have used your scratch code. You have been redirected to the two-factor settings page so you may remove your device enrollment or generate a new scratch code."))
 		ctx.Redirect(setting.AppSubURL + "/user/settings/security")
 		return
 	}
@@ -250,7 +250,7 @@ func ResetPasswdPost(ctx *context.Context) {
 
 // MustChangePassword renders the page to change a user's password
 func MustChangePassword(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("auth.must_change_password")
+	ctx.Data["Title"] = ctx.Tr("Update your password")
 	ctx.Data["ChangePasscodeLink"] = setting.AppSubURL + "/user/settings/change_password"
 	ctx.Data["MustChangePassword"] = true
 	ctx.HTML(http.StatusOK, tplMustChangePassword)
@@ -260,7 +260,7 @@ func MustChangePassword(ctx *context.Context) {
 // account was created by an admin
 func MustChangePasswordPost(ctx *context.Context) {
 	form := web.GetForm(ctx).(*forms.MustChangePasswordForm)
-	ctx.Data["Title"] = ctx.Tr("auth.must_change_password")
+	ctx.Data["Title"] = ctx.Tr("Update your password")
 	ctx.Data["ChangePasscodeLink"] = setting.AppSubURL + "/user/settings/change_password"
 	if ctx.HasError() {
 		ctx.HTML(http.StatusOK, tplMustChangePassword)
@@ -276,7 +276,7 @@ func MustChangePasswordPost(ctx *context.Context) {
 
 	if form.Password != form.Retype {
 		ctx.Data["Err_Password"] = true
-		ctx.RenderWithErr(ctx.Tr("form.password_not_match"), tplMustChangePassword, &form)
+		ctx.RenderWithErr(ctx.Tr("The passwords do not match."), tplMustChangePassword, &form)
 		return
 	}
 
@@ -288,23 +288,23 @@ func MustChangePasswordPost(ctx *context.Context) {
 		switch {
 		case errors.Is(err, password.ErrMinLength):
 			ctx.Data["Err_Password"] = true
-			ctx.RenderWithErr(ctx.Tr("auth.password_too_short", setting.MinPasswordLength), tplMustChangePassword, &form)
+			ctx.RenderWithErr(ctx.Tr("Password length cannot be less than %d characters.", setting.MinPasswordLength), tplMustChangePassword, &form)
 		case errors.Is(err, password.ErrComplexity):
 			ctx.Data["Err_Password"] = true
 			ctx.RenderWithErr(password.BuildComplexityError(ctx.Locale), tplMustChangePassword, &form)
 		case errors.Is(err, password.ErrIsPwned):
 			ctx.Data["Err_Password"] = true
-			ctx.RenderWithErr(ctx.Tr("auth.password_pwned", "https://haveibeenpwned.com/Passwords"), tplMustChangePassword, &form)
+			ctx.RenderWithErr(ctx.Tr("The password you chose is on a <a target=\"_blank\" rel=\"noopener noreferrer\" href=\"%s\">list of stolen passwords</a> previously exposed in public data breaches. Please try again with a different password and consider changing this password elsewhere too.", "https://haveibeenpwned.com/Passwords"), tplMustChangePassword, &form)
 		case password.IsErrIsPwnedRequest(err):
 			ctx.Data["Err_Password"] = true
-			ctx.RenderWithErr(ctx.Tr("auth.password_pwned_err"), tplMustChangePassword, &form)
+			ctx.RenderWithErr(ctx.Tr("Could not complete request to HaveIBeenPwned"), tplMustChangePassword, &form)
 		default:
 			ctx.ServerError("UpdateAuth", err)
 		}
 		return
 	}
 
-	ctx.Flash.Success(ctx.Tr("settings.change_password_success"))
+	ctx.Flash.Success(ctx.Tr("Your password has been updated. Sign in using your new password from now on."))
 
 	log.Trace("User updated password: %s", ctx.Doer.Name)
 

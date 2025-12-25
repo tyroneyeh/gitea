@@ -79,44 +79,44 @@ func handleMigrateError(ctx *context.Context, owner *user_model.User, err error,
 
 	switch {
 	case migrations.IsRateLimitError(err):
-		ctx.RenderWithErr(ctx.Tr("form.visit_rate_limit"), tpl, form)
+		ctx.RenderWithErr(ctx.Tr("Remote visit addressed rate limitation."), tpl, form)
 	case migrations.IsTwoFactorAuthError(err):
-		ctx.RenderWithErr(ctx.Tr("form.2fa_auth_required"), tpl, form)
+		ctx.RenderWithErr(ctx.Tr("Remote visit required two-factor authentication."), tpl, form)
 	case repo_model.IsErrReachLimitOfRepo(err):
 		maxCreationLimit := owner.MaxCreationLimit()
-		msg := ctx.TrN(maxCreationLimit, "repo.form.reach_limit_of_creation_1", "repo.form.reach_limit_of_creation_n", maxCreationLimit)
+		msg := ctx.TrN(maxCreationLimit, "The owner has already reached the limit of %d repository.", "The owner has already reached the limit of %d repositories.", maxCreationLimit)
 		ctx.RenderWithErr(msg, tpl, form)
 	case repo_model.IsErrRepoAlreadyExist(err):
 		ctx.Data["Err_RepoName"] = true
-		ctx.RenderWithErr(ctx.Tr("form.repo_name_been_taken"), tpl, form)
+		ctx.RenderWithErr(ctx.Tr("The repository name is already used."), tpl, form)
 	case repo_model.IsErrRepoFilesAlreadyExist(err):
 		ctx.Data["Err_RepoName"] = true
 		switch {
 		case ctx.IsUserSiteAdmin() || (setting.Repository.AllowAdoptionOfUnadoptedRepositories && setting.Repository.AllowDeleteOfUnadoptedRepositories):
-			ctx.RenderWithErr(ctx.Tr("form.repository_files_already_exist.adopt_or_delete"), tpl, form)
+			ctx.RenderWithErr(ctx.Tr("Files already exist for this repository. Either adopt them or delete them."), tpl, form)
 		case setting.Repository.AllowAdoptionOfUnadoptedRepositories:
-			ctx.RenderWithErr(ctx.Tr("form.repository_files_already_exist.adopt"), tpl, form)
+			ctx.RenderWithErr(ctx.Tr("Files already exist for this repository and can only be adopted."), tpl, form)
 		case setting.Repository.AllowDeleteOfUnadoptedRepositories:
-			ctx.RenderWithErr(ctx.Tr("form.repository_files_already_exist.delete"), tpl, form)
+			ctx.RenderWithErr(ctx.Tr("Files already exist for this repository. You must delete them."), tpl, form)
 		default:
-			ctx.RenderWithErr(ctx.Tr("form.repository_files_already_exist"), tpl, form)
+			ctx.RenderWithErr(ctx.Tr("Files already exist for this repository. Contact the system administrator."), tpl, form)
 		}
 	case db.IsErrNameReserved(err):
 		ctx.Data["Err_RepoName"] = true
-		ctx.RenderWithErr(ctx.Tr("repo.form.name_reserved", err.(db.ErrNameReserved).Name), tpl, form)
+		ctx.RenderWithErr(ctx.Tr("The repository name \"%s\" is reserved.", err.(db.ErrNameReserved).Name), tpl, form)
 	case db.IsErrNamePatternNotAllowed(err):
 		ctx.Data["Err_RepoName"] = true
-		ctx.RenderWithErr(ctx.Tr("repo.form.name_pattern_not_allowed", err.(db.ErrNamePatternNotAllowed).Pattern), tpl, form)
+		ctx.RenderWithErr(ctx.Tr("The pattern \"%s\" is not allowed in a repository name.", err.(db.ErrNamePatternNotAllowed).Pattern), tpl, form)
 	default:
 		err = util.SanitizeErrorCredentialURLs(err)
 		if strings.Contains(err.Error(), "Authentication failed") ||
 			strings.Contains(err.Error(), "Bad credentials") ||
 			strings.Contains(err.Error(), "could not read Username") {
 			ctx.Data["Err_Auth"] = true
-			ctx.RenderWithErr(ctx.Tr("form.auth_failed", err.Error()), tpl, form)
+			ctx.RenderWithErr(ctx.Tr("Authentication failed: %v", err.Error()), tpl, form)
 		} else if strings.Contains(err.Error(), "fatal:") {
 			ctx.Data["Err_CloneAddr"] = true
-			ctx.RenderWithErr(ctx.Tr("repo.migrate.failed", err.Error()), tpl, form)
+			ctx.RenderWithErr(ctx.Tr("Migration failed: %v", err.Error()), tpl, form)
 		} else {
 			ctx.ServerError(name, err)
 		}
@@ -128,24 +128,24 @@ func handleMigrateRemoteAddrError(ctx *context.Context, err error, tpl templates
 		addrErr := err.(*git.ErrInvalidCloneAddr)
 		switch {
 		case addrErr.IsProtocolInvalid:
-			ctx.RenderWithErr(ctx.Tr("repo.mirror_address_protocol_invalid"), tpl, form)
+			ctx.RenderWithErr(ctx.Tr("The provided URL is invalid. Only http(s):// or git:// locations can be used for mirroring."), tpl, form)
 		case addrErr.IsURLError:
-			ctx.RenderWithErr(ctx.Tr("form.url_error", addrErr.Host), tpl, form)
+			ctx.RenderWithErr(ctx.Tr("\"%s\" is not a valid URL.", addrErr.Host), tpl, form)
 		case addrErr.IsPermissionDenied:
 			if addrErr.LocalPath {
-				ctx.RenderWithErr(ctx.Tr("repo.migrate.permission_denied"), tpl, form)
+				ctx.RenderWithErr(ctx.Tr("You are not allowed to import local repositories."), tpl, form)
 			} else {
-				ctx.RenderWithErr(ctx.Tr("repo.migrate.permission_denied_blocked"), tpl, form)
+				ctx.RenderWithErr(ctx.Tr("You cannot import from disallowed hosts. Please ask the admin to check ALLOWED_DOMAINS/ALLOW_LOCALNETWORKS/BLOCKED_DOMAINS settings."), tpl, form)
 			}
 		case addrErr.IsInvalidPath:
-			ctx.RenderWithErr(ctx.Tr("repo.migrate.invalid_local_path"), tpl, form)
+			ctx.RenderWithErr(ctx.Tr("The local path is invalid. It doesn't exist or is not a directory."), tpl, form)
 		default:
 			log.Error("Error whilst updating url: %v", err)
-			ctx.RenderWithErr(ctx.Tr("form.url_error", "unknown"), tpl, form)
+			ctx.RenderWithErr(ctx.Tr("\"%s\" is not a valid URL.", "unknown"), tpl, form)
 		}
 	} else {
 		log.Error("Error whilst updating url: %v", err)
-		ctx.RenderWithErr(ctx.Tr("form.url_error", "unknown"), tpl, form)
+		ctx.RenderWithErr(ctx.Tr("\"%s\" is not a valid URL.", "unknown"), tpl, form)
 	}
 }
 
@@ -193,7 +193,7 @@ func MigratePost(ctx *context.Context) {
 		ep := lfs.DetermineEndpoint("", form.LFSEndpoint)
 		if ep == nil {
 			ctx.Data["Err_LFSEndpoint"] = true
-			ctx.RenderWithErr(ctx.Tr("repo.migrate.invalid_lfs_endpoint"), tpl, &form)
+			ctx.RenderWithErr(ctx.Tr("The LFS endpoint is not valid."), tpl, &form)
 			return
 		}
 		err = migrations.IsMigrateURLAllowed(ep.String(), ctx.Doer)
@@ -254,7 +254,7 @@ func MigratePost(ctx *context.Context) {
 }
 
 func setMigrationContextData(ctx *context.Context, serviceType structs.GitServiceType) {
-	ctx.Data["Title"] = ctx.Tr("new_migrate")
+	ctx.Data["Title"] = ctx.Tr("New Migration")
 
 	ctx.Data["LFSActive"] = setting.LFS.StartServer
 	ctx.Data["IsForcedPrivate"] = setting.Repository.ForcePrivate

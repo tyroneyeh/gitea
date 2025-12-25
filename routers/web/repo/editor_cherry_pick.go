@@ -49,7 +49,7 @@ func CherryPickPost(ctx *context.Context) {
 		return
 	}
 
-	defaultCommitMessage := util.Iif(parsed.form.Revert, ctx.Locale.TrString("repo.commit.revert-header", fromCommitID), ctx.Locale.TrString("repo.commit.cherry-pick-header", fromCommitID))
+	defaultCommitMessage := util.Iif(parsed.form.Revert, ctx.Locale.TrString("Revert: %s", fromCommitID), ctx.Locale.TrString("Cherry-pick: %s", fromCommitID))
 	opts := &files.ApplyDiffPatchOptions{
 		LastCommitID: parsed.form.LastCommit,
 		OldBranch:    parsed.OldBranchName,

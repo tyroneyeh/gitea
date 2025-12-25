@@ -32,7 +32,7 @@ func TopicsPost(ctx *context.Context) {
 	if len(validTopics) > 25 {
 		ctx.JSON(http.StatusUnprocessableEntity, map[string]any{
 			"invalidTopics": nil,
-			"message":       ctx.Tr("repo.topic.count_prompt"),
+			"message":       ctx.Tr("You cannot select more than 25 topics"),
 		})
 		return
 	}
@@ -40,7 +40,7 @@ func TopicsPost(ctx *context.Context) {
 	if len(invalidTopics) > 0 {
 		ctx.JSON(http.StatusUnprocessableEntity, map[string]any{
 			"invalidTopics": invalidTopics,
-			"message":       ctx.Tr("repo.topic.format_prompt"),
+			"message":       ctx.Tr("Topics must start with a letter or number, can include dashes ('-') and dots ('.'), can be up to 35 characters long. Letters must be lowercase."),
 		})
 		return
 	}

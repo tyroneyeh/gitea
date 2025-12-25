@@ -1,12 +1,12 @@
 <div class="file-info tw-font-mono">
 	{{if .FileIsSymlink}}
 		<div class="file-info-entry">
-			{{ctx.Locale.Tr "repo.symbolic_link"}}
+			{{ctx.Locale.Tr "Symbolic link"}}
 		</div>
 	{{end}}
 	{{if ne .NumLines nil}}
 		<div class="file-info-entry">
-			{{.NumLines}} {{ctx.Locale.TrN .NumLines "repo.line" "repo.lines"}}
+			{{.NumLines}} {{ctx.Locale.TrN .NumLines "line" "lines"}}
 		</div>
 	{{end}}
 	{{if ne .FileSize nil}}
@@ -27,17 +27,17 @@
 	{{end}}
 	{{if .IsExecutable}}
 		<div class="file-info-entry">
-			{{ctx.Locale.Tr "repo.executable_file"}}
+			{{ctx.Locale.Tr "Executable File"}}
 		</div>
 	{{end}}
 	{{if .IsVendored}}
 		<div class="file-info-entry">
-			{{ctx.Locale.Tr "repo.vendored"}}
+			{{ctx.Locale.Tr "Vendored"}}
 		</div>
 	{{end}}
 	{{if .IsGenerated}}
 		<div class="file-info-entry">
-			{{ctx.Locale.Tr "repo.generated"}}
+			{{ctx.Locale.Tr "Generated"}}
 		</div>
 	{{end}}
 	{{if .ImageSize}}

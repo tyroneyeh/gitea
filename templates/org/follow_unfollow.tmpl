@@ -1,7 +1,7 @@
 <button class="ui basic button tw-mr-0" hx-post="{{.Org.HomeLink}}?action={{if $.IsFollowing}}unfollow{{else}}follow{{end}}">
 	{{if $.IsFollowing}}
-		{{ctx.Locale.Tr "user.unfollow"}}
+		{{ctx.Locale.Tr "Unfollow"}}
 	{{else}}
-		{{ctx.Locale.Tr "user.follow"}}
+		{{ctx.Locale.Tr "Follow"}}
 	{{end}}
 </button>

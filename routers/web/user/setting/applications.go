@@ -25,7 +25,7 @@ const (
 
 // Applications render manage access token page
 func Applications(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("settings.applications")
+	ctx.Data["Title"] = ctx.Tr("Applications")
 	ctx.Data["PageIsSettingsApplications"] = true
 	ctx.Data["UserDisabledFeatures"] = user_model.DisabledFeaturesWithLoginType(ctx.Doer)
 
@@ -37,7 +37,7 @@ func Applications(ctx *context.Context) {
 // ApplicationsPost response for add user's access token
 func ApplicationsPost(ctx *context.Context) {
 	form := web.GetForm(ctx).(*forms.NewAccessTokenForm)
-	ctx.Data["Title"] = ctx.Tr("settings_title")
+	ctx.Data["Title"] = ctx.Tr("Settings")
 	ctx.Data["PageIsSettingsApplications"] = true
 	ctx.Data["UserDisabledFeatures"] = user_model.DisabledFeaturesWithLoginType(ctx.Doer)
 
@@ -56,7 +56,7 @@ func ApplicationsPost(ctx *context.Context) {
 		return
 	}
 	if !scope.HasPermissionScope() {
-		ctx.Flash.Error(ctx.Tr("settings.at_least_one_permission"), true)
+		ctx.Flash.Error(ctx.Tr("You must select at least one permission to create a token"), true)
 	}
 
 	if ctx.HasError() {
@@ -77,7 +77,7 @@ func ApplicationsPost(ctx *context.Context) {
 		return
 	}
 	if exist {
-		ctx.Flash.Error(ctx.Tr("settings.generate_token_name_duplicate", t.Name))
+		ctx.Flash.Error(ctx.Tr("<strong>%s</strong> has been used as an application name already. Please use a new one.", t.Name))
 		ctx.Redirect(setting.AppSubURL + "/user/settings/applications")
 		return
 	}
@@ -87,7 +87,7 @@ func ApplicationsPost(ctx *context.Context) {
 		return
 	}
 
-	ctx.Flash.Success(ctx.Tr("settings.generate_token_success"))
+	ctx.Flash.Success(ctx.Tr("Your new token has been generated. Copy it now as it will not be shown again."))
 	ctx.Flash.Info(t.Token)
 
 	ctx.Redirect(setting.AppSubURL + "/user/settings/applications")
@@ -98,7 +98,7 @@ func DeleteApplication(ctx *context.Context) {
 	if err := auth_model.DeleteAccessTokenByID(ctx, ctx.FormInt64("id"), ctx.Doer.ID); err != nil {
 		ctx.Flash.Error("DeleteAccessTokenByID: " + err.Error())
 	} else {
-		ctx.Flash.Success(ctx.Tr("settings.delete_token_success"))
+		ctx.Flash.Success(ctx.Tr("The token has been deleted. Applications using it no longer have access to your account."))
 	}
 
 	ctx.JSONRedirect(setting.AppSubURL + "/user/settings/applications")

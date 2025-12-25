@@ -10,16 +10,16 @@
 <body>
 	<p>
 		{{if .IsPull}}
-			{{.locale.Tr "mail.issue_assigned.pull" .Doer.Name $link $repo_url}}
+			{{.locale.Tr "@%[1]s assigned you to pull request %[2]s in repository %[3]s." .Doer.Name $link $repo_url}}
 		{{else}}
-			{{.locale.Tr "mail.issue_assigned.issue" .Doer.Name $link $repo_url}}
+			{{.locale.Tr "@%[1]s assigned you to issue %[2]s in repository %[3]s." .Doer.Name $link $repo_url}}
 		{{end}}
 	</p>
 	<div style="font-size:small; color:#666;">
 		<p>
 			---
 			<br>
-			<a href="{{.Link}}">{{.locale.Tr "mail.view_it_on" AppName}}</a>.
+			<a href="{{.Link}}">{{.locale.Tr "View it on %s" AppName}}</a>.
 		</p>
 	</div>
 </body>

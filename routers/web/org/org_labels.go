@@ -88,7 +88,7 @@ func DeleteLabel(ctx *context.Context) {
 	if err := issues_model.DeleteLabel(ctx, ctx.Org.Organization.ID, ctx.FormInt64("id")); err != nil {
 		ctx.Flash.Error("DeleteLabel: " + err.Error())
 	} else {
-		ctx.Flash.Success(ctx.Tr("repo.issues.label_deletion_success"))
+		ctx.Flash.Success(ctx.Tr("The label has been deleted."))
 	}
 
 	ctx.JSONRedirect(ctx.Org.OrgLink + "/settings/labels")
@@ -105,7 +105,7 @@ func InitializeLabels(ctx *context.Context) {
 	if err := repo_module.InitializeLabels(ctx, ctx.Org.Organization.ID, form.TemplateName, true); err != nil {
 		if label.IsErrTemplateLoad(err) {
 			originalErr := err.(label.ErrTemplateLoad).OriginalError
-			ctx.Flash.Error(ctx.Tr("repo.issues.label_templates.fail_to_load_file", form.TemplateName, originalErr))
+			ctx.Flash.Error(ctx.Tr("Failed to load label template file \"%s\": %v", form.TemplateName, originalErr))
 			ctx.Redirect(ctx.Org.OrgLink + "/settings/labels")
 			return
 		}

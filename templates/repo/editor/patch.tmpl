@@ -4,25 +4,25 @@
 	<div class="ui container">
 		{{template "base/alert" .}}
 		<form class="ui edit form form-fetch-action" method="post" action="{{.CommitFormOptions.TargetFormAction}}"
-					data-text-empty-confirm-header="{{ctx.Locale.Tr "repo.editor.commit_empty_file_header"}}"
-					data-text-empty-confirm-content="{{ctx.Locale.Tr "repo.editor.commit_empty_file_text"}}"
+					data-text-empty-confirm-header="{{ctx.Locale.Tr "Commit an empty file"}}"
+					data-text-empty-confirm-content="{{ctx.Locale.Tr "The file you're about to commit is empty. Proceed?"}}"
 		>
 			{{.CsrfTokenHtml}}
 			{{template "repo/editor/common_top" .}}
 			<div class="repo-editor-header">
 				<div class="breadcrumb">
-					{{ctx.Locale.Tr "repo.editor.patching"}}
+					{{ctx.Locale.Tr "Patching:"}}
 					<a class="section" href="{{$.RepoLink}}">{{.Repository.FullName}}</a>
 					<div class="breadcrumb-divider">:</div>
 					<a class="section" href="{{$.BranchLink}}">{{.BranchName}}</a>
-					<span>{{ctx.Locale.Tr "repo.editor.or"}} <a href="{{$.BranchLink}}">{{ctx.Locale.Tr "repo.editor.cancel_lower"}}</a></span>
+					<span>{{ctx.Locale.Tr "or"}} <a href="{{$.BranchLink}}">{{ctx.Locale.Tr "Cancel"}}</a></span>
 					<input type="hidden" name="tree_path" value="__dummy_for_EditRepoFileForm.TreePath(Required)__">
 					<input id="file-name" type="hidden" value="diff.patch">
 				</div>
 			</div>
 			<div class="field">
 				<div class="ui compact small menu small-menu-items repo-editor-menu">
-					<a class="active item" data-tab="write">{{svg "octicon-code" 16 "tw-mr-1"}}{{ctx.Locale.Tr "repo.editor.new_patch"}}</a>
+					<a class="active item" data-tab="write">{{svg "octicon-code" 16 "tw-mr-1"}}{{ctx.Locale.Tr "New Patch"}}</a>
 				</div>
 				<div class="ui active tab segment tw-rounded tw-p-0" data-tab="write">
 					<textarea id="edit_area" name="content" class="tw-hidden" data-id="repo-{{.Repository.Name}}-patch"

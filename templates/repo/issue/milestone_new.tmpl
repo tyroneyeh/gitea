@@ -6,55 +6,55 @@
 			{{template "repo/issue/navbar" .}}
 			{{if and (or .CanWriteIssues .CanWritePulls) .PageIsEditMilestone}}
 				<div class="ui right">
-					<a class="ui primary button" href="{{$.RepoLink}}/milestones/new">{{ctx.Locale.Tr "repo.milestones.new"}}</a>
+					<a class="ui primary button" href="{{$.RepoLink}}/milestones/new">{{ctx.Locale.Tr "New Milestone"}}</a>
 				</div>
 			{{end}}
 		</div>
 		<div class="divider"></div>
 		<h2 class="ui dividing header">
 			{{if .PageIsEditMilestone}}
-				{{ctx.Locale.Tr "repo.milestones.edit"}}
-				<div class="sub header">{{ctx.Locale.Tr "repo.milestones.edit_subheader"}}</div>
+				{{ctx.Locale.Tr "Edit Milestone"}}
+				<div class="sub header">{{ctx.Locale.Tr "Milestones organize issues and track progress."}}</div>
 			{{else}}
-				{{ctx.Locale.Tr "repo.milestones.new"}}
-				<div class="sub header">{{ctx.Locale.Tr "repo.milestones.new_subheader"}}</div>
+				{{ctx.Locale.Tr "New Milestone"}}
+				<div class="sub header">{{ctx.Locale.Tr "Milestones can help you organize issues and track their progress."}}</div>
 			{{end}}
 		</h2>
 		{{template "base/alert" .}}
 		<form class="ui form" action="{{.Link}}" method="post">
 			{{.CsrfTokenHtml}}
 				<div class="field {{if .Err_Title}}error{{end}}">
-					<label>{{ctx.Locale.Tr "repo.milestones.title"}}</label>
-					<input name="title" placeholder="{{ctx.Locale.Tr "repo.milestones.title"}}" value="{{.title}}" autofocus required maxlength="50">
+					<label>{{ctx.Locale.Tr "Title"}}</label>
+					<input name="title" placeholder="{{ctx.Locale.Tr "Title"}}" value="{{.title}}" autofocus required maxlength="50">
 				</div>
 				<div class="field {{if .Err_Deadline}}error{{end}}">
 					<label>
-						{{ctx.Locale.Tr "repo.milestones.due_date"}}
-						<a id="milestone-clear-deadline">{{ctx.Locale.Tr "repo.milestones.clear"}}</a>
+						{{ctx.Locale.Tr "Due Date (optional)"}}
+						<a id="milestone-clear-deadline">{{ctx.Locale.Tr "Clear"}}</a>
 					</label>
-					<input type="date" name="deadline" class="tw-w-auto" value="{{.deadline}}" placeholder="{{ctx.Locale.Tr "repo.issues.due_date_form"}}">
+					<input type="date" name="deadline" class="tw-w-auto" value="{{.deadline}}" placeholder="{{ctx.Locale.Tr "yyyy-mm-dd"}}">
 				</div>
 				<div class="field">
-					<label>{{ctx.Locale.Tr "repo.milestones.desc"}}</label>
+					<label>{{ctx.Locale.Tr "Description"}}</label>
 					{{template "shared/combomarkdowneditor" (dict
 						"MarkdownPreviewInRepo" $.Repository
 						"MarkdownPreviewMode" "comment"
 						"TextareaName" "content"
 						"TextareaContent" .content
-						"TextareaPlaceholder" (ctx.Locale.Tr "repo.milestones.desc")
+						"TextareaPlaceholder" (ctx.Locale.Tr "Description")
 					)}}
 				</div>
 				<div class="flex-text-block tw-justify-end">
 					{{if .PageIsEditMilestone}}
 						<a class="ui primary basic button" href="{{.RepoLink}}/milestones">
-							{{ctx.Locale.Tr "repo.milestones.cancel"}}
+							{{ctx.Locale.Tr "Cancel"}}
 						</a>
 						<button class="ui primary button">
-							{{ctx.Locale.Tr "repo.milestones.modify"}}
+							{{ctx.Locale.Tr "Update Milestone"}}
 						</button>
 					{{else}}
 						<button class="ui primary button">
-							{{ctx.Locale.Tr "repo.milestones.create"}}
+							{{ctx.Locale.Tr "Create Milestone"}}
 						</button>
 					{{end}}
 			</div>

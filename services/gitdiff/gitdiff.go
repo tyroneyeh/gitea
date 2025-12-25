@@ -499,15 +499,15 @@ func (diffFile *DiffFile) ShouldBeHidden() bool {
 func (diffFile *DiffFile) ModeTranslationKey(mode string) string {
 	switch mode {
 	case "040000":
-		return "git.filemode.directory"
+		return "Directory"
 	case "100644":
-		return "git.filemode.normal_file"
+		return "Normal file"
 	case "100755":
-		return "git.filemode.executable_file"
+		return "Executable file"
 	case "120000":
-		return "git.filemode.symbolic_link"
+		return "Symbolic link"
 	case "160000":
-		return "git.filemode.submodule"
+		return "Submodule"
 	default:
 		return mode
 	}

@@ -1,24 +1,24 @@
 <h4 class="ui top attached header">
-	{{ctx.Locale.Tr "packages.owner.settings.cargo.title"}}
+	{{ctx.Locale.Tr "Cargo Registry Index"}}
 </h4>
 <div class="ui attached segment">
 	<div class="ui form">
 		<div class="field">
-			<label>{{ctx.Locale.Tr "packages.owner.settings.cargo.initialize.description"}}</label>
+			<label>{{ctx.Locale.Tr "A special index Git repository is needed to use the Cargo registry. Using this option will (re-)create the repository and configure it automatically."}}</label>
 		</div>
 		<form class="field" action="{{.Link}}/cargo/initialize" method="post">
 			{{.CsrfTokenHtml}}
-			<button class="ui primary button">{{ctx.Locale.Tr "packages.owner.settings.cargo.initialize"}}</button>
+			<button class="ui primary button">{{ctx.Locale.Tr "Initialize Index"}}</button>
 		</form>
 		<div class="field">
-			<label>{{ctx.Locale.Tr "packages.owner.settings.cargo.rebuild.description"}}</label>
+			<label>{{ctx.Locale.Tr "Rebuilding can be useful if the index is not synchronized with the stored Cargo packages."}}</label>
 		</div>
 		<form class="field" action="{{.Link}}/cargo/rebuild" method="post">
 			{{.CsrfTokenHtml}}
-			<button class="ui primary button">{{ctx.Locale.Tr "packages.owner.settings.cargo.rebuild"}}</button>
+			<button class="ui primary button">{{ctx.Locale.Tr "Rebuild Index"}}</button>
 		</form>
 		<div class="field">
-			<label>{{ctx.Locale.Tr "packages.registry.documentation" "Cargo" "https://docs.gitea.com/usage/packages/cargo/"}}</label>
+			<label>{{ctx.Locale.Tr "For more information on the %s registry, see <a target=\"_blank\" rel=\"noopener noreferrer\" href=\"%s\">the documentation</a>." "Cargo" "https://docs.gitea.com/usage/packages/cargo/"}}</label>
 		</div>
 	</div>
 </div>

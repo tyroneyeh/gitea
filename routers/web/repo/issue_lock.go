@@ -20,7 +20,7 @@ func LockIssue(ctx *context.Context) {
 	}
 
 	if issue.IsLocked {
-		ctx.JSONError(ctx.Tr("repo.issues.lock_duplicate"))
+		ctx.JSONError(ctx.Tr("An issue cannot be locked twice."))
 		return
 	}
 
@@ -44,7 +44,7 @@ func UnlockIssue(ctx *context.Context) {
 	}
 
 	if !issue.IsLocked {
-		ctx.JSONError(ctx.Tr("repo.issues.unlock_error"))
+		ctx.JSONError(ctx.Tr("Cannot unlock an issue that is not locked."))
 		return
 	}
 

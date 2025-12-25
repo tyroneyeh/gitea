@@ -64,11 +64,11 @@ func sendRepoTransferNotifyMailPerLang(lang string, newOwner, doer *user_model.U
 		content bytes.Buffer
 	)
 
-	destination := locale.TrString("mail.repo.transfer.to_you")
-	subject := locale.TrString("mail.repo.transfer.subject_to_you", doer.DisplayName(), repo.FullName())
+	destination := locale.TrString("you")
+	subject := locale.TrString("%s would like to transfer \"%s\" to you", doer.DisplayName(), repo.FullName())
 	if newOwner.IsOrganization() {
 		destination = newOwner.DisplayName()
-		subject = locale.TrString("mail.repo.transfer.subject_to", doer.DisplayName(), repo.FullName(), destination)
+		subject = locale.TrString("%s would like to transfer \"%s\" to %s", doer.DisplayName(), repo.FullName(), destination)
 	}
 
 	data := map[string]any{
@@ -104,7 +104,7 @@ func SendCollaboratorMail(u, doer *user_model.User, repo *repo_model.Repository)
 	locale := translation.NewLocale(u.Language)
 	repoName := repo.FullName()
 
-	subject := locale.TrString("mail.repo.collaborator.added.subject", doer.DisplayName(), repoName)
+	subject := locale.TrString("%s added you to %s", doer.DisplayName(), repoName)
 	data := map[string]any{
 		"locale":   locale,
 		"Subject":  subject,

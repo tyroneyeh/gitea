@@ -51,13 +51,13 @@ func AdoptOrDeleteRepository(ctx *context.Context) {
 			ctx.ServerError("repository.AdoptRepository", err)
 			return
 		}
-		ctx.Flash.Success(ctx.Tr("repo.adopt_preexisting_success", dir))
+		ctx.Flash.Success(ctx.Tr("Adopted files and created repository from %s", dir))
 	} else if action == "delete" && allowDelete {
 		if err := repo_service.DeleteUnadoptedRepository(ctx, ctxUser, ctxUser, dir); err != nil {
 			ctx.ServerError("repository.AdoptRepository", err)
 			return
 		}
-		ctx.Flash.Success(ctx.Tr("repo.delete_preexisting_success", dir))
+		ctx.Flash.Success(ctx.Tr("Deleted unadopted files in %s", dir))
 	}
 
 	ctx.Redirect(setting.AppSubURL + "/user/settings/repos")

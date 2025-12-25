@@ -24,7 +24,7 @@ const (
 
 // Emails show all emails
 func Emails(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("admin.emails")
+	ctx.Data["Title"] = ctx.Tr("User Email Addresses")
 	ctx.Data["PageIsAdminEmails"] = true
 
 	opts := &user_model.SearchEmailOptions{
@@ -125,13 +125,13 @@ func ActivateEmail(ctx *context.Context) {
 	if err := user_model.ActivateUserEmail(ctx, uid, email, activate); err != nil {
 		log.Error("ActivateUserEmail(%v,%v,%v): %v", uid, email, activate, err)
 		if user_model.IsErrEmailAlreadyUsed(err) {
-			ctx.Flash.Error(ctx.Tr("admin.emails.duplicate_active"))
+			ctx.Flash.Error(ctx.Tr("This email address is already active for a different user."))
 		} else {
-			ctx.Flash.Error(ctx.Tr("admin.emails.not_updated", err))
+			ctx.Flash.Error(ctx.Tr("Failed to update the requested email address: %v", err))
 		}
 	} else {
 		log.Info("Activation for User ID: %d, email: %s, primary: %v changed to %v", uid, email, primary, activate)
-		ctx.Flash.Info(ctx.Tr("admin.emails.updated"))
+		ctx.Flash.Info(ctx.Tr("Email address updated"))
 	}
 
 	redirect, _ := url.Parse(setting.AppSubURL + "/-/admin/emails")
@@ -168,7 +168,7 @@ func DeleteEmail(ctx *context.Context) {
 
 	if err := user.DeleteEmailAddresses(ctx, u, []string{email.Email}); err != nil {
 		if user_model.IsErrPrimaryEmailCannotDelete(err) {
-			ctx.Flash.Error(ctx.Tr("admin.emails.delete_primary_email_error"))
+			ctx.Flash.Error(ctx.Tr("You cannot delete the primary email address."))
 			ctx.JSONRedirect("")
 			return
 		}
@@ -177,6 +177,6 @@ func DeleteEmail(ctx *context.Context) {
 	}
 	log.Trace("Email address deleted: %s %s", u.Name, email.Email)
 
-	ctx.Flash.Success(ctx.Tr("admin.emails.deletion_success"))
+	ctx.Flash.Success(ctx.Tr("The email address has been deleted."))
 	ctx.JSONRedirect("")
 }

@@ -60,7 +60,7 @@ func (oa *OAuth2CommonHandlers) AddApp(ctx *context.Context) {
 	}
 
 	// render the edit page with secret
-	ctx.Flash.Success(ctx.Tr("settings.create_oauth2_application_success"), true)
+	ctx.Flash.Success(ctx.Tr("You have successfully created a new OAuth2 application."), true)
 	ctx.Data["App"] = app
 	ctx.Data["ClientSecret"], err = app.GenerateClientSecret(ctx)
 	if err != nil {
@@ -126,7 +126,7 @@ func (oa *OAuth2CommonHandlers) EditSave(ctx *context.Context) {
 		ctx.ServerError("UpdateOAuth2Application", err)
 		return
 	}
-	ctx.Flash.Success(ctx.Tr("settings.update_oauth2_application_success"))
+	ctx.Flash.Success(ctx.Tr("You have successfully updated the OAuth2 application."))
 	ctx.Redirect(oa.BasePathList)
 }
 
@@ -151,7 +151,7 @@ func (oa *OAuth2CommonHandlers) RegenerateSecret(ctx *context.Context) {
 		ctx.ServerError("GenerateClientSecret", err)
 		return
 	}
-	ctx.Flash.Success(ctx.Tr("settings.update_oauth2_application_success"), true)
+	ctx.Flash.Success(ctx.Tr("You have successfully updated the OAuth2 application."), true)
 	oa.renderEditPage(ctx)
 }
 
@@ -162,7 +162,7 @@ func (oa *OAuth2CommonHandlers) DeleteApp(ctx *context.Context) {
 		return
 	}
 
-	ctx.Flash.Success(ctx.Tr("settings.remove_oauth2_application_success"))
+	ctx.Flash.Success(ctx.Tr("The application has been deleted."))
 	ctx.JSONRedirect(oa.BasePathList)
 }
 
@@ -173,6 +173,6 @@ func (oa *OAuth2CommonHandlers) RevokeGrant(ctx *context.Context) {
 		return
 	}
 
-	ctx.Flash.Success(ctx.Tr("settings.revoke_oauth2_grant_success"))
+	ctx.Flash.Success(ctx.Tr("Access revoked successfully."))
 	ctx.JSONRedirect(oa.BasePathList)
 }

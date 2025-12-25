@@ -20,11 +20,11 @@ const (
 
 // Webhooks render webhook list page
 func Webhooks(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("settings_title")
+	ctx.Data["Title"] = ctx.Tr("Settings")
 	ctx.Data["PageIsSettingsHooks"] = true
 	ctx.Data["BaseLink"] = setting.AppSubURL + "/user/settings/hooks"
 	ctx.Data["BaseLinkNew"] = setting.AppSubURL + "/user/settings/hooks"
-	ctx.Data["Description"] = ctx.Tr("settings.hooks.desc")
+	ctx.Data["Description"] = ctx.Tr("Add webhooks which will be triggered for <strong>all repositories</strong> that you own.")
 	ctx.Data["UserDisabledFeatures"] = user_model.DisabledFeaturesWithLoginType(ctx.Doer)
 
 	ws, err := db.Find[webhook.Webhook](ctx, webhook.ListWebhookOptions{OwnerID: ctx.Doer.ID})
@@ -42,7 +42,7 @@ func DeleteWebhook(ctx *context.Context) {
 	if err := webhook.DeleteWebhookByOwnerID(ctx, ctx.Doer.ID, ctx.FormInt64("id")); err != nil {
 		ctx.Flash.Error("DeleteWebhookByOwnerID: " + err.Error())
 	} else {
-		ctx.Flash.Success(ctx.Tr("repo.settings.webhook_deletion_success"))
+		ctx.Flash.Success(ctx.Tr("The webhook has been removed."))
 	}
 
 	ctx.JSONRedirect(setting.AppSubURL + "/user/settings/hooks")

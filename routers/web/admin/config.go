@@ -35,9 +35,9 @@ func SendTestMail(ctx *context.Context) {
 	email := ctx.FormString("email")
 	// Send a test email to the user's email address and redirect back to Config
 	if err := mailer.SendTestMail(email); err != nil {
-		ctx.Flash.Error(ctx.Tr("admin.config.test_mail_failed", email, err))
+		ctx.Flash.Error(ctx.Tr("Failed to send a testing email to \"%s\": %v", email, err))
 	} else {
-		ctx.Flash.Info(ctx.Tr("admin.config.test_mail_sent", email))
+		ctx.Flash.Info(ctx.Tr("A testing email has been sent to \"%s\".", email))
 	}
 
 	ctx.Redirect(setting.AppSubURL + "/-/admin/config")
@@ -47,12 +47,12 @@ func SendTestMail(ctx *context.Context) {
 func TestCache(ctx *context.Context) {
 	elapsed, err := cache.Test()
 	if err != nil {
-		ctx.Flash.Error(ctx.Tr("admin.config.cache_test_failed", err))
+		ctx.Flash.Error(ctx.Tr("Failed to probe the cache: %v.", err))
 	} else {
 		if elapsed > cache.SlowCacheThreshold {
-			ctx.Flash.Warning(ctx.Tr("admin.config.cache_test_slow", elapsed))
+			ctx.Flash.Warning(ctx.Tr("Cache test successful, but response is slow: %s.", elapsed))
 		} else {
-			ctx.Flash.Info(ctx.Tr("admin.config.cache_test_succeeded", elapsed))
+			ctx.Flash.Info(ctx.Tr("Cache test successful, got a response in %s.", elapsed))
 		}
 	}
 
@@ -118,7 +118,7 @@ func shadowPassword(provider, cfgItem string) string {
 
 // Config show admin config page
 func Config(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("admin.config_summary")
+	ctx.Data["Title"] = ctx.Tr("Summary")
 	ctx.Data["PageIsAdminConfig"] = true
 	ctx.Data["PageIsAdminConfigSummary"] = true
 
@@ -188,7 +188,7 @@ func Config(ctx *context.Context) {
 }
 
 func ConfigSettings(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("admin.config_settings")
+	ctx.Data["Title"] = ctx.Tr("Settings")
 	ctx.Data["PageIsAdminConfig"] = true
 	ctx.Data["PageIsAdminConfigSettings"] = true
 	ctx.Data["DefaultOpenWithEditorAppsString"] = setting.DefaultOpenWithEditorApps().ToTextareaString()
@@ -244,20 +244,20 @@ func ChangeConfig(ctx *context.Context) {
 loop:
 	for i, key := range configKeys {
 		if i >= len(configValues) {
-			ctx.JSONError(ctx.Tr("admin.config.set_setting_failed", key))
+			ctx.JSONError(ctx.Tr("Set setting %s failed", key))
 			break loop
 		}
 		value := configValues[i]
 
 		marshaller, hasMarshaller := marshallers[key]
 		if !hasMarshaller {
-			ctx.JSONError(ctx.Tr("admin.config.set_setting_failed", key))
+			ctx.JSONError(ctx.Tr("Set setting %s failed", key))
 			break loop
 		}
 
 		marshaledValue, err := marshaller(value)
 		if err != nil {
-			ctx.JSONError(ctx.Tr("admin.config.set_setting_failed", key))
+			ctx.JSONError(ctx.Tr("Set setting %s failed", key))
 			break loop
 		}
 		configSettings[key] = string(marshaledValue)

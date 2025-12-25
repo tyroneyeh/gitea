@@ -476,7 +476,7 @@ func Wiki(ctx *context.Context) {
 	}
 
 	if !repo_service.HasWiki(ctx, ctx.Repo.Repository) {
-		ctx.Data["Title"] = ctx.Tr("repo.wiki")
+		ctx.Data["Title"] = ctx.Tr("Wiki")
 		ctx.HTML(http.StatusOK, tplWikiStart)
 		return
 	}
@@ -486,7 +486,7 @@ func Wiki(ctx *context.Context) {
 		return
 	}
 	if entry == nil {
-		ctx.Data["Title"] = ctx.Tr("repo.wiki")
+		ctx.Data["Title"] = ctx.Tr("Wiki")
 		ctx.HTML(http.StatusOK, tplWikiStart)
 		return
 	}
@@ -512,7 +512,7 @@ func WikiRevision(ctx *context.Context) {
 	ctx.Data["CanWriteWiki"] = ctx.Repo.CanWrite(unit.TypeWiki) && !ctx.Repo.Repository.IsArchived
 
 	if !repo_service.HasWiki(ctx, ctx.Repo.Repository) {
-		ctx.Data["Title"] = ctx.Tr("repo.wiki")
+		ctx.Data["Title"] = ctx.Tr("Wiki")
 		ctx.HTML(http.StatusOK, tplWikiStart)
 		return
 	}
@@ -522,7 +522,7 @@ func WikiRevision(ctx *context.Context) {
 		return
 	}
 	if entry == nil {
-		ctx.Data["Title"] = ctx.Tr("repo.wiki")
+		ctx.Data["Title"] = ctx.Tr("Wiki")
 		ctx.HTML(http.StatusOK, tplWikiStart)
 		return
 	}
@@ -546,7 +546,7 @@ func WikiPages(ctx *context.Context) {
 		return
 	}
 
-	ctx.Data["Title"] = ctx.Tr("repo.wiki.pages")
+	ctx.Data["Title"] = ctx.Tr("Pages")
 	ctx.Data["CanWriteWiki"] = ctx.Repo.CanWrite(unit.TypeWiki) && !ctx.Repo.Repository.IsArchived
 
 	_, commit, err := findWikiRepoCommit(ctx)
@@ -647,7 +647,7 @@ func WikiRaw(ctx *context.Context) {
 
 // NewWiki render wiki create page
 func NewWiki(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("repo.wiki.new_page")
+	ctx.Data["Title"] = ctx.Tr("Page")
 
 	if !repo_service.HasWiki(ctx, ctx.Repo.Repository) {
 		ctx.Data["title"] = "Home"
@@ -662,7 +662,7 @@ func NewWiki(ctx *context.Context) {
 // NewWikiPost response for wiki create request
 func NewWikiPost(ctx *context.Context) {
 	form := web.GetForm(ctx).(*forms.NewWikiForm)
-	ctx.Data["Title"] = ctx.Tr("repo.wiki.new_page")
+	ctx.Data["Title"] = ctx.Tr("Page")
 
 	if ctx.HasError() {
 		ctx.HTML(http.StatusOK, tplWikiNew)
@@ -670,23 +670,23 @@ func NewWikiPost(ctx *context.Context) {
 	}
 
 	if util.IsEmptyString(form.Title) {
-		ctx.RenderWithErr(ctx.Tr("repo.issues.new.title_empty"), tplWikiNew, form)
+		ctx.RenderWithErr(ctx.Tr("Title cannot be empty"), tplWikiNew, form)
 		return
 	}
 
 	wikiName := wiki_service.UserTitleToWebPath("", form.Title)
 
 	if len(form.Message) == 0 {
-		form.Message = ctx.Locale.TrString("repo.editor.add", form.Title)
+		form.Message = ctx.Locale.TrString("Add %s", form.Title)
 	}
 
 	if err := wiki_service.AddWikiPage(ctx, ctx.Doer, ctx.Repo.Repository, wikiName, form.Content, form.Message); err != nil {
 		if repo_model.IsErrWikiReservedName(err) {
 			ctx.Data["Err_Title"] = true
-			ctx.RenderWithErr(ctx.Tr("repo.wiki.reserved_page", wikiName), tplWikiNew, &form)
+			ctx.RenderWithErr(ctx.Tr("The wiki page name \"%s\" is reserved.", wikiName), tplWikiNew, &form)
 		} else if repo_model.IsErrWikiAlreadyExist(err) {
 			ctx.Data["Err_Title"] = true
-			ctx.RenderWithErr(ctx.Tr("repo.wiki.page_already_exists"), tplWikiNew, &form)
+			ctx.RenderWithErr(ctx.Tr("A wiki page with the same name already exists."), tplWikiNew, &form)
 		} else {
 			ctx.ServerError("AddWikiPage", err)
 		}
@@ -718,7 +718,7 @@ func EditWiki(ctx *context.Context) {
 // EditWikiPost response for wiki modify request
 func EditWikiPost(ctx *context.Context) {
 	form := web.GetForm(ctx).(*forms.NewWikiForm)
-	ctx.Data["Title"] = ctx.Tr("repo.wiki.new_page")
+	ctx.Data["Title"] = ctx.Tr("Page")
 
 	if ctx.HasError() {
 		ctx.HTML(http.StatusOK, tplWikiNew)
@@ -729,7 +729,7 @@ func EditWikiPost(ctx *context.Context) {
 	newWikiName := wiki_service.UserTitleToWebPath("", form.Title)
 
 	if len(form.Message) == 0 {
-		form.Message = ctx.Locale.TrString("repo.editor.update", form.Title)
+		form.Message = ctx.Locale.TrString("Update %s", form.Title)
 	}
 
 	if err := wiki_service.EditWikiPage(ctx, ctx.Doer, ctx.Repo.Repository, oldWikiName, newWikiName, form.Content, form.Message); err != nil {

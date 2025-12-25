@@ -1,47 +1,47 @@
 {{if eq .PackageDescriptor.Package.Type "rpm"}}
-	<h4 class="ui top attached header">{{ctx.Locale.Tr "packages.installation"}}</h4>
+	<h4 class="ui top attached header">{{ctx.Locale.Tr "Installation"}}</h4>
 	<div class="ui attached segment">
 		<div class="ui form">
 			<div class="field">
-				<label>{{svg "octicon-terminal"}} {{ctx.Locale.Tr "packages.rpm.registry"}}</label>
+				<label>{{svg "octicon-terminal"}} {{ctx.Locale.Tr "Set up this registry from the command line:"}}</label>
 				<div class="markup"><pre class="code-block"><code>{{- if gt (len .Groups) 1 -}}
-# {{ctx.Locale.Tr "packages.rpm.repository.multiple_groups"}}
+# {{ctx.Locale.Tr "This package is available in multiple groups."}}
 
 {{end -}}
-# {{ctx.Locale.Tr "packages.rpm.distros.redhat"}}
+# {{ctx.Locale.Tr "on RedHat based distributions"}}
 {{- range $group := .Groups}}
 	{{- if $group}}{{$group = print "/" $group}}{{end}}
 dnf config-manager --add-repo <origin-url data-url="{{AppSubUrl}}/api/packages/{{$.PackageDescriptor.Owner.Name}}/rpm{{$group}}.repo"></origin-url>
 {{- end}}
 
-# {{ctx.Locale.Tr "packages.rpm.distros.suse"}}
+# {{ctx.Locale.Tr "on SUSE based distributions"}}
 {{- range $group := .Groups}}
 	{{- if $group}}{{$group = print "/" $group}}{{end}}
 zypper addrepo <origin-url data-url="{{AppSubUrl}}/api/packages/{{$.PackageDescriptor.Owner.Name}}/rpm{{$group}}.repo"></origin-url>
 {{- end}}</code></pre></div>
 			</div>
 			<div class="field">
-				<label>{{svg "octicon-terminal"}} {{ctx.Locale.Tr "packages.rpm.install"}}</label>
+				<label>{{svg "octicon-terminal"}} {{ctx.Locale.Tr "To install the package, run the following command:"}}</label>
 				<div class="markup">
-					<pre class="code-block"><code># {{ctx.Locale.Tr "packages.rpm.distros.redhat"}}
+					<pre class="code-block"><code># {{ctx.Locale.Tr "on RedHat based distributions"}}
 dnf install {{$.PackageDescriptor.Package.Name}}
 
-# {{ctx.Locale.Tr "packages.rpm.distros.suse"}}
+# {{ctx.Locale.Tr "on SUSE based distributions"}}
 zypper install {{$.PackageDescriptor.Package.Name}}</code></pre>
 				</div>
 			</div>
 			<div class="field">
-				<label>{{ctx.Locale.Tr "packages.registry.documentation" "RPM" "https://docs.gitea.com/usage/packages/rpm/"}}</label>
+				<label>{{ctx.Locale.Tr "For more information on the %s registry, see <a target=\"_blank\" rel=\"noopener noreferrer\" href=\"%s\">the documentation</a>." "RPM" "https://docs.gitea.com/usage/packages/rpm/"}}</label>
 			</div>
 		</div>
 	</div>
 
-	<h4 class="ui top attached header">{{ctx.Locale.Tr "packages.rpm.repository"}}</h4>
+	<h4 class="ui top attached header">{{ctx.Locale.Tr "Repository Info"}}</h4>
 	<div class="ui attached segment">
 		<table class="ui single line very basic table">
 			<tbody>
 				<tr>
-					<td class="collapsing"><h5>{{ctx.Locale.Tr "packages.rpm.repository.architectures"}}</h5></td>
+					<td class="collapsing"><h5>{{ctx.Locale.Tr "Architectures"}}</h5></td>
 					<td>{{StringUtils.Join .Architectures ", "}}</td>
 				</tr>
 			</tbody>
@@ -49,7 +49,7 @@ zypper install {{$.PackageDescriptor.Package.Name}}</code></pre>
 	</div>
 
 	{{if or .PackageDescriptor.Metadata.Summary .PackageDescriptor.Metadata.Description}}
-		<h4 class="ui top attached header">{{ctx.Locale.Tr "packages.about"}}</h4>
+		<h4 class="ui top attached header">{{ctx.Locale.Tr "About this package"}}</h4>
 		{{if .PackageDescriptor.Metadata.Summary}}<div class="ui attached segment">{{.PackageDescriptor.Metadata.Summary}}</div>{{end}}
 		{{if .PackageDescriptor.Metadata.Description}}<div class="ui attached segment">{{.PackageDescriptor.Metadata.Description}}</div>{{end}}
 	{{end}}

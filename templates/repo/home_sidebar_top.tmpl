@@ -1,19 +1,19 @@
 <div class="repo-home-sidebar-top">
 	<form class="ignore-dirty tw-flex tw-flex-1" action="{{.RepoLink}}/search" method="get">
 		<div class="ui small action input tw-flex-1">
-			<input name="q" size="10" placeholder="{{ctx.Locale.Tr "search.code_kind"}}"> {{template "shared/search/button"}}
+			<input name="q" size="10" placeholder="{{ctx.Locale.Tr "Search code…"}}"> {{template "shared/search/button"}}
 		</div>
 	</form>
 
 	<div class="flex-list">
 		<div class="flex-item">
 			<div class="flex-item-main">
-				<div class="flex-item-title">{{ctx.Locale.Tr "repo.repo_desc"}}</div>
+				<div class="flex-item-title">{{ctx.Locale.Tr "Description"}}</div>
 				<div class="flex-item-body tw-text-15">
 					<div class="tw-flex tw-flex-col tw-gap-2 tw-mt-2">
 						<div class="repo-description tw-break-anywhere tw-gap-2">
 							{{- $description := .Repository.DescriptionHTML ctx -}}
-							{{if $description}}{{$description | RenderCodeBlock}}{{else}}{{ctx.Locale.Tr "repo.repo_no_desc"}}{{end}}
+							{{if $description}}{{$description | RenderCodeBlock}}{{else}}{{ctx.Locale.Tr "No description provided"}}{{end}}
 						</div>
 
 						{{if .Repository.Website}}
@@ -27,7 +27,7 @@
 							{{range .Topics}}<a class="repo-topic ui large label gt-ellipsis" title={{.Name}} href="{{AppSubUrl}}/explore/repos?q={{.Name}}&topic=1">{{.Name}}</a>{{end}}
 						</div>
 						{{if and .Permission.IsAdmin (not .Repository.IsArchived)}}
-							<button id="manage_topic" class="btn interact-fg tw-mb-2 tw-text-12">{{ctx.Locale.Tr "repo.topic.manage_topics"}}</button>
+							<button id="manage_topic" class="btn interact-fg tw-mb-2 tw-text-12">{{ctx.Locale.Tr "Manage Topics"}}</button>
 							<div class="ui form tw-hidden tw-my-2" id="topic_edit">
 								<div class="ui fluid multiple search selection dropdown tw-flex-wrap tw-flex-1">
 									<input type="hidden" name="topics" value="{{range $i, $v := .Topics}}{{.Name}}{{if Eval $i "+" 1 "<" (len $.Topics)}},{{end}}{{end}}">
@@ -38,28 +38,28 @@
 									<div class="text"></div>
 								</div>
 								<div class="tw-my-2">
-									<button class="ui primary button" id="save_topic" data-link="{{.RepoLink}}/topics">{{ctx.Locale.Tr "save"}}</button>
-									<button class="ui basic button" id="cancel_topic_edit">{{ctx.Locale.Tr "cancel"}}</button>
+									<button class="ui primary button" id="save_topic" data-link="{{.RepoLink}}/topics">{{ctx.Locale.Tr "Save"}}</button>
+									<button class="ui basic button" id="cancel_topic_edit">{{ctx.Locale.Tr "Cancel"}}</button>
 								</div>
 							</div>
 						{{end}}
 
 						{{if .ReadmeExist}}
 							<a class="flex-text-block muted" href="{{.RepoLink}}/src/{{.RefTypeNameSubURL}}/{{PathEscapeSegments .FileTreePath}}">
-								{{svg "octicon-book"}} {{ctx.Locale.Tr "readme"}}
+								{{svg "octicon-book"}} {{ctx.Locale.Tr "Readme"}}
 							</a>
 						{{end}}
 
 						{{if .DetectedRepoLicenses}}
 							<a class="flex-text-block muted" href="{{.RepoLink}}/src/{{.Repository.DefaultBranch}}/{{PathEscapeSegments .LicenseFileName}}" title="{{StringUtils.Join .DetectedRepoLicenses ", "}}">
-								{{svg "octicon-law"}} {{if eq (len .DetectedRepoLicenses) 1}}{{index .DetectedRepoLicenses 0}}{{else}}{{ctx.Locale.Tr "repo.multiple_licenses"}}{{end}}
+								{{svg "octicon-law"}} {{if eq (len .DetectedRepoLicenses) 1}}{{index .DetectedRepoLicenses 0}}{{else}}{{ctx.Locale.Tr "Multiple Licenses"}}{{end}}
 							</a>
 						{{end}}
 
 						{{if .CitiationExist}}
 							{{template "repo/cite/cite_modal" .}}
 							<a class="flex-text-block muted" id="cite-repo-button">
-								{{svg "octicon-cross-reference"}} {{ctx.Locale.Tr "repo.cite_this_repo"}}
+								{{svg "octicon-cross-reference"}} {{ctx.Locale.Tr "Cite this repository"}}
 							</a>
 						{{end}}
 						<span class="flex-text-block muted" {{if not (eq .Repository.Size 0)}}data-tooltip-placement="top" data-tooltip-content="{{.Repository.SizeDetailsString}}"{{end}}>

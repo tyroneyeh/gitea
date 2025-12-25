@@ -102,7 +102,7 @@ func SignInOAuthCallback(ctx *context.Context) {
 		if user_model.IsErrUserProhibitLogin(err) {
 			uplerr := err.(user_model.ErrUserProhibitLogin)
 			log.Info("Failed authentication attempt for %s from %s: %v", uplerr.Name, ctx.RemoteAddr(), err)
-			ctx.Data["Title"] = ctx.Tr("auth.prohibit_login")
+			ctx.Data["Title"] = ctx.Tr("Sign-In Prohibited")
 			ctx.HTML(http.StatusOK, "user/auth/prohibit_login")
 			return
 		}
@@ -110,11 +110,11 @@ func SignInOAuthCallback(ctx *context.Context) {
 			log.Info("Failed OAuth callback: (%v) %v", callbackErr.Code, callbackErr.Description)
 			switch callbackErr.Code {
 			case "access_denied":
-				ctx.Flash.Error(ctx.Tr("auth.oauth.signin.error.access_denied"))
+				ctx.Flash.Error(ctx.Tr("The authorization request was denied."))
 			case "temporarily_unavailable":
-				ctx.Flash.Error(ctx.Tr("auth.oauth.signin.error.temporarily_unavailable"))
+				ctx.Flash.Error(ctx.Tr("Authorization failed because the authentication server is temporarily unavailable. Please try again later."))
 			default:
-				ctx.Flash.Error(ctx.Tr("auth.oauth.signin.error.general", callbackErr.Description))
+				ctx.Flash.Error(ctx.Tr("There was an error processing the authorization request: %s. If this error persists, please contact the site administrator.", callbackErr.Description))
 			}
 			ctx.Redirect(setting.AppSubURL + "/user/login")
 			return

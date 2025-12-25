@@ -98,22 +98,22 @@ func DeleteBranchPost(ctx *context.Context) {
 		switch {
 		case git.IsErrBranchNotExist(err):
 			log.Debug("DeleteBranch: Can't delete non existing branch '%s'", branchName)
-			ctx.Flash.Error(ctx.Tr("repo.branch.deletion_failed", branchName))
+			ctx.Flash.Error(ctx.Tr("Failed to delete branch \"%s\".", branchName))
 		case errors.Is(err, repo_service.ErrBranchIsDefault):
 			log.Debug("DeleteBranch: Can't delete default branch '%s'", branchName)
-			ctx.Flash.Error(ctx.Tr("repo.branch.default_deletion_failed", branchName))
+			ctx.Flash.Error(ctx.Tr("Branch \"%s\" is the default branch. It cannot be deleted.", branchName))
 		case errors.Is(err, git_model.ErrBranchIsProtected):
 			log.Debug("DeleteBranch: Can't delete protected branch '%s'", branchName)
-			ctx.Flash.Error(ctx.Tr("repo.branch.protected_deletion_failed", branchName))
+			ctx.Flash.Error(ctx.Tr("Branch \"%s\" is protected. It cannot be deleted.", branchName))
 		default:
 			log.Error("DeleteBranch: %v", err)
-			ctx.Flash.Error(ctx.Tr("repo.branch.deletion_failed", branchName))
+			ctx.Flash.Error(ctx.Tr("Failed to delete branch \"%s\".", branchName))
 		}
 
 		return
 	}
 
-	ctx.Flash.Success(ctx.Tr("repo.branch.deletion_success", branchName))
+	ctx.Flash.Success(ctx.Tr("Branch \"%s\" has been deleted.", branchName))
 }
 
 // RestoreBranchPost responses for delete merged branch
@@ -126,11 +126,11 @@ func RestoreBranchPost(ctx *context.Context) {
 	deletedBranch, err := git_model.GetDeletedBranchByID(ctx, ctx.Repo.Repository.ID, branchID)
 	if err != nil {
 		log.Error("GetDeletedBranchByID: %v", err)
-		ctx.Flash.Error(ctx.Tr("repo.branch.restore_failed", branchName))
+		ctx.Flash.Error(ctx.Tr("Failed to restore branch \"%s\".", branchName))
 		return
 	} else if deletedBranch == nil {
 		log.Debug("RestoreBranch: Can't restore branch[%d] '%s', as it does not exist", branchID, branchName)
-		ctx.Flash.Error(ctx.Tr("repo.branch.restore_failed", branchName))
+		ctx.Flash.Error(ctx.Tr("Failed to restore branch \"%s\".", branchName))
 		return
 	}
 
@@ -140,11 +140,11 @@ func RestoreBranchPost(ctx *context.Context) {
 	}); err != nil {
 		if strings.Contains(err.Error(), "already exists") {
 			log.Debug("RestoreBranch: Can't restore branch '%s', since one with same name already exist", deletedBranch.Name)
-			ctx.Flash.Error(ctx.Tr("repo.branch.already_exists", deletedBranch.Name))
+			ctx.Flash.Error(ctx.Tr("A branch named \"%s\" already exists.", deletedBranch.Name))
 			return
 		}
 		log.Error("RestoreBranch: CreateBranch: %v", err)
-		ctx.Flash.Error(ctx.Tr("repo.branch.restore_failed", deletedBranch.Name))
+		ctx.Flash.Error(ctx.Tr("Failed to restore branch \"%s\".", deletedBranch.Name))
 		return
 	}
 
@@ -164,7 +164,7 @@ func RestoreBranchPost(ctx *context.Context) {
 		log.Error("RestoreBranch: Update: %v", err)
 	}
 
-	ctx.Flash.Success(ctx.Tr("repo.branch.restore_success", deletedBranch.Name))
+	ctx.Flash.Success(ctx.Tr("Branch \"%s\" has been restored.", deletedBranch.Name))
 }
 
 func jsonRedirectBranches(ctx *context.Context) {
@@ -200,36 +200,36 @@ func CreateBranch(ctx *context.Context) {
 	}
 	if err != nil {
 		if release_service.IsErrProtectedTagName(err) {
-			ctx.Flash.Error(ctx.Tr("repo.release.tag_name_protected"))
+			ctx.Flash.Error(ctx.Tr("The tag name is protected."))
 			ctx.Redirect(ctx.Repo.RepoLink + "/src/" + ctx.Repo.RefTypeNameSubURL())
 			return
 		}
 
 		if release_service.IsErrTagAlreadyExists(err) {
 			e := err.(release_service.ErrTagAlreadyExists)
-			ctx.Flash.Error(ctx.Tr("repo.branch.tag_collision", e.TagName))
+			ctx.Flash.Error(ctx.Tr("Branch \"%s\" cannot be created as a tag with same name already exists in the repository.", e.TagName))
 			ctx.Redirect(ctx.Repo.RepoLink + "/src/" + ctx.Repo.RefTypeNameSubURL())
 			return
 		}
 		if git_model.IsErrBranchAlreadyExists(err) || git.IsErrPushOutOfDate(err) {
-			ctx.Flash.Error(ctx.Tr("repo.branch.branch_already_exists", form.NewBranchName))
+			ctx.Flash.Error(ctx.Tr("Branch \"%s\" already exists in this repository.", form.NewBranchName))
 			ctx.Redirect(ctx.Repo.RepoLink + "/src/" + ctx.Repo.RefTypeNameSubURL())
 			return
 		}
 		if git_model.IsErrBranchNameConflict(err) {
 			e := err.(git_model.ErrBranchNameConflict)
-			ctx.Flash.Error(ctx.Tr("repo.branch.branch_name_conflict", form.NewBranchName, e.BranchName))
+			ctx.Flash.Error(ctx.Tr("Branch name \"%s\" conflicts with the already existing branch \"%s\".", form.NewBranchName, e.BranchName))
 			ctx.Redirect(ctx.Repo.RepoLink + "/src/" + ctx.Repo.RefTypeNameSubURL())
 			return
 		}
 		if git.IsErrPushRejected(err) {
 			e := err.(*git.ErrPushRejected)
 			if len(e.Message) == 0 {
-				ctx.Flash.Error(ctx.Tr("repo.editor.push_rejected_no_message"))
+				ctx.Flash.Error(ctx.Tr("The change was rejected by the server without a message. Please check Git Hooks."))
 			} else {
 				flashError, err := ctx.RenderToHTML(tplAlertDetails, map[string]any{
-					"Message": ctx.Tr("repo.editor.push_rejected"),
-					"Summary": ctx.Tr("repo.editor.push_rejected_summary"),
+					"Message": ctx.Tr("The change was rejected by the server. Please check Git Hooks."),
+					"Summary": ctx.Tr("Full Rejection Message:"),
 					"Details": utils.SanitizeFlashErrorString(e.Message),
 				})
 				if err != nil {
@@ -247,12 +247,12 @@ func CreateBranch(ctx *context.Context) {
 	}
 
 	if form.CreateTag {
-		ctx.Flash.Success(ctx.Tr("repo.tag.create_success", form.NewBranchName))
+		ctx.Flash.Success(ctx.Tr("Tag \"%s\" has been created.", form.NewBranchName))
 		ctx.Redirect(ctx.Repo.RepoLink + "/src/tag/" + util.PathEscapeSegments(form.NewBranchName))
 		return
 	}
 
-	ctx.Flash.Success(ctx.Tr("repo.branch.create_success", form.NewBranchName))
+	ctx.Flash.Success(ctx.Tr("Branch \"%s\" has been created.", form.NewBranchName))
 	ctx.Redirect(ctx.Repo.RepoLink + "/src/branch/" + util.PathEscapeSegments(form.NewBranchName) + "/" + util.PathEscapeSegments(form.CurrentPath))
 }
 
@@ -264,7 +264,7 @@ func MergeUpstream(ctx *context.Context) {
 			ctx.JSONErrorNotFound()
 			return
 		} else if pull_service.IsErrMergeConflicts(err) {
-			ctx.JSONError(ctx.Tr("repo.pulls.merge_conflict"))
+			ctx.JSONError(ctx.Tr("Merge Failed: There was a conflict while merging. Hint: Try a different strategy."))
 			return
 		}
 		ctx.ServerError("MergeUpstream", err)

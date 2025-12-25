@@ -24,7 +24,7 @@ func Notifications(ctx *context.Context) {
 		return
 	}
 
-	ctx.Data["Title"] = ctx.Tr("notifications")
+	ctx.Data["Title"] = ctx.Tr("Notifications")
 	ctx.Data["PageIsSettingsNotifications"] = true
 	ctx.Data["EmailNotificationsPreference"] = ctx.Doer.EmailNotificationsPreference
 
@@ -50,7 +50,7 @@ func NotificationsEmailPost(ctx *context.Context) {
 		preference == user_model.EmailNotificationsOnMention ||
 		preference == user_model.EmailNotificationsDisabled ||
 		preference == user_model.EmailNotificationsAndYourOwn) {
-		ctx.Flash.Error(ctx.Tr("invalid_data", preference))
+		ctx.Flash.Error(ctx.Tr("Invalid data: %v", preference))
 		ctx.Redirect(setting.AppSubURL + "/user/settings/notifications")
 		return
 	}
@@ -61,7 +61,7 @@ func NotificationsEmailPost(ctx *context.Context) {
 		ctx.ServerError("UpdateUser", err)
 		return
 	}
-	ctx.Flash.Success(ctx.Tr("settings.email_preference_set_success"))
+	ctx.Flash.Success(ctx.Tr("Email preference has been set successfully."))
 	ctx.Redirect(setting.AppSubURL + "/user/settings/notifications")
 }
 
@@ -76,7 +76,7 @@ func NotificationsActionsEmailPost(ctx *context.Context) {
 	if !(preference == user_model.SettingEmailNotificationGiteaActionsAll ||
 		preference == user_model.SettingEmailNotificationGiteaActionsDisabled ||
 		preference == user_model.SettingEmailNotificationGiteaActionsFailureOnly) {
-		ctx.Flash.Error(ctx.Tr("invalid_data", preference))
+		ctx.Flash.Error(ctx.Tr("Invalid data: %v", preference))
 		ctx.Redirect(setting.AppSubURL + "/user/settings/notifications")
 		return
 	}
@@ -84,6 +84,6 @@ func NotificationsActionsEmailPost(ctx *context.Context) {
 		ctx.ServerError("SetUserSetting", err)
 		return
 	}
-	ctx.Flash.Success(ctx.Tr("settings.email_preference_set_success"))
+	ctx.Flash.Success(ctx.Tr("Email preference has been set successfully."))
 	ctx.Redirect(setting.AppSubURL + "/user/settings/notifications")
 }

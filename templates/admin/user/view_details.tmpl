@@ -7,42 +7,42 @@
 			<div class="flex-item-title">
 				{{template "shared/user/name" .User}}
 				{{if .User.IsAdmin}}
-					<span class="ui basic label">{{ctx.Locale.Tr "admin.users.admin"}}</span>
+					<span class="ui basic label">{{ctx.Locale.Tr "Admin"}}</span>
 				{{end}}
 				{{if .User.IsTypeBot}}
-					<span class="ui basic label">{{ctx.Locale.Tr "admin.users.bot"}}</span>
+					<span class="ui basic label">{{ctx.Locale.Tr "Bot"}}</span>
 				{{end}}
 			</div>
 			<div class="flex-item-body">
-				<b>{{ctx.Locale.Tr "admin.users.auth_source"}}:</b>
-				{{Iif (eq .LoginSource.ID 0) (ctx.Locale.Tr "admin.users.local") .LoginSource.Name}}
+				<b>{{ctx.Locale.Tr "Authentication Source"}}:</b>
+				{{Iif (eq .LoginSource.ID 0) (ctx.Locale.Tr "Local") .LoginSource.Name}}
 			</div>
 			<div class="flex-item-body">
-				<b>{{ctx.Locale.Tr "admin.users.activated"}}:</b>
+				<b>{{ctx.Locale.Tr "Activated"}}:</b>
 				{{svg (Iif .User.IsActive "octicon-check" "octicon-x")}}
 			</div>
 			<div class="flex-item-body">
-				<b>{{ctx.Locale.Tr "admin.users.prohibit_login"}}:</b>
+				<b>{{ctx.Locale.Tr "Disable Sign-In"}}:</b>
 				{{svg (Iif .User.ProhibitLogin "octicon-check" "octicon-x")}}
 			</div>
 			<div class="flex-item-body">
-				<b>{{ctx.Locale.Tr "admin.users.restricted"}}:</b>
+				<b>{{ctx.Locale.Tr "Restricted"}}:</b>
 				{{svg (Iif .User.IsRestricted "octicon-check" "octicon-x")}}
 			</div>
 			<div class="flex-item-body">
-				<b>{{ctx.Locale.Tr "settings.visibility"}}:</b>
-				{{if .User.Visibility.IsPublic}}{{ctx.Locale.Tr "settings.visibility.public"}}{{end}}
-				{{if .User.Visibility.IsLimited}}{{ctx.Locale.Tr "settings.visibility.limited"}}{{end}}
-				{{if .User.Visibility.IsPrivate}}{{ctx.Locale.Tr "settings.visibility.private"}}{{end}}
+				<b>{{ctx.Locale.Tr "User visibility"}}:</b>
+				{{if .User.Visibility.IsPublic}}{{ctx.Locale.Tr "Public"}}{{end}}
+				{{if .User.Visibility.IsLimited}}{{ctx.Locale.Tr "Limited"}}{{end}}
+				{{if .User.Visibility.IsPrivate}}{{ctx.Locale.Tr "Private"}}{{end}}
 			</div>
 			<div class="flex-item-body">
-				<b>{{ctx.Locale.Tr "admin.users.2fa"}}:</b>
+				<b>{{ctx.Locale.Tr "2FA"}}:</b>
 				{{svg (Iif .TwoFactorEnabled "octicon-check" "octicon-x")}}
 			</div>
 			{{if .User.Language}}
 				<div class="flex-item-body">
 					<span class="flex-text-inline">
-						<b>{{ctx.Locale.Tr "settings.language"}}:</b>
+						<b>{{ctx.Locale.Tr "Language"}}:</b>
 						{{range .AllLangs}}{{if eq $.User.Language .Lang}}{{.Name}}{{end}}{{end}}
 					</span>
 				</div>

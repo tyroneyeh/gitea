@@ -9,15 +9,15 @@
 				<div>
 					{{if or .CanWriteIssues .CanWritePulls}}
 						{{if .Milestone.IsClosed}}
-							<a class="ui primary basic button link-action" href data-url="{{$.RepoLink}}/milestones/{{.MilestoneID}}/open">{{ctx.Locale.Tr "repo.milestones.open"}}
+							<a class="ui primary basic button link-action" href data-url="{{$.RepoLink}}/milestones/{{.MilestoneID}}/open">{{ctx.Locale.Tr "Open"}}
 							</a>
 						{{else}}
-							<a class="ui red basic button link-action" href data-url="{{$.RepoLink}}/milestones/{{.MilestoneID}}/close">{{ctx.Locale.Tr "repo.milestones.close"}}
+							<a class="ui red basic button link-action" href data-url="{{$.RepoLink}}/milestones/{{.MilestoneID}}/close">{{ctx.Locale.Tr "Close"}}
 							</a>
 						{{end}}
-						<a class="ui button" href="{{.RepoLink}}/milestones/{{.MilestoneID}}/edit">{{ctx.Locale.Tr "repo.milestones.edit"}}</a>
+						<a class="ui button" href="{{.RepoLink}}/milestones/{{.MilestoneID}}/edit">{{ctx.Locale.Tr "Edit Milestone"}}</a>
 					{{end}}
-					<a class="ui primary button" href="{{.RepoLink}}/issues/new{{if .NewIssueChooseTemplate}}/choose{{end}}?milestone={{.MilestoneID}}">{{ctx.Locale.Tr "repo.issues.new"}}</a>
+					<a class="ui primary button" href="{{.RepoLink}}/issues/new{{if .NewIssueChooseTemplate}}/choose{{end}}?milestone={{.MilestoneID}}">{{ctx.Locale.Tr "New Issue"}}</a>
 				</div>
 			{{end}}
 		</div>
@@ -32,7 +32,7 @@
 				<div class="flex-text-inline">
 					{{$closedDate:= DateUtils.TimeSince .Milestone.ClosedDateUnix}}
 					{{if .IsClosed}}
-						{{svg "octicon-clock"}} {{ctx.Locale.Tr "repo.milestones.closed" $closedDate}}
+						{{svg "octicon-clock"}} {{ctx.Locale.Tr "Closed %s" $closedDate}}
 					{{else}}
 
 						{{if .Milestone.DeadlineString}}
@@ -42,13 +42,13 @@
 							</span>
 						{{else}}
 							{{svg "octicon-calendar"}}
-							{{ctx.Locale.Tr "repo.milestones.no_due_date"}}
+							{{ctx.Locale.Tr "No due date"}}
 						{{end}}
 					{{end}}
 				</div>
-				<div>{{ctx.Locale.Tr "repo.milestones.completeness" .Milestone.Completeness}}</div>
+				<div>{{ctx.Locale.Tr "<strong>%d%%</strong> Completed" .Milestone.Completeness}}</div>
 				{{if .TotalTrackedTime}}
-					<div data-tooltip-content='{{ctx.Locale.Tr "tracked_time_summary"}}'>
+					<div data-tooltip-content='{{ctx.Locale.Tr "Summary of tracked time based on filters of issue list"}}'>
 						{{svg "octicon-clock"}}
 						{{.TotalTrackedTime | Sec2Hour}}
 					</div>

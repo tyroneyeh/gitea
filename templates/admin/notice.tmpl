@@ -1,17 +1,17 @@
 {{template "admin/layout_head" (dict "ctxData" . "pageClass" "admin notice")}}
 	<div class="admin-setting-content">
 		<h4 class="ui top attached header">
-			{{ctx.Locale.Tr "admin.notices.system_notice_list"}} ({{ctx.Locale.Tr "admin.total" .Total}})
+			{{ctx.Locale.Tr "System Notices"}} ({{ctx.Locale.Tr "Total: %d" .Total}})
 		</h4>
 		<table class="ui attached segment select selectable striped table unstackable g-table-auto-ellipsis">
 			<thead>
 				<tr>
 					<th></th>
 					<th>ID</th>
-					<th>{{ctx.Locale.Tr "admin.notices.type"}}</th>
-					<th>{{ctx.Locale.Tr "admin.notices.desc"}}</th>
-					<th>{{ctx.Locale.Tr "admin.users.created"}}</th>
-					<th>{{ctx.Locale.Tr "admin.notices.op"}}</th>
+					<th>{{ctx.Locale.Tr "Type"}}</th>
+					<th>{{ctx.Locale.Tr "Description"}}</th>
+					<th>{{ctx.Locale.Tr "Created"}}</th>
+					<th>{{ctx.Locale.Tr "Op."}}</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -25,7 +25,7 @@
 						<td class="view-detail"><a href="#">{{svg "octicon-note" 16}}</a></td>
 					</tr>
 				{{else}}
-					<tr><td class="tw-text-center" colspan="6">{{ctx.Locale.Tr "no_results_found"}}</td></tr>
+					<tr><td class="tw-text-center" colspan="6">{{ctx.Locale.Tr "No results found."}}</td></tr>
 				{{end}}
 			</tbody>
 			{{if .Notices}}
@@ -35,24 +35,24 @@
 							<th colspan="5">
 								<form class="tw-float-right" method="post" action="{{AppSubUrl}}/-/admin/notices/empty">
 									{{.CsrfTokenHtml}}
-									<button type="submit" class="ui red small button">{{ctx.Locale.Tr "admin.notices.delete_all"}}</button>
+									<button type="submit" class="ui red small button">{{ctx.Locale.Tr "Delete All Notices"}}</button>
 								</form>
 								<div class="ui floating upward dropdown small button">
-									<span class="text">{{ctx.Locale.Tr "admin.notices.operations"}}</span>
+									<span class="text">{{ctx.Locale.Tr "Operations"}}</span>
 									<div class="menu">
 										<div class="item select action" data-action="select-all">
-											{{ctx.Locale.Tr "admin.notices.select_all"}}
+											{{ctx.Locale.Tr "Select All"}}
 										</div>
 										<div class="item select action" data-action="deselect-all">
-											{{ctx.Locale.Tr "admin.notices.deselect_all"}}
+											{{ctx.Locale.Tr "Deselect All"}}
 										</div>
 										<div class="item select action" data-action="inverse">
-											{{ctx.Locale.Tr "admin.notices.inverse_selection"}}
+											{{ctx.Locale.Tr "Inverse Selection"}}
 										</div>
 									</div>
 								</div>
 								<button class="ui small button" id="delete-selection" data-link="{{.Link}}/delete" data-redirect="?page={{.Page.Paginater.Current}}">
-									<span class="text">{{ctx.Locale.Tr "admin.notices.delete_selected"}}</span>
+									<span class="text">{{ctx.Locale.Tr "Delete Selected"}}</span>
 								</button>
 							</th>
 						</tr>
@@ -63,7 +63,7 @@
 	</div>
 
 <div class="ui modal admin" id="detail-modal">
-	<div class="header">{{ctx.Locale.Tr "admin.notices.view_detail_header"}}</div>
+	<div class="header">{{ctx.Locale.Tr "View Notice Details"}}</div>
 	<div class="content"><pre></pre></div>
 </div>
 

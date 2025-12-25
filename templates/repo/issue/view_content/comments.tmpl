@@ -34,10 +34,10 @@
 									{{.OriginalAuthor}}
 								</span>
 								<span class="comment-text-line">
-									{{ctx.Locale.Tr "repo.issues.commented_at" .HashTag $createdStr}} {{if $.Repository.OriginalURL}}
+									{{ctx.Locale.Tr "commented <a href=\"#%s\">%s</a>" .HashTag $createdStr}} {{if $.Repository.OriginalURL}}
 								</span>
 								<span class="text migrate">
-									({{ctx.Locale.Tr "repo.migrated_from" $.Repository.OriginalURL $.Repository.GetOriginalURLHostname}}){{end}}
+									({{ctx.Locale.Tr "Migrated from <a href=\"%[1]s\">%[2]s</a>" $.Repository.OriginalURL $.Repository.GetOriginalURLHostname}}){{end}}
 								</span>
 							{{else}}
 								{{if gt .Poster.ID 0}}
@@ -47,7 +47,7 @@
 								{{end}}
 								<span class="comment-text-line">
 									{{template "shared/user/authorlink" .Poster}}
-									{{ctx.Locale.Tr "repo.issues.commented_at" .HashTag $createdStr}}
+									{{ctx.Locale.Tr "commented <a href=\"#%s\">%s</a>" .HashTag $createdStr}}
 								</span>
 							{{end}}
 						</div>
@@ -64,7 +64,7 @@
 							{{if .RenderedContent}}
 								{{.RenderedContent}}
 							{{else}}
-								<span class="no-content">{{ctx.Locale.Tr "repo.issues.no_content"}}</span>
+								<span class="no-content">{{ctx.Locale.Tr "No description provided."}}</span>
 							{{end}}
 						</div>
 						<div id="issuecomment-{{.ID}}-raw" class="raw-content tw-hidden">{{.Content}}</div>
@@ -88,9 +88,9 @@
 				<span class="comment-text-line">
 					{{template "repo/issue/view_content/comments_authorlink" dict "ctxData" $ "comment" .}}
 					{{if .Issue.IsPull}}
-						{{ctx.Locale.Tr "repo.pulls.reopened_at" .EventTag $createdStr}}
+						{{ctx.Locale.Tr "reopened this pull request <a id=\"%[1]s\" href=\"#%[1]s\">%[2]s</a>" .EventTag $createdStr}}
 					{{else}}
-						{{ctx.Locale.Tr "repo.issues.reopened_at" .EventTag $createdStr}}
+						{{ctx.Locale.Tr "reopened this issue <a id=\"%[1]s\" href=\"#%[1]s\">%[2]s</a>" .EventTag $createdStr}}
 					{{end}}
 				</span>
 			</div>
@@ -103,9 +103,9 @@
 				<span class="comment-text-line">
 					{{template "repo/issue/view_content/comments_authorlink" dict "ctxData" $ "comment" .}}
 					{{if .Issue.IsPull}}
-						{{ctx.Locale.Tr "repo.pulls.closed_at" .EventTag $createdStr}}
+						{{ctx.Locale.Tr "closed this pull request <a id=\"%[1]s\" href=\"#%[1]s\">%[2]s</a>" .EventTag $createdStr}}
 					{{else}}
-						{{ctx.Locale.Tr "repo.issues.closed_at" .EventTag $createdStr}}
+						{{ctx.Locale.Tr "closed this issue <a id=\"%[1]s\" href=\"#%[1]s\">%[2]s</a>" .EventTag $createdStr}}
 					{{end}}
 				</span>
 			</div>
@@ -119,24 +119,24 @@
 					{{template "repo/issue/view_content/comments_authorlink" dict "ctxData" $ "comment" .}}
 					{{$link := printf "%s/commit/%s" $.Repository.Link ($.Issue.PullRequest.MergedCommitID|PathEscape)}}
 					{{if eq $.Issue.PullRequest.Status 3}}
-						{{ctx.Locale.Tr "repo.issues.comment_manually_pull_merged_at" (HTMLFormat `<a class="ui sha" href="%[1]s"><b>%[2]s</b></a>` $link (ShortSha $.Issue.PullRequest.MergedCommitID)) (HTMLFormat "<b>%[1]s</b>" $.BaseTarget) $createdStr}}
+						{{ctx.Locale.Tr "manually merged commit %[1]s into %[2]s %[3]s" (HTMLFormat `<a class="ui sha" href="%[1]s"><b>%[2]s</b></a>` $link (ShortSha $.Issue.PullRequest.MergedCommitID)) (HTMLFormat "<b>%[1]s</b>" $.BaseTarget) $createdStr}}
 					{{else}}
-						{{ctx.Locale.Tr "repo.issues.comment_pull_merged_at" (HTMLFormat `<a class="ui sha" href="%[1]s"><b>%[2]s</b></a>` $link (ShortSha $.Issue.PullRequest.MergedCommitID)) (HTMLFormat "<b>%[1]s</b>" $.BaseTarget) $createdStr}}
+						{{ctx.Locale.Tr "merged commit %[1]s into %[2]s %[3]s" (HTMLFormat `<a class="ui sha" href="%[1]s"><b>%[2]s</b></a>` $link (ShortSha $.Issue.PullRequest.MergedCommitID)) (HTMLFormat "<b>%[1]s</b>" $.BaseTarget) $createdStr}}
 					{{end}}
 				</span>
 			</div>
 		{{else if eq .Type 3 5 6}}
 			{{$refFrom:= ""}}
 			{{if ne .RefRepoID .Issue.RepoID}}
-				{{$refFrom = ctx.Locale.Tr "repo.issues.ref_from" .RefRepo.FullName}}
+				{{$refFrom = ctx.Locale.Tr "from %[1]s" .RefRepo.FullName}}
 			{{end}}
-			{{$refTr := "repo.issues.ref_issue_from"}}
+			{{$refTr := `<a href=\"%[3]s\">referenced this issue %[4]s</a> <a id=\"%[1]s\" href=\"#%[1]s\">%[2]s</a>`}}
 			{{if .Issue.IsPull}}
-				{{$refTr = "repo.issues.ref_pull_from"}}
+				{{$refTr = `<a href=\"%[3]s\">referenced this pull request %[4]s</a> <a id=\"%[1]s\" href=\"#%[1]s\">%[2]s</a>`}}
 			{{else if eq .RefAction 1}}
-				{{$refTr = "repo.issues.ref_closing_from"}}
+				{{$refTr = `<a href=\"%[3]s\">referenced a pull request %[4]s that will close this issue</a> <a id=\"%[1]s\" href=\"#%[1]s\">%[2]s</a>`}}
 			{{else if eq .RefAction 2}}
-				{{$refTr = "repo.issues.ref_reopening_from"}}
+				{{$refTr = `<a href=\"%[3]s\">referenced a pull request %[4]s that will reopen this issue</a> <a id=\"%[1]s\" href=\"#%[1]s\">%[2]s</a>`}}
 			{{end}}
 			{{$createdStr:= DateUtils.TimeSince .CreatedUnix}}
 			<div class="timeline-item event" id="{{.HashTag}}">
@@ -159,7 +159,7 @@
 				{{template "shared/user/avatarlink" dict "user" .Poster}}
 				<span class="comment-text-line">
 					{{template "shared/user/authorlink" .Poster}}
-					{{ctx.Locale.Tr "repo.issues.commit_ref_at" .EventTag $createdStr}}
+					{{ctx.Locale.Tr "referenced this issue from a commit <a id=\"%[1]s\" href=\"#%[1]s\">%[2]s</a>" .EventTag $createdStr}}
 				</span>
 				<div class="detail flex-text-block">
 					{{svg "octicon-git-commit"}}
@@ -175,11 +175,11 @@
 					<span class="comment-text-line">
 						{{template "shared/user/authorlink" .Poster}}
 						{{if and .AddedLabels (not .RemovedLabels)}}
-							{{ctx.Locale.TrN (len .AddedLabels) "repo.issues.add_label" "repo.issues.add_labels" (ctx.RenderUtils.RenderLabels .AddedLabels $.RepoLink .Issue) $createdStr}}
+							{{ctx.Locale.TrN (len .AddedLabels) "added the %s label %s" "added the %s labels %s" (ctx.RenderUtils.RenderLabels .AddedLabels $.RepoLink .Issue) $createdStr}}
 						{{else if and (not .AddedLabels) .RemovedLabels}}
-							{{ctx.Locale.TrN (len .RemovedLabels) "repo.issues.remove_label" "repo.issues.remove_labels" (ctx.RenderUtils.RenderLabels .RemovedLabels $.RepoLink .Issue) $createdStr}}
+							{{ctx.Locale.TrN (len .RemovedLabels) "removed the %s label %s" "removed the %s labels %s" (ctx.RenderUtils.RenderLabels .RemovedLabels $.RepoLink .Issue) $createdStr}}
 						{{else}}
-							{{ctx.Locale.Tr "repo.issues.add_remove_labels" (ctx.RenderUtils.RenderLabels .AddedLabels $.RepoLink .Issue) (ctx.RenderUtils.RenderLabels .RemovedLabels $.RepoLink .Issue) $createdStr}}
+							{{ctx.Locale.Tr "added %s and removed %s labels %s" (ctx.RenderUtils.RenderLabels .AddedLabels $.RepoLink .Issue) (ctx.RenderUtils.RenderLabels .RemovedLabels $.RepoLink .Issue) $createdStr}}
 						{{end}}
 					</span>
 				</div>
@@ -190,7 +190,7 @@
 				{{template "shared/user/avatarlink" dict "user" .Poster}}
 				<span class="comment-text-line">
 					{{template "shared/user/authorlink" .Poster}}
-					{{if gt .OldMilestoneID 0}}{{if gt .MilestoneID 0}}{{ctx.Locale.Tr "repo.issues.change_milestone_at" .OldMilestone.Name .Milestone.Name $createdStr}}{{else}}{{ctx.Locale.Tr "repo.issues.remove_milestone_at" .OldMilestone.Name $createdStr}}{{end}}{{else if gt .MilestoneID 0}}{{ctx.Locale.Tr "repo.issues.add_milestone_at" .Milestone.Name $createdStr}}{{end}}
+					{{if gt .OldMilestoneID 0}}{{if gt .MilestoneID 0}}{{ctx.Locale.Tr "modified the milestone from <b>%s</b> to <b>%s</b> %s" .OldMilestone.Name .Milestone.Name $createdStr}}{{else}}{{ctx.Locale.Tr "removed this from the <b>%s</b> milestone %s" .OldMilestone.Name $createdStr}}{{end}}{{else if gt .MilestoneID 0}}{{ctx.Locale.Tr "added this to the <b>%s</b> milestone %s" .Milestone.Name $createdStr}}{{end}}
 				</span>
 			</div>
 		{{else if and (eq .Type 9) (gt .AssigneeID 0)}}
@@ -201,9 +201,9 @@
 					<span class="comment-text-line">
 						{{template "shared/user/authorlink" .Assignee}}
 						{{if eq .Poster.ID .Assignee.ID}}
-							{{ctx.Locale.Tr "repo.issues.remove_self_assignment" $createdStr}}
+							{{ctx.Locale.Tr "removed their assignment %s" $createdStr}}
 						{{else}}
-							{{ctx.Locale.Tr "repo.issues.remove_assignee_at" .Poster.GetDisplayName $createdStr}}
+							{{ctx.Locale.Tr "was unassigned by <b>%s</b> %s" .Poster.GetDisplayName $createdStr}}
 						{{end}}
 					</span>
 				{{else}}
@@ -211,9 +211,9 @@
 					<span class="comment-text-line">
 						{{template "shared/user/authorlink" .Assignee}}
 						{{if eq .Poster.ID .AssigneeID}}
-							{{ctx.Locale.Tr "repo.issues.self_assign_at" $createdStr}}
+							{{ctx.Locale.Tr "self-assigned this %s" $createdStr}}
 						{{else}}
-							{{ctx.Locale.Tr "repo.issues.add_assignee_at" .Poster.GetDisplayName $createdStr}}
+							{{ctx.Locale.Tr "was assigned by <b>%s</b> %s" .Poster.GetDisplayName $createdStr}}
 						{{end}}
 					</span>
 				{{end}}
@@ -224,7 +224,7 @@
 				{{template "shared/user/avatarlink" dict "user" .Poster}}
 				<span class="comment-text-line">
 					{{template "shared/user/authorlink" .Poster}}
-					{{ctx.Locale.Tr "repo.issues.change_title_at" (.OldTitle|ctx.RenderUtils.RenderEmoji) (.NewTitle|ctx.RenderUtils.RenderEmoji) $createdStr}}
+					{{ctx.Locale.Tr "changed title from <b><strike>%s</strike></b> to <b>%s</b> %s" (.OldTitle|ctx.RenderUtils.RenderEmoji) (.NewTitle|ctx.RenderUtils.RenderEmoji) $createdStr}}
 				</span>
 			</div>
 		{{else if eq .Type 11}}
@@ -234,7 +234,7 @@
 				<span class="comment-text-line">
 					{{template "shared/user/authorlink" .Poster}}
 					{{$oldRef := HTMLFormat `<span class="tw-line-through">%s</span>` .OldRef}}
-					{{ctx.Locale.Tr "repo.issues.delete_branch_at" $oldRef $createdStr}}
+					{{ctx.Locale.Tr "deleted branch <b>%s</b> %s" $oldRef $createdStr}}
 				</span>
 			</div>
 		{{else if eq .Type 12}}
@@ -243,7 +243,7 @@
 				{{template "shared/user/avatarlink" dict "user" .Poster}}
 				<span class="comment-text-line">
 					{{template "shared/user/authorlink" .Poster}}
-					{{ctx.Locale.Tr "repo.issues.start_tracking_history" $createdStr}}
+					{{ctx.Locale.Tr "started working %s" $createdStr}}
 				</span>
 			</div>
 		{{else if eq .Type 13}}
@@ -254,7 +254,7 @@
 					{{template "shared/user/authorlink" .Poster}}
 					{{$timeStr := .RenderedContent}} {{/* compatibility with time comments made before v1.21 */}}
 					{{if not $timeStr}}{{$timeStr = .Content|Sec2Hour}}{{end}}
-					{{ctx.Locale.Tr "repo.issues.stop_tracking_history" $timeStr $createdStr}}
+					{{ctx.Locale.Tr "worked for <b>%[1]s</b> %[2]s" $timeStr $createdStr}}
 				</span>
 				{{template "repo/issue/view_content/comments_delete_time" dict "ctxData" $ "comment" .}}
 			</div>
@@ -266,7 +266,7 @@
 					{{template "shared/user/authorlink" .Poster}}
 					{{$timeStr := .RenderedContent}} {{/* compatibility with time comments made before v1.21 */}}
 					{{if not $timeStr}}{{$timeStr = .Content|Sec2Hour}}{{end}}
-					{{ctx.Locale.Tr "repo.issues.add_time_history" $timeStr $createdStr}}
+					{{ctx.Locale.Tr "added spent time <b>%[1]s</b> %[2]s" $timeStr $createdStr}}
 				</span>
 				{{template "repo/issue/view_content/comments_delete_time" dict "ctxData" $ "comment" .}}
 			</div>
@@ -276,7 +276,7 @@
 				{{template "shared/user/avatarlink" dict "user" .Poster}}
 				<span class="comment-text-line">
 					{{template "shared/user/authorlink" .Poster}}
-					{{ctx.Locale.Tr "repo.issues.cancel_tracking_history" $createdStr}}
+					{{ctx.Locale.Tr "canceled time tracking %s" $createdStr}}
 				</span>
 			</div>
 		{{else if eq .Type 16}}
@@ -286,7 +286,7 @@
 				<span class="comment-text-line">
 					{{template "shared/user/authorlink" .Poster}}
 					{{$dueDate := DateUtils.AbsoluteLong (.Content|DateUtils.ParseLegacy)}}
-					{{ctx.Locale.Tr "repo.issues.due_date_added" $dueDate $createdStr}}
+					{{ctx.Locale.Tr "added the due date %s %s" $dueDate $createdStr}}
 				</span>
 			</div>
 		{{else if eq .Type 17}}
@@ -299,7 +299,7 @@
 					{{if eq (len $parsedDeadline) 2}}
 						{{$to := DateUtils.AbsoluteLong ((index $parsedDeadline 0)|DateUtils.ParseLegacy)}}
 						{{$from := DateUtils.AbsoluteLong ((index $parsedDeadline 1)|DateUtils.ParseLegacy)}}
-						{{ctx.Locale.Tr "repo.issues.due_date_modified" $to $from $createdStr}}
+						{{ctx.Locale.Tr "modified the due date from %[2]s to %[1]s %[3]s" $to $from $createdStr}}
 					{{end}}
 				</span>
 			</div>
@@ -310,7 +310,7 @@
 				<span class="comment-text-line">
 					{{template "shared/user/authorlink" .Poster}}
 					{{$dueDate := DateUtils.AbsoluteLong (.Content|DateUtils.ParseLegacy)}}
-					{{ctx.Locale.Tr "repo.issues.due_date_remove" $dueDate $createdStr}}
+					{{ctx.Locale.Tr "removed the due date %s %s" $dueDate $createdStr}}
 				</span>
 			</div>
 		{{else if eq .Type 19}}
@@ -319,7 +319,7 @@
 				{{template "shared/user/avatarlink" dict "user" .Poster}}
 				<span class="comment-text-line">
 					{{template "shared/user/authorlink" .Poster}}
-					{{ctx.Locale.Tr "repo.issues.dependency.added_dependency" $createdStr}}
+					{{ctx.Locale.Tr "added a new dependency %s" $createdStr}}
 				</span>
 				{{if .DependentIssue}}
 					<div class="detail flex-text-block">
@@ -342,7 +342,7 @@
 				{{template "shared/user/avatarlink" dict "user" .Poster}}
 				<span class="comment-text-line">
 					{{template "shared/user/authorlink" .Poster}}
-					{{ctx.Locale.Tr "repo.issues.dependency.removed_dependency" $createdStr}}
+					{{ctx.Locale.Tr "removed a dependency %s" $createdStr}}
 				</span>
 				{{if .DependentIssue}}
 					<div class="detail flex-text-block">
@@ -378,16 +378,16 @@
 					<span class="comment-text-line">
 						{{template "repo/issue/view_content/comments_authorlink" dict "ctxData" $ "comment" .}}
 						{{if eq $reviewType 1}}
-							{{ctx.Locale.Tr "repo.issues.review.approve" $createdStr}}
+							{{ctx.Locale.Tr "approved these changes %s" $createdStr}}
 						{{else if eq $reviewType 2}}
-							{{ctx.Locale.Tr "repo.issues.review.comment" $createdStr}}
+							{{ctx.Locale.Tr "reviewed %s" $createdStr}}
 						{{else if eq $reviewType 3}}
-							{{ctx.Locale.Tr "repo.issues.review.reject" $createdStr}}
+							{{ctx.Locale.Tr "requested changes %s" $createdStr}}
 						{{else}}
-							{{ctx.Locale.Tr "repo.issues.review.comment" $createdStr}}
+							{{ctx.Locale.Tr "reviewed %s" $createdStr}}
 						{{end}}
 						{{if and .Review .Review.Dismissed}}
-							<div class="ui small label">{{ctx.Locale.Tr "repo.issues.review.dismissed_label"}}</div>
+							<div class="ui small label">{{ctx.Locale.Tr "Dismissed"}}</div>
 						{{end}}
 					</span>
 				</div>
@@ -408,12 +408,12 @@
 											{{.OriginalAuthor}}
 										</span>
 										<span class="comment-text-line"> {{if $.Repository.OriginalURL}}</span>
-										<span class="text migrate">({{ctx.Locale.Tr "repo.migrated_from" $.Repository.OriginalURL $.Repository.GetOriginalURLHostname}}){{end}}</span>
+										<span class="text migrate">({{ctx.Locale.Tr "Migrated from <a href=\"%[1]s\">%[2]s</a>" $.Repository.OriginalURL $.Repository.GetOriginalURLHostname}}){{end}}</span>
 									{{else}}
 										{{template "shared/user/authorlink" .Poster}}
 									{{end}}
 
-									{{ctx.Locale.Tr "repo.issues.review.left_comment"}}
+									{{ctx.Locale.Tr "left a comment"}}
 								</span>
 							</div>
 							<div class="comment-header-right">
@@ -429,7 +429,7 @@
 								{{if .RenderedContent}}
 									{{.RenderedContent}}
 								{{else}}
-									<span class="no-content">{{ctx.Locale.Tr "repo.issues.no_content"}}</span>
+									<span class="no-content">{{ctx.Locale.Tr "No description provided."}}</span>
 								{{end}}
 							</div>
 							<div id="issuecomment-{{.ID}}-raw" class="raw-content tw-hidden">{{.Content}}</div>
@@ -463,12 +463,12 @@
 				{{if .Content}}
 					<span class="comment-text-line">
 						{{template "shared/user/authorlink" .Poster}}
-						{{ctx.Locale.Tr "repo.issues.lock_with_reason" .Content $createdStr}}
+						{{ctx.Locale.Tr "locked as <strong>%s</strong> and limited conversation to collaborators %s" .Content $createdStr}}
 					</span>
 				{{else}}
 					<span class="comment-text-line">
 						{{template "shared/user/authorlink" .Poster}}
-						{{ctx.Locale.Tr "repo.issues.lock_no_reason" $createdStr}}
+						{{ctx.Locale.Tr "locked and limited conversation to collaborators %s" $createdStr}}
 					</span>
 				{{end}}
 			</div>
@@ -478,7 +478,7 @@
 				{{template "shared/user/avatarlink" dict "user" .Poster}}
 				<span class="comment-text-line">
 					{{template "shared/user/authorlink" .Poster}}
-					{{ctx.Locale.Tr "repo.issues.unlock_comment" $createdStr}}
+					{{ctx.Locale.Tr "unlocked this conversation %s" $createdStr}}
 				</span>
 			</div>
 		{{else if eq .Type 25}}
@@ -489,7 +489,7 @@
 				{{end}}
 				<span class="comment-text-line">
 					{{template "repo/issue/view_content/comments_authorlink" dict "ctxData" $ "comment" .}}
-					{{ctx.Locale.Tr "repo.pulls.change_target_branch_at" .OldRef .NewRef $createdStr}}
+					{{ctx.Locale.Tr "changed target branch from <b>%s</b> to <b>%s</b> %s" .OldRef .NewRef $createdStr}}
 				</span>
 			</div>
 		{{else if eq .Type 26}}
@@ -499,7 +499,7 @@
 				<span class="comment-text-line">
 					{{template "shared/user/authorlink" .Poster}}
 
-					{{ctx.Locale.Tr "repo.issues.del_time_history" $createdStr}}
+					{{ctx.Locale.Tr "deleted spent time %s" $createdStr}}
 				</span>
 				<div class="detail flex-text-block">
 					{{svg "octicon-clock"}}
@@ -520,12 +520,12 @@
 					{{if (gt .AssigneeID 0)}}
 						{{if .RemovedAssignee}}
 							{{if eq .PosterID .AssigneeID}}
-								{{ctx.Locale.Tr "repo.issues.review.remove_review_request_self" $createdStr}}
+								{{ctx.Locale.Tr "declined to review %s" $createdStr}}
 							{{else}}
-								{{ctx.Locale.Tr "repo.issues.review.remove_review_request" .Assignee.GetDisplayName $createdStr}}
+								{{ctx.Locale.Tr "removed review request for %s %s" .Assignee.GetDisplayName $createdStr}}
 							{{end}}
 						{{else}}
-							{{ctx.Locale.Tr "repo.issues.review.add_review_request" .Assignee.GetDisplayName $createdStr}}
+							{{ctx.Locale.Tr "requested review from %s %s" .Assignee.GetDisplayName $createdStr}}
 						{{end}}
 					{{else}}
 						<!-- If the assigned team is deleted, just displaying "Ghost Team" in the comment -->
@@ -534,9 +534,9 @@
 							{{$teamName = .AssigneeTeam.Name}}
 						{{end}}
 						{{if .RemovedAssignee}}
-							{{ctx.Locale.Tr "repo.issues.review.remove_review_request" $teamName $createdStr}}
+							{{ctx.Locale.Tr "removed review request for %s %s" $teamName $createdStr}}
 						{{else}}
-							{{ctx.Locale.Tr "repo.issues.review.add_review_request" $teamName $createdStr}}
+							{{ctx.Locale.Tr "requested review from %s %s" $teamName $createdStr}}
 						{{end}}
 					{{end}}
 				</span>
@@ -551,13 +551,13 @@
 				<span class="comment-text-line">
 					{{template "shared/user/authorlink" .Poster}}
 					{{if .IsForcePush}}
-						{{ctx.Locale.Tr "repo.issues.force_push_codes" $.Issue.PullRequest.HeadBranch (ShortSha .OldCommit) ($.Issue.Repo.CommitLink .OldCommit) (ShortSha .NewCommit) ($.Issue.Repo.CommitLink .NewCommit) $createdStr}}
+						{{ctx.Locale.Tr "force-pushed %[1]s from <a class=\"ui sha\" href=\"%[3]s\"><code>%[2]s</code></a> to <a class=\"ui sha\" href=\"%[5]s\"><code>%[4]s</code></a> %[6]s" $.Issue.PullRequest.HeadBranch (ShortSha .OldCommit) ($.Issue.Repo.CommitLink .OldCommit) (ShortSha .NewCommit) ($.Issue.Repo.CommitLink .NewCommit) $createdStr}}
 					{{else}}
-						{{ctx.Locale.TrN (len .Commits) "repo.issues.push_commit_1" "repo.issues.push_commits_n" (len .Commits) $createdStr}}
+						{{ctx.Locale.TrN (len .Commits) "added %d commit %s" "added %d commits %s" (len .Commits) $createdStr}}
 					{{end}}
 				</span>
 				{{if and .IsForcePush $.Issue.PullRequest.BaseRepo.Name}}
-					<a class="ui label comment-text-label tw-float-right" href="{{$.Issue.PullRequest.BaseRepo.Link}}/compare/{{PathEscape .OldCommit}}..{{PathEscape .NewCommit}}" rel="nofollow">{{ctx.Locale.Tr "repo.issues.force_push_compare"}}</a>
+					<a class="ui label comment-text-label tw-float-right" href="{{$.Issue.PullRequest.BaseRepo.Link}}/compare/{{PathEscape .OldCommit}}..{{PathEscape .NewCommit}}" rel="nofollow">{{ctx.Locale.Tr "Compare"}}</a>
 				{{end}}
 			</div>
 			{{if not .IsForcePush}}
@@ -571,7 +571,7 @@
 					{{template "shared/user/authorlink" .Poster}}
 					{{$oldProjectDisplayHtml := "Unknown Project"}}
 					{{if .OldProject}}
-						{{$tooltip := ctx.Locale.Tr "projects.deleted.display_name"}}
+						{{$tooltip := ctx.Locale.Tr "Deleted Project"}}
 						{{if not .OldProject.IsGhost}}
 							{{$tooltip = ctx.Locale.Tr (printf "projects.type-%d.display_name" .OldProject.Type)}}
 						{{end}}
@@ -579,18 +579,18 @@
 					{{end}}
 					{{$newProjectDisplayHtml := "Unknown Project"}}
 					{{if .Project}}
-						{{$tooltip := ctx.Locale.Tr "projects.deleted.display_name"}}
+						{{$tooltip := ctx.Locale.Tr "Deleted Project"}}
 						{{if not .Project.IsGhost}}
 							{{$tooltip = ctx.Locale.Tr (printf "projects.type-%d.display_name" .Project.Type)}}
 						{{end}}
 						{{$newProjectDisplayHtml = HTMLFormat `<span data-tooltip-content="%s">%s</span>` $tooltip .Project.Title}}
 					{{end}}
 					{{if and (gt .OldProjectID 0) (gt .ProjectID 0)}}
-						{{ctx.Locale.Tr "repo.issues.change_project_at" $oldProjectDisplayHtml $newProjectDisplayHtml $createdStr}}
+						{{ctx.Locale.Tr "modified the project from <b>%s</b> to <b>%s</b> %s" $oldProjectDisplayHtml $newProjectDisplayHtml $createdStr}}
 					{{else if gt .OldProjectID 0}}
-						{{ctx.Locale.Tr "repo.issues.remove_project_at" $oldProjectDisplayHtml $createdStr}}
+						{{ctx.Locale.Tr "removed this from the <b>%s</b> project %s" $oldProjectDisplayHtml $createdStr}}
 					{{else if gt .ProjectID 0}}
-						{{ctx.Locale.Tr "repo.issues.add_project_at" $newProjectDisplayHtml $createdStr}}
+						{{ctx.Locale.Tr "added this to the <b>%s</b> project %s" $newProjectDisplayHtml $createdStr}}
 					{{end}}
 				</span>
 			</div>
@@ -606,7 +606,7 @@
 						{{$trKey := printf "projects.type-%d.display_name" .Project.Type}}
 						{{$newProjectDisplay = HTMLFormat `%s <a href="%s"><span data-tooltip-content="%s">%s</span></a>` (svg .Project.IconName) (.Project.Link ctx) (ctx.Locale.Tr $trKey) .Project.Title}}
 					{{end}}
-					{{ctx.Locale.Tr "repo.issues.move_to_column_of_project" .CommentMetaData.ProjectColumnTitle $newProjectDisplay $createdStr}}
+					{{ctx.Locale.Tr "moved this to %s in %s on %s" .CommentMetaData.ProjectColumnTitle $newProjectDisplay $createdStr}}
 				</span>
 			</div>
 			{{end}}
@@ -627,7 +627,7 @@
 								{{$reviewerName = .Review.OriginalAuthor}}
 							{{end}}
 						{{end}}
-						{{ctx.Locale.Tr "repo.issues.review.dismissed" $reviewerName $createdStr}}
+						{{ctx.Locale.Tr "dismissed %s's review %s" $reviewerName $createdStr}}
 					</span>
 				</div>
 				{{if .Content}}
@@ -640,7 +640,7 @@
 									</a>
 								{{end}}
 								<span class="comment-text-line">
-									{{ctx.Locale.Tr "action.review_dismissed_reason"}}
+									{{ctx.Locale.Tr "Reason:"}}
 								</span>
 							</div>
 							<div class="ui attached segment comment-body">
@@ -648,7 +648,7 @@
 									{{if .RenderedContent}}
 										{{.RenderedContent}}
 									{{else}}
-										<span class="no-content">{{ctx.Locale.Tr "repo.issues.no_content"}}</span>
+										<span class="no-content">{{ctx.Locale.Tr "No description provided."}}</span>
 									{{end}}
 								</div>
 							</div>
@@ -663,11 +663,11 @@
 				<span class="comment-text-line">
 					{{template "shared/user/authorlink" .Poster}}
 					{{if and .OldRef .NewRef}}
-						{{ctx.Locale.Tr "repo.issues.change_ref_at" .OldRef .NewRef $createdStr}}
+						{{ctx.Locale.Tr "changed reference from <b><strike>%s</strike></b> to <b>%s</b> %s" .OldRef .NewRef $createdStr}}
 					{{else if .OldRef}}
-						{{ctx.Locale.Tr "repo.issues.remove_ref_at" .OldRef $createdStr}}
+						{{ctx.Locale.Tr "removed reference <b>%s</b> %s" .OldRef $createdStr}}
 					{{else}}
-						{{ctx.Locale.Tr "repo.issues.add_ref_at" .NewRef $createdStr}}
+						{{ctx.Locale.Tr "added reference <b>%s</b> %s" .NewRef $createdStr}}
 					{{end}}
 				</span>
 			</div>
@@ -676,8 +676,8 @@
 				<span class="badge">{{svg "octicon-git-merge" 16}}</span>
 				<span class="comment-text-line">
 					{{template "repo/issue/view_content/comments_authorlink" dict "ctxData" $ "comment" .}}
-					{{if eq .Type 34}}{{ctx.Locale.Tr "repo.pulls.auto_merge_newly_scheduled_comment" $createdStr}}
-					{{else}}{{ctx.Locale.Tr "repo.pulls.auto_merge_canceled_schedule_comment" $createdStr}}{{end}}
+					{{if eq .Type 34}}{{ctx.Locale.Tr "scheduled this pull request to auto merge when all checks succeed %[1]s" $createdStr}}
+					{{else}}{{ctx.Locale.Tr "canceled auto merging this pull request when all checks succeed %[1]s" $createdStr}}{{end}}
 				</span>
 			</div>
 		{{else if or (eq .Type 36) (eq .Type 37)}}
@@ -686,8 +686,8 @@
 				{{template "shared/user/avatarlink" dict "user" .Poster}}
 				<span class="comment-text-line">
 					{{template "shared/user/authorlink" .Poster}}
-					{{if eq .Type 36}}{{ctx.Locale.Tr "repo.issues.pin_comment" $createdStr}}
-					{{else}}{{ctx.Locale.Tr "repo.issues.unpin_comment" $createdStr}}{{end}}
+					{{if eq .Type 36}}{{ctx.Locale.Tr "pinned this %s" $createdStr}}
+					{{else}}{{ctx.Locale.Tr "unpinned this %s" $createdStr}}{{end}}
 				</span>
 			</div>
 		{{else if eq .Type 38}}
@@ -698,9 +698,9 @@
 					{{template "shared/user/authorlink" .Poster}}
 					{{$timeStr := .Content|TimeEstimateString}}
 					{{if $timeStr}}
-						{{ctx.Locale.Tr "repo.issues.change_time_estimate_at" $timeStr $createdStr}}
+						{{ctx.Locale.Tr "changed time estimate to <b>%[1]s</b> %[2]s" $timeStr $createdStr}}
 					{{else}}
-						{{ctx.Locale.Tr "repo.issues.remove_time_estimate_at" $createdStr}}
+						{{ctx.Locale.Tr "removed time estimate %s" $createdStr}}
 					{{end}}
 				</span>
 			</div>

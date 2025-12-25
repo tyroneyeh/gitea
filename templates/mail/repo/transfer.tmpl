@@ -8,13 +8,13 @@
 {{$url := HTMLFormat "<a href='%[1]s'>%[2]s</a>" .Link .Repo}}
 <body>
 	<p>{{.Subject}}.
-		{{.locale.Tr "mail.repo.transfer.body" $url}}
+		{{.locale.Tr "To accept or reject it, visit %s or just ignore it." $url}}
 	</p>
 	<div style="font-size:small; color:#666;">
 		<p>
 			---
 			<br>
-			<a href="{{.Link}}">{{.locale.Tr "mail.view_it_on" AppName}}</a>.
+			<a href="{{.Link}}">{{.locale.Tr "View it on %s" AppName}}</a>.
 		</p>
 	</div>
 </body>

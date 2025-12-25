@@ -55,7 +55,7 @@ func LFSFiles(ctx *context.Context) {
 	ctx.Data["Total"] = total
 
 	pager := context.NewPagination(int(total), setting.UI.ExplorePagingNum, page, 5)
-	ctx.Data["Title"] = ctx.Tr("repo.settings.lfs")
+	ctx.Data["Title"] = ctx.Tr("LFS")
 	ctx.Data["PageIsSettingsLFS"] = true
 	lfsMetaObjects, err := git_model.GetLFSMetaObjects(ctx, ctx.Repo.Repository.ID, pager.Paginater.Current(), setting.UI.ExplorePagingNum)
 	if err != nil {
@@ -84,7 +84,7 @@ func LFSLocks(ctx *context.Context) {
 	ctx.Data["Total"] = total
 
 	pager := context.NewPagination(int(total), setting.UI.ExplorePagingNum, page, 5)
-	ctx.Data["Title"] = ctx.Tr("repo.settings.lfs_locks")
+	ctx.Data["Title"] = ctx.Tr("Locks")
 	ctx.Data["PageIsSettingsLFS"] = true
 	lfsLocks, err := git_model.GetLFSLockByRepoID(ctx, ctx.Repo.Repository.ID, pager.Paginater.Current(), setting.UI.ExplorePagingNum)
 	if err != nil {
@@ -180,18 +180,18 @@ func LFSLockFile(ctx *context.Context) {
 	originalPath := ctx.FormString("path")
 	lockPath := originalPath
 	if len(lockPath) == 0 {
-		ctx.Flash.Error(ctx.Tr("repo.settings.lfs_invalid_locking_path", originalPath))
+		ctx.Flash.Error(ctx.Tr("Invalid path: %s", originalPath))
 		ctx.Redirect(ctx.Repo.RepoLink + "/settings/lfs/locks")
 		return
 	}
 	if lockPath[len(lockPath)-1] == '/' {
-		ctx.Flash.Error(ctx.Tr("repo.settings.lfs_invalid_lock_directory", originalPath))
+		ctx.Flash.Error(ctx.Tr("Cannot lock directory: %s", originalPath))
 		ctx.Redirect(ctx.Repo.RepoLink + "/settings/lfs/locks")
 		return
 	}
 	lockPath = util.PathJoinRel(lockPath)
 	if len(lockPath) == 0 {
-		ctx.Flash.Error(ctx.Tr("repo.settings.lfs_invalid_locking_path", originalPath))
+		ctx.Flash.Error(ctx.Tr("Invalid path: %s", originalPath))
 		ctx.Redirect(ctx.Repo.RepoLink + "/settings/lfs/locks")
 		return
 	}
@@ -202,7 +202,7 @@ func LFSLockFile(ctx *context.Context) {
 	})
 	if err != nil {
 		if git_model.IsErrLFSLockAlreadyExist(err) {
-			ctx.Flash.Error(ctx.Tr("repo.settings.lfs_lock_already_exists", originalPath))
+			ctx.Flash.Error(ctx.Tr("Lock already exists: %s", originalPath))
 			ctx.Redirect(ctx.Repo.RepoLink + "/settings/lfs/locks")
 			return
 		}

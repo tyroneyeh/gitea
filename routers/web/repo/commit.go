@@ -93,7 +93,7 @@ func Commits(ctx *context.Context) {
 	commitsTagsMap, err := repo_model.FindTagsByCommitIDs(ctx, ctx.Repo.Repository.ID, commitIDs...)
 	if err != nil {
 		log.Error("FindTagsByCommitIDs: %v", err)
-		ctx.Flash.Error(ctx.Tr("internal_error_skipped", "FindTagsByCommitIDs"))
+		ctx.Flash.Error(ctx.Tr("Internal error occurred but is skipped: %s", "FindTagsByCommitIDs"))
 	} else {
 		ctx.Data["CommitsTagsMap"] = commitsTagsMap
 	}
@@ -109,7 +109,7 @@ func Commits(ctx *context.Context) {
 
 // Graph render commit graph - show commits from all branches.
 func Graph(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("repo.commit_graph")
+	ctx.Data["Title"] = ctx.Tr("Commit Graph")
 	ctx.Data["PageIsCommits"] = true
 	ctx.Data["PageIsViewCode"] = true
 	mode := strings.ToLower(ctx.FormTrim("mode"))

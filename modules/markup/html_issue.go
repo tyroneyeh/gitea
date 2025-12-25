@@ -52,7 +52,7 @@ func fullIssuePatternProcessor(ctx *RenderContext, node *html.Node) {
 		// indicate that in the text by appending (comment)
 		if m[4] != -1 && m[5] != -1 {
 			if locale, ok := ctx.Value(translation.ContextKey).(translation.Locale); ok {
-				text += " " + locale.TrString("repo.from_comment")
+				text += " " + locale.TrString("(comment)")
 			} else {
 				text += " (comment)"
 			}

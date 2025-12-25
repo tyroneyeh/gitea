@@ -12,14 +12,14 @@
 					{{$shaurl := printf "%s/commit/%s" $.RepoLink (PathEscape .FromCommitID)}}
 					{{$shalink := HTMLFormat `<a class="ui primary sha label" href="%s">%s</a>` $shaurl (ShortSha .FromCommitID)}}
 					{{if eq .CherryPickType "revert"}}
-						{{ctx.Locale.Tr "repo.editor.revert" $shalink}}
+						{{ctx.Locale.Tr "Revert %s onto:" $shalink}}
 					{{else}}
-						{{ctx.Locale.Tr "repo.editor.cherry_pick" $shalink}}
+						{{ctx.Locale.Tr "Cherry-pick %s onto:" $shalink}}
 					{{end}}
 					<a class="section" href="{{$.RepoLink}}">{{.Repository.FullName}}</a>
 					<div class="breadcrumb-divider">:</div>
 					<a class="section" href="{{$.BranchLink}}">{{.BranchName}}</a>
-					<span>{{ctx.Locale.Tr "repo.editor.or"}} <a href="{{$shaurl}}">{{ctx.Locale.Tr "repo.editor.cancel_lower"}}</a></span>
+					<span>{{ctx.Locale.Tr "or"}} <a href="{{$shaurl}}">{{ctx.Locale.Tr "Cancel"}}</a></span>
 				</div>
 			</div>
 			{{template "repo/editor/commit_form" .}}

@@ -63,7 +63,7 @@ func showUserFeed(ctx *context.Context, formatType string) {
 	}
 
 	feed := &feeds.Feed{
-		Title:       ctx.Locale.TrString("home.feed_of", ctx.ContextUser.DisplayName()),
+		Title:       ctx.Locale.TrString("Feed of \"%s\"", ctx.ContextUser.DisplayName()),
 		Link:        &feeds.Link{Href: ctx.ContextUser.HTMLURL(ctx)},
 		Description: string(ctxUserDescription),
 		Created:     time.Now(),
