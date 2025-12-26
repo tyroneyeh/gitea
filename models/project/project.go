@@ -184,11 +184,13 @@ func init() {
 	db.RegisterModel(new(Project))
 }
 
+type Translator func(string, ...any) string
+
 // GetCardConfig retrieves the types of configurations project column cards could have
-func GetCardConfig() []CardConfig {
+func GetCardConfig(TrString Translator) []CardConfig {
 	return []CardConfig{
-		{CardTypeTextOnly, "repo.projects.card_type.text_only"},
-		{CardTypeImagesAndText, "repo.projects.card_type.images_and_text"},
+		{CardTypeTextOnly, TrString("Text Only")},
+		{CardTypeImagesAndText, TrString("Images and Text")},
 	}
 }
 

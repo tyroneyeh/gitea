@@ -52,12 +52,12 @@
 				{{range $element := .CardTypes}}
 					{{if or (eq $.card_type $element.CardType) (and (not $.PageIsEditProjects) (eq $element.CardType 1))}}
 						<input type="hidden" name="card_type" value="{{$element.CardType}}">
-						<div class="default text">{{ctx.Locale.Tr $element.Translation}}</div>
+						<div class="default text">{{$element.Translation}}</div>
 					{{end}}
 				{{end}}
 				<div class="menu">
 					{{range $element := .CardTypes}}
-						<div class="item" data-id="{{$element.CardType}}" data-value="{{$element.CardType}}">{{ctx.Locale.Tr $element.Translation}}</div>
+						<div class="item" data-id="{{$element.CardType}}" data-value="{{$element.CardType}}">{{$element.Translation}}</div>
 					{{end}}
 				</div>
 			</div>

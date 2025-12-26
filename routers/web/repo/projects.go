@@ -133,7 +133,7 @@ func Projects(ctx *context.Context) {
 func RenderNewProject(ctx *context.Context) {
 	ctx.Data["Title"] = ctx.Tr("New Project")
 	ctx.Data["TemplateConfigs"] = project_model.GetTemplateConfigs()
-	ctx.Data["CardTypes"] = project_model.GetCardConfig()
+	ctx.Data["CardTypes"] = project_model.GetCardConfig(ctx.Locale.TrString)
 	ctx.Data["CanWriteProjects"] = ctx.Repo.Permission.CanWrite(unit.TypeProjects)
 	ctx.Data["CancelLink"] = ctx.Repo.Repository.Link() + "/projects"
 	ctx.HTML(http.StatusOK, tplProjectsNew)
@@ -217,7 +217,7 @@ func RenderEditProject(ctx *context.Context) {
 	ctx.Data["Title"] = ctx.Tr("Edit Project")
 	ctx.Data["PageIsEditProjects"] = true
 	ctx.Data["CanWriteProjects"] = ctx.Repo.Permission.CanWrite(unit.TypeProjects)
-	ctx.Data["CardTypes"] = project_model.GetCardConfig()
+	ctx.Data["CardTypes"] = project_model.GetCardConfig(ctx.Locale.TrString)
 
 	p, err := project_model.GetProjectByID(ctx, ctx.PathParamInt64("id"))
 	if err != nil {
@@ -251,7 +251,7 @@ func EditProjectPost(ctx *context.Context) {
 	ctx.Data["Title"] = ctx.Tr("Edit Project")
 	ctx.Data["PageIsEditProjects"] = true
 	ctx.Data["CanWriteProjects"] = ctx.Repo.Permission.CanWrite(unit.TypeProjects)
-	ctx.Data["CardTypes"] = project_model.GetCardConfig()
+	ctx.Data["CardTypes"] = project_model.GetCardConfig(ctx.Locale.TrString)
 	ctx.Data["CancelLink"] = project_model.ProjectLinkForRepo(ctx.Repo.Repository, projectID)
 
 	if ctx.HasError() {

@@ -140,7 +140,7 @@ func canWriteProjects(ctx *context.Context) bool {
 func RenderNewProject(ctx *context.Context) {
 	ctx.Data["Title"] = ctx.Tr("New Project")
 	ctx.Data["TemplateConfigs"] = project_model.GetTemplateConfigs()
-	ctx.Data["CardTypes"] = project_model.GetCardConfig()
+	ctx.Data["CardTypes"] = project_model.GetCardConfig(ctx.Locale.TrString)
 	ctx.Data["CanWriteProjects"] = canWriteProjects(ctx)
 	ctx.Data["PageIsViewProjects"] = true
 	ctx.Data["HomeLink"] = ctx.ContextUser.HomeLink()
@@ -239,7 +239,7 @@ func RenderEditProject(ctx *context.Context) {
 	ctx.Data["PageIsEditProjects"] = true
 	ctx.Data["PageIsViewProjects"] = true
 	ctx.Data["CanWriteProjects"] = canWriteProjects(ctx)
-	ctx.Data["CardTypes"] = project_model.GetCardConfig()
+	ctx.Data["CardTypes"] = project_model.GetCardConfig(ctx.Locale.TrString)
 
 	if _, err := shared_user.RenderUserOrgHeader(ctx); err != nil {
 		ctx.ServerError("RenderUserOrgHeader", err)
@@ -275,7 +275,7 @@ func EditProjectPost(ctx *context.Context) {
 	ctx.Data["PageIsEditProjects"] = true
 	ctx.Data["PageIsViewProjects"] = true
 	ctx.Data["CanWriteProjects"] = canWriteProjects(ctx)
-	ctx.Data["CardTypes"] = project_model.GetCardConfig()
+	ctx.Data["CardTypes"] = project_model.GetCardConfig(ctx.Locale.TrString)
 	ctx.Data["CancelLink"] = project_model.ProjectLinkForOrg(ctx.ContextUser, projectID)
 
 	if _, err := shared_user.RenderUserOrgHeader(ctx); err != nil {
