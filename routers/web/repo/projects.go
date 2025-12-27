@@ -132,7 +132,7 @@ func Projects(ctx *context.Context) {
 // RenderNewProject render creating a project page
 func RenderNewProject(ctx *context.Context) {
 	ctx.Data["Title"] = ctx.Tr("New Project")
-	ctx.Data["TemplateConfigs"] = project_model.GetTemplateConfigs()
+	ctx.Data["TemplateConfigs"] = project_model.GetTemplateConfigs(ctx.Locale.TrString)
 	ctx.Data["CardTypes"] = project_model.GetCardConfig(ctx.Locale.TrString)
 	ctx.Data["CanWriteProjects"] = ctx.Repo.Permission.CanWrite(unit.TypeProjects)
 	ctx.Data["CancelLink"] = ctx.Repo.Repository.Link() + "/projects"

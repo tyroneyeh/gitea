@@ -26,11 +26,11 @@ const (
 )
 
 // GetTemplateConfigs retrieves the template configs of configurations project columns could have
-func GetTemplateConfigs() []TemplateConfig {
+func GetTemplateConfigs(TrString Translator) []TemplateConfig {
 	return []TemplateConfig{
-		{TemplateTypeNone, "repo.projects.type.none"},
-		{TemplateTypeBasicKanban, "repo.projects.type.basic_kanban"},
-		{TemplateTypeBugTriage, "repo.projects.type.bug_triage"},
+		{TemplateTypeNone, TrString("None")},
+		{TemplateTypeBasicKanban, TrString("Basic Kanban")},
+		{TemplateTypeBugTriage, TrString("Bug Triage")},
 	}
 }
 
