@@ -17,6 +17,15 @@
     padding: 5px 10px !important;
     width: auto;
 }
+.gridjs-tbody tr:nth-child(odd) td {
+  background-color: #ffffff !important;
+}
+.gridjs-tbody tr:nth-child(even) td {
+  background-color: #f9fafb !important;
+}
+.gridjs-tbody tr:hover td {
+  background-color: #e5e7eb !important;
+}
 input.gridjs-input {
     color: var(--color-text);
     background-color: var(--color-input-background);
