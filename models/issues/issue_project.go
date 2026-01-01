@@ -5,6 +5,7 @@ package issues
 
 import (
 	"context"
+	"slices"
 
 	"code.gitea.io/gitea/models/db"
 	project_model "code.gitea.io/gitea/models/project"
@@ -91,19 +92,19 @@ func LoadIssuesFromColumn(ctx context.Context, b *project_model.Column, opts *Is
 // If newProjectID is 0, the issue is removed from the project
 func IssueAssignOrRemoveProject(ctx context.Context, issue *Issue, doer *user_model.User, newProjectIDs []int64, newColumnID int64) error {
 	return db.WithTx(ctx, func(ctx context.Context) error {
-		oldProjectIDs := issue.projectIDs(ctx)
+		oldProjectFullIDs := issue.projectIDs(ctx)
 
 		if err := issue.LoadRepo(ctx); err != nil {
 			return err
 		}
 		projectDB := db.GetEngine(ctx).Where("project_issue.issue_id=?", issue.ID)
-		newProjectIDs, oldProjectIDs := util.DiffSlice(oldProjectIDs, newProjectIDs)
 
-		if len(oldProjectIDs) > 0 {
-			if _, err := projectDB.Where("issue_id=?", issue.ID).In("project_id", oldProjectIDs).Delete(&project_model.ProjectIssue{}); err != nil {
+		newProjectIDs, oldProjectIDs := util.DiffSlice(oldProjectFullIDs, newProjectIDs)
+		if len(oldProjectIDs) > 0 && slices.Equal(oldProjectFullIDs, newProjectIDs) || len(newProjectIDs) == 0 {
+			if _, err := projectDB.Where("issue_id=?", issue.ID).In("project_id", oldProjectFullIDs).Delete(&project_model.ProjectIssue{}); err != nil {
 				return err
 			}
-			for _, pID := range oldProjectIDs {
+			for _, pID := range oldProjectFullIDs {
 				if _, err := CreateComment(ctx, &CreateCommentOptions{
 					Type:         CommentTypeProject,
 					Doer:         doer,
