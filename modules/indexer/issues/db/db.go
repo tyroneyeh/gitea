@@ -85,18 +85,22 @@ func (i *Indexer) Search(ctx context.Context, options *internal.SearchOptions) (
 		}
 		subQuery := builder.Select("id").From("issue").Where(repoCond)
 		searchMode := util.IfZero(options.SearchMode, i.SupportedSearchModes()[0].ModeValue)
-		cond = builder.Or(
-			buildMatchQuery(searchMode, "issue.name", options.Keyword),
-			buildMatchQuery(searchMode, "issue.content", options.Keyword),
-			builder.In("issue.id", builder.Select("issue_id").
-				From("comment").
-				Where(builder.And(
-					builder.Eq{"type": issue_model.CommentTypeComment},
-					builder.In("issue_id", subQuery),
-					buildMatchQuery(searchMode, "content", options.Keyword),
-				)),
-			),
-		)
+		if options.Keyword[0] == '+' {
+			options.Keyword = options.Keyword[1:]
+			cond = builder.Or(
+				buildMatchQuery(searchMode, "issue.content", options.Keyword),
+				builder.In("issue.id", builder.Select("issue_id").
+					From("comment").
+					Where(builder.And(
+						builder.Eq{"type": issue_model.CommentTypeComment},
+						builder.In("issue_id", subQuery),
+						buildMatchQuery(searchMode, "content", options.Keyword),
+					)),
+				),
+			)
+		} else {
+			cond = cond.And(buildMatchQuery(searchMode, "issue.name", options.Keyword))
+		}
 
 		if options.IsKeywordNumeric() {
 			cond = cond.Or(

@@ -171,17 +171,27 @@ func (b *Indexer) Search(ctx context.Context, options *internal.SearchOptions) (
 			if searchMode == indexer.SearchModeFuzzy {
 				fuzziness = inner_bleve.GuessFuzzinessByKeyword(options.Keyword)
 			}
-			queries = append(queries, bleve.NewDisjunctionQuery([]query.Query{
-				inner_bleve.MatchAndQuery(options.Keyword, "title", issueIndexerAnalyzer, fuzziness),
-				inner_bleve.MatchAndQuery(options.Keyword, "content", issueIndexerAnalyzer, fuzziness),
-				inner_bleve.MatchAndQuery(options.Keyword, "comments", issueIndexerAnalyzer, fuzziness),
-			}...))
+			if options.Keyword[0] == '+' {
+				options.Keyword = options.Keyword[1:]
+				queries = append(queries, bleve.NewDisjunctionQuery([]query.Query{
+					inner_bleve.MatchAndQuery(options.Keyword, "content", issueIndexerAnalyzer, fuzziness),
+					inner_bleve.MatchAndQuery(options.Keyword, "comments", issueIndexerAnalyzer, fuzziness),
+				}...))
+			} else {
+				queries = append(queries, inner_bleve.MatchAndQuery(options.Keyword, "title", issueIndexerAnalyzer, fuzziness))
+			}
 		} else /* exact */ {
-			queries = append(queries, bleve.NewDisjunctionQuery([]query.Query{
-				inner_bleve.MatchPhraseQuery(options.Keyword, "title", issueIndexerAnalyzer, 0),
-				inner_bleve.MatchPhraseQuery(options.Keyword, "content", issueIndexerAnalyzer, 0),
-				inner_bleve.MatchPhraseQuery(options.Keyword, "comments", issueIndexerAnalyzer, 0),
-			}...))
+			if options.Keyword[0] == '+' {
+				options.Keyword = options.Keyword[1:]
+				queries = append(queries, bleve.NewDisjunctionQuery([]query.Query{
+					inner_bleve.MatchPhraseQuery(options.Keyword, "content", issueIndexerAnalyzer, 0),
+					inner_bleve.MatchPhraseQuery(options.Keyword, "comments", issueIndexerAnalyzer, 0),
+				}...))
+			} else {
+				queries = append(queries, bleve.NewDisjunctionQuery([]query.Query{
+					inner_bleve.MatchPhraseQuery(options.Keyword, "title", issueIndexerAnalyzer, 0),
+				}...))
+			}
 		}
 	}
 
