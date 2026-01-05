@@ -46,11 +46,15 @@ export function initCommonIssueListQuickGoto() {
     const onInput = () => {
       const searchText = input.value;
       // try to check whether the parsed goto link is valid
-      const targetUrl = parseIssueListQuickGotoLink(repoLink, searchText);
-      if (targetUrl) {
-        toggleElem(goto, Boolean(targetUrl));
-        goto.setAttribute('data-issue-goto-link', targetUrl);
+      let targetUrl;
+      if (repoLink.length && !Number.isNaN(Number(searchText))) {
+        // also support issue index only (eg: "123")
+        targetUrl = `${repoLink}/issues/${Number(searchText)}`;
+      } else {
+        targetUrl = parseIssueListQuickGotoLink(repoLink, searchText);
       }
+      toggleElem(goto, Boolean(targetUrl));
+      goto.setAttribute('data-issue-goto-link', targetUrl);
     };
 
     input.addEventListener('input', onInputDebounce(onInput));
