@@ -101,6 +101,11 @@ func getIssueIndexerData(ctx context.Context, issueID int64) (*internal.IndexerD
 		return nil, false, fmt.Errorf("issue.Repo.LoadOwner: %w", err)
 	}
 
+	AssigneeIDs := make([]int64, 0, len(issue.Assignees))
+	for _, assignee := range issue.Assignees {
+		AssigneeIDs = append(AssigneeIDs, assignee.ID)
+	}
+
 	return &internal.IndexerData{
 		ID:                 issue.ID,
 		RepoID:             issue.RepoID,
@@ -117,7 +122,7 @@ func getIssueIndexerData(ctx context.Context, issueID int64) (*internal.IndexerD
 		ProjectIDs:         projectIDs,
 		ProjectColumnID:    projectColumnID,
 		PosterID:           issue.PosterID,
-		AssigneeID:         issue.AssigneeID,
+		AssigneeIDs:        AssigneeIDs,
 		MentionIDs:         mentionIDs,
 		ReviewedIDs:        reviewedIDs,
 		ReviewRequestedIDs: reviewRequestedIDs,

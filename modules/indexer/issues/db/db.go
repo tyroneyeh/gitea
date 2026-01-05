@@ -88,6 +88,7 @@ func (i *Indexer) Search(ctx context.Context, options *internal.SearchOptions) (
 		if options.Keyword[0] == '+' {
 			options.Keyword = options.Keyword[1:]
 			cond = builder.Or(
+				buildMatchQuery(searchMode, "issue.name", options.Keyword),
 				buildMatchQuery(searchMode, "issue.content", options.Keyword),
 				builder.In("issue.id", builder.Select("issue_id").
 					From("comment").
@@ -99,7 +100,7 @@ func (i *Indexer) Search(ctx context.Context, options *internal.SearchOptions) (
 				),
 			)
 		} else {
-			cond = cond.And(buildMatchQuery(searchMode, "issue.name", options.Keyword))
+			cond = cond.Or(buildMatchQuery(searchMode, "issue.name", options.Keyword))
 		}
 
 		if options.IsKeywordNumeric() {
