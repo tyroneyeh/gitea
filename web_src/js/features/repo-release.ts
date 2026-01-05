@@ -15,40 +15,12 @@ export function initRepoReleaseNew() {
     hideElem(`#attachment-${id}`);
   });
   registerGlobalInitFunc('initReleaseEditForm', (elForm: HTMLFormElement) => {
-    initTagNameEditor(elForm);
     initGenerateReleaseNotes(elForm);
   });
 }
 
 function getReleaseFormExistingTags(elForm: HTMLFormElement): Array<string> {
   return JSON.parse(elForm.getAttribute('data-existing-tags')!);
-}
-
-function initTagNameEditor(elForm: HTMLFormElement) {
-  const tagNameInput = elForm.querySelector<HTMLInputElement>('input[type=text][name=tag_name]');
-  if (!tagNameInput) return; // only init if tag name input exists (the tag name is editable)
-
-  const existingTags = getReleaseFormExistingTags(elForm);
-  const defaultTagHelperText = elForm.getAttribute('data-tag-helper');
-  const newTagHelperText = elForm.getAttribute('data-tag-helper-new');
-  const existingTagHelperText = elForm.getAttribute('data-tag-helper-existing');
-
-  const hideTargetInput = function(tagNameInput: HTMLInputElement) {
-    const value = tagNameInput.value;
-    const tagHelper = elForm.querySelector('.tag-name-helper')!;
-    if (existingTags.includes(value)) {
-      // If the tag already exists, hide the target branch selector.
-      hideElem(elForm.querySelectorAll('.tag-target-selector'));
-      tagHelper.textContent = existingTagHelperText;
-    } else {
-      showElem(elForm.querySelectorAll('.tag-target-selector'));
-      tagHelper.textContent = value ? newTagHelperText : defaultTagHelperText;
-    }
-  };
-  hideTargetInput(tagNameInput); // update on page load because the input may have a value
-  tagNameInput.addEventListener('input', (e) => {
-    hideTargetInput(e.target as HTMLInputElement);
-  });
 }
 
 export function guessPreviousReleaseTag(tagName: string, existingTags: Array<string>): string {
