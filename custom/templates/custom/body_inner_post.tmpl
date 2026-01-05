@@ -19,11 +19,11 @@
                 </div>
                 <div class="scrolling menu">
                     <a class="item muted" tabindex="-1" v-for="assignee in assignees" @click="selectAssignee(assignee.username)">
-                        <img class="ui avatar image mr-3" width="28" height="28" :src="assignee.avatar_url"><span class="gt-ellipsis">[[assignee.username]]</span>
+                        <img class="ui avatar image mr-3" width="28" height="28" :src="assignee.avatar_url"><span class="gt-ellipsis">[[assignee.full_name]]</span>
                     </a>
                 </div>
             </div>
-            <input type="search" v-model="username" class="combo-value ui button small" placeholder="username" style="width:100px">
+            <input type="search" v-model="username" @click="username=''" class="combo-value ui button small" placeholder="username" style="width:100px">
         </div>
 
         <input type="button" class="ui small" @click="queryReport" value="OK">
