@@ -1,7 +1,6 @@
 import {isElemVisible, onInputDebounce, submitEventSubmitter, toggleElem} from '../utils/dom.ts';
 
 const {appSubUrl} = window.config;
-const reIssueIndex = /^(\d+)$/; // eg: "123"
 const reIssueSharpIndex = /^#(\d+)$/; // eg: "#123"
 const reIssueOwnerRepoIndex = /([-.\w]+)\/([-.\w]+)#(\d+)$/;  // eg: "{owner}/{repo}#{index}"
 
@@ -11,9 +10,7 @@ export function parseIssueListQuickGotoLink(repoLink: string, searchText: string
   let targetUrl = '';
   const [_, owner, repo, index] = reIssueOwnerRepoIndex.exec(searchText) || [];
   // try to parse it in current repo
-  if (reIssueIndex.test(searchText)) {
-    targetUrl = `${repoLink}/issues/${searchText}`;
-  } else if (reIssueSharpIndex.test(searchText)) {
+  if (reIssueSharpIndex.test(searchText)) {
     targetUrl = `${repoLink}/issues/${searchText.substring(1)}`;
   } else if (owner) {
     // try to parse it for a global search (eg: "owner/repo#123")
@@ -46,7 +43,7 @@ export function initCommonIssueListQuickGoto() {
       }
     });
 
-    const onInput = async () => {
+    const onInput = () => {
       const searchText = input.value;
       // try to check whether the parsed goto link is valid
       const targetUrl = parseIssueListQuickGotoLink(repoLink, searchText);
