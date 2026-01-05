@@ -1,5 +1,4 @@
 import {isElemVisible, onInputDebounce, submitEventSubmitter, toggleElem} from '../utils/dom.ts';
-import {GET} from '../modules/fetch.ts';
 
 const {appSubUrl} = window.config;
 const reIssueIndex = /^(\d+)$/; // eg: "123"
@@ -50,19 +49,13 @@ export function initCommonIssueListQuickGoto() {
     const onInput = async () => {
       const searchText = input.value;
       // try to check whether the parsed goto link is valid
-      let targetUrl = parseIssueListQuickGotoLink(repoLink, searchText);
+      const targetUrl = parseIssueListQuickGotoLink(repoLink, searchText);
       if (targetUrl) {
-        const res = await GET(`${targetUrl}/info`); // backend: GetIssueInfo, it only checks whether the issue exists by status code
-        if (res.status !== 200) targetUrl = '';
+        toggleElem(goto, Boolean(targetUrl));
+        goto.setAttribute('data-issue-goto-link', targetUrl);
       }
-      // if the input value has changed, then ignore the result
-      if (input.value !== searchText) return;
-
-      toggleElem(goto, Boolean(targetUrl));
-      goto.setAttribute('data-issue-goto-link', targetUrl);
     };
 
     input.addEventListener('input', onInputDebounce(onInput));
-    onInput();
   }
 }
