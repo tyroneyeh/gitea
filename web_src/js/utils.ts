@@ -145,12 +145,12 @@ export function toAbsoluteUrl(url: string): string {
     return url;
   }
   if (url.startsWith('//')) {
-    return `${window.location.protocol}${url}`; // it's also a somewhat absolute URL (with the current scheme)
+    return `[${document.title}](${window.location.origin}${url})`; // it's also a somewhat absolute URL (with the current scheme)
   }
   if (url && !url.startsWith('/')) {
     throw new Error('unsupported url, it should either start with / or http(s)://');
   }
-  return `${window.location.origin}${url}`;
+  return `[${document.title}](${window.location.origin}${url})`;
 }
 
 /** Encode an Uint8Array into a URLEncoded base64 string. */
