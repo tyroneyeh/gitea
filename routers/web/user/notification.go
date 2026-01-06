@@ -213,11 +213,14 @@ func NotificationSubscriptions(ctx *context.Context) {
 		}
 	}
 
+	excludedLabelNames := []string{"MIS", "ADM", "EWC"}
+
 	count, err := issues_model.CountIssues(ctx, &issues_model.IssuesOptions{
-		SubscriberID: ctx.Doer.ID,
-		IsClosed:     showClosed,
-		IsPull:       issueTypeBool,
-		LabelIDs:     labelIDs,
+		SubscriberID:       ctx.Doer.ID,
+		IsClosed:           showClosed,
+		IsPull:             issueTypeBool,
+		LabelIDs:           labelIDs,
+		ExcludedLabelNames: excludedLabelNames,
 	})
 	if err != nil {
 		ctx.ServerError("CountIssues", err)
@@ -228,11 +231,12 @@ func NotificationSubscriptions(ctx *context.Context) {
 			PageSize: setting.UI.IssuePagingNum,
 			Page:     page,
 		},
-		SubscriberID: ctx.Doer.ID,
-		SortType:     sortType,
-		IsClosed:     showClosed,
-		IsPull:       issueTypeBool,
-		LabelIDs:     labelIDs,
+		SubscriberID:       ctx.Doer.ID,
+		SortType:           sortType,
+		IsClosed:           showClosed,
+		IsPull:             issueTypeBool,
+		LabelIDs:           labelIDs,
+		ExcludedLabelNames: excludedLabelNames,
 	})
 	if err != nil {
 		ctx.ServerError("Issues", err)
