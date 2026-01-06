@@ -107,7 +107,7 @@ async function handleUploadFiles(editor: CodeMirrorEditor | TextareaEditor, drop
     const {width, dppx} = await imageInfo(file);
     const placeholder = `[${name}](uploading ...)`;
 
-    if (file.size > 10240 && !isImageFile(file) && !isVideoFile(file) && !isCompressedFile(file)) {
+    if (document.querySelector('#issue-title-display') && file.size > 10240 && !isImageFile(file) && !isVideoFile(file) && !isCompressedFile(file)) {
       file = await compressFileToZip(file);
     }
 
