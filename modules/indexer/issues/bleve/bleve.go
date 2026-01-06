@@ -248,7 +248,7 @@ func (b *Indexer) Search(ctx context.Context, options *internal.SearchOptions) (
 			options.Keyword = keyword
 		}
 
-		searchMode := util.IfZero(options.SearchMode, b.SupportedSearchModes()[0].ModeValue)
+		searchMode := util.IfZero(options.SearchMode, b.SupportedSearchModes()[2].ModeValue)
 		if searchMode == indexer.SearchModeWords || searchMode == indexer.SearchModeFuzzy {
 			fuzziness := 0
 			if searchMode == indexer.SearchModeFuzzy {
