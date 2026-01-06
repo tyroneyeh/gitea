@@ -5,7 +5,10 @@ package bleve
 
 import (
 	"context"
+	"regexp"
 	"strconv"
+	"strings"
+	"time"
 
 	"code.gitea.io/gitea/modules/indexer"
 	indexer_internal "code.gitea.io/gitea/modules/indexer/internal"
@@ -158,6 +161,75 @@ func (b *Indexer) Delete(_ context.Context, ids ...int64) error {
 	}
 	return batch.Flush()
 }
+func ParseCreatedRange(input string) (createdAfter, createdBefore optional.Option[int64], keyword string) {
+	re := regexp.MustCompile(`(?i)\+?Created:\s*(>=|>|<=|<|=)?\s*"?(\d{4}-\d{2}-\d{2})"?`)
+
+	matches := re.FindAllStringSubmatch(input, -1)
+	if len(matches) == 0 {
+		return optional.None[int64](), optional.None[int64](), input
+	}
+
+	var afterVals []int64
+	var beforeVals []int64
+
+	for _, m := range matches {
+		op := m[1]
+		dateStr := m[2]
+
+		if op == "" {
+			op = "="
+		}
+
+		t, parseErr := time.Parse("2006-01-02", dateStr)
+		if parseErr != nil {
+			continue
+		}
+
+		switch op {
+		case "=":
+			start := t
+			end := t.Add(24*time.Hour - time.Nanosecond)
+			afterVals = append(afterVals, start.Unix())
+			beforeVals = append(beforeVals, end.Unix())
+		case ">":
+			afterVals = append(afterVals, t.Add(24*time.Hour).Unix())
+		case ">=":
+			afterVals = append(afterVals, t.Unix())
+		case "<":
+			beforeVals = append(beforeVals, t.Unix()-1)
+		case "<=":
+			beforeVals = append(beforeVals, t.Add(24*time.Hour-1*time.Nanosecond).Unix())
+		}
+	}
+
+	if len(afterVals) > 0 {
+		minAfter := afterVals[0]
+		for _, v := range afterVals[1:] {
+			if v > minAfter {
+				minAfter = v
+			}
+		}
+		createdAfter = optional.Some(minAfter)
+	} else {
+		createdAfter = optional.None[int64]()
+	}
+
+	if len(beforeVals) > 0 {
+		maxBefore := beforeVals[0]
+		for _, v := range beforeVals[1:] {
+			if v < maxBefore {
+				maxBefore = v
+			}
+		}
+		createdBefore = optional.Some(maxBefore)
+	} else {
+		createdBefore = optional.None[int64]()
+	}
+
+	keyword = strings.TrimSpace(re.ReplaceAllString(input, ""))
+
+	return createdAfter, createdBefore, keyword
+}
 
 // Search searches for issues by given conditions.
 // Returns the matching issue IDs
@@ -165,6 +237,17 @@ func (b *Indexer) Search(ctx context.Context, options *internal.SearchOptions) (
 	var queries []query.Query
 
 	if options.Keyword != "" {
+		CreatedAfterUnix, CreatedBeforeUnix, keyword := ParseCreatedRange(options.Keyword)
+		if CreatedAfterUnix.Has() || CreatedBeforeUnix.Has() {
+			var dateQueries []query.Query
+			dateQueries = append(dateQueries, inner_bleve.NumericRangeInclusiveQuery(
+				CreatedAfterUnix,
+				CreatedBeforeUnix,
+				"created_unix"))
+			queries = append(queries, bleve.NewConjunctionQuery(dateQueries...))
+			options.Keyword = keyword
+		}
+
 		searchMode := util.IfZero(options.SearchMode, b.SupportedSearchModes()[0].ModeValue)
 		if searchMode == indexer.SearchModeWords || searchMode == indexer.SearchModeFuzzy {
 			fuzziness := 0
@@ -181,9 +264,9 @@ func (b *Indexer) Search(ctx context.Context, options *internal.SearchOptions) (
 			} else {
 				queries = append(queries, inner_bleve.MatchAndQuery(options.Keyword, "title", issueIndexerAnalyzer, fuzziness))
 			}
-		} else /* exact */ {
-			if options.Keyword[0] == '+' {
-				options.Keyword = options.Keyword[1:]
+		} else if options.Keyword != "" /* exact */ {
+			if strings.Contains(options.Keyword, "+") {
+				options.Keyword = strings.ReplaceAll(options.Keyword, "+", "")
 				queries = append(queries, bleve.NewDisjunctionQuery([]query.Query{
 					inner_bleve.MatchPhraseQuery(options.Keyword, "title", issueIndexerAnalyzer, 0),
 					inner_bleve.MatchPhraseQuery(options.Keyword, "content", issueIndexerAnalyzer, 0),
