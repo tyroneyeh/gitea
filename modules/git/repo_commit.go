@@ -147,8 +147,8 @@ func (repo *Repository) searchCommits(id ObjectID, opts SearchCommitsOptions) ([
 		}
 	}
 
-	// create new git log command with limit of 100 commits
-	cmd := gitcmd.NewCommand("log", "-100", prettyLogFormat).AddDynamicArguments(id.String())
+	// create new git log command with limit of 200 commits
+	cmd := gitcmd.NewCommand("log", "-200", prettyLogFormat).AddDynamicArguments(id.String())
 
 	// pretend that all refs along with HEAD were listed on command line as <commis>
 	// https://git-scm.com/docs/git-log#Documentation/git-log.txt---all
