@@ -213,7 +213,7 @@ func NotificationSubscriptions(ctx *context.Context) {
 		}
 	}
 
-	excludedLabelNames := []string{"MIS", "ADM", "EWC"}
+	excludedLabelNames := []string{"MIS", "ADM", "EWC", "FIN"}
 
 	count, err := issues_model.CountIssues(ctx, &issues_model.IssuesOptions{
 		SubscriberID:       ctx.Doer.ID,
