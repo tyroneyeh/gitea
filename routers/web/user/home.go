@@ -409,7 +409,6 @@ func buildIssueOverview(ctx *context.Context, unitType unit.Type) {
 		fallthrough
 	default:
 		filterMode = issues_model.FilterModeYourRepositories
-		viewType = "your_repositories"
 	}
 
 	isPullList := unitType == unit.TypePullRequests
@@ -495,7 +494,26 @@ func buildIssueOverview(ctx *context.Context, unitType unit.Type) {
 		// So we need search issues in all public repos.
 		opts.AllPublic = true
 	}
-
+	// keyword holds the search term entered into the search field.
+	keyword := strings.Trim(ctx.FormString("q"), " ")
+	ctx.Data["Keyword"] = keyword
+	if viewType == "" {
+		issueStatsForReview, err := getUserIssueStats(ctx, ctxUser, issues_model.FilterModeReviewRequested, issue_indexer.ToSearchOptions(keyword, opts).Copy(
+			func(o *issue_indexer.SearchOptions) {
+				o.SearchMode = indexer.SearchModeType(searchMode)
+			},
+		))
+		if err != nil {
+			ctx.ServerError("getUserIssueStats", err)
+			return
+		}
+		if issueStatsForReview.ReviewRequestedCount > 0 {
+			viewType = "review_requested"
+			filterMode = issues_model.FilterModeReviewRequested
+		} else {
+			viewType = "your_repositories"
+		}
+	}
 	switch filterMode {
 	case issues_model.FilterModeAll:
 	case issues_model.FilterModeYourRepositories:
@@ -510,10 +528,6 @@ func buildIssueOverview(ctx *context.Context, unitType unit.Type) {
 	case issues_model.FilterModeReviewed:
 		opts.ReviewedID = ctx.Doer.ID
 	}
-
-	// keyword holds the search term entered into the search field.
-	keyword := strings.Trim(ctx.FormString("q"), " ")
-	ctx.Data["Keyword"] = keyword
 
 	// Educated guess: Do or don't show closed issues.
 	isShowClosed := ctx.FormString("state") == "closed"
