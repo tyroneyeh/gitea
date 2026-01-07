@@ -76,6 +76,7 @@ func generateIssueIndexMapping() (mapping.IndexMapping, error) {
 
 	docMapping.AddFieldMappingsAt("is_public", boolFieldMapping)
 
+	docMapping.AddFieldMappingsAt("index", numberFieldMapping)
 	docMapping.AddFieldMappingsAt("title", textFieldMapping)
 	docMapping.AddFieldMappingsAt("content", textFieldMapping)
 	docMapping.AddFieldMappingsAt("comments", textFieldMapping)
@@ -263,7 +264,24 @@ func (b *Indexer) Search(ctx context.Context, options *internal.SearchOptions) (
 						inner_bleve.MatchAndQuery(options.Keyword, "comments", issueIndexerAnalyzer, fuzziness),
 					}...))
 				} else {
-					queries = append(queries, inner_bleve.MatchAndQuery(options.Keyword, "title", issueIndexerAnalyzer, fuzziness))
+					isNumber := regexp.MustCompile(`^#?(\d+)$`).MatchString(options.Keyword)
+					if isNumber {
+						id, err := util.ToInt64(strings.TrimPrefix(options.Keyword, "#"))
+						if err == nil {
+							if options.Keyword[0] == '#' {
+								queries = append(queries, inner_bleve.NumericEqualityQuery(id, "index"))
+							} else {
+								queries = append(queries, bleve.NewDisjunctionQuery([]query.Query{
+									inner_bleve.NumericEqualityQuery(id, "index"),
+									inner_bleve.MatchAndQuery(options.Keyword, "title", issueIndexerAnalyzer, fuzziness),
+								}...))
+							}
+						} else {
+							queries = append(queries, inner_bleve.MatchAndQuery(options.Keyword, "title", issueIndexerAnalyzer, fuzziness))
+						}
+					} else {
+						queries = append(queries, inner_bleve.MatchAndQuery(options.Keyword, "title", issueIndexerAnalyzer, fuzziness))
+					}
 				}
 			} else /* exact */ {
 				if strings.Contains(options.Keyword, "+") {

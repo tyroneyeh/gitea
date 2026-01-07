@@ -19,6 +19,7 @@ type IndexerData struct {
 	IsPublic bool  `json:"is_public"` // If the repo is public
 
 	// Fields used for keyword searching
+	Index    int64    `json:"index"`
 	Title    string   `json:"title"`
 	Content  string   `json:"content"`
 	Comments []string `json:"comments"`
