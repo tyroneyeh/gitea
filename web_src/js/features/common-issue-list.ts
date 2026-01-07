@@ -67,6 +67,6 @@ export function initCommonIssueListQuickGoto() {
       goto.setAttribute('data-issue-goto-link', targetUrl);
     };
 
-    input.addEventListener('input', onInputDebounce(onInput));
+    input.addEventListener('input', onInput);
   }
 }
