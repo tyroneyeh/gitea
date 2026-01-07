@@ -43,6 +43,7 @@ func getAuthorSignatureSquash(ctx *mergeContext) (*git.Signature, error) {
 		if commit.Author != nil && uniqueEmails.Add(commit.Author.Email) {
 			commitUser, _ := user_model.GetUserByEmail(ctx, commit.Author.Email)
 			if commitUser != nil && commitUser.ID == ctx.pr.Issue.Poster.ID {
+				commit.Author.Name = commitUser.FullName
 				return commit.Author, nil
 			}
 		}
