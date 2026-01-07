@@ -205,7 +205,7 @@ func (d *DiffLine) RenderBlobExcerptButtons(fileNameHash string, data *DiffBlobE
 	anchor := fmt.Sprintf("diff-%sK%d", fileNameHash, d.SectionInfo.RightIdx)
 
 	makeButton := func(direction, svgName string) template.HTML {
-		style := util.IfZero(data.DiffStyle, "unified")
+		style := util.IfZero(data.DiffStyle, "")
 		link := data.BaseLink + "/" + data.AfterCommitID + fmt.Sprintf("?style=%s&direction=%s&anchor=%s", url.QueryEscape(style), direction, url.QueryEscape(anchor)) + "&" + d.getBlobExcerptQuery()
 		if data.PullIssueIndex > 0 {
 			link += fmt.Sprintf("&pull_issue_index=%d", data.PullIssueIndex)
