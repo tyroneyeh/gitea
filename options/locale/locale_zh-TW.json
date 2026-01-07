@@ -1730,7 +1730,7 @@
     "issues.review.comment": "已審核 %s",
     "issues.review.dismissed": "",
     "issues.review.dismissed_label": "已取消",
-    "issues.review.left_comment": "留下了回應",
+    "issues.review.left_comment": "留下了回應 <a href=\"#%s\"> %s</a>",
     "issues.review.content.empty": "您必須留下訊息指出需要修正的地方。",
     "issues.review.reject": "請求了變更 %s",
     "issues.review.wait": "被請求進行審核 %s",

@@ -1730,7 +1730,7 @@
     "issues.review.comment": "reviewed %s",
     "issues.review.dismissed": "dismissed %s's review %s",
     "issues.review.dismissed_label": "Dismissed",
-    "issues.review.left_comment": "left a comment",
+    "issues.review.left_comment": "left a comment <a href=\"#%s\"> %s</a>",
     "issues.review.content.empty": "You need to leave a comment indicating the requested change(s).",
     "issues.review.reject": "requested changes %s",
     "issues.review.wait": "was requested for review %s",
