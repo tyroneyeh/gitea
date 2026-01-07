@@ -11,7 +11,7 @@
 			<input type="hidden" name="sort" value="{{$.SortType}}">
 		{{end}}
 		{{template "shared/search/input" dict "Value" .Keyword}}
-			<button id="issue-list-quick-goto" class="ui small icon button tw-hidden" data-tooltip-content="{{ctx.Locale.Tr "explore.go_to"}}" data-repo-link="{{.RepoLink}}">{{svg "octicon-hash"}}</button>
+			<button id="issue-list-quick-goto" type="button" class="ui small icon button tw-hidden" data-tooltip-content="{{ctx.Locale.Tr "explore.go_to"}}" data-repo-link="{{.RepoLink}}">{{svg "octicon-hash"}}</button>
 		{{template "shared/search/button"}}
 	</div>
 </form>

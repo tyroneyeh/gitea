@@ -22,6 +22,14 @@ export function parseIssueListQuickGotoLink(repoLink: string, searchText: string
 export function initCommonIssueListQuickGoto() {
   const gotos = document.querySelectorAll<HTMLElement>('#issue-list-quick-goto');
   if (!gotos.length) return;
+  let isHash = false;
+
+  const quickGoto = (goto: HTMLElement) => {
+    const link = goto.getAttribute('data-issue-goto-link');
+    if (link) {
+      window.location.href = link;
+    }
+  };
 
   for (const goto of gotos) {
     const form = goto.closest('form')!;
@@ -32,15 +40,16 @@ export function initCommonIssueListQuickGoto() {
       // if there is no goto button, or the form is submitted by non-quick-goto elements, submit the form directly
       let doQuickGoto = isElemVisible(goto);
       const submitter = submitEventSubmitter(e);
-      if (submitter !== form && submitter !== input && submitter !== goto) doQuickGoto = false;
+      if (submitter !== form && submitter !== input && submitter !== goto && !isHash) doQuickGoto = false;
       if (!doQuickGoto) return;
 
       // if there is a goto button, use its link
       e.preventDefault();
-      const link = goto.getAttribute('data-issue-goto-link');
-      if (link) {
-        window.location.href = link;
-      }
+      quickGoto(goto);
+    });
+
+    goto.addEventListener('click', () => {
+      quickGoto(goto);
     });
 
     const onInput = () => {
@@ -52,6 +61,7 @@ export function initCommonIssueListQuickGoto() {
         targetUrl = `${repoLink}/issues/${Number(searchText)}`;
       } else {
         targetUrl = parseIssueListQuickGotoLink(repoLink, searchText);
+        isHash = true;
       }
       toggleElem(goto, Boolean(targetUrl));
       goto.setAttribute('data-issue-goto-link', targetUrl);
