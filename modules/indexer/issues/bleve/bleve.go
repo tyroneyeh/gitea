@@ -255,8 +255,8 @@ func (b *Indexer) Search(ctx context.Context, options *internal.SearchOptions) (
 				if searchMode == indexer.SearchModeFuzzy {
 					fuzziness = inner_bleve.GuessFuzzinessByKeyword(options.Keyword)
 				}
-				if options.Keyword[0] == '+' {
-					options.Keyword = options.Keyword[1:]
+				if strings.Contains(options.Keyword, "+") {
+					options.Keyword = strings.ReplaceAll(options.Keyword, "+", "")
 					queries = append(queries, bleve.NewDisjunctionQuery([]query.Query{
 						inner_bleve.MatchAndQuery(options.Keyword, "title", issueIndexerAnalyzer, fuzziness),
 						inner_bleve.MatchAndQuery(options.Keyword, "content", issueIndexerAnalyzer, fuzziness),
