@@ -53,12 +53,17 @@ func composeIssueCommentMessages(ctx context.Context, comment *mailComment, lang
 		reviewComments []*issues_model.Comment
 	)
 
+	substribe := "?subscribe=0"
+	if fromMention {
+		substribe = "?subscribe=1"
+	}
+
 	commentType := issues_model.CommentTypeComment
 	if comment.Comment != nil {
 		commentType = comment.Comment.Type
-		link = comment.Issue.HTMLURL(ctx) + "#" + comment.Comment.HashTag()
+		link = comment.Issue.HTMLURL(ctx) + substribe + "#" + comment.Comment.HashTag()
 	} else {
-		link = comment.Issue.HTMLURL(ctx)
+		link = comment.Issue.HTMLURL(ctx) + substribe
 	}
 
 	reviewType := issues_model.ReviewTypeComment
