@@ -494,12 +494,16 @@ func buildIssueOverview(ctx *context.Context, unitType unit.Type) {
 		// So we need search issues in all public repos.
 		opts.AllPublic = true
 	}
+	// Educated guess: Do or don't show closed issues.
+	isShowClosed := ctx.FormString("state") == "closed"
+	opts.IsClosed = optional.Some(isShowClosed)
 	// keyword holds the search term entered into the search field.
 	keyword := strings.Trim(ctx.FormString("q"), " ")
 	ctx.Data["Keyword"] = keyword
 	if viewType == "" {
 		issueStatsForReview, err := getUserIssueStats(ctx, ctxUser, issues_model.FilterModeReviewRequested, issue_indexer.ToSearchOptions(keyword, opts).Copy(
 			func(o *issue_indexer.SearchOptions) {
+				o.ReviewRequestedID = optional.Some(ctx.Doer.ID)
 				o.SearchMode = indexer.SearchModeType(searchMode)
 			},
 		))
@@ -511,7 +515,8 @@ func buildIssueOverview(ctx *context.Context, unitType unit.Type) {
 			viewType = "review_requested"
 			filterMode = issues_model.FilterModeReviewRequested
 		} else {
-			viewType = "your_repositories"
+			viewType = "created_by"
+			filterMode = issues_model.FilterModeCreate
 		}
 	}
 	switch filterMode {
@@ -528,10 +533,6 @@ func buildIssueOverview(ctx *context.Context, unitType unit.Type) {
 	case issues_model.FilterModeReviewed:
 		opts.ReviewedID = ctx.Doer.ID
 	}
-
-	// Educated guess: Do or don't show closed issues.
-	isShowClosed := ctx.FormString("state") == "closed"
-	opts.IsClosed = optional.Some(isShowClosed)
 
 	// Make sure page number is at least 1. Will be posted to ctx.Data.
 	page := max(ctx.FormInt("page"), 1)
