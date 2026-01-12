@@ -234,7 +234,7 @@ func ParseCreatedRange(input string) (createdAfter, createdBefore optional.Optio
 }
 
 func ParseLabels(ctx context.Context, input string) (labelIDs []int64, keyword string) {
-	re := regexp.MustCompile(`(?i)[\+\-]?labels?:\s*"?([^\s]+)"?`)
+	re := regexp.MustCompile(`(?i)[\+\-]?[Ll]abels?:\s*"?([^\s]+)"?`)
 	matches := re.FindAllStringSubmatch(input, -1)
 	if len(matches) == 0 {
 		return nil, input
@@ -274,7 +274,7 @@ func (b *Indexer) Search(ctx context.Context, options *internal.SearchOptions) (
 		}
 
 		isNot := strings.Contains(lowerKeyword, "-")
-		labels, keyword := ParseLabels(ctx, lowerKeyword)
+		labels, keyword := ParseLabels(ctx, options.Keyword)
 		if len(labels) > 0 {
 			if isNot {
 				boolQuery := bleve.NewBooleanQuery()
