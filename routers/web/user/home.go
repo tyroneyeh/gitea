@@ -500,7 +500,7 @@ func buildIssueOverview(ctx *context.Context, unitType unit.Type) {
 	// keyword holds the search term entered into the search field.
 	keyword := strings.Trim(ctx.FormString("q"), " ")
 	ctx.Data["Keyword"] = keyword
-	if viewType == "" {
+	if isPullList && viewType == "" {
 		issueStatsForReview, err := getUserIssueStats(ctx, ctxUser, issues_model.FilterModeReviewRequested, issue_indexer.ToSearchOptions(keyword, opts).Copy(
 			func(o *issue_indexer.SearchOptions) {
 				o.ReviewRequestedID = optional.Some(ctx.Doer.ID)
