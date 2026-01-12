@@ -43,6 +43,13 @@ type mailComment struct {
 	ForceDoerNotification bool
 }
 
+func boolToInt(b bool) int {
+	if b {
+		return 1
+	}
+	return 0
+}
+
 func composeIssueCommentMessages(ctx context.Context, comment *mailComment, lang string, recipients []*user_model.User, fromMention bool, info string) ([]*sender_service.Message, error) {
 	var (
 		subject string
@@ -53,17 +60,16 @@ func composeIssueCommentMessages(ctx context.Context, comment *mailComment, lang
 		reviewComments []*issues_model.Comment
 	)
 
-	substribe := "?subscribe=0"
-	if fromMention {
-		substribe = "?subscribe=1"
-	}
+	var subscribeLink string
 
 	commentType := issues_model.CommentTypeComment
 	if comment.Comment != nil {
 		commentType = comment.Comment.Type
-		link = comment.Issue.HTMLURL(ctx) + "#" + comment.Comment.HashTag()
+		link = fmt.Sprintf("%s#%s", comment.Issue.HTMLURL(ctx), comment.Comment.HashTag())
+		subscribeLink = fmt.Sprintf("%s?subscribe=%d#%s", comment.Issue.HTMLURL(ctx), boolToInt(fromMention), comment.Comment.HashTag())
 	} else {
 		link = comment.Issue.HTMLURL(ctx)
+		subscribeLink = fmt.Sprintf("%s?subscribe=%d", comment.Issue.HTMLURL(ctx), boolToInt(fromMention))
 	}
 
 	reviewType := issues_model.ReviewTypeComment
@@ -109,7 +115,7 @@ func composeIssueCommentMessages(ctx context.Context, comment *mailComment, lang
 		"FallbackSubject": fallback,
 		"Body":            body,
 		"Link":            link,
-		"SubscribeLink":   link + substribe,
+		"SubscribeLink":   subscribeLink,
 		"Issue":           comment.Issue,
 		"Comment":         comment.Comment,
 		"IsPull":          comment.Issue.IsPull,
