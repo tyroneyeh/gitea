@@ -21,7 +21,6 @@ import (
 
 	"github.com/blevesearch/bleve/v2"
 	"github.com/blevesearch/bleve/v2/analysis/analyzer/custom"
-	"github.com/blevesearch/bleve/v2/analysis/token/camelcase"
 	"github.com/blevesearch/bleve/v2/analysis/token/lowercase"
 	"github.com/blevesearch/bleve/v2/analysis/token/unicodenorm"
 	"github.com/blevesearch/bleve/v2/analysis/tokenizer/unicode"
@@ -109,7 +108,7 @@ func generateIssueIndexMapping() (mapping.IndexMapping, error) {
 		"type":          custom.Name,
 		"char_filters":  []string{},
 		"tokenizer":     unicode.Name,
-		"token_filters": []string{unicodeNormalizeName, camelcase.Name, lowercase.Name},
+		"token_filters": []string{unicodeNormalizeName, lowercase.Name},
 	}); err != nil {
 		return nil, err
 	}
@@ -165,7 +164,7 @@ func (b *Indexer) Delete(_ context.Context, ids ...int64) error {
 	return batch.Flush()
 }
 func ParseCreatedRange(input string) (createdAfter, createdBefore optional.Option[int64], keyword string) {
-	re := regexp.MustCompile(`(?i)\+?[Cc]reated?:\s*(>=|>|<=|<|=)?\s*"?(\d{4}-\d{2}-\d{2})"?`)
+	re := regexp.MustCompile(`(?i)\+?created?:\s*(>=|>|<=|<|=)?\s*"?(\d{4}-\d{2}-\d{2})"?`)
 
 	matches := re.FindAllStringSubmatch(input, -1)
 	if len(matches) == 0 {
@@ -235,7 +234,7 @@ func ParseCreatedRange(input string) (createdAfter, createdBefore optional.Optio
 }
 
 func ParseLabels(ctx context.Context, input string) (labelIDs []int64, keyword string) {
-	re := regexp.MustCompile(`(?i)[\+\-]?[Ll]abels?:\s*"?([^\s]+)"?`)
+	re := regexp.MustCompile(`(?i)[\+\-]?labels?:\s*"?([^\s]+)"?`)
 	matches := re.FindAllStringSubmatch(input, -1)
 	if len(matches) == 0 {
 		return nil, input
@@ -262,7 +261,8 @@ func (b *Indexer) Search(ctx context.Context, options *internal.SearchOptions) (
 	var queries []query.Query
 
 	if options.Keyword != "" {
-		CreatedAfterUnix, CreatedBeforeUnix, keyword := ParseCreatedRange(options.Keyword)
+		lowerKeyword := strings.ToLower(options.Keyword)
+		CreatedAfterUnix, CreatedBeforeUnix, keyword := ParseCreatedRange(lowerKeyword)
 		if CreatedAfterUnix.Has() || CreatedBeforeUnix.Has() {
 			var dateQueries []query.Query
 			dateQueries = append(dateQueries, inner_bleve.NumericRangeInclusiveQuery(
@@ -270,11 +270,11 @@ func (b *Indexer) Search(ctx context.Context, options *internal.SearchOptions) (
 				CreatedBeforeUnix,
 				"created_unix"))
 			queries = append(queries, bleve.NewConjunctionQuery(dateQueries...))
-			options.Keyword = keyword
+			lowerKeyword = keyword
 		}
 
-		isNot := strings.Contains(options.Keyword, "-")
-		labels, keyword := ParseLabels(ctx, options.Keyword)
+		isNot := strings.Contains(lowerKeyword, "-")
+		labels, keyword := ParseLabels(ctx, lowerKeyword)
 		if len(labels) > 0 {
 			if isNot {
 				boolQuery := bleve.NewBooleanQuery()
@@ -290,22 +290,22 @@ func (b *Indexer) Search(ctx context.Context, options *internal.SearchOptions) (
 				}
 				queries = append(queries, bleve.NewDisjunctionQuery(labelQueries...))
 			}
-			options.Keyword = keyword
+			lowerKeyword = keyword
 		}
 
-		if options.Keyword != "" {
+		if lowerKeyword != "" {
 			searchMode := util.IfZero(options.SearchMode, b.SupportedSearchModes()[2].ModeValue)
 			if searchMode == indexer.SearchModeWords || searchMode == indexer.SearchModeFuzzy {
 				fuzziness := 0
 				if searchMode == indexer.SearchModeFuzzy {
-					fuzziness = inner_bleve.GuessFuzzinessByKeyword(options.Keyword)
+					fuzziness = inner_bleve.GuessFuzzinessByKeyword(lowerKeyword)
 				}
-				if strings.Contains(options.Keyword, "+") {
-					options.Keyword = strings.ReplaceAll(options.Keyword, "+", "")
+				if strings.Contains(lowerKeyword, "+") {
+					lowerKeyword = strings.ReplaceAll(lowerKeyword, "+", "")
 					queries = append(queries, bleve.NewDisjunctionQuery([]query.Query{
-						inner_bleve.MatchAndQuery(options.Keyword, "title", issueIndexerAnalyzer, fuzziness),
-						inner_bleve.MatchAndQuery(options.Keyword, "content", issueIndexerAnalyzer, fuzziness),
-						inner_bleve.MatchAndQuery(options.Keyword, "comments", issueIndexerAnalyzer, fuzziness),
+						inner_bleve.MatchAndQuery(lowerKeyword, "title", issueIndexerAnalyzer, fuzziness),
+						inner_bleve.MatchAndQuery(lowerKeyword, "content", issueIndexerAnalyzer, fuzziness),
+						inner_bleve.MatchAndQuery(lowerKeyword, "comments", issueIndexerAnalyzer, fuzziness),
 					}...))
 				} else {
 					isNumber := regexp.MustCompile(`^#?(\d+)$`).MatchString(options.Keyword)
@@ -324,7 +324,7 @@ func (b *Indexer) Search(ctx context.Context, options *internal.SearchOptions) (
 							queries = append(queries, inner_bleve.MatchAndQuery(options.Keyword, "title", issueIndexerAnalyzer, fuzziness))
 						}
 					} else {
-						queries = append(queries, inner_bleve.MatchAndQuery(options.Keyword, "title", issueIndexerAnalyzer, fuzziness))
+						queries = append(queries, inner_bleve.MatchAndQuery(lowerKeyword, "title", issueIndexerAnalyzer, fuzziness))
 					}
 				}
 			} else /* exact */ {
