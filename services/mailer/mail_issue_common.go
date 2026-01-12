@@ -61,9 +61,9 @@ func composeIssueCommentMessages(ctx context.Context, comment *mailComment, lang
 	commentType := issues_model.CommentTypeComment
 	if comment.Comment != nil {
 		commentType = comment.Comment.Type
-		link = comment.Issue.HTMLURL(ctx) + substribe + "#" + comment.Comment.HashTag()
+		link = comment.Issue.HTMLURL(ctx) + "#" + comment.Comment.HashTag()
 	} else {
-		link = comment.Issue.HTMLURL(ctx) + substribe
+		link = comment.Issue.HTMLURL(ctx)
 	}
 
 	reviewType := issues_model.ReviewTypeComment
@@ -109,6 +109,7 @@ func composeIssueCommentMessages(ctx context.Context, comment *mailComment, lang
 		"FallbackSubject": fallback,
 		"Body":            body,
 		"Link":            link,
+		"SubscribeLink":   link + substribe,
 		"Issue":           comment.Issue,
 		"Comment":         comment.Comment,
 		"IsPull":          comment.Issue.IsPull,

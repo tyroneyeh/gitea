@@ -80,7 +80,7 @@
 			---
 			<br>
 			<a href="{{.Link}}">{{.locale.Tr "mail.view_it_on" AppName}}</a>{{if .CanReply}}&nbsp;{{.locale.Tr "mail.reply"}}{{end}}.
-			<a href="{{.Link}}">{{if .IsMention}}{{.locale.Tr "repo.issues.subscribe"}}{{else}}{{.locale.Tr "repo.issues.unsubscribe"}}{{end}}</a>
+			<a href="{{.SubscribeLink}}">{{if .IsMention}}{{.locale.Tr "repo.issues.subscribe"}}{{else}}{{.locale.Tr "repo.issues.unsubscribe"}}{{end}}</a>
 		</p>
 	</div>
 </body>
