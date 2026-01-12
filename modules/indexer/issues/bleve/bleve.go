@@ -10,6 +10,8 @@ import (
 	"strings"
 	"time"
 
+	issues_model "code.gitea.io/gitea/models/issues"
+
 	"code.gitea.io/gitea/modules/indexer"
 	indexer_internal "code.gitea.io/gitea/modules/indexer/internal"
 	inner_bleve "code.gitea.io/gitea/modules/indexer/internal/bleve"
@@ -163,7 +165,7 @@ func (b *Indexer) Delete(_ context.Context, ids ...int64) error {
 	return batch.Flush()
 }
 func ParseCreatedRange(input string) (createdAfter, createdBefore optional.Option[int64], keyword string) {
-	re := regexp.MustCompile(`(?i)\+?Created:\s*(>=|>|<=|<|=)?\s*"?(\d{4}-\d{2}-\d{2})"?`)
+	re := regexp.MustCompile(`(?i)\+?[Cc]reated?:\s*(>=|>|<=|<|=)?\s*"?(\d{4}-\d{2}-\d{2})"?`)
 
 	matches := re.FindAllStringSubmatch(input, -1)
 	if len(matches) == 0 {
@@ -232,6 +234,28 @@ func ParseCreatedRange(input string) (createdAfter, createdBefore optional.Optio
 	return createdAfter, createdBefore, keyword
 }
 
+func ParseLabels(ctx context.Context, input string) (labelIDs []int64, keyword string) {
+	re := regexp.MustCompile(`(?i)[\+\-]?[Ll]abels?:\s*"?([^\s]+)"?`)
+	matches := re.FindAllStringSubmatch(input, -1)
+	if len(matches) == 0 {
+		return nil, input
+	}
+
+	var labels []string
+	for _, m := range matches {
+		labels = append(labels, m[1])
+	}
+
+	// query labels table to ids and add to labels
+	if len(labels) > 0 {
+		labelIDs, _ := issues_model.GetLabelIDsByNames(ctx, labels)
+		keyword = strings.TrimSpace(re.ReplaceAllString(input, ""))
+		return labelIDs, keyword
+	}
+
+	return nil, input
+}
+
 // Search searches for issues by given conditions.
 // Returns the matching issue IDs
 func (b *Indexer) Search(ctx context.Context, options *internal.SearchOptions) (*internal.SearchResult, error) {
@@ -246,6 +270,26 @@ func (b *Indexer) Search(ctx context.Context, options *internal.SearchOptions) (
 				CreatedBeforeUnix,
 				"created_unix"))
 			queries = append(queries, bleve.NewConjunctionQuery(dateQueries...))
+			options.Keyword = keyword
+		}
+
+		isNot := strings.Contains(options.Keyword, "-")
+		labels, keyword := ParseLabels(ctx, options.Keyword)
+		if len(labels) > 0 {
+			if isNot {
+				boolQuery := bleve.NewBooleanQuery()
+				boolQuery.AddMust(bleve.NewMatchAllQuery())
+				for _, label := range labels {
+					boolQuery.AddMustNot(inner_bleve.NumericEqualityQuery(label, "label_ids"))
+				}
+				queries = append(queries, boolQuery)
+			} else {
+				var labelQueries []query.Query
+				for _, label := range labels {
+					labelQueries = append(labelQueries, inner_bleve.NumericEqualityQuery(label, "label_ids"))
+				}
+				queries = append(queries, bleve.NewDisjunctionQuery(labelQueries...))
+			}
 			options.Keyword = keyword
 		}
 
