@@ -204,6 +204,10 @@ export function isCompressedFile({name, type}: {name?: string, type?: string}): 
          COMPRESSED_MIME_TYPES.has(type ?? '');
 }
 
+export function isPDFFile({name, type}: {name?: string, type?: string}): boolean {
+  return Boolean(/\.(pdf)$/i.test(name ?? '') || type?.startsWith('application/pdf'));
+}
+
 export async function compressFileToZip(file: File) {
   let zip: any;
   document.body.style.cursor = 'wait';
