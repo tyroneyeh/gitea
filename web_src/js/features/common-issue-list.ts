@@ -57,10 +57,10 @@ export function initCommonIssueListQuickGoto() {
       // try to check whether the parsed goto link is valid
       let targetUrl = parseIssueListQuickGotoLink(repoLink, searchText);
       if (targetUrl) {
-        if (['/', '/issues', '/pulls'].includes(location.pathname)) {
+        if (['/', '/issues', '/pulls'].includes(location.pathname) && !reIssueOwnerRepoIndex.test(searchText)) {
           targetUrl = '';
         } else {
-          isHash = searchText.startsWith('#');
+          isHash = reIssueSharpIndex.test(searchText) || reIssueOwnerRepoIndex.test(searchText);
         }
         toggleElem(goto, Boolean(targetUrl));
       }
