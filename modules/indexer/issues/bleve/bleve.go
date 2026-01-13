@@ -307,12 +307,17 @@ func (b *Indexer) Search(ctx context.Context, options *internal.SearchOptions) (
 						inner_bleve.MatchAndQuery(lowerKeyword, "content", issueIndexerAnalyzer, fuzziness),
 						inner_bleve.MatchAndQuery(lowerKeyword, "comments", issueIndexerAnalyzer, fuzziness),
 					}...))
+				} else if strings.HasSuffix(options.Keyword, "*") {
+					wildcardQuery := bleve.NewPrefixQuery(strings.TrimSuffix(lowerKeyword, "*"))
+					wildcardQuery.FieldVal = "title"
+					wildcardQuery.SetBoost(10)
+					queries = append(queries, wildcardQuery)
 				} else {
 					isNumber := regexp.MustCompile(`^#?(\d+)$`).MatchString(options.Keyword)
 					if isNumber {
 						id, err := util.ToInt64(strings.TrimPrefix(options.Keyword, "#"))
 						if err == nil {
-							if options.Keyword[0] == '#' {
+							if strings.HasPrefix(options.Keyword, "#") {
 								queries = append(queries, inner_bleve.NumericEqualityQuery(id, "index"))
 							} else {
 								queries = append(queries, bleve.NewDisjunctionQuery([]query.Query{
