@@ -150,7 +150,7 @@ export function toAbsoluteUrl(url: string): string {
   if (url && !url.startsWith('/')) {
     throw new Error('unsupported url, it should either start with / or http(s)://');
   }
-  return `[${document.title}](${window.location.origin}${url})`;
+  return `[${document.title}${location.hash}](${window.location.origin}${url})`;
 }
 
 /** Encode an Uint8Array into a URLEncoded base64 string. */
