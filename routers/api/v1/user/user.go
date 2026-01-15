@@ -151,8 +151,10 @@ func GetHeatmapData(ctx *context.APIContext) {
 	// responses:
 	//   "200":
 	//     "$ref": "#/responses/UserHeatmapData"
+	fullName := ctx.FormString("full_name")
 	created_start := ctx.FormInt64("start")
 	created_end := ctx.FormInt64("end")
+	limit := ctx.FormInt("limit")
 
 	if created_start == 0 {
 		created_start = time.Now().Unix() - (7 * 86400)
@@ -160,8 +162,13 @@ func GetHeatmapData(ctx *context.APIContext) {
 	if created_end == 0 {
 		created_end = time.Now().Unix()
 	}
+	if limit == 0 {
+		limit = 20
+	} else if limit > 100 {
+		limit = 100
+	}
 
-	heatmap, err := activities_model.GetTop10UserHeatmapData(ctx, created_start, created_end)
+	heatmap, err := activities_model.GetTop10UserHeatmapData(ctx, fullName, created_start, created_end, limit)
 	if err != nil {
 		ctx.APIErrorInternal(err)
 		return

@@ -11,6 +11,7 @@ import (
 	user_model "code.gitea.io/gitea/models/user"
 	"code.gitea.io/gitea/modules/setting"
 	"code.gitea.io/gitea/modules/timeutil"
+	"xorm.io/builder"
 )
 
 // UserHeatmapData represents the data needed to create a heatmap
@@ -20,16 +21,23 @@ type Top10UserHeatmapData struct {
 	Contributions int64  `json:"contributions"`
 }
 
-func GetTop10UserHeatmapData(ctx context.Context, created_start, created_end int64) ([]*Top10UserHeatmapData, error) {
+func GetTop10UserHeatmapData(ctx context.Context, fullName string, created_start, created_end int64, limit int) ([]*Top10UserHeatmapData, error) {
 	hdata := make([]*Top10UserHeatmapData, 0)
+
+	cond := builder.NewCond()
+	cond = cond.And(builder.Gte{"a.created_unix": created_start})
+	cond = cond.And(builder.Lte{"a.created_unix": created_end})
+	if fullName != "" {
+		cond = cond.And(builder.Expr("u.full_name LIKE ?", fullName+"%"))
+	}
 
 	err := db.GetEngine(ctx).
 		Select("u.name, u.full_name as full_name, count(*) as contributions").
 		Table("action a").Join("INNER", `"user" u`, "a.user_id = u.id AND a.act_user_id = u.id").
-		Where("a.created_unix >= ? AND a.created_unix <= ?", created_start, created_end). // (366+7) days to include the first week for the heatmap
+		Where(cond).
 		GroupBy("u.name, u.full_name").
 		OrderBy("contributions DESC").
-		Limit(10).Find(&hdata)
+		Limit(limit).Find(&hdata)
 
 	return hdata, err
 }
