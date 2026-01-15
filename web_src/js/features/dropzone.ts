@@ -41,7 +41,7 @@ export function generateMarkdownLinkForAttachment(file: Partial<CustomDropzoneFi
   } else if (isVideoFile(file)) {
     fileMarkdown = html`<video src="attachments/${file.uuid}" title="${file.name}" controls></video>`;
   }
-  return fileMarkdown;
+  return `${fileMarkdown}\n`;
 }
 
 function addCopyLink(file: Partial<CustomDropzoneFile>) {

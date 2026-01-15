@@ -19,7 +19,7 @@ export function triggerUploadStateChanged(target: HTMLElement) {
   target.dispatchEvent(new CustomEvent(EventUploadStateChanged, {bubbles: true}));
 }
 
-function uploadFile(dropzoneEl: HTMLElement, file: File) {
+function uploadFile(dropzoneEl: HTMLElement, file: File, removeUploaingPlaceholder: () => void) {
   return new Promise((resolve) => {
     const curUploadId = uploadIdCounter++;
     (file as any)._giteaUploadId = curUploadId;
@@ -32,6 +32,7 @@ function uploadFile(dropzoneEl: HTMLElement, file: File) {
     };
     dropzoneInst.on(DropzoneCustomEventUploadDone, onUploadDone);
     // FIXME: this is not entirely correct because `file` does not satisfy DropzoneFile (we have abused the Dropzone for long time)
+    if (dropzoneInst.files.length >= dropzoneInst.options.maxFiles) removeUploaingPlaceholder();
     dropzoneInst.addFile(file as DropzoneFile);
   });
 }
@@ -60,9 +61,9 @@ class TextareaEditor {
       editor.selectionEnd += newVal.length;
     }
     editor.selectionStart = editor.selectionEnd;
-    editor.focus();
     const selPos = endPos + newVal.length - oldVal.length;
     editor.setSelectionRange(selPos, selPos);
+    editor.focus();
     triggerEditorContentChanged(editor);
   }
 }
@@ -114,7 +115,10 @@ async function handleUploadFiles(editor: CodeMirrorEditor | TextareaEditor, drop
     }
 
     editor.insertPlaceholder(placeholder);
-    await uploadFile(dropzoneEl, file); // the "file" will get its "uuid" during the upload
+    const removeUploaingPlaceholder = () => {
+      editor.replacePlaceholder(placeholder, '');
+    }
+    await uploadFile(dropzoneEl, file, removeUploaingPlaceholder); // the "file" will get its "uuid" during the upload
     editor.replacePlaceholder(placeholder, generateMarkdownLinkForAttachment(file, {width, dppx}));
   }
 }
