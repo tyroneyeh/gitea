@@ -994,6 +994,7 @@ func Routes() *web.Router {
 		// Users (requires user scope)
 		m.Group("/users", func() {
 			m.Get("/search", reqExploreSignIn(), reqUsersExploreEnabled(), user.Search)
+			m.Get("/heatmap", user.GetHeatmapData)
 
 			m.Group("/{username}", func() {
 				m.Get("", reqExploreSignIn(), user.GetInfo)

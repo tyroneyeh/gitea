@@ -6,6 +6,7 @@ package user
 
 import (
 	"net/http"
+	"time"
 
 	activities_model "code.gitea.io/gitea/models/activities"
 	user_model "code.gitea.io/gitea/models/user"
@@ -139,6 +140,33 @@ func GetAuthenticatedUser(ctx *context.APIContext) {
 	//     "$ref": "#/responses/User"
 
 	ctx.JSON(http.StatusOK, convert.ToUser(ctx, ctx.Doer, ctx.Doer))
+}
+
+func GetHeatmapData(ctx *context.APIContext) {
+	// swagger:operation GET /user/heatmap user userGetHeatmapData
+	// ---
+	// summary: Get the authenticated user's heatmap
+	// produces:
+	// - application/json
+	// responses:
+	//   "200":
+	//     "$ref": "#/responses/UserHeatmapData"
+	created_start := ctx.FormInt64("start")
+	created_end := ctx.FormInt64("end")
+
+	if created_start == 0 {
+		created_start = time.Now().Unix() - (7 * 86400)
+	}
+	if created_end == 0 {
+		created_end = time.Now().Unix()
+	}
+
+	heatmap, err := activities_model.GetTop10UserHeatmapData(ctx, created_start, created_end)
+	if err != nil {
+		ctx.APIErrorInternal(err)
+		return
+	}
+	ctx.JSON(http.StatusOK, heatmap)
 }
 
 // GetUserHeatmapData is the handler to get a users heatmap
