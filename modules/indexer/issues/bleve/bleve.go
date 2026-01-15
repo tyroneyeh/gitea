@@ -307,11 +307,19 @@ func (b *Indexer) Search(ctx context.Context, options *internal.SearchOptions) (
 						inner_bleve.MatchAndQuery(lowerKeyword, "content", issueIndexerAnalyzer, fuzziness),
 						inner_bleve.MatchAndQuery(lowerKeyword, "comments", issueIndexerAnalyzer, fuzziness),
 					}...))
-				} else if strings.HasSuffix(options.Keyword, "*") {
-					wildcardQuery := bleve.NewPrefixQuery(strings.TrimSuffix(lowerKeyword, "*"))
-					wildcardQuery.FieldVal = "title"
-					wildcardQuery.SetBoost(10)
-					queries = append(queries, wildcardQuery)
+				} else if strings.Contains(options.Keyword, "*") {
+					terms := strings.Fields(lowerKeyword)
+					for _, term := range terms {
+						if strings.HasSuffix(term, "*") {
+							wildcardQuery := bleve.NewPrefixQuery(strings.TrimSuffix(term, "*"))
+							wildcardQuery.FieldVal = "title"
+							wildcardQuery.SetBoost(10)
+							queries = append(queries, wildcardQuery)
+							continue
+						} else if term != "" {
+							queries = append(queries, inner_bleve.MatchAndQuery(term, "title", issueIndexerAnalyzer, fuzziness))
+						}
+					}
 				} else {
 					isNumber := regexp.MustCompile(`^#?(\d+)$`).MatchString(options.Keyword)
 					if isNumber {
