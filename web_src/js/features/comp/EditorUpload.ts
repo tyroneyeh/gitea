@@ -61,6 +61,8 @@ class TextareaEditor {
     }
     editor.selectionStart = editor.selectionEnd;
     editor.focus();
+    const selPos = endPos + newVal.length - oldVal.length;
+    editor.setSelectionRange(selPos, selPos);
     triggerEditorContentChanged(editor);
   }
 }
