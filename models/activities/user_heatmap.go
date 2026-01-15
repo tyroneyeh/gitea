@@ -16,6 +16,7 @@ import (
 // UserHeatmapData represents the data needed to create a heatmap
 type Top10UserHeatmapData struct {
 	Username      string `json:"username"`
+	FullName      string `json:"full_name"`
 	Contributions int64  `json:"contributions"`
 }
 
@@ -23,11 +24,11 @@ func GetTop10UserHeatmapData(ctx context.Context, created_start, created_end int
 	hdata := make([]*Top10UserHeatmapData, 0)
 
 	err := db.GetEngine(ctx).
-		Select("u.full_name as username, count(a.user_id) as contributions").
+		Select("u.name as username, u.full_name as full_name, count(a.user_id) as contributions").
 		Table("action a").Join("INNER", `"user" u`, "a.user_id = u.id").
 		Where("a.created_unix >= ? AND a.created_unix <= ?", created_start, created_end). // (366+7) days to include the first week for the heatmap
-		GroupBy("u.full_name").
-		OrderBy("u.contributions DESC").
+		GroupBy("u.name, u.full_name").
+		OrderBy("contributions DESC").
 		Limit(10).Find(&hdata)
 
 	return hdata, err
