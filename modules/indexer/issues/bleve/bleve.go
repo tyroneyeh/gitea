@@ -315,7 +315,6 @@ func (b *Indexer) Search(ctx context.Context, options *internal.SearchOptions) (
 							wildcardQuery.FieldVal = "title"
 							wildcardQuery.SetBoost(10)
 							queries = append(queries, wildcardQuery)
-							continue
 						} else if term != "" {
 							queries = append(queries, inner_bleve.MatchAndQuery(term, "title", issueIndexerAnalyzer, fuzziness))
 						}
