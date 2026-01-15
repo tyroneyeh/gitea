@@ -27,7 +27,7 @@ func GetTop10UserHeatmapData(ctx context.Context, created_start, created_end int
 		Table("action a").Join("INNER", `"user" u`, "a.user_id = u.id").
 		Where("a.created_unix >= ? AND a.created_unix <= ?", created_start, created_end). // (366+7) days to include the first week for the heatmap
 		GroupBy("u.full_name").
-		OrderBy("u.full_name").
+		OrderBy("u.contributions DESC").
 		Limit(10).Find(&hdata)
 
 	return hdata, err
