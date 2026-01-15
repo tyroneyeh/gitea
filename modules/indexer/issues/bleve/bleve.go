@@ -311,7 +311,7 @@ func (b *Indexer) Search(ctx context.Context, options *internal.SearchOptions) (
 					terms := strings.Fields(lowerKeyword)
 					for _, term := range terms {
 						if strings.HasSuffix(term, "*") {
-							wildcardQuery := bleve.NewPrefixQuery(strings.TrimSuffix(term, "*"))
+							wildcardQuery := bleve.NewPrefixQuery(term[:len(term)-1])
 							wildcardQuery.FieldVal = "title"
 							wildcardQuery.SetBoost(10)
 							queries = append(queries, wildcardQuery)
@@ -320,11 +320,17 @@ func (b *Indexer) Search(ctx context.Context, options *internal.SearchOptions) (
 						}
 					}
 				} else {
-					isNumber := regexp.MustCompile(`^#?(\d+)$`).MatchString(options.Keyword)
+					isHash := false
+					s := options.Keyword
+					if strings.HasPrefix(s, "#") {
+						s = s[1:]
+						isHash = true
+					}
+					id, err := strconv.ParseInt(s, 10, 64)
+					isNumber := err == nil
 					if isNumber {
-						id, err := util.ToInt64(strings.TrimPrefix(options.Keyword, "#"))
 						if err == nil {
-							if strings.HasPrefix(options.Keyword, "#") {
+							if isHash {
 								queries = append(queries, inner_bleve.NumericEqualityQuery(id, "index"))
 							} else {
 								queries = append(queries, bleve.NewDisjunctionQuery([]query.Query{
