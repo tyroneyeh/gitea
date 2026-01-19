@@ -255,6 +255,24 @@ func ParseLabels(ctx context.Context, input string) (labelIDs []int64, keyword s
 	return nil, input
 }
 
+func ParseKeywordPrefixPlusMinus(input string) (plus, minus []string, keyword string) {
+	kw := strings.Fields(input)
+	for _, k := range kw {
+		if !strings.HasSuffix(k, "*") {
+			if strings.HasPrefix(k, "+") {
+				plus = append(plus, k[1:])
+			} else if strings.HasPrefix(k, "-") {
+				minus = append(minus, k[1:])
+			} else {
+				keyword += " " + k
+			}
+		} else {
+			keyword += " " + k
+		}
+	}
+	return plus, minus, strings.TrimLeft(keyword, " ")
+}
+
 // Search searches for issues by given conditions.
 // Returns the matching issue IDs
 func (b *Indexer) Search(ctx context.Context, options *internal.SearchOptions) (*internal.SearchResult, error) {
@@ -262,7 +280,7 @@ func (b *Indexer) Search(ctx context.Context, options *internal.SearchOptions) (
 
 	if options.Keyword != "" {
 		lowerKeyword := strings.ToLower(options.Keyword)
-		CreatedAfterUnix, CreatedBeforeUnix, keyword := ParseCreatedRange(lowerKeyword)
+		CreatedAfterUnix, CreatedBeforeUnix, lowerKeyword := ParseCreatedRange(lowerKeyword)
 		if CreatedAfterUnix.Has() || CreatedBeforeUnix.Has() {
 			var dateQueries []query.Query
 			dateQueries = append(dateQueries, inner_bleve.NumericRangeInclusiveQuery(
@@ -270,11 +288,10 @@ func (b *Indexer) Search(ctx context.Context, options *internal.SearchOptions) (
 				CreatedBeforeUnix,
 				"created_unix"))
 			queries = append(queries, bleve.NewConjunctionQuery(dateQueries...))
-			lowerKeyword = keyword
 		}
 
 		isNot := strings.Contains(lowerKeyword, "-")
-		labels, keyword := ParseLabels(ctx, options.Keyword)
+		labels, lowerKeyword := ParseLabels(ctx, options.Keyword)
 		if len(labels) > 0 {
 			if isNot {
 				boolQuery := bleve.NewBooleanQuery()
@@ -290,73 +307,98 @@ func (b *Indexer) Search(ctx context.Context, options *internal.SearchOptions) (
 				}
 				queries = append(queries, bleve.NewDisjunctionQuery(labelQueries...))
 			}
-			lowerKeyword = keyword
 		}
 
 		if lowerKeyword != "" {
 			searchMode := util.IfZero(options.SearchMode, b.SupportedSearchModes()[2].ModeValue)
-			if searchMode == indexer.SearchModeWords || searchMode == indexer.SearchModeFuzzy {
-				fuzziness := 0
-				if searchMode == indexer.SearchModeFuzzy {
-					fuzziness = inner_bleve.GuessFuzzinessByKeyword(lowerKeyword)
-				}
-				if strings.Contains(lowerKeyword, "+") {
-					lowerKeyword = strings.ReplaceAll(lowerKeyword, "+", "")
+			fuzziness := 0
+			if searchMode == indexer.SearchModeFuzzy {
+				fuzziness = inner_bleve.GuessFuzzinessByKeyword(lowerKeyword)
+			}
+
+			isExact := searchMode == indexer.SearchModeExact
+
+			plus, minus, lowerKeyword := ParseKeywordPrefixPlusMinus(lowerKeyword)
+			if len(plus) > 0 {
+				pk := strings.Join(plus, " ")
+				if isExact {
 					queries = append(queries, bleve.NewDisjunctionQuery([]query.Query{
-						inner_bleve.MatchAndQuery(lowerKeyword, "title", issueIndexerAnalyzer, fuzziness),
-						inner_bleve.MatchAndQuery(lowerKeyword, "content", issueIndexerAnalyzer, fuzziness),
-						inner_bleve.MatchAndQuery(lowerKeyword, "comments", issueIndexerAnalyzer, fuzziness),
+						inner_bleve.MatchPhraseQuery(pk, "content", issueIndexerAnalyzer, fuzziness),
+						inner_bleve.MatchPhraseQuery(pk, "comments", issueIndexerAnalyzer, fuzziness),
 					}...))
-				} else if strings.Contains(options.Keyword, "*") {
-					terms := strings.Fields(lowerKeyword)
-					for _, term := range terms {
-						if strings.HasSuffix(term, "*") {
+				} else {
+					queries = append(queries, bleve.NewDisjunctionQuery([]query.Query{
+						inner_bleve.MatchAndQuery(pk, "content", issueIndexerAnalyzer, fuzziness),
+						inner_bleve.MatchAndQuery(pk, "comments", issueIndexerAnalyzer, fuzziness),
+					}...))
+				}
+			}
+
+			for _, mk := range minus {
+				titleBq := bleve.NewBooleanQuery()
+				titleBq.AddMustNot(inner_bleve.MatchAndQuery(mk, "title", issueIndexerAnalyzer, fuzziness))
+				contentBq := bleve.NewBooleanQuery()
+				contentBq.AddMustNot(inner_bleve.MatchAndQuery(mk, "content", issueIndexerAnalyzer, fuzziness))
+				commentBq := bleve.NewBooleanQuery()
+				commentBq.AddMustNot(inner_bleve.MatchAndQuery(mk, "comments", issueIndexerAnalyzer, fuzziness))
+				queries = append(queries, bleve.NewConjunctionQuery(titleBq, contentBq, commentBq))
+			}
+
+			if strings.Contains(lowerKeyword, "*") {
+				terms := strings.Fields(lowerKeyword)
+				for _, term := range terms {
+					if strings.HasSuffix(term, "*") {
+						if strings.HasPrefix(term, "+") {
+							wildcardQuery := bleve.NewPrefixQuery(term[1 : len(term)-1])
+							wildcardQuery.FieldVal = "content"
+							commentWildcardQuery := bleve.NewPrefixQuery(term[1 : len(term)-1])
+							commentWildcardQuery.FieldVal = "comments"
+							queries = append(queries, bleve.NewDisjunctionQuery(wildcardQuery, commentWildcardQuery))
+						} else {
 							wildcardQuery := bleve.NewPrefixQuery(term[:len(term)-1])
 							wildcardQuery.FieldVal = "title"
-							wildcardQuery.SetBoost(10)
 							queries = append(queries, wildcardQuery)
-						} else if term != "" {
+						}
+					} else if term != "" {
+						if isExact {
+							queries = append(queries, inner_bleve.MatchPhraseQuery(lowerKeyword, "title", issueIndexerAnalyzer, fuzziness))
+						} else {
 							queries = append(queries, inner_bleve.MatchAndQuery(term, "title", issueIndexerAnalyzer, fuzziness))
 						}
 					}
-				} else {
-					isHash := false
-					s := options.Keyword
-					if strings.HasPrefix(s, "#") {
-						s = s[1:]
-						isHash = true
-					}
-					id, err := strconv.ParseInt(s, 10, 64)
-					isNumber := err == nil
-					if isNumber {
-						if err == nil {
-							if isHash {
-								queries = append(queries, inner_bleve.NumericEqualityQuery(id, "index"))
-							} else {
-								queries = append(queries, bleve.NewDisjunctionQuery([]query.Query{
-									inner_bleve.NumericEqualityQuery(id, "index"),
-									inner_bleve.MatchAndQuery(options.Keyword, "title", issueIndexerAnalyzer, fuzziness),
-								}...))
-							}
+				}
+			} else {
+				isHash := false
+				s := options.Keyword
+				if strings.HasPrefix(s, "#") {
+					s = s[1:]
+					isHash = true
+				}
+				id, err := strconv.ParseInt(s, 10, 64)
+				isNumber := err == nil
+				if isNumber {
+					if err == nil {
+						if isHash {
+							queries = append(queries, inner_bleve.NumericEqualityQuery(id, "index"))
+						} else {
+							queries = append(queries, bleve.NewDisjunctionQuery([]query.Query{
+								inner_bleve.NumericEqualityQuery(id, "index"),
+								inner_bleve.MatchAndQuery(options.Keyword, "title", issueIndexerAnalyzer, fuzziness),
+							}...))
+						}
+					} else {
+						if isExact {
+							queries = append(queries, inner_bleve.MatchPhraseQuery(lowerKeyword, "title", issueIndexerAnalyzer, fuzziness))
 						} else {
 							queries = append(queries, inner_bleve.MatchAndQuery(options.Keyword, "title", issueIndexerAnalyzer, fuzziness))
 						}
+					}
+				} else if lowerKeyword != "" {
+					if isExact {
+						queries = append(queries, inner_bleve.MatchPhraseQuery(lowerKeyword, "title", issueIndexerAnalyzer, fuzziness))
 					} else {
 						queries = append(queries, inner_bleve.MatchAndQuery(lowerKeyword, "title", issueIndexerAnalyzer, fuzziness))
 					}
-				}
-			} else /* exact */ {
-				if strings.Contains(options.Keyword, "+") {
-					options.Keyword = strings.ReplaceAll(options.Keyword, "+", "")
-					queries = append(queries, bleve.NewDisjunctionQuery([]query.Query{
-						inner_bleve.MatchPhraseQuery(options.Keyword, "title", issueIndexerAnalyzer, 0),
-						inner_bleve.MatchPhraseQuery(options.Keyword, "content", issueIndexerAnalyzer, 0),
-						inner_bleve.MatchPhraseQuery(options.Keyword, "comments", issueIndexerAnalyzer, 0),
-					}...))
-				} else {
-					queries = append(queries, bleve.NewDisjunctionQuery([]query.Query{
-						inner_bleve.MatchPhraseQuery(options.Keyword, "title", issueIndexerAnalyzer, 0),
-					}...))
 				}
 			}
 		}
