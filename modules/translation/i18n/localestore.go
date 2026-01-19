@@ -6,6 +6,7 @@ package i18n
 import (
 	"errors"
 	"fmt"
+	"html"
 	"html/template"
 	"slices"
 
@@ -130,17 +131,16 @@ func (l *locale) TrString(trKey string, trArgs ...any) string {
 	var format string
 	idx, ok := l.store.trKeyToIdxMap[trKey]
 	if ok {
-		if msg, ok := l.idxToMsgMap[idx]; ok {
-			format = msg // use the found translation
-		}
-		if format == "" {
+		format = l.idxToMsgMap[idx]
+		if format == "" { // missing translation in this locale, fallback to default
 			if def, ok := l.store.localeMap[l.store.defaultLang]; ok {
 				// try to use default locale's translation
-				if msg, ok := def.idxToMsgMap[idx]; ok {
-					format = msg
-				}
+				format = def.idxToMsgMap[idx]
 			}
 		}
+	}
+	if format == "" { // still missing, use the key itself
+		format = html.EscapeString(trKey)
 	}
 	msg, err := Format(format, trArgs...)
 	if err != nil {
