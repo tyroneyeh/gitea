@@ -1436,7 +1436,7 @@ func CompareAndPullRequestPost(ctx *context.Context) {
 		AssigneeIDs:     assigneeIDs,
 		Reviewers:       validateRet.Reviewers,
 		TeamReviewers:   validateRet.TeamReviewers,
-		ProjectID:       projectID,
+		ProjectIDs:      projectIDs,
 	}
 	if err := pull_service.NewPullRequest(ctx, prOpts); err != nil {
 		switch {
@@ -1488,7 +1488,6 @@ func CompareAndPullRequestPost(ctx *context.Context) {
 		return
 	}
 
-<<<<<<< HEAD
 	if len(projectIDs) > 0 && ctx.Repo.CanWrite(unit.TypeProjects) {
 		if err := issues_model.IssueAssignOrRemoveProject(ctx, pullIssue, ctx.Doer, projectIDs, 0); err != nil {
 			if !errors.Is(err, util.ErrPermissionDenied) {
@@ -1498,8 +1497,6 @@ func CompareAndPullRequestPost(ctx *context.Context) {
 		}
 	}
 
-=======
->>>>>>> 72be55f7d3dd889ea4f115ff9d6aebd7efc8b05f
 	log.Trace("Pull request created: %d/%d", repo.ID, pullIssue.ID)
 	ctx.JSONRedirect(pullIssue.Link())
 }
