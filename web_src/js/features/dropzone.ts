@@ -106,6 +106,16 @@ export async function initDropzone(dropzoneEl: HTMLElement) {
     const input = createElementFromAttrs('input', {name: 'files', type: 'hidden', id: `dropzone-file-${resp.uuid}`, value: resp.uuid});
     dropzoneEl.querySelector('.files')!.append(input);
     addCopyLink(file);
+    const form = dropzoneEl.closest('form');
+    const easyMDEElement = form?.querySelector('.combo-markdown-editor')?._giteaComboMarkdownEditor?.easyMDE;
+    if (easyMDEElement) {
+      easyMDEElement.value(generateMarkdownLinkForAttachment(file) + easyMDEElement.value());
+    } else {
+      const textareaElement = form?.querySelector('textarea');
+      if (textareaElement) {
+        textareaElement.value = generateMarkdownLinkForAttachment(file) + textareaElement.value;
+      }
+    }
     dzInst.emit(DropzoneCustomEventUploadDone, {file});
   });
 
