@@ -316,7 +316,7 @@ func (b *Indexer) Search(ctx context.Context, options *internal.SearchOptions) (
 				fuzziness = inner_bleve.GuessFuzzinessByKeyword(lowerKeyword)
 			}
 
-			isExact := searchMode == indexer.SearchModeExact
+			isExact := searchMode == indexer.SearchModeExact || strings.HasPrefix(lowerKeyword, "\"")
 
 			plus, minus, lowerKeyword := ParseKeywordPrefixPlusMinus(lowerKeyword)
 			if len(plus) > 0 {
