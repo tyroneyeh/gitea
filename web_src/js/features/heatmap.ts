@@ -27,7 +27,7 @@ export function initHeatmap() {
         more: el.getAttribute('data-locale-more'),
         less: el.getAttribute('data-locale-less'),
       },
-      tooltipUnit: 'contributions',
+      tooltipUnit: el.getAttribute('data-locale-tooltip-unit'),
       textTotalContributions: el.getAttribute('data-locale-total-contributions'),
       noDataText: el.getAttribute('data-locale-no-contributions'),
     };
