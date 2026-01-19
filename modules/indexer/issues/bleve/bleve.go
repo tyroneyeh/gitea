@@ -280,16 +280,6 @@ func (b *Indexer) Search(ctx context.Context, options *internal.SearchOptions) (
 
 	if options.Keyword != "" {
 		lowerKeyword := strings.ToLower(options.Keyword)
-		CreatedAfterUnix, CreatedBeforeUnix, lowerKeyword := ParseCreatedRange(lowerKeyword)
-		if CreatedAfterUnix.Has() || CreatedBeforeUnix.Has() {
-			var dateQueries []query.Query
-			dateQueries = append(dateQueries, inner_bleve.NumericRangeInclusiveQuery(
-				CreatedAfterUnix,
-				CreatedBeforeUnix,
-				"created_unix"))
-			queries = append(queries, bleve.NewConjunctionQuery(dateQueries...))
-		}
-
 		isNot := strings.Contains(lowerKeyword, "-")
 		labels, lowerKeyword := ParseLabels(ctx, options.Keyword)
 		if len(labels) > 0 {
@@ -307,6 +297,16 @@ func (b *Indexer) Search(ctx context.Context, options *internal.SearchOptions) (
 				}
 				queries = append(queries, bleve.NewDisjunctionQuery(labelQueries...))
 			}
+		}
+
+		CreatedAfterUnix, CreatedBeforeUnix, lowerKeyword := ParseCreatedRange(lowerKeyword)
+		if CreatedAfterUnix.Has() || CreatedBeforeUnix.Has() {
+			var dateQueries []query.Query
+			dateQueries = append(dateQueries, inner_bleve.NumericRangeInclusiveQuery(
+				CreatedAfterUnix,
+				CreatedBeforeUnix,
+				"created_unix"))
+			queries = append(queries, bleve.NewConjunctionQuery(dateQueries...))
 		}
 
 		if lowerKeyword != "" {
