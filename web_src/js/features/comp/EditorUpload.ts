@@ -33,7 +33,7 @@ function uploadFile(dropzoneEl: HTMLElement, file: File, removePlaceholder: () =
     dropzoneInst.on(DropzoneCustomEventUploadDone, onUploadDone);
     // FIXME: this is not entirely correct because `file` does not satisfy DropzoneFile (we have abused the Dropzone for long time)
     dropzoneInst.addFile(file as DropzoneFile);
-    if (file.status === 'error') {
+    if ((file as DropzoneFile).status === 'error') {
       removePlaceholder();
     }
   });
