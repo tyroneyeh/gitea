@@ -108,11 +108,11 @@ export async function initDropzone(dropzoneEl: HTMLElement) {
     addCopyLink(file);
     const form = dropzoneEl.closest('form');
     const easyMDEElement = form?.querySelector('.combo-markdown-editor')?._giteaComboMarkdownEditor?.easyMDE;
-    if (easyMDEElement) {
+    if (easyMDEElement && !easyMDEElement.value().includes('uploading ...')) {
       easyMDEElement.value(generateMarkdownLinkForAttachment(file) + easyMDEElement.value());
     } else {
       const textareaElement = form?.querySelector('textarea');
-      if (textareaElement) {
+      if (textareaElement && !textareaElement.value.includes('uploading ...')) {
         textareaElement.value = generateMarkdownLinkForAttachment(file) + textareaElement.value;
       }
     }
