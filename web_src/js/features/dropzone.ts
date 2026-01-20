@@ -7,6 +7,7 @@ import {showErrorToast} from '../modules/toast.ts';
 import {createElementFromHTML, createElementFromAttrs} from '../utils/dom.ts';
 import {isImageFile, isVideoFile, isCompressedFile, isPDFFile, compressFileToZip} from '../utils.ts';
 import type {DropzoneFile, DropzoneOptions} from 'dropzone/index.js';
+import type {ComboMarkdownEditorTextarea} from './comp/ComboMarkdownEditor.ts';
 
 const {i18n} = window.config;
 
@@ -107,12 +108,14 @@ export async function initDropzone(dropzoneEl: HTMLElement) {
     dropzoneEl.querySelector('.files')!.append(input);
     addCopyLink(file);
     const form = dropzoneEl.closest('form');
-    const easyMDEElement = form?.querySelector('.combo-markdown-editor')?._giteaComboMarkdownEditor?.easyMDE;
-    if (easyMDEElement && !easyMDEElement.value().includes('uploading ...')) {
-      easyMDEElement.value(generateMarkdownLinkForAttachment(file) + easyMDEElement.value());
+    if (localStorage.getItem('markdown-editor-comment') === 'easymde') {
+      const easyMDEElement = (form?.querySelector('.combo-markdown-editor') as ComboMarkdownEditorTextarea)?._giteaComboMarkdownEditor?.easyMDE;
+      if (easyMDEElement && !easyMDEElement.value().includes('(uploading ...)')) {
+        easyMDEElement.value(generateMarkdownLinkForAttachment(file) + easyMDEElement.value());
+      }
     } else {
       const textareaElement = form?.querySelector('textarea');
-      if (textareaElement && !textareaElement.value.includes('uploading ...')) {
+      if (textareaElement && !textareaElement.value.includes('(uploading ...)')) {
         textareaElement.value = generateMarkdownLinkForAttachment(file) + textareaElement.value;
       }
     }
