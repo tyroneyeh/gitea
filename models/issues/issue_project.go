@@ -34,7 +34,7 @@ func (issue *Issue) projectIDs(ctx context.Context) []int64 {
 // ProjectColumnID return project column id if issue was assigned to one
 func (issue *Issue) ProjectColumnID(ctx context.Context) (int64, error) {
 	var ip project_model.ProjectIssue
-	has, err := db.GetEngine(ctx).Where("issue_id=?", issue.ID).Get(&ip)
+	has, err := db.GetEngine(ctx).Where("issue_id=? AND project_id=?", issue.ID, issue.Projects[0].ID).Get(&ip)
 	if err != nil {
 		return 0, err
 	} else if !has {

@@ -47,6 +47,7 @@ func MoveIssuesOnProjectColumn(ctx context.Context, doer *user_model.User, colum
 
 		issuesMap := make(map[int64]*issues_model.Issue, len(issues))
 		for _, issue := range issues {
+			issue.Projects = []*project_model.Project{project}
 			issuesMap[issue.ID] = issue
 		}
 
