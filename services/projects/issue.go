@@ -40,10 +40,10 @@ func MoveIssuesOnProjectColumn(ctx context.Context, doer *user_model.User, colum
 			return err
 		}
 
-		// project, err := project_model.GetProjectByID(ctx, column.ProjectID)
-		// if err != nil {
-		// 	return err
-		// }
+		project, err := project_model.GetProjectByID(ctx, column.ProjectID)
+		if err != nil {
+			return err
+		}
 
 		issuesMap := make(map[int64]*issues_model.Issue, len(issues))
 		for _, issue := range issues {
@@ -56,26 +56,26 @@ func MoveIssuesOnProjectColumn(ctx context.Context, doer *user_model.User, colum
 				continue
 			}
 
-			// projectColumnID, err := curIssue.ProjectColumnID(ctx)
-			// if err != nil {
-			// 	return err
-			// }
+			projectColumnID, err := curIssue.ProjectColumnID(ctx)
+			if err != nil {
+				return err
+			}
 
-			// if projectColumnID != column.ID {
-			// 	// add timeline to issue
-			// 	if _, err := issues_model.CreateComment(ctx, &issues_model.CreateCommentOptions{
-			// 		Type:               issues_model.CommentTypeProjectColumn,
-			// 		Doer:               doer,
-			// 		Repo:               curIssue.Repo,
-			// 		Issue:              curIssue,
-			// 		ProjectID:          column.ProjectID,
-			// 		ProjectTitle:       project.Title,
-			// 		ProjectColumnID:    column.ID,
-			// 		ProjectColumnTitle: column.Title,
-			// 	}); err != nil {
-			// 		return err
-			// 	}
-			// }
+			if projectColumnID != column.ID {
+				// add timeline to issue
+				if _, err := issues_model.CreateComment(ctx, &issues_model.CreateCommentOptions{
+					Type:               issues_model.CommentTypeProjectColumn,
+					Doer:               doer,
+					Repo:               curIssue.Repo,
+					Issue:              curIssue,
+					ProjectID:          column.ProjectID,
+					ProjectTitle:       project.Title,
+					ProjectColumnID:    column.ID,
+					ProjectColumnTitle: column.Title,
+				}); err != nil {
+					return err
+				}
+			}
 
 			_, err = db.GetEngine(ctx).Table("project_issue").
 				Where("issue_id = ? AND project_id = ?", issueID, column.ProjectID).
