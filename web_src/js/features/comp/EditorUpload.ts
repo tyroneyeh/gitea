@@ -155,6 +155,12 @@ export function initEasyMDEPaste(easyMDE: EasyMDE, dropzoneEl: HTMLElement) {
     if (!e.dataTransfer?.files.length) return;
     handleUploadFiles(editor, dropzoneEl, e.dataTransfer.files, e);
   });
+  easyMDE.codemirror.on('blur', () => {
+    window.lastSelection = {
+      start: easyMDE.codemirror.indexFromPos(easyMDE.codemirror.getCursor('start')),
+      end: easyMDE.codemirror.indexFromPos(easyMDE.codemirror.getCursor('end')),
+    };
+  });
   dropzoneEl.dropzone.on(DropzoneCustomEventRemovedFile, ({fileUuid}) => {
     const oldText = easyMDE.codemirror.getValue();
     const newText = removeAttachmentLinksFromMarkdown(oldText, fileUuid);
@@ -174,6 +180,12 @@ export function initTextareaEvents(textarea: HTMLTextAreaElement, dropzoneEl: HT
     if (!e.dataTransfer?.files.length) return;
     if (!dropzoneEl) return;
     handleUploadFiles(new TextareaEditor(textarea), dropzoneEl, e.dataTransfer.files, e);
+  });
+  textarea.addEventListener('blur', () => {
+    window.lastSelection = {
+      start: textarea.selectionStart,
+      end: textarea.selectionEnd,
+    };
   });
   dropzoneEl?.dropzone.on(DropzoneCustomEventRemovedFile, ({fileUuid}: {fileUuid: string}) => {
     const newText = removeAttachmentLinksFromMarkdown(textarea.value, fileUuid);

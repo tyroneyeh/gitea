@@ -64,5 +64,9 @@ interface Window {
   turnstile: any,
   hcaptcha: any,
 
+  lastSelection?: {
+    start: number;
+    end: number;
+  };
   // do not add more properties here unless it is a must
 }

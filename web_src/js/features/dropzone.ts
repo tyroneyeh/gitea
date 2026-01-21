@@ -110,12 +110,41 @@ export async function initDropzone(dropzoneEl: HTMLElement) {
     if (localStorage.getItem('markdown-editor-comment') === 'easymde') {
       const easyMDEElement = (form?.querySelector('.combo-markdown-editor') as HTMLTextAreaElement & {_giteaComboMarkdownEditor: any})?._giteaComboMarkdownEditor?.easyMDE;
       if (easyMDEElement && !easyMDEElement.value().includes('(uploading ...)')) {
-        easyMDEElement.value(generateMarkdownLinkForAttachment(file) + easyMDEElement.value());
+        const {start, end} = window.lastSelection ?? {
+          start: easyMDEElement.codemirror.indexFromPos(easyMDEElement.codemirror.getCursor('start')),
+          end: easyMDEElement.codemirror.indexFromPos(easyMDEElement.codemirror.getCursor('end')),
+        };
+        const before = easyMDEElement.value().slice(0, start);
+        const fileLink = generateMarkdownLinkForAttachment(file);
+        const after = easyMDEElement.value().slice(end);
+        easyMDEElement.value(`${before}${fileLink}${after}`);
+        const newPos = before.length + fileLink.length;
+        const newCursorPos = easyMDEElement.codemirror.posFromIndex(newPos);
+        easyMDEElement.codemirror.focus();
+        easyMDEElement.codemirror.setSelection(newCursorPos, newCursorPos);
+        window.lastSelection = {
+          start: newPos,
+          end: newPos,
+        };
       }
     } else {
       const textareaElement = form?.querySelector('textarea');
       if (textareaElement && !textareaElement.value.includes('(uploading ...)')) {
-        textareaElement.value = generateMarkdownLinkForAttachment(file) + textareaElement.value;
+        const {start, end} = window.lastSelection ?? {
+          start: textareaElement.selectionStart,
+          end: textareaElement.selectionEnd,
+        };
+        const before = textareaElement.value.slice(0, start);
+        const fileLink = generateMarkdownLinkForAttachment(file);
+        const after = textareaElement.value.slice(end);
+        textareaElement.value = `${before}${fileLink}${after}`;
+        const newPos = before.length + fileLink.length;
+        textareaElement.focus();
+        textareaElement.setSelectionRange(newPos, newPos);
+        window.lastSelection = {
+          start: newPos,
+          end: newPos,
+        };
       }
     }
     dzInst.emit(DropzoneCustomEventUploadDone, {file});
