@@ -187,6 +187,70 @@ export function initTextareaEvents(textarea: HTMLTextAreaElement, dropzoneEl: HT
       end: textarea.selectionEnd,
     };
   });
+  textarea.addEventListener('keydown', (e) => {
+    const isCopy = (e.ctrlKey || e.metaKey) && e.key === 'c';
+    const isCut = (e.ctrlKey || e.metaKey) && e.key === 'x';
+    if (isCopy || isCut) {
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      if (start !== end) return;
+      e.preventDefault();
+      const lineStart = textarea.value.lastIndexOf('\n', start - 1) + 1;
+      const lineEnd = textarea.value.indexOf('\n', end);
+      const realEnd = lineEnd === -1 ? textarea.value.length : lineEnd + 1;
+      const block = textarea.value.slice(lineStart, realEnd);
+      navigator.clipboard.writeText(block);
+      if (isCut) {
+        textarea.value = textarea.value.slice(0, lineStart) + textarea.value.slice(realEnd);
+        textarea.setSelectionRange(lineStart, lineStart);
+      }
+      return;
+    }
+
+    if (e.key !== 'Tab') return;
+    e.preventDefault();
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const value = textarea.value;
+
+    const lineStart = value.lastIndexOf('\n', start - 1) + 1;
+    const lineEnd = value.indexOf('\n', end);
+    const realEnd = lineEnd === -1 ? value.length : lineEnd;
+
+    const block = value.slice(lineStart, realEnd);
+
+    if (start === end) {
+      if (e.shiftKey) {
+        if (value[start - 1] === '\t') {
+          textarea.value = value.slice(0, start - 1) + value.slice(start);
+          textarea.setSelectionRange(start - 1, start - 1);
+        }
+      } else {
+        textarea.value = `${value.slice(0, start)}\t${value.slice(end)}`;
+        textarea.setSelectionRange(start + 1, start + 1);
+      }
+      return;
+    }
+
+    const lines = block.split('\n');
+    const newLines = lines.map((line) => {
+      if (e.shiftKey) {
+        return line.startsWith('\t') ? line.slice(1) : line;
+      }
+      return `\t${line}`;
+    });
+
+    const indented = newLines.join('\n');
+    textarea.value = value.slice(0, lineStart) + indented + value.slice(realEnd);
+    let newEnd = end + indented.length - block.length;
+
+    if (e.shiftKey) {
+      newEnd = end - lines.filter((line) => line.startsWith('\t')).length;
+    }
+
+    textarea.setSelectionRange(start, newEnd);
+  });
   dropzoneEl?.dropzone.on(DropzoneCustomEventRemovedFile, ({fileUuid}: {fileUuid: string}) => {
     const newText = removeAttachmentLinksFromMarkdown(textarea.value, fileUuid);
     if (textarea.value !== newText) textarea.value = newText;
