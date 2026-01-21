@@ -62,7 +62,7 @@ func MoveIssuesOnProjectColumn(ctx context.Context, doer *user_model.User, colum
 				return err
 			}
 
-			if projectColumnID != column.ID {
+			if projectColumnID != 0 && projectColumnID != column.ID {
 				// add timeline to issue
 				if _, err := issues_model.CreateComment(ctx, &issues_model.CreateCommentOptions{
 					Type:               issues_model.CommentTypeProjectColumn,
