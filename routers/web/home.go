@@ -44,6 +44,7 @@ func Home(ctx *context.Context) {
 			middleware.SetRedirectToCookie(ctx.Resp, setting.AppSubURL+ctx.Req.URL.RequestURI())
 			ctx.Redirect(setting.AppSubURL + "/user/settings/change_password")
 		} else {
+			ctx.Data["IsDashboard"] = true
 			user.Dashboard(ctx)
 		}
 		return
