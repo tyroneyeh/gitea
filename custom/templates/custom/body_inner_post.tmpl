@@ -9,13 +9,13 @@
         <input type="button" @click="dateCtrl(30)" value="Month">
     </div>
     <div class="ui input tiny tw-pt-2">
-        <input type="search" class="ui small" v-model="orig" title="Organization" placeholder="Organization" style="width:100px">
-        <select v-model="by" class="ui small"><option value="created_by">created_by</option><option value="assigned_by" selected>assigned_by</option><option value="mentioned_by">mentioned_by</option></select>
-        <select v-model="type" class="ui small" title="Type"><option value="all">All</option><option value="issue">Issue</option><option value="pr">PR</option></select>
-        <select v-model="state" class="ui small" title="State"><option value="all">All</option><option value="open" selected>open</option><option value="closed">closed</option></select>
+        <input type="search" class="ui small" v-model="orig" title="Organization" placeholder="{{ctx.Locale.Tr "organization"}}" style="width:100px">
+        <select v-model="by" class="ui small"><option value="created_by">{{ctx.Locale.Tr "repo.issues.filter_type.created_by_you"}}</option><option value="assigned_by" selected>{{ctx.Locale.Tr "repo.issues.filter_type.assigned_to_you"}}</option><option value="mentioned_by">{{ctx.Locale.Tr "repo.issues.filter_type.mentioning_you"}}</option></select>
+        <select v-model="type" class="ui small" title="Type"><option value="all">All</option><option value="issue">{{ctx.Locale.Tr "repo.issues"}}</option><option value="pr">{{ctx.Locale.Tr "repo.pulls"}}</option></select>
+        <select v-model="state" class="ui small" title="State"><option value="all">All</option><option value="open" selected>{{ctx.Locale.Tr "repo.issues.open_title"}}</option><option value="closed">{{ctx.Locale.Tr "repo.issues.closed_title"}}</option></select>
         <select v-model="onlyself" class="ui small tw-hidden" title="Self or follow"><option value="all">All</option><option value="self" selected>Self</option><option value="follow">Follow</option></select>
-        <input type="search" class="ui small" v-model="labels" title="Labels" placeholder="Labels" style="width:100px">
-        <input type="search" v-model="q" class="ui button small" placeholder="Query" style="width:100px">
+        <input type="search" class="ui small" v-model="labels" title="Labels" placeholder="{{ctx.Locale.Tr "repo.tags"}}" style="width:100px">
+        <input type="search" v-model="q" class="ui button small" placeholder="{{ctx.Locale.Tr "packages.keywords"}}" style="width:100px">
 
         <div class="ui floating jump dropdown" tabindex="0">
             <div class="filter menu transition" tabindex="-1">
@@ -32,7 +32,7 @@
             <input type="search" v-model="userTitle" @click="userTitle=''" class="combo-value ui button small" style="width:100px">
         </div>
 
-        <input type="button" class="ui small" @click="queryReport" value="OK">
+        <input type="button" class="ui small" @click="queryReport" value="{{ctx.Locale.Tr "ok"}}">
     </div>
     <div class="ui divider"></div>
     <div id="reposdetailtmeplate" class="tw-hidden">
