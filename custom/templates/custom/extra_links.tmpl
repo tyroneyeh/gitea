@@ -1,4 +1,5 @@
-
+{{if ctx.RootData.IsSigned}}
 <a class="item" href="/FAE/CF/issues">FAE/CF</a>
 <a class="item" href="#report" onclick="reportGenerator()">Report</a>
 <div style="width:300px"><form class="ui form ignore-dirty item" action="/issues">{{template "repo/issue/search" .}}</form></div>
+{{end}}
