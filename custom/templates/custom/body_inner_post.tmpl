@@ -1,21 +1,23 @@
 <br>
 <div id="report" class="ui container fluid tw-hidden">
     <div class="ui input tiny">
-        <input placeholder="yyyy-mm-dd" type="date" v-model="startDate" :max="endDateMax" title="Start Date">
-        <input placeholder="yyyy-mm-dd" type="date" v-model="endDate" :max="endDateMax" title="End Date">
-        <input type="button" @click="dateCtrl(0)" value="Today">
-        <input type="button" @click="dateCtrl(1)" value="Yesterday">
-        <input type="button" @click="dateCtrl(7)" value="Week">
-        <input type="button" @click="dateCtrl(30)" value="Month">
+        <input placeholder="yyyy-mm-dd" type="date" class="ui tiny" v-model="startDate" :max="endDateMax" title="Start Date">
+        <input placeholder="yyyy-mm-dd" type="date" class="ui tiny" v-model="endDate" :max="endDateMax" title="End Date">
+        <span id="quickdaybtn">
+        <input type="button" class="ui button" @click="dateCtrl(0, $event)" value="Today">
+        <input type="button" class="ui button" @click="dateCtrl(1, $event)" value="Yesterday">
+        <input type="button" class="ui button primary" @click="dateCtrl(7, $event)" value="Week">
+        <input type="button" class="ui button" @click="dateCtrl(30, $event)" value="Month">
+        </span>
     </div>
     <div class="ui input tiny tw-pt-2">
-        <input type="search" class="ui small" v-model="orig" title="Organization" placeholder="{{ctx.Locale.Tr "organization"}}" style="width:100px">
-        <select v-model="by" class="ui small"><option value="created_by">{{ctx.Locale.Tr "repo.issues.filter_type.created_by_you"}}</option><option value="assigned_by" selected>{{ctx.Locale.Tr "repo.issues.filter_type.assigned_to_you"}}</option><option value="mentioned_by">{{ctx.Locale.Tr "repo.issues.filter_type.mentioning_you"}}</option><option value="myself">Myself</option></select>
-        <select v-model="type" class="ui small" title="Type"><option value="all">All</option><option value="issue">{{ctx.Locale.Tr "repo.issues"}}</option><option value="pr">{{ctx.Locale.Tr "repo.pulls"}}</option></select>
-        <select v-model="state" class="ui small" title="State"><option value="all">All</option><option value="open" selected>{{ctx.Locale.Tr "repo.issues.open_title"}}</option><option value="closed">{{ctx.Locale.Tr "repo.issues.closed_title"}}</option></select>
-        <select v-model="onlyself" class="ui small tw-hidden" title="Self or follow"><option value="all">All</option><option value="self" selected>Self</option><option value="follow">Follow</option></select>
-        <input type="search" class="ui small" v-model="labels" title="Labels" placeholder="{{ctx.Locale.Tr "repo.tags"}}" style="width:100px">
-        <input type="search" v-model="q" class="ui button small" placeholder="{{ctx.Locale.Tr "packages.keywords"}}" style="width:100px">
+        <input type="search" class="ui tiny" v-model="orig" title="Organization" placeholder="{{ctx.Locale.Tr "organization"}}" style="width:100px">
+        <select v-model="by" class="ui tiny"><option value="created_by">{{ctx.Locale.Tr "repo.issues.filter_type.created_by_you"}}</option><option value="assigned_by" selected>{{ctx.Locale.Tr "repo.issues.filter_type.assigned_to_you"}}</option><option value="mentioned_by">{{ctx.Locale.Tr "repo.issues.filter_type.mentioning_you"}}</option><option value="myself">Myself</option></select>
+        <select v-model="type" class="ui tiny" title="Type"><option value="all">All</option><option value="issue">{{ctx.Locale.Tr "repo.issues"}}</option><option value="pr">{{ctx.Locale.Tr "repo.pulls"}}</option></select>
+        <select v-model="state" class="ui tiny" title="State"><option value="all">All</option><option value="open" selected>{{ctx.Locale.Tr "repo.issues.open_title"}}</option><option value="closed">{{ctx.Locale.Tr "repo.issues.closed_title"}}</option></select>
+        <select v-model="onlyself" class="ui tiny tw-hidden" title="Self or follow"><option value="all">All</option><option value="self" selected>Self</option><option value="follow">Follow</option></select>
+        <input type="search" class="ui tiny" v-model="labels" title="Labels" placeholder="{{ctx.Locale.Tr "repo.tags"}}" style="width:100px">
+        <input type="search" v-model="q" class="ui button tiny" placeholder="{{ctx.Locale.Tr "packages.keywords"}}" style="width:100px">
 
         <div class="ui floating jump dropdown" tabindex="0">
             <div class="filter menu transition" tabindex="-1">
@@ -29,15 +31,15 @@
                     </a>
                 </div>
             </div>
-            <input type="search" v-model="userTitle" @click="userTitle=''" class="combo-value ui button small" style="width:100px">
+            <input type="search" v-model="userTitle" @click="userTitle=''" class="combo-value ui button" style="field-sizing:content">
         </div>
 
-        <input type="button" class="ui small" @click="queryReport" value="{{ctx.Locale.Tr "ok"}}">
+        <input type="button" class="ui button primary tiny" @click="queryReport" value="{{ctx.Locale.Tr "ok"}}">
     </div>
     <div class="ui divider"></div>
     <div id="reposdetailtmeplate" class="tw-hidden">
         <div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><a class="reponame" style="font-size:xx-small"></a></div>
-        <div><div class="ui yellow small label tooltip" title="Open">0</div><div class="ui green small label tooltip" title="Solved">0</div><div class="ui grey small label tooltip" title="Close">0</div><div class="ui blue small label tooltip" title="Total">0</div></div>
+        <div><div class="ui yellow tiny label tooltip" title="Open">0</div><div class="ui green tiny label tooltip" title="Solved">0</div><div class="ui grey tiny label tooltip" title="Close">0</div><div class="ui blue tiny label tooltip" title="Total">0</div></div>
     </div>
     <div id="reposcardtemplate" class="tw-hidden">
         <div style="min-width:6em;width:8em">
@@ -45,7 +47,7 @@
             <div style="width:6em;height:22px;display:grid;margin-top:3px">
                 <progress class="progress"></progress>
             </div>
-            <div class="allcount"><div class="ui yellow small label tooltip" title="Open">0</div><div class="ui green small label tooltip" title="Solved">0</div><div class="ui grey small label tooltip" title="Close">0</div><div class="ui blue small label tooltip" title="Total">0</div></div>
+            <div class="allcount"><div class="ui yellow tiny label tooltip" title="Open">0</div><div class="ui green tiny label tooltip" title="Solved">0</div><div class="ui grey tiny label tooltip" title="Close">0</div><div class="ui blue tiny label tooltip" title="Total">0</div></div>
             <div class="reposdetail"></div>
         </div>
     </div>
@@ -69,6 +71,6 @@
                 </a>
             </div>
         </div>
-        <input type="button" @click="queryRelease" class="ui button small" value="Filter Releases">
+        <input type="button" @click="queryRelease" class="ui button tiny" value="Filter Releases">
     </div>
 </div>
