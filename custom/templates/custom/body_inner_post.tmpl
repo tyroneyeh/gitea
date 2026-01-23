@@ -1,8 +1,8 @@
 <br>
 <div id="report" class="ui container fluid tw-hidden">
     <div class="ui input tiny">
-        <input placeholder="yyyy-mm-dd" type="date" class="ui tiny" v-model="startDate" :max="endDateMax" title="Start Date">
-        <input placeholder="yyyy-mm-dd" type="date" class="ui tiny" v-model="endDate" :max="endDateMax" title="End Date">
+        <input placeholder="yyyy-mm-dd" type="date" class="ui tiny" v-model="startDate" @click="dateCtrl(-1)" :max="endDateMax" title="Start Date">
+        <input placeholder="yyyy-mm-dd" type="date" class="ui tiny" v-model="endDate" @click="dateCtrl(-1)" :max="endDateMax" title="End Date">
         <span id="quickdaybtn">
         <input type="button" class="ui button" @click="dateCtrl(0, $event)" value="Today">
         <input type="button" class="ui button" @click="dateCtrl(1, $event)" value="Yesterday">
