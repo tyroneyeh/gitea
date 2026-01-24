@@ -4,10 +4,10 @@
         <input placeholder="yyyy-mm-dd" type="date" class="ui tiny" v-model="startDate" @click="dateCtrl(-1)" :max="endDateMax" title="Start Date">
         <input placeholder="yyyy-mm-dd" type="date" class="ui tiny" v-model="endDate" @click="dateCtrl(-1)" :max="endDateMax" title="End Date">
         <span id="quickdaybtn">
-        <input type="button" class="ui button" @click="dateCtrl(0, $event)" value="Today">
-        <input type="button" class="ui button" @click="dateCtrl(1, $event)" value="Yesterday">
-        <input type="button" class="ui button primary" @click="dateCtrl(7, $event)" value="Week">
-        <input type="button" class="ui button" @click="dateCtrl(30, $event)" value="Month">
+        <input type="button" :class="{primary: quickday === 0}" class="ui button" @click="dateCtrl(0)" value="Today">
+        <input type="button" :class="{primary: quickday === 1}" class="ui button" @click="dateCtrl(1)" value="Yesterday">
+        <input type="button" :class="{primary: quickday === 7}" class="ui button" @click="dateCtrl(7)" value="Week">
+        <input type="button" :class="{primary: quickday === 30}" class="ui button" @click="dateCtrl(30)" value="Month">
         </span>
     </div>
     <div class="ui input tiny tw-pt-2">
