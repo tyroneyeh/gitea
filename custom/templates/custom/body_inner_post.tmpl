@@ -15,7 +15,7 @@
         <select v-model="state" class="ui tiny" title="State"><option value="all">All</option><option value="open" selected>{{ctx.Locale.Tr "repo.issues.open_title"}}</option><option value="closed">{{ctx.Locale.Tr "repo.issues.closed_title"}}</option></select>
         <select v-model="onlyself" class="ui tiny tw-hidden" title="Self or follow"><option value="all">All</option><option value="self" selected>Self</option><option value="follow">Follow</option></select>
         <input type="search" class="ui tiny" v-model="labels" @keyup.enter="queryReport" title="Labels" placeholder="{{ctx.Locale.Tr "repo.tags"}}" style="width:100px">
-        <input type="search" v-model="q" @keyup.enter="queryReport" class="ui button tiny" placeholder="{{ctx.Locale.Tr "packages.keywords"}}" style="width:100px">
+        <input type="search" v-model="q" @keyup.enter="queryReport" class="ui button tiny" placeholder="{{ctx.Locale.Tr "packages.keywords"}}" style="field-sizing:content">
 
         <div class="ui floating jump dropdown" tabindex="0">
             <div class="filter menu transition" tabindex="-1">
@@ -29,7 +29,7 @@
                     </a>
                 </div>
             </div>
-            <input type="search" v-model="userTitle" @keyup.enter="queryReport" class="combo-value ui button" style="field-sizing:content">
+            <input type="search" v-model="userTitle" @keyup.enter="queryReport" @dblclick="userTitle = ''" class="combo-value ui button" style="field-sizing:content">
         </div>
 
         <input type="button" class="ui button primary tiny" @click="okCount++;queryReport()" value="{{ctx.Locale.Tr "ok"}}">
