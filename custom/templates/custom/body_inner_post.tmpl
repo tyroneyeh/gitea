@@ -13,7 +13,6 @@
         <select v-model="by" class="ui tiny"><option value="created_by">{{ctx.Locale.Tr "repo.issues.filter_type.created_by_you"}}</option><option value="assigned_by" selected>{{ctx.Locale.Tr "repo.issues.filter_type.assigned_to_you"}}</option><option value="mentioned_by">{{ctx.Locale.Tr "repo.issues.filter_type.mentioning_you"}}</option><option value="myself">Myself</option></select>
         <select v-model="type" class="ui tiny" title="Type"><option value="all">All</option><option value="issue">{{ctx.Locale.Tr "repo.issues"}}</option><option value="pr">{{ctx.Locale.Tr "repo.pulls"}}</option></select>
         <select v-model="state" class="ui tiny" title="State"><option value="all">All</option><option value="open" selected>{{ctx.Locale.Tr "repo.issues.open_title"}}</option><option value="closed">{{ctx.Locale.Tr "repo.issues.closed_title"}}</option></select>
-        <input type="search" class="ui tiny" v-model="labels" @keyup.enter="queryReport" placeholder="{{ctx.Locale.Tr "repo.tags"}}" style="width:100px">
         <input type="search" v-model="q" @keyup.enter="queryReport" class="ui button tiny" placeholder="{{ctx.Locale.Tr "packages.keywords"}}" style="field-sizing:content">
 
         <div class="ui floating jump dropdown" tabindex="0">
