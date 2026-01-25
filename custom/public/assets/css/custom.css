@@ -18,17 +18,18 @@
     width: auto;
 }
 .gridjs-tbody tr:nth-child(odd) td {
-  background-color: #ffffff !important;
+  background-color: var(--color-box-body) !important;
 }
 .gridjs-tbody tr:nth-child(even) td {
-  background-color: #f9fafb !important;
+  background-color: var(--color-box-body-highlight) !important;
 }
 .gridjs-tbody tr:hover td {
-  background-color: #e5e7eb !important;
+  background-color: var(--color-hover-opaque) !important;
 }
 input.gridjs-input {
     color: var(--color-text);
-    background-color: var(--color-input-background);
+    background-color: var(--color-input-background) !important;
+    border-color: var(--color-input-border) !important;
 }
 
 .timeline-reverse {
