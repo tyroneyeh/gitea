@@ -1,5 +1,5 @@
 <br>
-<div id="report" class="ui container fluid tw-hidden">
+<div id="report" class="ui container fluid tw-hidden" v-cloak>
     <div class="ui input tiny">
         <input placeholder="yyyy-mm-dd" type="date" class="ui tiny" v-model="startDate" @click="dateCtrl(-1)" :max="endDateMax" title="Start Date">
         <input placeholder="yyyy-mm-dd" type="date" class="ui tiny" v-model="endDate" @click="dateCtrl(-1)" :max="endDateMax" title="End Date">
@@ -32,6 +32,8 @@
 
         <input type="button" class="ui button primary tiny" @click="okCount++;queryReport()" value="{{ctx.Locale.Tr "ok"}}">
     </div>
+    <div class="ui divider"></div>
+    <div><span v-for="(value, key) in labelsSummary" :key="key" class="ui label tw-mr-2"><span class="ui tw-mr-1">[[value.count]]</span><span class="ui label" :style="{backgroundColor: value.color}">[[key]]</span></span></div>
     <div class="ui divider"></div>
 
     <div id="column-controls" class="mb-4 p-4 bg-white rounded shadow"></div>

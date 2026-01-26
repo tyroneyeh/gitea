@@ -1,3 +1,6 @@
+[v-cloak] {
+    display: none;
+}
 .ui.container {
     width: 100%;
 }
