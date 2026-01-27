@@ -50,15 +50,16 @@ input.gridjs-input {
   position: absolute;
   margin-top: -15px;
 }
-.gridjs-tbody td.ellipsis {
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
+td.ellipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
-.gridjs-tbody td.ellipsis-start {
-  white-space: nowrap;
+td.ellipsis-start {
   overflow: hidden;
   text-overflow: ellipsis;
   direction: rtl;
   text-align: left;
+}
+.overflow-x-auto {
+  overflow-x: auto;
 }
