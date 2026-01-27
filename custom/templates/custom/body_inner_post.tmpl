@@ -30,7 +30,7 @@
             <input type="search" v-model="userTitle" @keyup.enter="queryReport" @dblclick="userTitle = ''" class="combo-value ui button" style="field-sizing:content">
         </div>
 
-        <input type="button" class="ui button primary tiny" @click="okCount++;queryReport()" value="{{ctx.Locale.Tr "ok"}}">
+        <input type="button" class="ui button primary tiny" @click="okCount++;queryReport($event)" value="{{ctx.Locale.Tr "ok"}}">
     </div>
     <div class="ui divider"></div>
     <div><span v-for="(value, key) in reposSummary" :key="key" class="ui label tw-mr-2 tw-cursor-pointer" @click="filterRepos(key)" :data-tooltip-content="`Total: ${value.count}, Open: ${value.open}, Closed: ${value.closed}`"><span class="ui tw-mr-1">[[value.count]]</span><span class="ui label">[[key]]</span><span>([[value.open]] / [[value.closed]])</span></div>
