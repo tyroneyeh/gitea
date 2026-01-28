@@ -75,3 +75,9 @@ td.ellipsis-start {
 .overflow-x-auto {
     overflow-x: auto;
 }
+.pre {
+    white-space: pre !important;
+}
+.rem8 {
+    width: 8rem !important;
+}
