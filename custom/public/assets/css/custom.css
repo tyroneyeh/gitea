@@ -70,14 +70,14 @@ td.ellipsis-start {
     overflow: hidden;
     text-overflow: ellipsis;
     direction: rtl;
-    text-align: left;
 }
 .overflow-x-auto {
     overflow-x: auto;
 }
 .pre {
     white-space: pre !important;
+    font-family: monospace;
 }
 .rem8 {
-    width: 8rem !important;
+    width: 9.3rem !important;
 }
