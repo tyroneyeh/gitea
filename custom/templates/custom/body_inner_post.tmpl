@@ -33,11 +33,11 @@
         <input type="button" class="ui button primary tiny" @click="okCount++;queryReport($event)" value="{{ctx.Locale.Tr "ok"}}">
     </div>
     <div class="ui divider"></div>
-    <div><span v-for="(value, key) in reposSummary" :key="key" class="ui label tw-mr-2 tw-cursor-pointer" @click="filterRepos(`${key}#`, $event)" :data-tooltip-content="`Total: ${value.count}, Open: ${value.open}, Closed: ${value.closed}`"><span class="ui tw-mr-1">[[value.count]]</span><span class="ui label">[[key]]</span><span>([[value.open]] / [[value.closed]])</span></div>
+    <div><span v-for="(value, key) in reposSummary" :key="key" class="ui label tw-mr-2 tw-cursor-pointer" :class="{'border': isSelected[key]}" @click="filterRepos(`${key}`)" :data-tooltip-content="`Total: ${value.count}, Open: ${value.open}, Closed: ${value.closed}`"><span class="ui tw-mr-1">[[value.count]]</span><span class="ui label">[[key]]</span><span>([[value.open]] / [[value.closed]])</span></div>
     <div class="ui divider"></div>
-    <div><span v-for="(value, key) in labelsSummary" :key="key" class="ui label tw-mr-2 tw-cursor-pointer" @click="filterLabel(key, $event)"><span class="ui tw-mr-1">[[value.count]]</span><span class="ui label" :style="{backgroundColor: value.color}" :data-tooltip-content="key">[[key]]</span></span></div>
+    <div><span v-for="(value, key) in labelsSummary" :key="key" class="ui label tw-mr-2 tw-cursor-pointer" :class="{'border': isSelected[key]}" @click="filterLabel(key)"><span class="ui tw-mr-1">[[value.count]]</span><span class="ui label" :style="{backgroundColor: value.color}" :data-tooltip-content="key">[[key]]</span></span></div>
     <div class="ui divider"></div>
-    <div><span v-for="(value, key) in usersSummary" :key="key" class="ui label tw-mr-2" :data-tooltip-content="`Created: ${value.created}, Assigned: ${value.assigned}`"><span class="ui tw-px-3 tw-cursor-pointer" @click="filterUser(`${key}`, null, $event)">[[value.created]]</span><span class="ui label">[[key]]</span><span class="ui tw-mr-1 tw-cursor-pointer tw-px-3" @click="filterUser(null, `${key}`, $event)">[[value.assigned]]</span></span>
+    <div><span v-for="(value, key) in usersSummary" :key="key" class="ui label tw-mr-2" :data-tooltip-content="`Created: ${value.created}, Assigned: ${value.assigned}`"><span class="ui tw-px-3 tw-cursor-pointer" :class="{'border': isSelected[`${key}-created`]}" @click="filterUser(`${key}`)">[[value.created]]</span><span class="ui label">[[key]]</span><span class="ui tw-mr-1 tw-cursor-pointer tw-px-3" :class="{'border': isSelected[`${key}-assigned`]}" @click="filterUser(null, `${key}`)">[[value.assigned]]</span></span>
     <div class="ui divider"></div></div>
 
     <div id="column-controls" class="mb-4 p-4 bg-white rounded shadow"></div>
