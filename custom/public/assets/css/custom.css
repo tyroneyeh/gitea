@@ -21,13 +21,13 @@
     width: auto;
 }
 .gridjs-tbody tr:nth-child(odd) td {
-  background-color: var(--color-box-body) !important;
+    background-color: var(--color-box-body) !important;
 }
 .gridjs-tbody tr:nth-child(even) td {
-  background-color: var(--color-box-body-highlight) !important;
+    background-color: var(--color-box-body-highlight) !important;
 }
 .gridjs-tbody tr:hover td {
-  background-color: var(--color-hover-opaque) !important;
+    background-color: var(--color-hover-opaque) !important;
 }
 input.gridjs-input {
     color: var(--color-text);
@@ -46,20 +46,32 @@ input.gridjs-input {
     order: 2;
 }
 .close-btn::before {
-  content: '×';
-  position: absolute;
-  margin-top: -15px;
+    content: '×';
+    position: absolute;
+    margin-top: -15px;
 }
 td.ellipsis {
     overflow: hidden;
     text-overflow: ellipsis;
 }
 td.ellipsis-start {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  direction: rtl;
-  text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    direction: rtl;
+    text-align: left;
+}
+.tw-ellipsis {
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.tw-ellipsis-start {
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    direction: rtl;
+    text-align: left;
 }
 .overflow-x-auto {
-  overflow-x: auto;
+    overflow-x: auto;
 }
