@@ -50,6 +50,17 @@ input.gridjs-input {
     position: absolute;
     margin-top: -15px;
 }
+th.gridjs-td {
+    border: 1px solid #e5e7eb;
+    border-top: none;
+    user-select: none;
+}
+th.gridjs-td:last-child {
+    border-right: none;
+}
+th.gridjs-td .gridjs-th-content {
+    float: left;
+}
 td.ellipsis {
     overflow: hidden;
     text-overflow: ellipsis;
