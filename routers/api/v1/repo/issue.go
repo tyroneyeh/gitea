@@ -251,10 +251,18 @@ func SearchIssues(ctx *context.APIContext) {
 	}
 
 	if since != 0 {
-		searchOpt.UpdatedAfterUnix = optional.Some(since)
+		if ctx.FormBool("by_created") {
+			searchOpt.CreatedAfterUnix = optional.Some(since)
+		} else {
+			searchOpt.UpdatedAfterUnix = optional.Some(since)
+		}
 	}
 	if before != 0 {
-		searchOpt.UpdatedBeforeUnix = optional.Some(before)
+		if ctx.FormBool("by_created") {
+			searchOpt.CreatedBeforeUnix = optional.Some(before)
+		} else {
+			searchOpt.UpdatedBeforeUnix = optional.Some(before)
+		}
 	}
 
 	if ctx.IsSigned {

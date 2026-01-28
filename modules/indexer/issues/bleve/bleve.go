@@ -503,6 +503,13 @@ func (b *Indexer) Search(ctx context.Context, options *internal.SearchOptions) (
 		queries = append(queries, inner_bleve.NumericEqualityQuery(options.SubscriberID.Value(), "subscriber_ids"))
 	}
 
+	if options.CreatedAfterUnix.Has() || options.CreatedBeforeUnix.Has() {
+		queries = append(queries, inner_bleve.NumericRangeInclusiveQuery(
+			options.CreatedAfterUnix,
+			options.CreatedBeforeUnix,
+			"created_unix"))
+	}
+
 	if options.UpdatedAfterUnix.Has() || options.UpdatedBeforeUnix.Has() {
 		queries = append(queries, inner_bleve.NumericRangeInclusiveQuery(
 			options.UpdatedAfterUnix,
