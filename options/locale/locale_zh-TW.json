@@ -1515,7 +1515,7 @@
   "repo.issues.review.approve": "核可了這些變更 %s",
   "repo.issues.review.comment": "已審核 %s",
   "repo.issues.review.dismissed_label": "已取消",
-  "repo.issues.review.left_comment": "留下了回應",
+  "repo.issues.review.left_comment": "留下了回應 <a href=\"#%s\">%s</a>",
   "repo.issues.review.content.empty": "您必須留下訊息指出需要修正的地方。",
   "repo.issues.review.reject": "請求了變更 %s",
   "repo.issues.review.wait": "被請求進行審核 %s",

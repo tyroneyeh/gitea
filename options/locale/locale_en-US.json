@@ -1699,7 +1699,7 @@
   "repo.issues.review.comment": "reviewed %s",
   "repo.issues.review.dismissed": "dismissed %s's review %s",
   "repo.issues.review.dismissed_label": "Dismissed",
-  "repo.issues.review.left_comment": "left a comment",
+  "repo.issues.review.left_comment": "left a comment %s",
   "repo.issues.review.content.empty": "You need to leave a comment indicating the requested change(s).",
   "repo.issues.review.reject": "requested changes %s",
   "repo.issues.review.wait": "was requested for review %s",
