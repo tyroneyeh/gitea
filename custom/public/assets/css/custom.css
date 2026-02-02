@@ -86,12 +86,6 @@ td.ellipsis-start {
 .overflow-x-auto {
     overflow-x: auto;
 }
-.pre {
-    white-space: pre !important;
-}
-.rem8 {
-    width: 9.3rem !important;
-}
 .number {
     width: 3em;
     text-align: right;

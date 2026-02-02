@@ -41,7 +41,7 @@
     <div class="ui divider"></div>
     <details @toggle="onToggle('labels', $event)" :open="isLabelsOpen">
         <summary>{{ctx.Locale.Tr "repo.labels"}}</summary>
-        <span v-for="(value, key) in labelsSummary" :key="key" class="ui label tw-mr-2"><span class="tw-pl-2 rem8 tw-rounded tw-ellipsis" :style="{backgroundColor: value.color, color: textColorFor(value.color)}" :data-tooltip-content="`${key}: ${value.count}`">[[key]]</span><span class="ui label number tw-px-3 tw-cursor-pointer" :class="{'border': isSelected[key]}" @click="value.count && filterLabel(key, $event)">[[value.count]]</span></span>
+        <span v-for="(value, key) in labelsSummary" :key="key" class="ui label tw-mr-2"><span class="tw-pl-2 tw-w-24 tw-rounded tw-ellipsis" :style="{backgroundColor: value.color, color: textColorFor(value.color)}" :data-tooltip-content="`${key}: ${value.count}`">[[key]]</span><span class="ui label number tw-px-3 tw-cursor-pointer" :class="{'border': isSelected[key]}" @click="value.count && filterLabel(key, $event)">[[value.count]]</span></span>
     </details>
     <div class="ui divider"></div>
     <details @toggle="onToggle('users', $event)" :open="isUsersOpen">
