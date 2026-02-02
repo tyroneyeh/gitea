@@ -92,3 +92,8 @@ td.ellipsis-start {
 .rem8 {
     width: 9.3rem !important;
 }
+.number {
+    width: 3em;
+    text-align: right;
+    display: inline-block !important;
+}
