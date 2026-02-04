@@ -30,7 +30,7 @@
             <input type="search" v-model="userTitle" @keyup.enter="queryReport" @dblclick="userTitle = ''" class="combo-value ui button" style="field-sizing:content">
         </div>
 
-        <input type="button" class="ui button primary tiny" @click="submit" :disabled="loading" value="{{ctx.Locale.Tr "ok"}}">
+        <input type="button" class="ui button primary tiny" @click="submit" :disabled="loading" value="{{ctx.Locale.Tr "ok"}}" :title="okCount">
     </div>
     <div class="ui divider"></div>
     <details @toggle="onToggle('repos', $event)" :open="isReposOpen">
