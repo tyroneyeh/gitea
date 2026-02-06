@@ -13,14 +13,21 @@ import {localUserSettings} from '../modules/user-settings.ts';
 // see "models/actions/status.go", if it needs to be used somewhere else, move it to a shared file like "types/actions.ts"
 type RunStatus = 'unknown' | 'waiting' | 'running' | 'success' | 'failure' | 'cancelled' | 'skipped' | 'blocked';
 
-type LogLine = {
+type StepContainerElement = HTMLElement & {_stepLogsActiveContainer?: HTMLElement}
+
+export type LogLine = {
   index: number;
   timestamp: number;
   message: string;
 };
 
+// `##[group]` is from Azure Pipelines, just supported by the way. https://learn.microsoft.com/en-us/azure/devops/pipelines/scripts/logging-commands
 const LogLinePrefixesGroup = ['::group::', '##[group]'];
 const LogLinePrefixesEndGroup = ['::endgroup::', '##[endgroup]'];
+// https://github.com/actions/toolkit/blob/master/docs/commands.md
+// https://github.com/actions/runner/blob/main/docs/adrs/0276-problem-matchers.md#registration
+// Although there should be no `##[add-matcher]` syntax, there are still such outputs when using act-runner
+const LogLinePrefixesHidden = ['::add-matcher::', '##[add-matcher]', '::remove-matcher'];
 
 type LogLineCommand = {
   name: 'group' | 'endgroup',
@@ -59,6 +66,15 @@ function parseLineCommand(line: LogLine): LogLineCommand | null {
     }
   }
   return null;
+}
+
+export function shouldHideLine(line: LogLine): boolean {
+  for (const prefix of LogLinePrefixesHidden) {
+    if (line.message.startsWith(prefix)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 function isLogElementInViewport(el: Element, {extraViewPortHeight}={extraViewPortHeight: 0}): boolean {
@@ -221,19 +237,18 @@ export default defineComponent({
     },
 
     // get the job step logs container ('.job-step-logs')
-    getJobStepLogsContainer(stepIndex: number): HTMLElement {
+    getJobStepLogsContainer(stepIndex: number): StepContainerElement {
       return (this.$refs.logs as any)[stepIndex];
     },
 
     // get the active logs container element, either the `job-step-logs` or the `job-log-list` in the `job-log-group`
-    getActiveLogsContainer(stepIndex: number): HTMLElement {
+    getActiveLogsContainer(stepIndex: number): StepContainerElement {
       const el = this.getJobStepLogsContainer(stepIndex);
-      // @ts-expect-error - _stepLogsActiveContainer is a custom property
       return el._stepLogsActiveContainer ?? el;
     },
     // begin a log group
     beginLogGroup(stepIndex: number, startTime: number, line: LogLine, cmd: LogLineCommand) {
-      const el = (this.$refs.logs as any)[stepIndex];
+      const el = (this.$refs.logs as any)[stepIndex] as StepContainerElement;
       const elJobLogGroupSummary = createElementFromAttrs('summary', {class: 'job-log-group-summary'},
         this.createLogLine(stepIndex, startTime, {
           index: line.index,
@@ -314,6 +329,7 @@ export default defineComponent({
 
     appendLogs(stepIndex: number, startTime: number, logLines: LogLine[]) {
       for (const line of logLines) {
+        if (shouldHideLine(line)) continue;
         const el = this.getActiveLogsContainer(stepIndex);
         const cmd = parseLineCommand(line);
         if (cmd?.name === 'group') {
@@ -395,7 +411,7 @@ export default defineComponent({
         }
 
         // auto-scroll to the last log line of the last step
-        let autoScrollJobStepElement: HTMLElement | undefined;
+        let autoScrollJobStepElement: StepContainerElement | undefined;
         for (let stepIndex = 0; stepIndex < this.currentJob.steps.length; stepIndex++) {
           if (!autoScrollStepIndexes.get(stepIndex)) continue;
           autoScrollJobStepElement = this.getJobStepLogsContainer(stepIndex);
