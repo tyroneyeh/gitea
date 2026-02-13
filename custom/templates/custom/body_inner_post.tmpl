@@ -23,7 +23,7 @@
                 </div>
                 <div class="scrolling menu">
                     <a class="item muted" tabindex="-1" v-for="assignee in assignees" @click="selectAssignee(assignee.full_name, assignee.username, $event)">
-                        <img class="ui avatar image mr-3" width="28" height="28" :src="assignee.avatar_url"><span class="gt-ellipsis">[[assignee.full_name]]</span>
+                        <img class="ui avatar image mr-3" width="28" height="28" v-if="assignee.avatar_url" :src="assignee.avatar_url"><span class="gt-ellipsis">[[assignee.full_name]]</span>
                     </a>
                 </div>
             </div>
