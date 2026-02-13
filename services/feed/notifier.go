@@ -31,32 +31,43 @@ type actionNotifier struct {
 // the renderer tries (and fails) to process. This function detects the
 // situation and strips the partial block.
 func trimUnclosedCodeBlock(s string) string {
+	lines := strings.Split(s, "\n")
 	inBlock := false
-	lastOpenIdx := -1
-	i := 0
-	for i < len(s) {
-		lineStart := i
-		lineEnd := strings.Index(s[i:], "\n")
-		var line string
-		if lineEnd == -1 {
-			line = s[i:]
-			i = len(s)
-		} else {
-			line = s[i : i+lineEnd]
-			i = i + lineEnd + 1
+	fenceChar := byte(0)
+	fenceLen := 0
+
+	for _, line := range lines {
+		trimmed := strings.TrimLeft(line, " ")
+		if len(trimmed) < 3 {
+			continue
 		}
-		if strings.HasPrefix(strings.TrimLeft(line, " "), "```") {
+
+		if strings.HasPrefix(trimmed, "```") || strings.HasPrefix(trimmed, "~~~") {
+			char := trimmed[0]
+			count := 1
+			for count < len(trimmed) && trimmed[count] == char {
+				count++
+			}
+
 			if !inBlock {
-				lastOpenIdx = lineStart
 				inBlock = true
-			} else {
+				fenceChar = char
+				fenceLen = count
+			} else if char == fenceChar && count >= fenceLen {
 				inBlock = false
 			}
 		}
 	}
-	if inBlock && lastOpenIdx >= 0 {
-		return strings.TrimRight(s[:lastOpenIdx], " \t\n")
+
+	if inBlock && fenceLen > 0 {
+		s = strings.TrimRight(s, " \t\n")
+		if strings.HasSuffix(s, "…") {
+			s = strings.TrimRight(s, "…") + "\n" + strings.Repeat(string(fenceChar), fenceLen) + "\n…"
+		} else {
+			s += "\n" + strings.Repeat(string(fenceChar), fenceLen) + "\n"
+		}
 	}
+
 	return s
 }
 
