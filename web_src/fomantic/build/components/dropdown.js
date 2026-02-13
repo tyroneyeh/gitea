@@ -765,11 +765,12 @@ $.fn.dropdown = function(parameters) {
           }
           if(settings.apiSettings) {
             if( module.can.useAPI() ) {
-              if (lastText !== " " && lastText === searchTerm) return;
+              const sameSearch = (lastText !== " " && lastText === searchTerm);
               lastText = searchTerm;
 
-              if ($item.filter('div:not(.filtered)').length !== 0) {
-                module.filterItems(searchTerm);
+              if ($item.filter('div:not(.filtered)').length !== 0 || sameSearch) {
+                !sameSearch && module.filterItems(searchTerm);
+                afterFiltered();
                 return;
               }
               module.queryRemote(searchTerm, function() {
