@@ -98,8 +98,8 @@ $.fn.dropdown = function(parameters) {
         selectObserver,
         menuObserver,
         classObserver,
-        module,
-        lastText
+        lastText,
+        module
       ;
 
       module = {
