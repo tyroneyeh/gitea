@@ -13,15 +13,12 @@ import (
 )
 
 // BuildCaseInsensitiveLike returns a case-insensitive LIKE condition for the given key and value.
-// Handles especially SQLite correctly as UPPER there only transforms ASCII letters.
+// Handles especially SQLite correctly as LOWER there only transforms ASCII letters.
 // PostgreSQL uses ILIKE for pattern matching.
 // Other databases use LOWER(column) + LOWER(value) for case-insensitive matching.
 func BuildCaseInsensitiveLike(key, value string) builder.Cond {
 	if setting.Database.Type.IsSQLite3() {
-		return builder.Like{"UPPER(" + key + ")", util.ToUpperASCII(value)}
-	}
-	if setting.Database.Type.IsPostgreSQL() {
-		return builder.Expr(key+" ILIKE ?", value)
+		return builder.Like{"LOWER(" + key + ")", util.ToLowerASCII(value)}
 	}
 	return builder.Like{"LOWER(" + key + ")", strings.ToLower(value)}
 }
@@ -30,15 +27,15 @@ func BuildCaseInsensitiveLike(key, value string) builder.Cond {
 // Handles especially SQLite correctly as UPPER there only transforms ASCII letters.
 func BuildCaseInsensitiveIn(key string, values []string) builder.Cond {
 	uppers := make([]string, len(values))
-	transform := strings.ToUpper
+	transform := strings.ToLower
 	if setting.Database.Type.IsSQLite3() {
-		transform = util.ToUpperASCII
+		transform = util.ToLowerASCII
 	}
 	for i, value := range values {
 		uppers[i] = transform(value)
 	}
 
-	return builder.In("UPPER("+key+")", uppers)
+	return builder.In("LOWER("+key+")", uppers)
 }
 
 // BuilderDialect returns the xorm.Builder dialect of the engine

@@ -178,30 +178,30 @@ type StringTest struct {
 	in, out string
 }
 
-var upperTests = []StringTest{
+var lowerTests = []StringTest{
 	{"", ""},
-	{"ONLYUPPER", "ONLYUPPER"},
-	{"abc", "ABC"},
-	{"AbC123", "ABC123"},
-	{"azAZ09_", "AZAZ09_"},
-	{"longStrinGwitHmixofsmaLLandcAps", "LONGSTRINGWITHMIXOFSMALLANDCAPS"},
-	{"long\u0250string\u0250with\u0250nonascii\u2C6Fchars", "LONG\u0250STRING\u0250WITH\u0250NONASCII\u2C6FCHARS"},
+	{"onlyupper", "onlyupper"},
+	{"ABC", "abc"},
+	{"AbC123", "abc123"},
+	{"azAZ09_", "azaz09_"},
+	{"longStrinGwitHmixofsmaLLandcAps", "longstringwithmixofsmallandcaps"},
+	{"LONG\u0250STRING\u0250WITH\u0250NONASCII\u2C6FCHARS", "long\u0250string\u0250with\u0250nonascii\u2C6Fchars"},
 	{"\u0250\u0250\u0250\u0250\u0250", "\u0250\u0250\u0250\u0250\u0250"},
-	{"a\u0080\U0010FFFF", "A\u0080\U0010FFFF"},
-	{"lél", "LéL"},
+	{"A\u0080\U0010FFFF", "a\u0080\U0010FFFF"},
+	{"LéL", "lél"},
 }
 
-func TestToUpperASCII(t *testing.T) {
-	for _, tc := range upperTests {
-		assert.Equal(t, ToUpperASCII(tc.in), tc.out)
+func TestToLowerASCII(t *testing.T) {
+	for _, tc := range lowerTests {
+		assert.Equal(t, ToLowerASCII(tc.in), tc.out)
 	}
 }
 
-func BenchmarkToUpper(b *testing.B) {
-	for _, tc := range upperTests {
+func BenchmarkToLower(b *testing.B) {
+	for _, tc := range lowerTests {
 		b.Run(tc.in, func(b *testing.B) {
 			for b.Loop() {
-				ToUpperASCII(tc.in)
+				ToLowerASCII(tc.in)
 			}
 		})
 	}
