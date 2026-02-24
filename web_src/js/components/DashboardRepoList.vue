@@ -3,6 +3,7 @@ import {nextTick, defineComponent} from 'vue';
 import {SvgIcon} from '../svg.ts';
 import {GET} from '../modules/fetch.ts';
 import {fomanticQuery} from '../modules/fomantic/base.ts';
+import { debounce } from 'throttle-debounce';
 
 const {appSubUrl, assetUrlPrefix, pageData} = window.config;
 
@@ -108,7 +109,11 @@ export default defineComponent({
       return {checked: this.privateFilter === 'private', indeterminate: this.privateFilter === 'both'};
     },
   },
-
+  watch: {
+    searchQuery() {
+      this.changeReposFilterDebounced();
+    }
+  },
   mounted() {
     const el = document.querySelector('#dashboard-repo-list')!;
     this.changeReposFilter(this.reposFilter);
@@ -125,6 +130,10 @@ export default defineComponent({
       'public': this.textShowOnlyPublic,
       'both': this.textShowBothPrivatePublic,
     };
+
+    this.changeReposFilterDebounced = debounce(300, () => {
+      this.changeReposFilter(this.reposFilter);
+    });
   },
 
   methods: {
@@ -372,7 +381,7 @@ export default defineComponent({
       </div>
       <div v-else class="ui attached segment repos-search">
         <div class="ui small fluid action left icon input">
-          <input type="search" spellcheck="false" maxlength="255" @input="changeReposFilter(reposFilter)" v-model="searchQuery" ref="search" @keydown="reposFilterKeyControl" :placeholder="textSearchRepos">
+          <input type="search" spellcheck="false" maxlength="255" v-model="searchQuery" ref="search" @keydown="reposFilterKeyControl" :placeholder="textSearchRepos">
           <i class="icon loading-icon-3px" :class="{'is-loading': isLoading}"><svg-icon name="octicon-search" :size="16"/></i>
           <div class="ui dropdown icon button" :title="textFilter">
             <svg-icon name="octicon-filter" :size="16"/>
