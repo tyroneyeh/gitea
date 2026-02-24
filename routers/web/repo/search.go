@@ -75,5 +75,6 @@ func Search(ctx *context.Context) {
 	pager.AddParamFromRequest(ctx.Req)
 	ctx.Data["Page"] = pager
 
+	ctx.Resp.Header().Set("Cache-Control", "public, max-age=3600")
 	ctx.HTML(http.StatusOK, tplSearch)
 }

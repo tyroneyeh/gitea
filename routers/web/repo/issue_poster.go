@@ -58,5 +58,6 @@ func issuePosters(ctx *context.Context, isPullList bool) {
 			resp.Results[i].FullName = user.FullName
 		}
 	}
+	ctx.Resp.Header().Set("Cache-Control", "public, max-age=3600")
 	ctx.JSON(http.StatusOK, resp)
 }

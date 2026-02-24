@@ -41,6 +41,7 @@ func TreeList(ctx *context.Context) {
 			files = append(files, entry.Name())
 		}
 	}
+	ctx.Resp.Header().Set("Cache-Control", "public, max-age=3600")
 	ctx.JSON(http.StatusOK, files)
 }
 
