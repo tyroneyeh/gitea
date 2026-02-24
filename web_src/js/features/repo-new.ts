@@ -50,7 +50,7 @@ function initRepoNewTemplateSearch(form: HTMLFormElement) {
           $repoTemplateDropdown.fomanticExt.onResponseKeepSelectedItem($repoTemplateDropdown, inputRepoTemplate.value);
           return {results};
         },
-        cache: false,
+        cache: true,
       },
     });
   };

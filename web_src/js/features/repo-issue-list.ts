@@ -132,8 +132,8 @@ function initDropdownUserRemoteSearch(el: Element) {
   } else {
     if (!searchUrl.includes('?')) searchUrl += '?';
     $searchDropdown.dropdown('setting', 'apiSettings', {
-      cache: false,
-      url: `${searchUrl}&q={query}`,
+      cache: true,
+      url: `${searchUrl}q={query}`,
       onResponse(resp: any) {
         // the content is provided by backend IssuePosters handler
         processedResults.length = 0;

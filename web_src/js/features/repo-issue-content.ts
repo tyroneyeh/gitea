@@ -108,7 +108,7 @@ function showContentHistoryMenu(issueBaseUrl: string, elCommentItem: Element, co
   $fomanticDropdown.dropdown({
     action: 'hide',
     apiSettings: {
-      cache: false,
+      cache: true,
       url: `${issueBaseUrl}/content-history/list?comment_id=${commentId}`,
     },
     saveRemoteData: false,

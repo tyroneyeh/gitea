@@ -33,7 +33,7 @@ export function initRepoIssueSidebarDependency() {
   fomanticQuery(elDropdown).dropdown({
     fullTextSearch: true,
     apiSettings: {
-      cache: false,
+      cache: true,
       rawResponse: true,
       url: issueSearchUrl,
       onResponse(response: any) {
@@ -364,7 +364,7 @@ export function initRepoIssueReferenceIssue() {
   fomanticQuery(elDropdown).dropdown({
     fullTextSearch: true,
     apiSettings: {
-      cache: false,
+      cache: true,
       rawResponse: true,
       url: `${appSubUrl}/repo/search?q={query}&limit=20`,
       onResponse(response: any) {
