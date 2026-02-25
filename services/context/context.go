@@ -197,7 +197,7 @@ func Contexter() func(next http.Handler) http.Handler {
 			}
 
 			if ctx.Req.Method == http.MethodGet && strings.Contains(ctx.Req.URL.Path, "/attachments/") {
-				httpcache.SetCacheControlInHeader(ctx.Resp.Header(), &httpcache.CacheControlOptions{NoTransform: true, MaxAge: 365 * 24 * time.Hour})
+				httpcache.SetCacheControlInHeader(ctx.Resp.Header(), &httpcache.CacheControlOptions{NoTransform: true, IsPublic: true, MaxAge: 365 * 24 * time.Hour})
 			} else {
 				httpcache.SetCacheControlInHeader(ctx.Resp.Header(), &httpcache.CacheControlOptions{NoTransform: true})
 			}
