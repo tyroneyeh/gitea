@@ -3,6 +3,7 @@ import {parseIssueHref} from '../utils.ts';
 import {createApp} from 'vue';
 import ContextPopup from '../components/ContextPopup.vue';
 import {createTippy, getAttachedTippyInstance} from '../modules/tippy.ts';
+import type {Instance} from 'tippy.js';
 
 export function initMarkupRefIssue(el: HTMLElement) {
   queryElems(el, '.ref-issue', (el) => {
@@ -18,6 +19,7 @@ function showMarkupRefIssuePopup(e: MouseEvent | FocusEvent) {
 
   const issuePathInfo = parseIssueHref(refIssue.getAttribute('href')!);
   if (!issuePathInfo.ownerName) return;
+  const fetchedMap = new WeakMap<Instance, boolean>();
 
   const el = document.createElement('div');
   const tippy = createTippy(refIssue, {
@@ -30,11 +32,15 @@ function showMarkupRefIssuePopup(e: MouseEvent | FocusEvent) {
     interactiveBorder: 5,
     // onHide() { return false }, // help to keep the popup and debug the layout
     onShow: () => {
+      const alreadyTippy = getAttachedTippyInstance(refIssue);
+      if (!alreadyTippy) return;
+      if (fetchedMap.get(alreadyTippy)) return;
       const view = createApp(ContextPopup, {
         // backend: GetIssueInfo
         loadIssueInfoUrl: `${window.config.appSubUrl}/${issuePathInfo.ownerName}/${issuePathInfo.repoName}/issues/${issuePathInfo.indexString}/info`,
       });
       view.mount(el);
+      fetchedMap.set(alreadyTippy, true);
     },
   });
   tippy.show();
