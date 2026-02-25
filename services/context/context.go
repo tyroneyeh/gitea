@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 
 	"code.gitea.io/gitea/models/unit"
 	user_model "code.gitea.io/gitea/models/user"
@@ -195,8 +196,11 @@ func Contexter() func(next http.Handler) http.Handler {
 				}
 			}
 
-			httpcache.SetCacheControlInHeader(ctx.Resp.Header(), &httpcache.CacheControlOptions{NoTransform: true})
-
+			if ctx.Req.Method == http.MethodGet && strings.Contains(ctx.Req.URL.Path, "/attachments/") {
+				httpcache.SetCacheControlInHeader(ctx.Resp.Header(), &httpcache.CacheControlOptions{NoTransform: true, MaxAge: 365 * 24 * time.Hour})
+			} else {
+				httpcache.SetCacheControlInHeader(ctx.Resp.Header(), &httpcache.CacheControlOptions{NoTransform: true})
+			}
 			if setting.Security.XFrameOptions != "unset" {
 				ctx.Resp.Header().Set(`X-Frame-Options`, setting.Security.XFrameOptions)
 			}
