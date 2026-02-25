@@ -266,6 +266,7 @@ func GetIssueInfo(ctx *context.Context) {
 		}
 	}
 
+	ctx.Resp.Header().Set("Cache-Control", "public, max-age=86400")
 	ctx.JSON(http.StatusOK, map[string]any{
 		"convertedIssue": convert.ToIssue(ctx, ctx.Doer, issue),
 		"renderedLabels": templates.NewRenderUtils(ctx).RenderLabels(issue.Labels, ctx.Repo.RepoLink, issue),

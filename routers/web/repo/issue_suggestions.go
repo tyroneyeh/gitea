@@ -32,5 +32,6 @@ func IssueSuggestions(ctx *context.Context) {
 		return
 	}
 
+	ctx.Resp.Header().Set("Cache-Control", "public, max-age=86400")
 	ctx.JSON(http.StatusOK, suggestions)
 }
