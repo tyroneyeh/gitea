@@ -87,7 +87,7 @@ export default defineComponent({
       return this.repos.length > 0 && this.repos.length < this.counts[`${this.reposFilter}:${this.archivedFilter}:${this.privateFilter}`];
     },
     searchURL() {
-      return `${this.subUrl}/repo/search?sort=updated&order=desc&uid=${this.uid}&team_id=${this.teamId}&q=${this.searchQuery
+      return `${this.subUrl}/repo/search?sort=updated&order=desc&uid=${this.uid}&team_id=${this.teamId}&q=${encodeURIComponent(this.searchQuery)
       }&page=${this.page}&limit=${this.searchLimit}&mode=${this.repoTypes[this.reposFilter].searchMode
       }${this.archivedFilter === 'archived' ? '&archived=true' : ''}${this.archivedFilter === 'unarchived' ? '&archived=false' : ''
       }${this.privateFilter === 'private' ? '&is_private=true' : ''}${this.privateFilter === 'public' ? '&is_private=false' : ''
@@ -249,7 +249,7 @@ export default defineComponent({
 
       const searchedMode = this.repoTypes[this.reposFilter].searchMode;
       const searchedURL = this.searchURL;
-      const searchedQuery = this.searchQuery;
+      const searchedQuery = this.searchQuery.trim();
 
       let response, json;
       const firstLoad = this.reposTotalCount === null;
@@ -290,8 +290,12 @@ export default defineComponent({
 
       if (searchedURL === this.searchURL) {
         this.repos = json.data.map((webSearchRepo: any) => {
+          const { id, link, full_name, archived } = webSearchRepo.repository;
           return {
-            ...webSearchRepo.repository,
+            id,
+            link,
+            full_name,
+            archived,
             latest_commit_status_state: webSearchRepo.latest_commit_status?.State, // if latest_commit_status is null, it means there is no commit status
             latest_commit_status_state_link: webSearchRepo.latest_commit_status?.TargetURL,
             locale_latest_commit_status_state: webSearchRepo.locale_latest_commit_status,
@@ -300,6 +304,8 @@ export default defineComponent({
         this.allRepos = [...new Set([...this.allRepos, ...this.repos])];
         if (searchedQuery === '' && searchedMode === '' && this.archivedFilter === 'both') {
           this.reposTotalCount = this.allRepos.length;
+        } else if (searchedQuery !== '' && this.repos.length > 0) {
+          this.reposTotalCount = this.repos.length;
         }
         this.counts[`${this.reposFilter}:${this.archivedFilter}:${this.privateFilter}`] = this.reposTotalCount;
         this.finalPage = Math.ceil(this.reposTotalCount / this.searchLimit);
