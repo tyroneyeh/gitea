@@ -44,7 +44,7 @@ export default defineComponent({
       reposFilter,
       archivedFilter,
       privateFilter,
-      page,
+      page: page,
       finalPage: 1,
       searchQuery,
       isLoading: false,
@@ -134,6 +134,10 @@ export default defineComponent({
     this.changeReposFilterDebounced = debounce(300, () => {
       this.changeReposFilter(this.reposFilter);
     });
+  },
+  created() {
+    this.allRepos = [];
+    this.isChangePage = false;
   },
 
   methods: {
@@ -227,7 +231,7 @@ export default defineComponent({
 
     async changePage(page: number) {
       if (this.isLoading) return;
-
+      this.isChangePage = true;
       this.page = page;
       if (this.page > this.finalPage) {
         this.page = this.finalPage;
@@ -248,12 +252,12 @@ export default defineComponent({
       const searchedQuery = this.searchQuery;
 
       let response, json;
+      const firstLoad = this.reposTotalCount === null;
       try {
-        const firstLoad = this.reposTotalCount === null;
         if (!this.reposTotalCount) {
           const totalCountSearchURL = `${this.subUrl}/repo/search?count_only=1&uid=${this.uid}&team_id=${this.teamId}&q=&page=1&mode=`;
           response = await GET(totalCountSearchURL);
-          this.reposTotalCount = parseInt(response.headers.get('X-Total-Count') ?? '0');
+          this.reposTotalCount = parseInt(response.headers.get('X-Total-Count')!) || 0;
         }
         if (firstLoad && this.reposTotalCount) {
           nextTick(() => {
@@ -263,8 +267,20 @@ export default defineComponent({
             }
           });
         }
-        response = await GET(searchedURL);
-        json = await response.json();
+        if (firstLoad || this.isChangePage) {
+          response = await GET(searchedURL);
+          json = await response.json();
+        } else {
+          this.repos = this.allRepos.filter((repo: any) => repo.full_name.toLowerCase().includes(searchedQuery.toLowerCase()));
+          if (!this.repos.length && searchedQuery !== '' || !this.allRepos.length) {
+            response = await GET(searchedURL);
+            json = await response.json();
+          } else {
+            this.counts[`${this.reposFilter}:${this.archivedFilter}:${this.privateFilter}`] = searchedQuery === '' ? this.reposTotalCount : this.repos.length;
+            this.isLoading = false;
+            return;
+          }
+        }
       } catch {
         if (searchedURL === this.searchURL) {
           this.isLoading = false;
@@ -281,12 +297,12 @@ export default defineComponent({
             locale_latest_commit_status_state: webSearchRepo.locale_latest_commit_status,
           };
         });
-        const count = Number(response.headers.get('X-Total-Count'));
+        this.allRepos = [...new Set([...this.allRepos, ...this.repos])];
         if (searchedQuery === '' && searchedMode === '' && this.archivedFilter === 'both') {
-          this.reposTotalCount = count;
+          this.reposTotalCount = this.allRepos.length;
         }
-        this.counts[`${this.reposFilter}:${this.archivedFilter}:${this.privateFilter}`] = count;
-        this.finalPage = Math.ceil(count / this.searchLimit);
+        this.counts[`${this.reposFilter}:${this.archivedFilter}:${this.privateFilter}`] = this.reposTotalCount;
+        this.finalPage = Math.ceil(this.reposTotalCount / this.searchLimit);
         this.updateHistory();
         this.isLoading = false;
       }
