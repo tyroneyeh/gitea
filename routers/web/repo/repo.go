@@ -505,18 +505,6 @@ func SearchRepo(ctx *context.Context) {
 		}
 	}
 
-	// To improve performance when only the count is requested
-	if ctx.FormBool("count_only") {
-		if count, err := repo_model.CountRepository(ctx, opts); err != nil {
-			log.Error("CountRepository: %v", err)
-			ctx.JSON(http.StatusInternalServerError, nil) // frontend JS doesn't handle error response (same as below)
-		} else {
-			ctx.SetTotalCountHeader(count)
-			ctx.JSONOK()
-		}
-		return
-	}
-
 	repos, count, err := repo_model.SearchRepository(ctx, opts)
 	if err != nil {
 		log.Error("SearchRepository: %v", err)
@@ -525,6 +513,12 @@ func SearchRepo(ctx *context.Context) {
 	}
 
 	ctx.SetTotalCountHeader(count)
+
+	// To improve performance when only the count is requested
+	if ctx.FormBool("count_only") {
+		ctx.JSONOK()
+		return
+	}
 
 	latestCommitStatuses, err := commitstatus_service.FindReposLatestCommitStatuses(ctx, repos)
 	if err != nil {

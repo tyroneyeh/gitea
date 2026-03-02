@@ -84,7 +84,7 @@ export default defineComponent({
 
   computed: {
     showMoreReposLink() {
-      return this.repos.length > 0 && this.repos.length < this.counts[`${this.reposFilter}:${this.archivedFilter}:${this.privateFilter}`];
+      return this.reposTotalCount > 0 && this.reposTotalCount > this.counts[`${this.reposFilter}:${this.archivedFilter}:${this.privateFilter}`];
     },
     searchURL() {
       return `${this.subUrl}/repo/search?sort=updated&order=desc&uid=${this.uid}&team_id=${this.teamId}&q=${encodeURIComponent(this.searchQuery)
@@ -247,36 +247,37 @@ export default defineComponent({
     async searchRepos() {
       this.isLoading = true;
 
-      const searchedMode = this.repoTypes[this.reposFilter].searchMode;
       const searchedURL = this.searchURL;
       const searchedQuery = this.searchQuery.trim();
 
       let response, json;
       const firstLoad = this.reposTotalCount === null;
       try {
-        if (!this.reposTotalCount) {
-          const totalCountSearchURL = `${this.subUrl}/repo/search?count_only=1&uid=${this.uid}&team_id=${this.teamId}&q=&page=1&mode=`;
-          response = await GET(totalCountSearchURL);
-          this.reposTotalCount = parseInt(response.headers.get('X-Total-Count')!) || 0;
-        }
-        if (firstLoad && this.reposTotalCount) {
-          nextTick(() => {
-            // MDN: If there's no focused element, this is the Document.body or Document.documentElement.
-            if ((document.activeElement === document.body || document.activeElement === document.documentElement)) {
-              this.$refs.search.focus({preventScroll: true});
-            }
-          });
-        }
         if (firstLoad || this.isChangePage) {
           response = await GET(searchedURL);
           json = await response.json();
+          this.reposTotalCount = parseInt(response.headers.get('X-Total-Count')!) || 0;
+          if (firstLoad && this.reposTotalCount) {
+            nextTick(() => {
+              // MDN: If there's no focused element, this is the Document.body or Document.documentElement.
+              if ((document.activeElement === document.body || document.activeElement === document.documentElement)) {
+                this.$refs.search.focus({preventScroll: true});
+              }
+            });
+          }
         } else {
           this.repos = this.allRepos.filter((repo: any) => repo.full_name.toLowerCase().includes(searchedQuery.toLowerCase()));
           if (!this.repos.length && searchedQuery !== '' || !this.allRepos.length) {
             response = await GET(searchedURL);
             json = await response.json();
+            const newReposTotalCount = parseInt(response.headers.get('X-Total-Count')!) || 0;
+            if (this.reposTotalCount < newReposTotalCount) this.reposTotalCount = newReposTotalCount;
           } else {
-            this.counts[`${this.reposFilter}:${this.archivedFilter}:${this.privateFilter}`] = searchedQuery === '' ? this.reposTotalCount : this.repos.length;
+            this.counts[`${this.reposFilter}:${this.archivedFilter}:${this.privateFilter}`] = this.repos.length;
+            if (searchedQuery === '') {
+              this.counts[`${this.reposFilter}:${this.archivedFilter}:${this.privateFilter}`] = this.allRepos.length ? this.allRepos.length : this.reposTotalCount;
+            }
+            this.finalPage = Math.ceil(this.counts[`${this.reposFilter}:${this.archivedFilter}:${this.privateFilter}`] / this.searchLimit);
             this.isLoading = false;
             return;
           }
@@ -302,12 +303,7 @@ export default defineComponent({
           };
         });
         this.allRepos = [...new Set([...this.allRepos, ...this.repos])];
-        if (searchedQuery === '' && searchedMode === '' && this.archivedFilter === 'both') {
-          this.reposTotalCount = this.allRepos.length;
-        } else if (searchedQuery !== '' && this.repos.length > 0) {
-          this.reposTotalCount = this.repos.length;
-        }
-        this.counts[`${this.reposFilter}:${this.archivedFilter}:${this.privateFilter}`] = this.reposTotalCount;
+        this.counts[`${this.reposFilter}:${this.archivedFilter}:${this.privateFilter}`] = this.repos.length;
         this.finalPage = Math.ceil(this.reposTotalCount / this.searchLimit);
         this.updateHistory();
         this.isLoading = false;
@@ -387,21 +383,13 @@ export default defineComponent({
       <h4 class="ui top attached header tw-flex tw-items-center">
         <div class="tw-flex-1 tw-flex tw-items-center">
           {{ textMyRepos }}
-          <span v-if="reposTotalCount" class="ui grey label tw-ml-2">{{ reposTotalCount }}</span>
+          <span class="ui grey label tw-ml-2">{{ reposTotalCount }}</span>
         </div>
         <a class="tw-flex tw-items-center muted" :href="subUrl + '/repo/create' + (isOrganization ? '?org=' + organizationId : '')" :data-tooltip-content="textNewRepo">
           <svg-icon name="octicon-plus"/>
         </a>
       </h4>
-      <div v-if="!reposTotalCount" class="ui attached segment">
-        <div v-if="!isLoading" class="empty-repo-or-org">
-          <svg-icon name="octicon-git-branch" :size="24"/>
-          <p>{{ textNoRepo }}</p>
-        </div>
-        <!-- using the loading indicator here will cause more (unnecessary) page flickers, so at the moment, not use the loading indicator -->
-        <!-- <div v-else class="is-loading loading-icon-2px tw-min-h-16"/> -->
-      </div>
-      <div v-else class="ui attached segment repos-search">
+      <div class="ui attached segment repos-search">
         <div class="ui small fluid action left icon input">
           <input type="search" spellcheck="false" maxlength="255" v-model="searchQuery" ref="search" @keydown="reposFilterKeyControl" :placeholder="textSearchRepos">
           <i class="icon loading-icon-3px" :class="{'is-loading': isLoading}"><svg-icon name="octicon-search" :size="16"/></i>
@@ -455,6 +443,10 @@ export default defineComponent({
             </a>
           </div>
         </overflow-menu>
+        <div v-if="!isLoading && !reposTotalCount && !repos.length" class="empty-repo-or-org">
+          <svg-icon name="octicon-git-branch" :size="24"/>
+          <p>{{ textNoRepo }}</p>
+        </div>
       </div>
       <div v-if="repos.length" class="ui attached table segment tw-rounded-b">
         <ul class="repo-owner-name-list">
