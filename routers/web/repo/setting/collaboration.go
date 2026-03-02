@@ -222,7 +222,7 @@ func DeleteTeam(ctx *context.Context) {
 	}
 
 	if err = repo_service.RemoveRepositoryFromTeam(ctx, team, ctx.Repo.Repository.ID); err != nil {
-		ctx.ServerError("team.RemoveRepositorys", err)
+		ctx.ServerError("team.RemoveRepositories", err)
 		return
 	}
 

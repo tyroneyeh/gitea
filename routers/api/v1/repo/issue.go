@@ -157,6 +157,10 @@ func SearchIssues(ctx *context.APIContext) {
 	//   in: query
 	//   description: Filter by repository owner
 	//   type: string
+	// - name: created_by
+	//   in: query
+	//   description: Only show items which were created by the given user
+	//   type: string
 	// - name: team
 	//   in: query
 	//   description: Filter by team (requires organization owner parameter)
@@ -263,6 +267,14 @@ func SearchIssues(ctx *context.APIContext) {
 		} else {
 			searchOpt.UpdatedBeforeUnix = optional.Some(before)
 		}
+	}
+
+	createdByID := getUserIDForFilter(ctx, "created_by")
+	if ctx.Written() {
+		return
+	}
+	if createdByID > 0 {
+		searchOpt.PosterID = strconv.FormatInt(createdByID, 10)
 	}
 
 	if ctx.IsSigned {
