@@ -22,14 +22,15 @@ function showMarkupRefIssuePopup(e: MouseEvent | FocusEvent) {
 
   const el = document.createElement('div');
   const onShowAsync = async () => {
-    if (fetchedMap.has(tippy)) return;
+    const alreadyTippy = getAttachedTippyInstance(refIssue);
+    if (fetchedMap.has(alreadyTippy!)) return;
     const {default: ContextPopup} = await import(/* webpackChunkName: "ContextPopup" */ '../components/ContextPopup.vue');
     const view = createApp(ContextPopup, {
       // backend: GetIssueInfo
       loadIssueInfoUrl: `${window.config.appSubUrl}/${issuePathInfo.ownerName}/${issuePathInfo.repoName}/issues/${issuePathInfo.indexString}/info`,
     });
     view.mount(el);
-    fetchedMap.set(tippy, true);
+    fetchedMap.set(alreadyTippy!, true);
   };
   const tippy = createTippy(refIssue, {
     theme: 'default',
