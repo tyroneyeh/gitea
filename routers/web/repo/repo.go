@@ -553,7 +553,7 @@ func SearchRepo(ctx *context.Context) {
 		}
 	}
 
-	ctx.Resp.Header().Set("Cache-Control", "public, max-age=86400")
+	ctx.Resp.Header().Set("Cache-Control", "private, max-age=86400")
 	ctx.JSON(http.StatusOK, repo_service.WebSearchResults{
 		OK:   true,
 		Data: results,
