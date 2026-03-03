@@ -768,7 +768,7 @@ $.fn.dropdown = function(parameters) {
               const sameSearch = (lastText !== " " && lastText === searchTerm);
               lastText = searchTerm;
 
-              if ($item.filter('div:not(.filtered)').length !== 0 || sameSearch) {
+              if ($item.filter((_, el) => el.textContent.toLowerCase().includes(searchTerm.toLowerCase())).length > 1 || sameSearch) {
                 !sameSearch && module.filterItems(searchTerm);
                 afterFiltered();
                 return;
