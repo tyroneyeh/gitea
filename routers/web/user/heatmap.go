@@ -62,6 +62,6 @@ func DashboardHeatmap(ctx *context.Context) {
 		ctx.ServerError("GetUserHeatmapData", err)
 		return
 	}
-	ctx.Resp.Header().Set("Cache-Control", "private, max-age=86400")
+	ctx.Resp.Header().Set("Cache-Control", "private, max-age=600")
 	writeHeatmapJSON(ctx, data)
 }
