@@ -98,7 +98,6 @@ $.fn.dropdown = function(parameters) {
         selectObserver,
         menuObserver,
         classObserver,
-        lastText,
         module
       ;
 
@@ -765,29 +764,25 @@ $.fn.dropdown = function(parameters) {
           }
           if(settings.apiSettings) {
             if( module.can.useAPI() ) {
-              const sameSearch = (lastText !== " " && lastText === searchTerm);
-              lastText = searchTerm;
-
-              if ($item.filter((_, el) => el.textContent.toLowerCase().includes(searchTerm.toLowerCase())).length > 1 || sameSearch) {
-                !sameSearch && module.filterItems(searchTerm);
-                afterFiltered();
-                return;
-              }
-              module.queryRemote(searchTerm, function() {
-                if(settings.filterRemoteData) {
-                  module.filterItems(searchTerm);
-                }
-                var preSelected = $input.val();
-                if(!Array.isArray(preSelected)) {
-                    preSelected = preSelected && preSelected!=="" ? preSelected.split(settings.delimiter) : [];
-                }
-                $.each(preSelected,function(index,value){
-                  $item.filter('[data-value="'+CSS.escape(value)+'"]') // GITEA-PATCH: use "CSS.escape" for query selector
-                      .addClass(className.filtered)
-                  ;
+              if ($item.length < 3) {
+                module.queryRemote(searchTerm, function() {
+                  if(settings.filterRemoteData) {
+                    module.filterItems(searchTerm);
+                  }
+                  var preSelected = $input.val();
+                  if(!Array.isArray(preSelected)) {
+                      preSelected = preSelected && preSelected!=="" ? preSelected.split(settings.delimiter) : [];
+                  }
+                  $.each(preSelected,function(index,value){
+                    $item.filter('[data-value="'+CSS.escape(value)+'"]') // GITEA-PATCH: use "CSS.escape" for query selector
+                        .addClass(className.filtered)
+                    ;
+                  });
                 });
-                afterFiltered();
-              });
+              } else {
+                module.filterItems(searchTerm);
+              }
+              afterFiltered();
             }
             else {
               module.error(error.noAPI);
