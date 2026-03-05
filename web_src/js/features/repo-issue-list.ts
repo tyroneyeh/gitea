@@ -103,7 +103,7 @@ function initDropdownUserRemoteSearch(el: Element) {
   const elItemFromInput = el.querySelector('.menu > .item-from-input')!;
 
   $searchDropdown.dropdown('setting', {
-    fullTextSearch: true,
+    fullTextSearch: 'exact',
     selectOnKeydown: false,
     action: (_text: string, value: string) => {
       window.location.href = actionJumpUrl.replace('{username}', encodeURIComponent(value));
