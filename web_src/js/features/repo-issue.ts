@@ -366,7 +366,7 @@ export function initRepoIssueReferenceIssue() {
     apiSettings: {
       cache: true,
       rawResponse: true,
-      url: `${appSubUrl}/repo/search?q={query}&limit=20`,
+      url: `${appSubUrl}/repo/search?limit=500`,
       onResponse(response: any) {
         const filteredResponse = {success: true, results: [] as Array<Record<string, any>>};
         for (const repo of response.data) {
