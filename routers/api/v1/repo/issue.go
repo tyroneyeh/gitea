@@ -252,6 +252,7 @@ func SearchIssues(ctx *context.APIContext) {
 		IncludedAnyLabelIDs: includedAnyLabels,
 		MilestoneIDs:        includedMilestones,
 		SortBy:              issue_indexer.SortByCreatedDesc,
+		IsMyself:            ctx.FormBool("myself"),
 	}
 
 	if since != 0 {

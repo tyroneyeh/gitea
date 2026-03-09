@@ -108,6 +108,7 @@ type SearchOptions struct {
 
 	SubscriberID optional.Option[int64] // subscriber of the issues
 
+	IsMyself          bool
 	CreatedAfterUnix  optional.Option[int64]
 	CreatedBeforeUnix optional.Option[int64]
 
