@@ -322,15 +322,15 @@ func (b *Indexer) Search(ctx context.Context, options *internal.SearchOptions) (
 			if len(plus) > 0 {
 				pk := strings.Join(plus, " ")
 				if isExact {
-					queries = append(queries, bleve.NewDisjunctionQuery([]query.Query{
+					queries = append(queries, bleve.NewDisjunctionQuery(
 						inner_bleve.MatchPhraseQuery(pk, "content", issueIndexerAnalyzer, fuzziness),
 						inner_bleve.MatchPhraseQuery(pk, "comments", issueIndexerAnalyzer, fuzziness),
-					}...))
+					))
 				} else {
-					queries = append(queries, bleve.NewDisjunctionQuery([]query.Query{
+					queries = append(queries, bleve.NewDisjunctionQuery(
 						inner_bleve.MatchAndQuery(pk, "content", issueIndexerAnalyzer, fuzziness),
 						inner_bleve.MatchAndQuery(pk, "comments", issueIndexerAnalyzer, fuzziness),
-					}...))
+					))
 				}
 			}
 
@@ -381,10 +381,10 @@ func (b *Indexer) Search(ctx context.Context, options *internal.SearchOptions) (
 						if isHash {
 							queries = append(queries, inner_bleve.NumericEqualityQuery(id, "index"))
 						} else {
-							queries = append(queries, bleve.NewDisjunctionQuery([]query.Query{
+							queries = append(queries, bleve.NewDisjunctionQuery(
 								inner_bleve.NumericEqualityQuery(id, "index"),
 								inner_bleve.MatchAndQuery(options.Keyword, "title", issueIndexerAnalyzer, fuzziness),
-							}...))
+							))
 						}
 					} else {
 						if isExact {
