@@ -505,7 +505,7 @@ func (b *Indexer) Search(ctx context.Context, options *internal.SearchOptions) (
 
 	if options.IsMyself {
 		if options.UpdatedAfterUnix.Has() || options.UpdatedBeforeUnix.Has() {
-			timeOrQuery := bleve.NewDisjunctionQuery([]query.Query{
+			timeOrQuery := bleve.NewDisjunctionQuery(
 				inner_bleve.NumericRangeInclusiveQuery(
 					options.UpdatedAfterUnix,
 					options.UpdatedBeforeUnix,
@@ -516,8 +516,7 @@ func (b *Indexer) Search(ctx context.Context, options *internal.SearchOptions) (
 					options.UpdatedBeforeUnix,
 					"updated_unix",
 				),
-			}...)
-			timeOrQuery.SetMin(1)
+			)
 			queries = append(queries, timeOrQuery)
 		}
 
