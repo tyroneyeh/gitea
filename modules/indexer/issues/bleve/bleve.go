@@ -504,19 +504,22 @@ func (b *Indexer) Search(ctx context.Context, options *internal.SearchOptions) (
 	}
 
 	if options.IsMyself {
-		timeOrQuery := bleve.NewDisjunctionQuery()
 		if options.UpdatedAfterUnix.Has() || options.UpdatedBeforeUnix.Has() {
-			timeOrQuery.AddQuery(inner_bleve.NumericRangeInclusiveQuery(
-				options.UpdatedAfterUnix,
-				options.UpdatedBeforeUnix,
-				"created_unix"))
-			timeOrQuery.AddQuery(inner_bleve.NumericRangeInclusiveQuery(
-				options.UpdatedAfterUnix,
-				options.UpdatedBeforeUnix,
-				"updated_unix"))
+			timeOrQuery := bleve.NewDisjunctionQuery([]query.Query{
+				inner_bleve.NumericRangeInclusiveQuery(
+					options.UpdatedAfterUnix,
+					options.UpdatedBeforeUnix,
+					"created_unix",
+				),
+				inner_bleve.NumericRangeInclusiveQuery(
+					options.UpdatedAfterUnix,
+					options.UpdatedBeforeUnix,
+					"updated_unix",
+				),
+			}...)
+			timeOrQuery.SetMin(1)
+			queries = append(queries, timeOrQuery)
 		}
-		timeOrQuery.SetMin(1)
-		queries = append(queries, timeOrQuery)
 
 	} else {
 		if options.CreatedAfterUnix.Has() || options.CreatedBeforeUnix.Has() {
