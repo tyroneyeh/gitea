@@ -1,1 +1,1 @@
-<span class="gt-ellipsis" title="{{.Name}}">{{if and DefaultShowFullName .FullName}}{{.FullName}}{{else}}{{.Name}}{{end}}</span>
+<span class="username-display" title="{{.Name}}">{{.Name}} {{if .FullName}}<span class="username-fullname gt-ellipsis">({{.FullName}})</span>{{end}}</span>

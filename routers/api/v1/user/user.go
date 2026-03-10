@@ -92,7 +92,7 @@ func Search(ctx *context.APIContext) {
 		}
 	}
 
-	ctx.SetLinkHeader(int(maxResults), listOptions.PageSize)
+	ctx.SetLinkHeader(maxResults, listOptions.PageSize)
 	ctx.SetTotalCountHeader(maxResults)
 
 	ctx.JSON(http.StatusOK, map[string]any{
