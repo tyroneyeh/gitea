@@ -1,5 +1,5 @@
 {{template "base/alert"}}
-{{range .Issue.Comments}}
+{{range $comment := .Issue.Comments}}
 	{{if call $.ShouldShowCommentType .Type}}
 		{{$createdStr:= DateUtils.TimeSince .CreatedUnix}}
 
@@ -29,7 +29,7 @@
 					<div class="comment-header avatar-content-left-arrow" role="heading" aria-level="3">
 						<div class="comment-header-left">
 							{{if .OriginalAuthor}}
-								<span class="text black tw-font-semibold tw-mr-1">
+								<span class="tw-text-text tw-font-semibold tw-mr-1">
 									{{svg (MigrationIcon $.Repository.GetOriginalURLHostname)}}
 									{{.OriginalAuthor}}
 								</span>
@@ -67,7 +67,7 @@
 								<span class="no-content">{{ctx.Locale.Tr "repo.issues.no_content"}}</span>
 							{{end}}
 						</div>
-						<div id="issuecomment-{{.ID}}-raw" class="raw-content tw-hidden">{{.Content}}</div>
+						<div id="{{.HashTag}}-raw" class="raw-content tw-hidden">{{.Content}}</div>
 						<div class="edit-content-zone tw-hidden" data-update-url="{{$.RepoLink}}/comments/{{.ID}}" data-content-version="{{.ContentVersion}}" data-context="{{$.RepoLink}}" data-attachment-url="{{$.RepoLink}}/comments/{{.ID}}/attachments"></div>
 						{{if .Attachments}}
 							{{template "repo/issue/view_content/attachments" dict "Attachments" .Attachments "RenderedContent" .RenderedContent}}
@@ -220,11 +220,11 @@
 			</div>
 		{{else if eq .Type 10}}
 			<div class="timeline-item event" id="{{.HashTag}}">
-				<span class="badge">{{svg "octicon-pencil"}}</span>
+				<span class="badge">{{ctx.RenderUtils.RenderTimelineEventBadge $comment}}</span>
 				{{template "shared/user/avatarlink" dict "user" .Poster}}
 				<span class="comment-text-line">
 					{{template "shared/user/authorlink" .Poster}}
-					{{ctx.Locale.Tr "repo.issues.change_title_at" (.OldTitle|ctx.RenderUtils.RenderEmoji) (.NewTitle|ctx.RenderUtils.RenderEmoji) $createdStr}}
+					{{ctx.RenderUtils.RenderTimelineEventComment $comment $createdStr}}
 				</span>
 			</div>
 		{{else if eq .Type 11}}
@@ -403,7 +403,7 @@
 								{{end}}
 								<span class="comment-text-line">
 									{{if .OriginalAuthor}}
-										<span class="text black tw-font-semibold">
+										<span class="tw-text-text tw-font-semibold">
 											{{svg (MigrationIcon $.Repository.GetOriginalURLHostname)}}
 											{{.OriginalAuthor}}
 										</span>
@@ -413,7 +413,7 @@
 										{{template "shared/user/authorlink" .Poster}}
 									{{end}}
 
-									{{ctx.Locale.Tr "repo.issues.review.left_comment" .HashTag $createdStr}}
+									{{ctx.Locale.Tr "repo.issues.review.left_comment"}}
 								</span>
 							</div>
 							<div class="comment-header-right">
@@ -432,7 +432,7 @@
 									<span class="no-content">{{ctx.Locale.Tr "repo.issues.no_content"}}</span>
 								{{end}}
 							</div>
-							<div id="issuecomment-{{.ID}}-raw" class="raw-content tw-hidden">{{.Content}}</div>
+							<div id="{{.HashTag}}-raw" class="raw-content tw-hidden">{{.Content}}</div>
 							<div class="edit-content-zone tw-hidden" data-update-url="{{$.RepoLink}}/comments/{{.ID}}" data-content-version="{{.ContentVersion}}" data-context="{{$.RepoLink}}" data-attachment-url="{{$.RepoLink}}/comments/{{.ID}}/attachments"></div>
 							{{if .Attachments}}
 								{{template "repo/issue/view_content/attachments" dict "Attachments" .Attachments "RenderedContent" .RenderedContent}}
@@ -514,32 +514,20 @@
 		{{else if eq .Type 27}}
 			<div class="timeline-item event" id="{{.HashTag}}">
 				<span class="badge">{{svg "octicon-eye"}}</span>
+				{{$specialDoerHtml := .MetaSpecialDoerTr ctx.Locale}}
+				{{$timelineRequestedReviewHtml := .TimelineRequestedReviewTr ctx.Locale $createdStr}}
+				{{if $specialDoerHtml}}
+					<span class="comment-text-line">
+						{{$specialDoerHtml}}
+						{{$timelineRequestedReviewHtml}}
+					</span>
+				{{else}}
 				{{template "shared/user/avatarlink" dict "user" .Poster}}
 				<span class="comment-text-line">
 					{{template "shared/user/authorlink" .Poster}}
-					{{if (gt .AssigneeID 0)}}
-						{{if .RemovedAssignee}}
-							{{if eq .PosterID .AssigneeID}}
-								{{ctx.Locale.Tr "repo.issues.review.remove_review_request_self" $createdStr}}
-							{{else}}
-								{{ctx.Locale.Tr "repo.issues.review.remove_review_request" .Assignee.GetDisplayName $createdStr}}
-							{{end}}
-						{{else}}
-							{{ctx.Locale.Tr "repo.issues.review.add_review_request" .Assignee.GetDisplayName $createdStr}}
-						{{end}}
-					{{else}}
-						<!-- If the assigned team is deleted, just displaying "Ghost Team" in the comment -->
-						{{$teamName := "Ghost Team"}}
-						{{if .AssigneeTeam}}
-							{{$teamName = .AssigneeTeam.Name}}
-						{{end}}
-						{{if .RemovedAssignee}}
-							{{ctx.Locale.Tr "repo.issues.review.remove_review_request" $teamName $createdStr}}
-						{{else}}
-							{{ctx.Locale.Tr "repo.issues.review.add_review_request" $teamName $createdStr}}
-						{{end}}
-					{{end}}
+						{{$timelineRequestedReviewHtml}}
 				</span>
+				{{end}}
 			</div>
 		{{else if and (eq .Type 29) (or (gt .CommitsNum 0) .IsForcePush)}}
 			<!-- If PR is closed, the comments whose type is CommentTypePullRequestPush(29) after latestCloseCommentID won't be rendered. //-->
