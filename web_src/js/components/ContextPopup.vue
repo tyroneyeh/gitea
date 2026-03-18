@@ -60,8 +60,11 @@ onMounted(async () => {
         </span>
       </div>
       <div v-if="body">{{ body }}</div>
-      <!-- eslint-disable-next-line vue/no-v-html -->
-      <div v-if="issue.labels.length" v-html="renderedLabels"/>
+      <div>
+        <a :href="`${issue.user.html_url}?tab=activity`" :title="issue.user.username" class="author text black tw-font-semibold muted" target="_blank">{{ issue.user.full_name }}</a>&nbsp;
+        <!-- eslint-disable-next-line vue/no-v-html -->
+        <span v-if="issue.labels.length" v-html="renderedLabels"/>
+      </div>
     </div>
     <div v-else>
       {{ errorMessage }}
