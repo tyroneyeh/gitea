@@ -94,3 +94,7 @@ td.ellipsis-start {
     text-align: right;
     display: inline-block !important;
 }
+.project-img {
+    height: fit-content;
+    top: 50px !important;
+}
