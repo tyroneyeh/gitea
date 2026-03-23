@@ -295,7 +295,7 @@ func (b *Indexer) Search(ctx context.Context, options *internal.SearchOptions) (
 				for _, label := range labels {
 					labelQueries = append(labelQueries, inner_bleve.NumericEqualityQuery(label, "label_ids"))
 				}
-				queries = append(queries, bleve.NewDisjunctionQuery(labelQueries...))
+				queries = append(queries, bleve.NewConjunctionQuery(labelQueries...))
 			}
 		}
 
