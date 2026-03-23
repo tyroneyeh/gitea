@@ -97,4 +97,5 @@ td.ellipsis-start {
 .project-img {
     height: fit-content;
     top: 50px !important;
+    position: absolute !important;
 }
