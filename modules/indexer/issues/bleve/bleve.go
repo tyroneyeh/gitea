@@ -241,26 +241,22 @@ func ParseLabels(ctx context.Context, input string) (labelIDs []int64, keyword s
 		return nil, input, nil
 	}
 
-	hasDifference := false
-	labels := make([]string, 0, n)
-	inOrNot = make([]bool, 0, n)
+	labelIDs = make([]int64, n)
+	labels := make([]string, n)
+	inOrNot = make([]bool, n)
 	for i, m := range matches {
-		labels = append(labels, m[2])
-		inOrNot = append(inOrNot, m[1] != "-")
-		if !hasDifference && i > 0 && inOrNot[i] != inOrNot[i-1] {
-			hasDifference = true
+		labels[i] = m[2]
+		IDs, err := issues_model.GetLabelIDsByNames(ctx, []string{labels[i]})
+		if err == nil && len(IDs) > 0 {
+			labelIDs[i] = IDs[0]
+		} else {
+			labelIDs[i] = 0
 		}
-	}
-
-	if hasDifference {
-		for i := range inOrNot {
-			inOrNot[i] = !inOrNot[i]
-		}
+		inOrNot[i] = m[1] != "-"
 	}
 
 	// query labels table to ids and add to labels
 	if len(labels) > 0 {
-		labelIDs, _ := issues_model.GetLabelIDsByNames(ctx, labels)
 		keyword = strings.TrimSpace(re.ReplaceAllString(input, ""))
 		return labelIDs, keyword, inOrNot
 	}
@@ -294,16 +290,14 @@ func (b *Indexer) Search(ctx context.Context, options *internal.SearchOptions) (
 	if options.Keyword != "" {
 		lowerKeyword := strings.ToLower(options.Keyword)
 		labels, lowerKeyword, inOrNot := ParseLabels(ctx, options.Keyword)
-		if len(labels) > 0 {
-			for i, label := range labels {
-				if inOrNot[i] {
-					queries = append(queries, inner_bleve.NumericEqualityQuery(label, "label_ids"))
-				} else {
-					boolQuery := bleve.NewBooleanQuery()
-					boolQuery.AddMust(bleve.NewMatchAllQuery())
-					boolQuery.AddMustNot(inner_bleve.NumericEqualityQuery(label, "label_ids"))
-					queries = append(queries, boolQuery)
-				}
+		for i, label := range labels {
+			if inOrNot != nil && len(inOrNot) > i && inOrNot[i] {
+				queries = append(queries, inner_bleve.NumericEqualityQuery(label, "label_ids"))
+			} else {
+				boolQuery := bleve.NewBooleanQuery()
+				boolQuery.AddMust(bleve.NewMatchAllQuery())
+				boolQuery.AddMustNot(inner_bleve.NumericEqualityQuery(label, "label_ids"))
+				queries = append(queries, boolQuery)
 			}
 		}
 
