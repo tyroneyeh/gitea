@@ -233,26 +233,39 @@ func ParseCreatedRange(input string) (createdAfter, createdBefore optional.Optio
 	return createdAfter, createdBefore, keyword
 }
 
-func ParseLabels(ctx context.Context, input string) (labelIDs []int64, keyword string) {
-	re := regexp.MustCompile(`(?i)[\+\-]?[Ll]abels?:\s*"?([^\s]+)"?`)
+func ParseLabels(ctx context.Context, input string) (labelIDs []int64, keyword string, inOrNot []bool) {
+	re := regexp.MustCompile(`(?i)([\+\-])?[Ll]abels?:\s*"?([^\s]+)"?`)
 	matches := re.FindAllStringSubmatch(input, -1)
-	if len(matches) == 0 {
-		return nil, input
+	n := len(matches)
+	if n == 0 {
+		return nil, input, nil
 	}
 
-	var labels []string
-	for _, m := range matches {
-		labels = append(labels, m[1])
+	hasDifference := false
+	labels := make([]string, 0, n)
+	inOrNot = make([]bool, 0, n)
+	for i, m := range matches {
+		labels = append(labels, m[2])
+		inOrNot = append(inOrNot, m[1] != "-")
+		if !hasDifference && i > 0 && inOrNot[i] != inOrNot[i-1] {
+			hasDifference = true
+		}
+	}
+
+	if hasDifference {
+		for i := range inOrNot {
+			inOrNot[i] = !inOrNot[i]
+		}
 	}
 
 	// query labels table to ids and add to labels
 	if len(labels) > 0 {
 		labelIDs, _ := issues_model.GetLabelIDsByNames(ctx, labels)
 		keyword = strings.TrimSpace(re.ReplaceAllString(input, ""))
-		return labelIDs, keyword
+		return labelIDs, keyword, inOrNot
 	}
 
-	return nil, input
+	return nil, input, nil
 }
 
 func ParseKeywordPrefixPlusMinus(input string) (plus, minus []string, keyword string) {
@@ -280,33 +293,26 @@ func (b *Indexer) Search(ctx context.Context, options *internal.SearchOptions) (
 
 	if options.Keyword != "" {
 		lowerKeyword := strings.ToLower(options.Keyword)
-		isNot := strings.Contains(lowerKeyword, "-")
-		labels, lowerKeyword := ParseLabels(ctx, options.Keyword)
+		labels, lowerKeyword, inOrNot := ParseLabels(ctx, options.Keyword)
 		if len(labels) > 0 {
-			if isNot {
-				boolQuery := bleve.NewBooleanQuery()
-				boolQuery.AddMust(bleve.NewMatchAllQuery())
-				for _, label := range labels {
+			for i, label := range labels {
+				if inOrNot[i] {
+					queries = append(queries, inner_bleve.NumericEqualityQuery(label, "label_ids"))
+				} else {
+					boolQuery := bleve.NewBooleanQuery()
+					boolQuery.AddMust(bleve.NewMatchAllQuery())
 					boolQuery.AddMustNot(inner_bleve.NumericEqualityQuery(label, "label_ids"))
+					queries = append(queries, boolQuery)
 				}
-				queries = append(queries, boolQuery)
-			} else {
-				var labelQueries []query.Query
-				for _, label := range labels {
-					labelQueries = append(labelQueries, inner_bleve.NumericEqualityQuery(label, "label_ids"))
-				}
-				queries = append(queries, bleve.NewConjunctionQuery(labelQueries...))
 			}
 		}
 
 		CreatedAfterUnix, CreatedBeforeUnix, lowerKeyword := ParseCreatedRange(lowerKeyword)
 		if CreatedAfterUnix.Has() || CreatedBeforeUnix.Has() {
-			var dateQueries []query.Query
-			dateQueries = append(dateQueries, inner_bleve.NumericRangeInclusiveQuery(
+			queries = append(queries, bleve.NewConjunctionQuery(inner_bleve.NumericRangeInclusiveQuery(
 				CreatedAfterUnix,
 				CreatedBeforeUnix,
-				"created_unix"))
-			queries = append(queries, bleve.NewConjunctionQuery(dateQueries...))
+				"created_unix")))
 		}
 
 		if lowerKeyword != "" {
