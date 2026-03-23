@@ -233,35 +233,38 @@ func ParseCreatedRange(input string) (createdAfter, createdBefore optional.Optio
 	return createdAfter, createdBefore, keyword
 }
 
-func ParseLabels(ctx context.Context, input string) (labelIDs []int64, keyword string, inOrNot []bool) {
+type labelFilter struct {
+	InOrNot  bool    `json:"inOrNot"`
+	LabelIDs []int64 `json:"labelIDs"`
+}
+
+func ParseLabels(ctx context.Context, input string) (labelFilters []labelFilter, keyword string) {
 	re := regexp.MustCompile(`(?i)([\+\-])?[Ll]abels?:\s*"?([^\s]+)"?`)
 	matches := re.FindAllStringSubmatch(input, -1)
 	n := len(matches)
 	if n == 0 {
-		return nil, input, nil
+		return nil, input
 	}
 
-	labelIDs = make([]int64, n)
+	labelFilters = make([]labelFilter, n)
 	labels := make([]string, n)
-	inOrNot = make([]bool, n)
 	for i, m := range matches {
 		labels[i] = m[2]
 		IDs, err := issues_model.GetLabelIDsByNames(ctx, []string{labels[i]})
 		if err == nil && len(IDs) > 0 {
-			labelIDs[i] = IDs[0]
+			labelFilters[i] = labelFilter{InOrNot: m[1] != "-", LabelIDs: IDs}
 		} else {
-			labelIDs[i] = 0
+			labelFilters[i] = labelFilter{InOrNot: m[1] != "-", LabelIDs: nil}
 		}
-		inOrNot[i] = m[1] != "-"
 	}
 
 	// query labels table to ids and add to labels
 	if len(labels) > 0 {
 		keyword = strings.TrimSpace(re.ReplaceAllString(input, ""))
-		return labelIDs, keyword, inOrNot
+		return labelFilters, keyword
 	}
 
-	return nil, input, nil
+	return nil, input
 }
 
 func ParseKeywordPrefixPlusMinus(input string) (plus, minus []string, keyword string) {
@@ -289,14 +292,22 @@ func (b *Indexer) Search(ctx context.Context, options *internal.SearchOptions) (
 
 	if options.Keyword != "" {
 		lowerKeyword := strings.ToLower(options.Keyword)
-		labels, lowerKeyword, inOrNot := ParseLabels(ctx, options.Keyword)
-		for i, label := range labels {
-			if inOrNot != nil && len(inOrNot) > i && inOrNot[i] {
-				queries = append(queries, inner_bleve.NumericEqualityQuery(label, "label_ids"))
+		labels, lowerKeyword := ParseLabels(ctx, options.Keyword)
+		for _, label := range labels {
+			if label.InOrNot {
+				labelQueries := make([]query.Query, 0, len(label.LabelIDs))
+				for _, id := range label.LabelIDs {
+					labelQueries = append(labelQueries, inner_bleve.NumericEqualityQuery(id, "label_ids"))
+				}
+				if len(labelQueries) > 0 {
+					queries = append(queries, bleve.NewDisjunctionQuery(labelQueries...))
+				}
 			} else {
 				boolQuery := bleve.NewBooleanQuery()
 				boolQuery.AddMust(bleve.NewMatchAllQuery())
-				boolQuery.AddMustNot(inner_bleve.NumericEqualityQuery(label, "label_ids"))
+				for _, id := range label.LabelIDs {
+					boolQuery.AddMustNot(inner_bleve.NumericEqualityQuery(id, "label_ids"))
+				}
 				queries = append(queries, boolQuery)
 			}
 		}
