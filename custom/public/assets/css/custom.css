@@ -99,3 +99,8 @@ td.ellipsis-start {
     top: 50px !important;
     position: absolute !important;
 }
+.render-content li span {
+    color: var(--color-primary-contrast);
+    padding: 0 4px 2px 4px;
+    border-radius: var(--border-radius);
+}
