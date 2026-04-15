@@ -35,9 +35,12 @@ type issueSidebarAssigneesData struct {
 }
 
 type issueSidebarProjectsData struct {
-	SelectedProjectID string
-	OpenProjects      []*project_model.Project
-	ClosedProjects    []*project_model.Project
+	SelectedProjectID      string
+	SelectedProjectColumns []*project_model.Column
+	SelectedProjectColumn  *project_model.Column
+
+	OpenProjects   []*project_model.Project
+	ClosedProjects []*project_model.Project
 }
 
 type IssuePageMetaData struct {
@@ -165,11 +168,13 @@ func (d *IssuePageMetaData) retrieveAssigneesData(ctx *context.Context) {
 }
 
 func (d *IssuePageMetaData) retrieveProjectData(ctx *context.Context) {
-	if d.Issue == nil || d.Issue.Project == nil {
+	if d.Issue == nil || d.Issue.Projects == nil {
 		return
 	}
-	d.ProjectsData.SelectedProjectIDs = []int64{d.Issue.Project.ID}
-	columns, err := d.Issue.Project.GetColumns(ctx)
+	d.ProjectsData.SelectedProjectID = strconv.FormatInt(d.Issue.Projects[0].ID, 10)
+	project, err := project_model.GetProjectByID(ctx, d.Issue.Projects[0].ID)
+
+	columns, err := project.GetColumns(ctx)
 	if err != nil {
 		ctx.ServerError("GetProjectColumns", err)
 		return
