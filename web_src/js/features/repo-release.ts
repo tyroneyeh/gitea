@@ -1,7 +1,7 @@
 import {POST} from '../modules/fetch.ts';
 import {hideToastsAll, showErrorToast} from '../modules/toast.ts';
 import {getComboMarkdownEditor} from './comp/ComboMarkdownEditor.ts';
-import {hideElem, showElem} from '../utils/dom.ts';
+import {hideElem} from '../utils/dom.ts';
 import {fomanticQuery} from '../modules/fomantic/base.ts';
 import {registerGlobalEventFunc, registerGlobalInitFunc} from '../modules/observer.ts';
 import {htmlEscape} from '../utils/html.ts';

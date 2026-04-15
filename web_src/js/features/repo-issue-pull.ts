@@ -11,7 +11,6 @@ function initRepoPullRequestUpdate(el: HTMLElement) {
   const prUpdateDropdown = prUpdateButtonContainer.querySelector(':scope > .ui.dropdown')!;
   prUpdateButton.addEventListener('click', async function (e) {
     e.preventDefault();
-    const redirect = this.getAttribute('data-redirect');
     this.classList.add('is-loading');
     let response: Response | undefined;
     try {
@@ -29,8 +28,6 @@ function initRepoPullRequestUpdate(el: HTMLElement) {
     }
     if (data?.redirect) {
       window.location.href = data.redirect;
-    } else if (redirect) {
-      window.location.href = redirect;
     } else {
       window.location.reload();
     }
@@ -66,7 +63,7 @@ async function initRepoPullRequestMergeForm(box: HTMLElement) {
   const el = box.querySelector('#pull-request-merge-form');
   if (!el) return;
 
-  const {default: PullRequestMergeForm} = await import(/* webpackChunkName: "PullRequestMergeForm" */ '../components/PullRequestMergeForm.vue');
+  const {default: PullRequestMergeForm} = await import('../components/PullRequestMergeForm.vue');
   const view = createApp(PullRequestMergeForm);
   view.mount(el);
 }

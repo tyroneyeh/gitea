@@ -24,7 +24,7 @@ function showMarkupRefIssuePopup(e: MouseEvent | FocusEvent) {
   const onShowAsync = async () => {
     const alreadyTippy = getAttachedTippyInstance(refIssue);
     if (fetchedMap.has(alreadyTippy!)) return;
-    const {default: ContextPopup} = await import(/* webpackChunkName: "ContextPopup" */ '../components/ContextPopup.vue');
+    const {default: ContextPopup} = await import('../components/ContextPopup.vue');
     const view = createApp(ContextPopup, {
       // backend: GetIssueInfo
       loadIssueInfoUrl: `${window.config.appSubUrl}/${issuePathInfo.ownerName}/${issuePathInfo.repoName}/issues/${issuePathInfo.indexString}/info`,

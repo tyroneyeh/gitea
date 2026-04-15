@@ -93,6 +93,11 @@ func retrieveRepoIssueMetaData(ctx *context.Context, repo *repo_model.Repository
 		return data
 	}
 
+	data.retrieveProjectData(ctx)
+	if ctx.Written() {
+		return data
+	}
+
 	// TODO: the issue/pull permissions are quite complex and unclear
 	// A reader could create an issue/PR with setting some meta (eg: assignees from issue template, reviewers, target branch)
 	// A reader(creator) could update some meta (eg: target branch), but can't change assignees anymore.
@@ -157,6 +162,30 @@ func (d *IssuePageMetaData) retrieveAssigneesData(ctx *context.Context) {
 		d.AssigneesData.SelectedAssigneeIDs = strings.Join(ids, ",")
 	}
 	ctx.Data["Assignees"] = d.AssigneesData.CandidateAssignees
+}
+
+func (d *IssuePageMetaData) retrieveProjectData(ctx *context.Context) {
+	if d.Issue == nil || d.Issue.Project == nil {
+		return
+	}
+	d.ProjectsData.SelectedProjectIDs = []int64{d.Issue.Project.ID}
+	columns, err := d.Issue.Project.GetColumns(ctx)
+	if err != nil {
+		ctx.ServerError("GetProjectColumns", err)
+		return
+	}
+	d.ProjectsData.SelectedProjectColumns = columns
+	columnID, err := d.Issue.ProjectColumnID(ctx)
+	if err != nil {
+		ctx.ServerError("ProjectColumnID", err)
+		return
+	}
+	for _, col := range columns {
+		if col.ID == columnID {
+			d.ProjectsData.SelectedProjectColumn = col
+			break
+		}
+	}
 }
 
 func (d *IssuePageMetaData) retrieveProjectsDataForIssueWriter(ctx *context.Context) {
