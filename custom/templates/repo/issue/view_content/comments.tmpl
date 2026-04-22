@@ -413,7 +413,7 @@
 										{{template "shared/user/authorlink" .Poster}}
 									{{end}}
 
-									{{ctx.Locale.Tr "repo.issues.review.left_comment"}}
+									{{ctx.Locale.Tr "repo.issues.review.left_comment" .HashTag $createdStr}}
 								</span>
 							</div>
 							<div class="comment-header-right">

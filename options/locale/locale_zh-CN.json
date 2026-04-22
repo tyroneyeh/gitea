@@ -1703,7 +1703,7 @@
   "repo.issues.review.comment": "于 %s 评审",
   "repo.issues.review.dismissed": "于 %[2]s 取消 %[1]s 的评审",
   "repo.issues.review.dismissed_label": "已取消",
-  "repo.issues.review.left_comment": "留下了一条评论",
+  "repo.issues.review.left_comment": "留下了一条评论 <a href=\"#%s\">%s</a>",
   "repo.issues.review.content.empty": "您需要留下一个注释，表明需要的更改。",
   "repo.issues.review.reject": "请求变更 %s",
   "repo.issues.review.wait": "已请求 %s 评审",
