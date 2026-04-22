@@ -54,9 +54,10 @@ func ServeSetHeaders(w http.ResponseWriter, opts ServeHeaderOptions) {
 		header.Set("Content-Length", strconv.FormatInt(*opts.ContentLength, 10))
 	}
 
-	// Disable script execution of HTML/SVG files, since we serve the file from the same origin as Gitea server
-	header.Set("Content-Security-Policy", "default-src 'none'; style-src 'unsafe-inline'; sandbox")
-	if strings.Contains(contentType, "application/pdf") {
+	if strings.Contains(contentType, "image/svg") {
+		// Disable script execution of HTML/SVG files, since we serve the file from the same origin as Gitea server
+		header.Set("Content-Security-Policy", "default-src 'none'; style-src 'unsafe-inline'; sandbox")
+	} else if strings.Contains(contentType, "application/pdf") {
 		// no sandbox attribute for PDF as it breaks rendering in at least safari. this
 		// should generally be safe as scripts inside PDF can not escape the PDF document
 		// see https://bugs.chromium.org/p/chromium/issues/detail?id=413851 for more discussion
