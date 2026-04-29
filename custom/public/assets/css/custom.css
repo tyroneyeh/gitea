@@ -95,22 +95,18 @@ td.ellipsis-start {
     display: inline-block !important;
 }
 #detail-modal.ui.dimmer {
-    width: 100vw !important;
-    height: 100vh !important;
-
     top: 0 !important;
     left: 0 !important;
-
-    position: fixed !important;
-    overflow-y: auto !important;
-    overflow-x: auto !important;
-
     background: rgba(0, 0, 0, 0.8);
 }
 #detail-modal.active {
+    width: 100vw !important;
+    height: 100vh !important;
     display: flex !important;
     flex-direction: column;
     align-items: center;
+    overflow-y: auto !important;
+    overflow-x: auto !important;
 }
 #detail-modal img {
     height: auto;
