@@ -99,18 +99,11 @@ td.ellipsis-start {
     left: 0 !important;
     background: rgba(0, 0, 0, 0.8);
 }
-#detail-modal.active {
-    width: 100vw !important;
-    height: 100vh !important;
-    display: flex !important;
-    flex-direction: column;
-    align-items: center;
-    overflow-y: auto !important;
-    overflow-x: auto !important;
-}
 #detail-modal img {
     height: auto;
     display: block;
+    align-self: center;
+    width: max-content;
 }
 .render-content li span {
     color: var(--color-primary-contrast);
