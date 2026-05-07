@@ -16,7 +16,6 @@ import (
 	user_model "code.gitea.io/gitea/models/user"
 	"code.gitea.io/gitea/modules/container"
 	"code.gitea.io/gitea/modules/optional"
-	"code.gitea.io/gitea/modules/util"
 	shared_user "code.gitea.io/gitea/routers/web/shared/user"
 	"code.gitea.io/gitea/services/context"
 	issue_service "code.gitea.io/gitea/services/issue"
@@ -34,10 +33,15 @@ type issueSidebarAssigneesData struct {
 	CandidateAssignees  []*user_model.User
 }
 
+type issueSidebarProjectCardData struct {
+	Project        *project_model.Project
+	Columns        []*project_model.Column
+	SelectedColumn *project_model.Column
+}
+
 type issueSidebarProjectsData struct {
-	SelectedProjectID      string
-	SelectedProjectColumns []*project_model.Column
-	SelectedProjectColumn  *project_model.Column
+	SelectedProjectIDs []int64
+	ProjectCards       []*issueSidebarProjectCardData
 
 	OpenProjects   []*project_model.Project
 	ClosedProjects []*project_model.Project
@@ -106,7 +110,7 @@ func retrieveRepoIssueMetaData(ctx *context.Context, repo *repo_model.Repository
 	// A reader(creator) could update some meta (eg: target branch), but can't change assignees anymore.
 	// For non-creator users, only writers could update some meta (eg: assignees, milestone, project)
 	// Need to clarify the logic and add some tests in the future
-	data.CanModifyIssueOrPull = ctx.Repo.CanWriteIssuesOrPulls(isPull) && !ctx.Repo.Repository.IsArchived
+	data.CanModifyIssueOrPull = ctx.Repo.Permission.CanWriteIssuesOrPulls(isPull) && !ctx.Repo.Repository.IsArchived
 	if !data.CanModifyIssueOrPull {
 		return data
 	}
@@ -167,38 +171,80 @@ func (d *IssuePageMetaData) retrieveAssigneesData(ctx *context.Context) {
 	ctx.Data["Assignees"] = d.AssigneesData.CandidateAssignees
 }
 
-func (d *IssuePageMetaData) retrieveProjectData(ctx *context.Context) {
-	if d.Issue == nil || d.Issue.Projects == nil {
+func (d *IssuePageMetaData) retrieveProjectCardsForExistingIssue(ctx *context.Context) {
+	if err := d.Issue.LoadProjects(ctx); err != nil {
+		ctx.ServerError("LoadProjects", err)
 		return
 	}
-	d.ProjectsData.SelectedProjectID = strconv.FormatInt(d.Issue.Projects[0].ID, 10)
-	project, err := project_model.GetProjectByID(ctx, d.Issue.Projects[0].ID)
 
-	columns, err := project.GetColumns(ctx)
+	// Load column mappings for all projects
+	projectColumnMap, err := d.Issue.ProjectColumnMap(ctx)
 	if err != nil {
-		ctx.ServerError("GetProjectColumns", err)
+		ctx.ServerError("ProjectColumnMap", err)
 		return
 	}
-	d.ProjectsData.SelectedProjectColumns = columns
-	columnID, err := d.Issue.ProjectColumnID(ctx)
-	if err != nil {
-		ctx.ServerError("ProjectColumnID", err)
-		return
-	}
-	for _, col := range columns {
-		if col.ID == columnID {
-			d.ProjectsData.SelectedProjectColumn = col
-			break
+
+	// Build project cards for each project
+	d.ProjectsData.ProjectCards = make([]*issueSidebarProjectCardData, 0, len(d.Issue.Projects))
+	for _, project := range d.Issue.Projects {
+		columns, err := project.GetColumns(ctx)
+		if err != nil {
+			ctx.ServerError("GetProjectColumns", err)
+			return
 		}
+
+		var selectedColumn *project_model.Column
+		columnID := projectColumnMap[project.ID]
+		for _, col := range columns {
+			if col.ID == columnID {
+				selectedColumn = col
+				break
+			}
+		}
+
+		if selectedColumn == nil {
+			selectedColumn, err = project.MustDefaultColumn(ctx)
+			if err != nil {
+				ctx.ServerError("MustDefaultColumn", err)
+				return
+			}
+		}
+		d.ProjectsData.ProjectCards = append(d.ProjectsData.ProjectCards, &issueSidebarProjectCardData{
+			Project:        project,
+			Columns:        columns,
+			SelectedColumn: selectedColumn,
+		})
+	}
+	d.ProjectsData.SelectedProjectIDs = make([]int64, 0, len(d.ProjectsData.ProjectCards))
+	for _, card := range d.ProjectsData.ProjectCards {
+		d.ProjectsData.SelectedProjectIDs = append(d.ProjectsData.SelectedProjectIDs, card.Project.ID)
 	}
 }
 
-func (d *IssuePageMetaData) retrieveProjectsDataForIssueWriter(ctx *context.Context) {
-	if d.Issue != nil && len(d.Issue.Projects) > 0 {
-		d.ProjectsData.SelectedProjectID = util.JoinSlice(d.Issue.Projects, func(v *project_model.Project) string {
-			return strconv.FormatInt(v.ID, 10)
-		})
+func (d *IssuePageMetaData) retrieveProjectData(ctx *context.Context) {
+	if d.Issue == nil {
+		return
 	}
+	d.retrieveProjectCardsForExistingIssue(ctx)
+}
+
+func (d *IssuePageMetaData) SetSelectedProjectIDs(ids []int64) {
+	allProjects := map[int64]*project_model.Project{}
+	for _, p := range d.ProjectsData.OpenProjects {
+		allProjects[p.ID] = p
+	}
+	for _, p := range d.ProjectsData.ClosedProjects {
+		allProjects[p.ID] = p
+	}
+	for _, id := range ids {
+		if project, ok := allProjects[id]; ok {
+			d.ProjectsData.ProjectCards = append(d.ProjectsData.ProjectCards, &issueSidebarProjectCardData{Project: project})
+		}
+	}
+	d.ProjectsData.SelectedProjectIDs = ids
+}
+
+func (d *IssuePageMetaData) retrieveProjectsDataForIssueWriter(ctx *context.Context) {
 	d.ProjectsData.OpenProjects, d.ProjectsData.ClosedProjects = retrieveProjectsInternal(ctx, ctx.Repo.Repository)
 }
 

@@ -8,8 +8,8 @@ import {
 import {subscribe} from '@github/paste-markdown';
 import type CodeMirror from 'codemirror';
 import type EasyMDE from 'easymde';
-import type {DropzoneFile} from 'dropzone';
 import {isImageFile, isVideoFile, isCompressedFile, isPDFFile, compressFileToZip} from '../../utils.ts';
+import type Dropzone from '@deltablot/dropzone';
 
 let uploadIdCounter = 0;
 
@@ -32,10 +32,7 @@ function uploadFile(dropzoneEl: HTMLElement, file: File, removePlaceholder: () =
     };
     dropzoneInst.on(DropzoneCustomEventUploadDone, onUploadDone);
     // FIXME: this is not entirely correct because `file` does not satisfy DropzoneFile (we have abused the Dropzone for long time)
-    dropzoneInst.addFile(file as DropzoneFile);
-    if ((file as DropzoneFile).status === 'error') {
-      removePlaceholder();
-    }
+    dropzoneInst.addFile(file as Dropzone.DropzoneFile);
   });
 }
 

@@ -6,21 +6,22 @@ import {GET, POST} from '../modules/fetch.ts';
 import {showErrorToast} from '../modules/toast.ts';
 import {createElementFromHTML, createElementFromAttrs} from '../utils/dom.ts';
 import {isImageFile, isVideoFile, isCompressedFile, isPDFFile, compressFileToZip} from '../utils.ts';
-import type {DropzoneFile, DropzoneOptions} from 'dropzone/index.js';
+import {errorMessage} from '../modules/errors.ts';
+import type Dropzone from '@deltablot/dropzone';
 
 const {i18n} = window.config;
 
-type CustomDropzoneFile = DropzoneFile & {uuid: string};
+type CustomDropzoneFile = Dropzone.DropzoneFile & {uuid: string};
 
 // dropzone has its owner event dispatcher (emitter)
 export const DropzoneCustomEventReloadFiles = 'dropzone-custom-reload-files';
 export const DropzoneCustomEventRemovedFile = 'dropzone-custom-removed-file';
 export const DropzoneCustomEventUploadDone = 'dropzone-custom-upload-done';
 
-async function createDropzone(el: HTMLElement, opts: DropzoneOptions) {
+async function createDropzone(el: HTMLElement, opts: Dropzone.DropzoneOptions) {
   const [{default: Dropzone}] = await Promise.all([
-    import('dropzone'),
-    import('dropzone/dist/dropzone.css'),
+    import('@deltablot/dropzone'),
+    import('@deltablot/dropzone/dist/dropzone.css'),
   ]);
   return new Dropzone(el, opts);
 }
@@ -199,7 +200,7 @@ export async function initDropzone(dropzoneEl: HTMLElement) {
     } catch (error) {
       // TODO: if listing the existing attachments failed, it should stop from operating the content or attachments,
       //  otherwise the attachments might be lost.
-      showErrorToast(`Failed to load attachments: ${error}`);
+      showErrorToast(`Failed to load attachments: ${errorMessage(error)}`);
       console.error(error);
     }
   });
