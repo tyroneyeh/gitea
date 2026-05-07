@@ -99,11 +99,16 @@ td.ellipsis-start {
     left: 0 !important;
     background: rgba(0, 0, 0, 0.8);
 }
-#detail-modal img {
-    height: auto;
+#detail-modal.ui.dimmer.active {
     display: block;
     align-self: center;
-    width: max-content;
+    justify-self: center;
+    width: 100%;
+    height: 100%;
+}
+#detail-modal.ui.dimmer.active img {
+    justify-self: center;
+    display: block;
 }
 .render-content li span {
     color: var(--color-primary-contrast);
