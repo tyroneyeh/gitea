@@ -1,19 +1,7 @@
 {{if .SignedUser}}
-<style>
-.gotocontrol {
-    position: fixed;
-    background-color: #33b5e5;
-    color: white;
-    border-radius: 50%;
-    text-align: center;
-    width: 30px;
-    height: 30px;
-    line-height: 30px;
-}
-</style>
 
-<a onclick="goTo('top', event)" class="gotocontrol up tw-hidden" style="right:30px;bottom:70px">▲</a>
-<a onclick="goTo('bottom', event)" class="gotocontrol down tw-hidden" style="right:30px;bottom:30px">▼</a>
+<a class="gotocontrol up tw-hidden" style="right:30px;bottom:70px">▲</a>
+<a class="gotocontrol down tw-hidden" style="right:30px;bottom:30px">▼</a>
 
 <script nonce="{{ctx.CspScriptNonce}}" src="{{AppSubUrl}}/assets/js/custom.min.js"></script>
 {{end}}
