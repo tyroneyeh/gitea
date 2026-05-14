@@ -59,12 +59,15 @@ func serveSetHeaderContentRelated(w http.ResponseWriter, contentType string) {
 	header.Set("Content-Type", contentType)
 	header.Set("X-Content-Type-Options", "nosniff")
 
-	csp := serveHeaderCspDefault
+	csp := ""
 	if strings.HasPrefix(contentType, "application/pdf") {
 		csp = serveHeaderCspPdf
 	}
 	if strings.HasPrefix(contentType, "video/") || strings.HasPrefix(contentType, "audio/") {
 		csp = serveHeaderCspAudioVideo
+	}
+	if strings.HasPrefix(contentType, "image/svg+xml") {
+		csp = serveHeaderCspDefault
 	}
 	if csp != "" {
 		header.Set("Content-Security-Policy", csp)
