@@ -69,7 +69,9 @@ var patchCommits = regexp.MustCompile(`^From\s(\w+)\s`)
 
 // GetDiff generates and returns patch data between given revisions, optimized for human readability
 func (repo *Repository) GetDiff(compareArg string, w io.Writer) error {
-	return gitcmd.NewCommand("diff", "-p").AddDynamicArguments(compareArg).
+	return gitcmd.NewCommand("diff", "-p").
+		AddArguments("-U999").
+		AddDynamicArguments(compareArg).
 		WithDir(repo.Path).
 		WithStdoutCopy(w).
 		Run(repo.Ctx)
