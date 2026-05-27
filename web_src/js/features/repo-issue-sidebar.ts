@@ -57,7 +57,7 @@ export function initRepoIssueSidebarDependency(elSidebar: HTMLElement) {
   const crossRepoSearch = elDropdown.getAttribute('data-issue-cross-repo-search');
   let issueSearchUrl = `${issuePageInfo.repoLink}/issues/search?q={query}&type=${issuePageInfo.issueDependencySearchType}`;
   if (crossRepoSearch === 'true') {
-    issueSearchUrl = `${appSubUrl}/issues/search?q={query}&priority_repo_id=${issuePageInfo.repoId}&type=${issuePageInfo.issueDependencySearchType}`;
+    issueSearchUrl = `${appSubUrl}/issues/search?q={query}&priority_repo_id=${issuePageInfo.repoId}&type=${issuePageInfo.issueDependencySearchType}&limit=9999`;
   }
   fomanticQuery(elDropdown).dropdown({
     fullTextSearch: true,
