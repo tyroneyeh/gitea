@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	issues_model "code.gitea.io/gitea/models/issues"
+	issues_model "gitea.dev/models/issues"
 
 	"gitea.dev/modules/indexer"
 	indexer_internal "gitea.dev/modules/indexer/internal"

@@ -217,6 +217,9 @@ func repoAssignment() func(ctx *context.APIContext) {
 			ctx.APIErrorNotFound()
 			return
 		}
+
+		ctx.Doer = user_model.NewActionsUser()
+
 	}
 }
 

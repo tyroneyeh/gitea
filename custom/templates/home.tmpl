@@ -1,7 +1,5 @@
 {{template "base/head" .}}
 
-<script>
-location.replace('/user/login');
-</script>
+<meta http-equiv="refresh" content="0; url={{.AppSubURL}}/user/login" />
 
 {{template "base/footer" .}}
