@@ -97,9 +97,8 @@ func ServeSetHeaders(w http.ResponseWriter, opts ServeHeaderOptions) {
 	}
 
 	httpcache.SetCacheControlInHeader(header, &httpcache.CacheControlOptions{
-		IsPublic:    opts.CacheIsPublic,
-		MaxAge:      opts.CacheDuration,
-		NoTransform: true,
+		IsPublic: opts.CacheIsPublic,
+		MaxAge:   opts.CacheDuration,
 	})
 
 	if !opts.LastModified.IsZero() {

@@ -247,9 +247,9 @@ func APIContexter() func(http.Handler) http.Handler {
 			}
 
 			if ctx.Req.Method == http.MethodGet && strings.Contains(ctx.Req.URL.Path, "/releases") {
-				httpcache.SetCacheControlInHeader(ctx.Resp.Header(), &httpcache.CacheControlOptions{NoTransform: true, IsPublic: true, MaxAge: 1 * time.Hour})
+				httpcache.SetCacheControlInHeader(ctx.Resp.Header(), &httpcache.CacheControlOptions{IsPublic: true, MaxAge: 1 * time.Hour})
 			} else {
-				httpcache.SetCacheControlInHeader(ctx.Resp.Header(), &httpcache.CacheControlOptions{NoTransform: true})
+				httpcache.SetCacheControlInHeader(ctx.Resp.Header(), &httpcache.CacheControlOptions{})
 			}
 
 			next.ServeHTTP(ctx.Resp, ctx.Req)
