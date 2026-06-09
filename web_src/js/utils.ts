@@ -212,15 +212,19 @@ export function isPDFFile({name, type}: {name?: string, type?: string}): boolean
 }
 
 export async function compressFileToZip(file: File) {
-  let zip: any;
+  if (typeof window === 'undefined') {
+    return file;
+  }
+
   document.body.style.cursor = 'wait';
   for (const el of document.querySelectorAll('textarea')) {
     el.style.cursor = 'wait';
   }
 
-  if (typeof window !== 'undefined') {
-    zip = await import('@zip.js/zip.js');
-  }
+  const zip = await import('@zip.js/zip.js');
+  zip.configure({
+    useWebWorkers: false,
+  });
   const writer = new zip.ZipWriter(new zip.BlobWriter('application/zip'));
   await writer.add(file.name, new zip.BlobReader(file), {
     level: 9,
