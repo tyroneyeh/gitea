@@ -218,8 +218,6 @@ func repoAssignment() func(ctx *context.APIContext) {
 			return
 		}
 
-		ctx.Doer.OriginalAuthorID = ctx.Doer.ID
-
 	}
 }
 

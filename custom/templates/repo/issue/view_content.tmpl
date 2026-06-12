@@ -31,7 +31,7 @@
 									{{ctx.AvatarUtils.Avatar .Issue.Poster 24}}
 								</a>
 								<span class="tw-text-text-light muted-links">
-									{{template "shared/user/authorlink" .Issue.Poster}}{{if .OriginalAuthorID}}<span class="ui basic label tw-p-1 tw-align-baseline">bot</span>{{end}}
+									{{template "shared/user/authorlink" .Issue.Poster}}{{if .Issue.OriginalAuthorID}}<span class="ui basic label tw-p-1 tw-align-baseline">bot</span>{{end}}
 									{{ctx.Locale.Tr "repo.issues.commented_at" .Issue.HashTag $createdStr}}
 								</span>
 							{{end}}

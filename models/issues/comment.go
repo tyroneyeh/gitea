@@ -841,7 +841,7 @@ func CreateComment(ctx context.Context, opts *CreateCommentOptions) (_ *Comment,
 			Type:             opts.Type,
 			PosterID:         opts.Doer.ID,
 			Poster:           opts.Doer,
-			OriginalAuthorID: opts.Doer.OriginalAuthorID,
+			OriginalAuthorID: opts.Issue.OriginalAuthorID,
 			IssueID:          opts.Issue.ID,
 			LabelID:          LabelID,
 			OldMilestoneID:   opts.OldMilestoneID,
@@ -1034,6 +1034,7 @@ type CreateCommentOptions struct {
 	IsForcePush        bool
 	Invalidated        bool
 	SpecialDoerName    SpecialDoerNameType // e.g. "CODEOWNERS" for CODEOWNERS-triggered review requests
+	OriginalAuthorID   int64
 }
 
 // GetCommentByID returns the comment by given ID.

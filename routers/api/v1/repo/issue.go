@@ -700,6 +700,8 @@ func CreateIssue(ctx *context.APIContext) {
 		form.Labels = make([]int64, 0)
 	}
 
+	issue.OriginalAuthorID = ctx.Doer.ID
+
 	if err := issue_service.NewIssue(ctx, ctx.Repo.Repository, issue, form.Labels, nil, assigneeIDs, form.Projects); err != nil {
 		if errors.Is(err, user_model.ErrBlockedUser) {
 			ctx.APIError(http.StatusForbidden, err)
