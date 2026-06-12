@@ -218,7 +218,7 @@ func repoAssignment() func(ctx *context.APIContext) {
 			return
 		}
 
-		ctx.Doer = user_model.NewActionsUser()
+		ctx.Doer.OriginalAuthorID = ctx.Doer.ID
 
 	}
 }
