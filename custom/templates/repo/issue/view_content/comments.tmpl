@@ -46,7 +46,7 @@
 									</a>
 								{{end}}
 								<span class="comment-text-line">
-									{{template "shared/user/authorlink" .Poster}}{{if .OriginalAuthorID}}<span class="ui basic label tw-p-1 tw-align-baseline">bot</span>{{end}}
+									{{template "shared/user/authorlink" .Poster}}{{if gt .OriginalAuthorID 0}}<span class="ui basic label tw-p-1 tw-align-baseline">bot</span>{{end}}
 									{{ctx.Locale.Tr "repo.issues.commented_at" .HashTag $createdStr}}
 								</span>
 							{{end}}
