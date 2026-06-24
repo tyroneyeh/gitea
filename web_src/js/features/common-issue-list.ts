@@ -26,6 +26,9 @@ export function initCommonIssueListQuickGoto() {
   const gotos = document.querySelectorAll<HTMLElement>('#issue-list-quick-goto');
   if (!gotos.length) return;
   let isHash = false;
+  const quickGoto = (goto: HTMLElement) => {
+    window.location.assign(goto.getAttribute('data-issue-goto-link')!);
+  };
 
   for (const goto of gotos) {
     const form = goto.closest('form')!;
