@@ -36,6 +36,7 @@ type IndexerData struct {
 	ProjectColumnMap   map[int64]int64    `json:"project_column_map,omitempty"` // Maps project ID to column ID for each project the issue is in
 	PosterID           int64              `json:"poster_id"`
 	AssigneeIDs        []int64            `json:"assignee_ids"`
+	NoAssignee         bool               `json:"no_assignee"` // True if the issue has no assignees
 	MentionIDs         []int64            `json:"mention_ids"`
 	ReviewedIDs        []int64            `json:"reviewed_ids"`
 	ReviewRequestedIDs []int64            `json:"review_requested_ids"`

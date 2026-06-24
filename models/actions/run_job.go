@@ -4,6 +4,7 @@
 package actions
 
 import (
+	"cmp"
 	"context"
 	"fmt"
 	"slices"
@@ -106,6 +107,10 @@ type ActionRunJob struct {
 
 	// ParentJobID scopes `Needs` resolution: name lookups happen only among rows sharing the same ParentJobID. 0 for top-level rows.
 	ParentJobID int64 `xorm:"index NOT NULL DEFAULT 0"`
+
+	// ContinueOnError mirrors the job-level continue-on-error field from the workflow YAML.
+	// When true, a failure of this job does not fail the overall workflow run.
+	ContinueOnError bool `xorm:"NOT NULL DEFAULT FALSE"`
 
 	Started timeutil.TimeStamp
 	Stopped timeutil.TimeStamp
@@ -499,9 +504,12 @@ func AggregateJobStatus(jobs []*ActionRunJob) Status {
 	allSkipped := len(jobs) != 0
 	var hasFailure, hasCancelled, hasCancelling, hasWaiting, hasRunning, hasBlocked bool
 	for _, job := range jobs {
-		allSuccessOrSkipped = allSuccessOrSkipped && (job.Status == StatusSuccess || job.Status == StatusSkipped)
+		// A failed job with continue-on-error:true does not fail the workflow run.
+		// It counts as a "continued failure" and is treated like success for aggregation.
+		isContinuedFailure := job.ContinueOnError && job.Status == StatusFailure
+		allSuccessOrSkipped = allSuccessOrSkipped && (job.Status == StatusSuccess || job.Status == StatusSkipped || isContinuedFailure)
 		allSkipped = allSkipped && job.Status == StatusSkipped
-		hasFailure = hasFailure || job.Status == StatusFailure
+		hasFailure = hasFailure || (job.Status == StatusFailure && !job.ContinueOnError)
 		hasCancelled = hasCancelled || job.Status == StatusCancelled
 		hasCancelling = hasCancelling || job.Status == StatusCancelling
 		hasWaiting = hasWaiting || job.Status == StatusWaiting
@@ -671,18 +679,18 @@ func cancelOneJob(ctx context.Context, job *ActionRunJob) (*ActionRunJob, error)
 func cancelReusableCaller(ctx context.Context, caller *ActionRunJob) ([]*ActionRunJob, error) {
 	cancelledJobs := make([]*ActionRunJob, 0)
 
-	if c, err := cancelOneJob(ctx, caller); err != nil {
-		return cancelledJobs, err
-	} else if c != nil {
-		cancelledJobs = append(cancelledJobs, c)
-	}
-
 	attemptJobs, err := GetRunJobsByRunAndAttemptID(ctx, caller.RunID, caller.RunAttemptID)
 	if err != nil {
 		return cancelledJobs, err
 	}
 
-	for _, c := range CollectAllDescendantJobs(caller, attemptJobs) {
+	// Cancel descendants deepest-first, then the caller: a caller's status is aggregated from its children,
+	// so each child must reach its final state before its parent caller is re-aggregated.
+	// A child's ID always exceeds its parent's, so descending ID is a valid deepest-first order.
+	descendants := CollectAllDescendantJobs(caller, attemptJobs)
+	slices.SortFunc(descendants, func(a, b *ActionRunJob) int { return cmp.Compare(b.ID, a.ID) })
+
+	for _, c := range descendants {
 		cancelled, err := cancelOneJob(ctx, c)
 		if err != nil {
 			return cancelledJobs, err
@@ -690,6 +698,12 @@ func cancelReusableCaller(ctx context.Context, caller *ActionRunJob) ([]*ActionR
 		if cancelled != nil {
 			cancelledJobs = append(cancelledJobs, cancelled)
 		}
+	}
+
+	if c, err := cancelOneJob(ctx, caller); err != nil {
+		return cancelledJobs, err
+	} else if c != nil {
+		cancelledJobs = append(cancelledJobs, c)
 	}
 	return cancelledJobs, nil
 }

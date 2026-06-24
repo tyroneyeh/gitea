@@ -4,6 +4,7 @@ export type ActionsArtifactStatus = 'expired' | 'completed';
 
 export type ActionsRun = {
   repoId: number,
+  index: number,
   link: string,
   viewLink: string,
   title: string,
@@ -23,7 +24,12 @@ export type ActionsRun = {
   duration: string,
   triggeredAt: number,
   triggerEvent: string,
+  pullRequest?: {
+    index: string,
+    link: string,
+  } | null,
   jobs: Array<ActionsJob>,
+  jobSummaries?: Array<ActionsJobSummary>,
   commit: {
     localeCommit: string,
     localePushedBy: string,
@@ -32,6 +38,7 @@ export type ActionsRun = {
     pusher: {
       displayName: string,
       link: string,
+      avatarLink: string,
     },
     branch: {
       name: string,
@@ -39,6 +46,12 @@ export type ActionsRun = {
       isDeleted: boolean,
     },
   },
+};
+
+export type ActionsJobSummary = {
+  jobId: number,
+  jobName: string,
+  summaryHTML: string,
 };
 
 export type ActionsRunAttempt = {
@@ -51,6 +64,7 @@ export type ActionsRunAttempt = {
   triggeredAt: number;
   triggerUserName: string;
   triggerUserLink: string;
+  triggerUserAvatar: string;
 };
 
 export type ActionsJob = {
