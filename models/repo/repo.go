@@ -23,7 +23,6 @@ import (
 	"gitea.dev/modules/base"
 	"gitea.dev/modules/git"
 	giturl "gitea.dev/modules/git/url"
-	"gitea.dev/modules/htmlutil"
 	"gitea.dev/modules/httplib"
 	"gitea.dev/modules/log"
 	"gitea.dev/modules/markup"
@@ -642,7 +641,7 @@ func (repo *Repository) CanContentChange() bool {
 
 // DescriptionHTML does special handles to description and return HTML string.
 func (repo *Repository) DescriptionHTML(ctx context.Context) template.HTML {
-	return markup.PostProcessDescriptionHTML(markup.NewRenderContext(ctx), htmlutil.EscapeString(repo.Description))
+	return markup.PostProcessDescriptionHTML(markup.NewRenderContext(ctx), template.HTML(repo.Description))
 }
 
 // CloneLink represents different types of clone URLs of repository.
