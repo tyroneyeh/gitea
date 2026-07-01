@@ -125,3 +125,6 @@ td.ellipsis-start {
     padding: 0 4px 2px 4px;
     border-radius: var(--border-radius);
 }
+.avatar-stack-names {
+    width: 18em;
+}
