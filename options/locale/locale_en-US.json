@@ -202,6 +202,7 @@
   "editor.buttons.bold.tooltip": "Add bold text",
   "editor.buttons.italic.tooltip": "Add italic text",
   "editor.buttons.strikethrough.tooltip": "Add strikethrough text",
+  "editor.buttons.color.tooltip": "Change text color",
   "editor.buttons.quote.tooltip": "Quote text",
   "editor.buttons.code.tooltip": "Add code",
   "editor.buttons.link.tooltip": "Add a link",
