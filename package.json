@@ -35,6 +35,7 @@
     "@replit/codemirror-vscode-keymap": "6.0.2",
     "@resvg/resvg-wasm": "2.6.2",
     "@vitejs/plugin-vue": "6.0.8",
+    "@zip.js/zip.js": "2.8.36",
     "asciinema-player": "3.17.0",
     "chart.js": "4.5.1",
     "chartjs-plugin-zoom": "2.2.0",
