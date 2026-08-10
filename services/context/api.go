@@ -20,9 +20,9 @@ import (
 	user_model "gitea.dev/models/user"
 	"gitea.dev/modules/cache"
 	"gitea.dev/modules/git"
-	"gitea.dev/modules/gitrepo"
 	"gitea.dev/modules/httpcache"
 	"gitea.dev/modules/log"
+	"gitea.dev/modules/reqctx"
 	"gitea.dev/modules/setting"
 	"gitea.dev/modules/util"
 	"gitea.dev/modules/web"
@@ -52,14 +52,15 @@ type APIContext struct {
 }
 
 // TokenCanAccessRepo reports whether the current API token is allowed to access the repository.
-// A public-only token cannot reach a private repo; any other token is unrestricted by this check.
+// A public-only token cannot reach a private repo or a repo owned by a non-public (limited or
+// private) owner; any other token is unrestricted by this check.
 func (ctx *APIContext) TokenCanAccessRepo(repo *repo_model.Repository) bool {
-	return repo == nil || !ctx.PublicOnly || !repo.IsPrivate
+	return !ctx.PublicOnly || !publicOnlyTokenDeniedRepo(ctx, repo)
 }
 
 func init() {
 	web.RegisterResponseStatusProvider[*APIContext](func(req *http.Request) web_types.ResponseStatusProvider {
-		return req.Context().Value(apiContextKey).(*APIContext)
+		return GetAPIContext(req)
 	})
 }
 
@@ -106,10 +107,6 @@ type APINotFound struct{}
 // APIConflict is a conflict empty response
 // swagger:response conflict
 type APIConflict struct{}
-
-// APIRedirect is a redirect response
-// swagger:response redirect
-type APIRedirect struct{}
 
 // APIString is a string response
 // swagger:response string
@@ -192,7 +189,7 @@ var apiContextKey = apiContextKeyType{}
 
 // GetAPIContext returns a context for API routes
 func GetAPIContext(req *http.Request) *APIContext {
-	return req.Context().Value(apiContextKey).(*APIContext)
+	return reqctx.MustContextValue[*APIContext](req.Context(), apiContextKey)
 }
 
 func genAPILinks(curURL *url.URL, total int64, pageSize, curPage int) []string {
@@ -291,7 +288,7 @@ func ReferencesGitRepo(allowEmpty ...bool) func(ctx *APIContext) {
 		// For API calls.
 		if ctx.Repo.GitRepo == nil {
 			var err error
-			ctx.Repo.GitRepo, err = gitrepo.RepositoryFromRequestContextOrOpen(ctx, ctx.Repo.Repository)
+			ctx.Repo.GitRepo, err = git.RepositoryFromRequestContextOrOpen(ctx, ctx.Repo.Repository)
 			if err != nil {
 				ctx.APIErrorInternal(err)
 				return
@@ -318,11 +315,11 @@ func RepoRefForAPI(next http.Handler) http.Handler {
 		var err error
 		switch refType {
 		case git.RefTypeBranch:
-			ctx.Repo.Commit, err = ctx.Repo.GitRepo.GetBranchCommit(refName)
+			ctx.Repo.Commit, err = ctx.Repo.GitRepo.GetBranchCommit(ctx, refName)
 		case git.RefTypeTag:
-			ctx.Repo.Commit, err = ctx.Repo.GitRepo.GetTagCommit(refName)
+			ctx.Repo.Commit, err = ctx.Repo.GitRepo.GetTagCommit(ctx, refName)
 		case git.RefTypeCommit:
-			ctx.Repo.Commit, err = ctx.Repo.GitRepo.GetCommit(refName)
+			ctx.Repo.Commit, err = ctx.Repo.GitRepo.GetCommit(ctx, refName)
 		}
 		if ctx.Repo.Commit == nil || errors.Is(err, util.ErrNotExist) {
 			ctx.APIErrorNotFound("unable to find a git ref")

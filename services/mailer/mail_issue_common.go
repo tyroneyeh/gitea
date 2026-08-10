@@ -110,7 +110,9 @@ func composeIssueCommentMessages(ctx context.Context, comment *mailComment, lang
 		}
 	}
 	locale := translation.NewLocale(lang)
-
+	if lang == "mock" {
+		locale = &translation.MockLocale{}
+	}
 	mailMeta := map[string]any{
 		"locale":          locale,
 		"FallbackSubject": fallback,

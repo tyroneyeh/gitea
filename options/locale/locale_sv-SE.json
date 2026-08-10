@@ -561,8 +561,10 @@
   "repo.fork_guest_user": "Logga in för att grena detta förråd.",
   "repo.watch_guest_user": "Logga in för att bevaka denna utvecklingskatalog.",
   "repo.star_guest_user": "Logga in för att stjärnmarkera denna utvecklingskatalog.",
-  "repo.unwatch": "Avsluta bevakning",
   "repo.watch": "Bevaka",
+  "repo.watch.options.issues": "Ärenden",
+  "repo.watch.options.pull_requests": "Pull förfrågningar",
+  "repo.watch.options.releases": "Releaser",
   "repo.unstar": "Ta bort stjärnmärkning",
   "repo.star": "Stjärnmärk",
   "repo.fork": "Förgrening",
@@ -1124,7 +1126,6 @@
   "repo.settings.event_push": "Pusha",
   "repo.settings.event_push_desc": "Git push till en utvecklingskatalog.",
   "repo.settings.event_repository": "Utvecklingskatalog",
-  "repo.settings.event_repository_desc": "Utvecklingskatalogen skapad eller borttagen.",
   "repo.settings.event_header_issue": "Ärendehändelser",
   "repo.settings.event_issues": "Ärenden",
   "repo.settings.event_issue_comment": "Kommentar",
@@ -1717,8 +1718,8 @@
   "actions.runners.owner_type": "Typ",
   "actions.runners.description": "Beskrivning",
   "actions.runners.labels": "Etiketter",
-  "actions.runners.task_list.run": "Kör",
   "actions.runners.task_list.repository": "Utvecklingskatalog",
   "actions.runners.status.active": "Aktiv",
-  "actions.runs.summary": "Översikt"
+  "actions.runs.summary": "Översikt",
+  "actions.workflow.scope_owner": "Ägare"
 }
