@@ -6,13 +6,13 @@ package util
 import (
 	"bytes"
 	"crypto/rand"
+	"crypto/subtle"
 	"encoding/hex"
 	"fmt"
 	"math/big"
 	rand2 "math/rand/v2"
 	"slices"
 	"strconv"
-	"strings"
 	"sync"
 
 	"gitea.dev/modules/container"
@@ -21,9 +21,9 @@ import (
 	"golang.org/x/text/language"
 )
 
-// IsEmptyString checks if the provided string is empty
-func IsEmptyString(s string) bool {
-	return len(strings.TrimSpace(s)) == 0
+// ParseYamlBool parses YAML 1.2 boolean values into bool
+func ParseYamlBool(s string) bool {
+	return s == "true" || s == "True" || s == "TRUE"
 }
 
 // ParseYamlBool parses YAML 1.2 boolean values into bool
@@ -97,6 +97,10 @@ func CryptoRandomBytes(length int64) []byte {
 		panic(err) // this should never happen, "rand.Read" never fails
 	}
 	return buf
+}
+
+func CryptoConstTimeEqual[T string | []byte](a, b T) bool {
+	return subtle.ConstantTimeCompare([]byte(a), []byte(b)) == 1
 }
 
 var chaCha8RandPool = sync.OnceValue(func() *sync.Pool {
@@ -318,24 +322,8 @@ func DiffSlice[T comparable](oldSlice, newSlice []T) (added, removed []T) {
 	return added, removed
 }
 
-func RemoveValue[T comparable](a []T, target T) []T {
-	n := 0
-	for _, v := range a {
-		if v != target {
-			a[n] = v
-			n++
-		}
+func MustNoError(err error) {
+	if err != nil {
+		panic(err)
 	}
-	return a[:n]
-}
-
-func JoinSlice[T any](items []T, toString func(T) string) string {
-	var b strings.Builder
-	sep := ""
-	for _, item := range items {
-		b.WriteString(sep)
-		b.WriteString(toString(item))
-		sep = ","
-	}
-	return b.String()
 }

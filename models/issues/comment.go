@@ -1077,6 +1077,10 @@ type FindCommentsOptions struct {
 	IsPull      optional.Option[bool]
 }
 
+func (opts FindCommentsOptions) ToOrders() string {
+	return "id"
+}
+
 // ToConds implements FindOptions interface
 func (opts FindCommentsOptions) ToConds() builder.Cond {
 	cond := builder.NewCond()

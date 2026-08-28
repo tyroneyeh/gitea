@@ -114,7 +114,6 @@ function showContentHistoryMenu(issueBaseUrl: string, elCommentItem: Element, co
       cache: true,
       url: `${issueBaseUrl}/content-history/list?comment_id=${commentId}`,
     },
-    saveRemoteData: false,
     onHide() {
       $fomanticDropdown.dropdown('change values', null);
     },
