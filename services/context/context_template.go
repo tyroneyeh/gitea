@@ -136,7 +136,7 @@ func WebContentSecurityPolicy(scriptNonce string) string {
 	return `default-src * data: blob:;` +
 
 		// enforce nonce for all scripts, disallow inline scripts
-		`script-src * 'nonce-` + scriptNonce + `';` + `' 'unsafe-eval';` +
+		`script-src * 'nonce-` + scriptNonce + `' 'unsafe-eval';` +
 
 		// it seems that Vue needs the unsafe-inline, and our custom colors (e.g.: label) also need it
 		`style-src * 'unsafe-inline';`
