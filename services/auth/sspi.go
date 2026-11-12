@@ -11,13 +11,14 @@ import (
 	"sync"
 	"uuid"
 
+	audit_model "gitea.dev/models/audit"
 	"gitea.dev/models/auth"
 	"gitea.dev/models/db"
 	user_model "gitea.dev/models/user"
 	"gitea.dev/modules/log"
 	"gitea.dev/modules/optional"
-	"gitea.dev/modules/setting"
 	"gitea.dev/modules/templates"
+	"gitea.dev/services/audit"
 	"gitea.dev/services/auth/source/sspi"
 	gitea_context "gitea.dev/services/context"
 )
@@ -85,7 +86,6 @@ func (s *SSPI) Verify(req *http.Request, w http.ResponseWriter, store DataStore,
 		store.GetData()["Flash"] = map[string]string{
 			"ErrorMsg": err.Error(),
 		}
-		store.GetData()["EnableOpenIDSignIn"] = setting.Service.EnableOpenIDSignIn
 		store.GetData()["EnableSSPI"] = true
 		// in this case, the Verify function is called in Gitea's web context
 		// FIXME: it doesn't look good to render the page here, why not redirect?
@@ -117,6 +117,9 @@ func (s *SSPI) Verify(req *http.Request, w http.ResponseWriter, store DataStore,
 			log.Error("CreateUser: %v", err)
 			return nil, err
 		}
+	} else if !user.IsIndividual() {
+		log.Trace("SSPI Authorization: user %q is not an individual, ignoring", username)
+		return nil, nil //nolint:nilnil // the auth method is not applicable
 	}
 
 	if s.CreateSession {
@@ -171,6 +174,8 @@ func (s *SSPI) newUser(ctx context.Context, username string, cfg *sspi.Source) (
 		return nil, err
 	}
 
+	audit.RecordAs(ctx, user_model.NewAuthSourceUser(), audit_model.UserCreate, user)
+
 	return user, nil
 }
 
@@ -178,18 +183,11 @@ func (s *SSPI) newUser(ctx context.Context, username string, cfg *sspi.Source) (
 // (eg. "DOMAIN\user" becomes "user"), and removes the UPN suffix (domain name) and separator
 // from UPNs (eg. "user@domain.local" becomes "user")
 func stripDomainNames(username string) string {
-	if strings.Contains(username, "\\") {
-		parts := strings.SplitN(username, "\\", 2)
-		if len(parts) > 1 {
-			username = parts[1]
-		}
-	} else if strings.Contains(username, "@") {
-		parts := strings.Split(username, "@")
-		if len(parts) > 1 {
-			username = parts[0]
-		}
+	if _, after, ok := strings.Cut(username, "\\"); ok {
+		return after
 	}
-	return username
+	before, _, _ := strings.Cut(username, "@")
+	return before
 }
 
 func replaceSeparators(username string, cfg *sspi.Source) string {

@@ -152,27 +152,16 @@ func loadLatestCommitData(ctx *context.Context, latestCommit *git.Commit) bool {
 	return true
 }
 
-func markupRenderToHTML(ctx *context.Context, renderCtx *markup.RenderContext, renderer markup.Renderer, input io.Reader) (escaped *charset.EscapeStatus, output template.HTML, err error) {
-	markupRd, markupWr := io.Pipe()
-	defer markupWr.Close()
-
-	done := make(chan struct{})
-	go func() {
-		sb := &strings.Builder{}
-		if markup.RendererNeedPostProcess(renderer) {
-			escaped, _ = charset.EscapeControlReader(markupRd, sb, ctx.Locale, charset.EscapeOptionsForView())
-		} else {
-			escaped = &charset.EscapeStatus{}
-			_, _ = io.Copy(sb, markupRd)
-		}
-		output = template.HTML(sb.String())
-		close(done)
-	}()
-
-	err = markup.RenderWithRenderer(renderCtx, renderer, input, markupWr)
-	_ = markupWr.CloseWithError(err)
-	<-done
-	return escaped, output, err
+func markupRenderToHTML(ctx *context.Context, renderCtx *markup.RenderContext, renderer markup.Renderer, input io.Reader) (*charset.EscapeStatus, template.HTML, error) {
+	sb := &strings.Builder{}
+	if err := markup.RenderWithRenderer(renderCtx, renderer, input, sb); err != nil {
+		return nil, "", err
+	}
+	if !markup.RendererNeedPostProcess(renderer) {
+		return &charset.EscapeStatus{}, template.HTML(sb.String()), nil
+	}
+	escaped, output := charset.EscapeControlHTML(template.HTML(sb.String()), ctx.Locale, charset.EscapeOptionsForView())
+	return escaped, output, nil
 }
 
 func checkHomeCodeViewable(ctx *context.Context) {
@@ -342,11 +331,11 @@ func RenderUserCards(ctx *context.Context, total int, getter func(opts db.ListOp
 	if page <= 0 {
 		page = 1
 	}
-	pager := context.NewPagination(int64(total), setting.ItemsPerPage, page, 5)
+	pager := context.NewPagerBuilder(ctx).TotalCount(int64(total)).PerPageLimit(setting.ItemsPerPage).CurPage(page).Build()
 	ctx.Data["Page"] = pager
 
 	items, err := getter(db.ListOptions{
-		Page:     pager.Paginater.Current(),
+		Page:     pager.Paginator.Current(),
 		PageSize: setting.ItemsPerPage,
 	})
 	if err != nil {
@@ -400,7 +389,7 @@ func Forks(ctx *context.Context) {
 		return
 	}
 
-	pager := context.NewPagination(total, pageSize, page, 5)
+	pager := context.NewPagerBuilder(ctx).TotalCount(total).PerPageLimit(pageSize).CurPage(page).Build()
 	ctx.Data["ShowRepoOwnerAvatar"] = true
 	ctx.Data["ShowRepoOwnerOnList"] = true
 	ctx.Data["Page"] = pager

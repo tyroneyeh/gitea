@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	actions_model "gitea.dev/models/actions"
+	audit_model "gitea.dev/models/audit"
 	"gitea.dev/models/db"
 	issues_model "gitea.dev/models/issues"
 	"gitea.dev/models/organization"
@@ -22,6 +23,7 @@ import (
 	"gitea.dev/modules/globallock"
 	"gitea.dev/modules/log"
 	"gitea.dev/modules/util"
+	"gitea.dev/services/audit"
 	notify_service "gitea.dev/services/notify"
 )
 
@@ -54,7 +56,10 @@ func AcceptTransferOwnership(ctx context.Context, repo *repo_model.Repository, d
 		return err
 	}
 
-	oldOwnerName := repo.OwnerName
+	if err := repo.LoadOwner(ctx); err != nil {
+		return err
+	}
+	oldOwner := repo.Owner
 
 	if err := db.WithTx(ctx, func(ctx context.Context) error {
 		if err := repoTransfer.LoadAttributes(ctx); err != nil {
@@ -69,9 +74,6 @@ func AcceptTransferOwnership(ctx context.Context, repo *repo_model.Repository, d
 			return util.ErrPermissionDenied
 		}
 
-		if err := repo.LoadOwner(ctx); err != nil {
-			return err
-		}
 		for _, team := range repoTransfer.Teams {
 			if repoTransfer.Recipient.ID != team.OrgID {
 				return fmt.Errorf("team %d does not belong to organization", team.ID)
@@ -84,7 +86,7 @@ func AcceptTransferOwnership(ctx context.Context, repo *repo_model.Repository, d
 	}
 	releaser()
 
-	notify_service.TransferRepository(ctx, doer, repo, oldOwnerName)
+	notify_service.TransferRepository(ctx, doer, repo, oldOwner)
 
 	return nil
 }
@@ -215,7 +217,7 @@ func transferOwnership(ctx context.Context, doer *user_model.User, newOwnerName 
 			return fmt.Errorf("removeOrgRepo: %w", err)
 		}
 
-		// Remove project's issues that belong to old organization's projects
+		// Remove project's issues that belong to old organization's projects, this intentionally doesn't trigger project workflows
 		projects, err := project_model.GetAllProjectsIDsByOwnerIDAndType(ctx, oldOwner.ID, project_model.TypeOrganization)
 		if err != nil {
 			return fmt.Errorf("Unable to find old org projects: %w", err)
@@ -258,6 +260,10 @@ func transferOwnership(ctx context.Context, doer *user_model.User, newOwnerName 
 		}
 	} else {
 		return fmt.Errorf("GetOwnerActionsConfig: %w", err)
+	}
+
+	if err := actions_model.RemoveOwnerScopedWorkflowSources(ctx, repo.ID); err != nil {
+		return fmt.Errorf("transferOwnership: %w", err)
 	}
 
 	// Update repository count.
@@ -352,7 +358,15 @@ func transferOwnership(ctx context.Context, doer *user_model.User, newOwnerName 
 		}
 	}
 
-	return committer.Commit()
+	if err := committer.Commit(); err != nil {
+		return err
+	}
+
+	for _, team := range teams {
+		audit.Record(ctx, audit_model.RepositoryCollaboratorTeamAdd, newRepo, "team", team.Name)
+	}
+
+	return nil
 }
 
 // changeRepositoryName changes all corresponding setting from old repository name to new one.
@@ -417,6 +431,7 @@ func ChangeRepositoryName(ctx context.Context, doer *user_model.User, repo *repo
 	releaser()
 
 	repo.Name = newRepoName
+
 	notify_service.RenameRepository(ctx, doer, repo, oldRepoName)
 
 	return nil
@@ -440,7 +455,7 @@ func StartRepositoryTransfer(ctx context.Context, doer, newOwner *user_model.Use
 	}
 
 	var isDirectTransfer bool
-	oldOwnerName := repo.OwnerName
+	oldOwner := repo.Owner
 
 	if err := db.WithTx(ctx, func(ctx context.Context) error {
 		// Admin is always allowed to transfer || user transfer repo back to his account,
@@ -476,7 +491,7 @@ func StartRepositoryTransfer(ctx context.Context, doer, newOwner *user_model.Use
 			if err := db.Insert(ctx, &repo_model.Collaboration{RepoID: repo.ID, UserID: newOwner.ID, Mode: perm.AccessModeRead}); err != nil {
 				return err
 			}
-			if err := access_model.RecalculateUserAccess(ctx, repo, newOwner.ID); err != nil {
+			if err := access_model.RecalculateUserAccess(ctx, repo, newOwner); err != nil {
 				return err
 			}
 		}
@@ -489,7 +504,7 @@ func StartRepositoryTransfer(ctx context.Context, doer, newOwner *user_model.Use
 	}
 
 	if isDirectTransfer {
-		notify_service.TransferRepository(ctx, doer, repo, oldOwnerName)
+		notify_service.TransferRepository(ctx, doer, repo, oldOwner)
 	} else {
 		// notify users who are able to accept / reject transfer
 		notify_service.RepoPendingTransfer(ctx, doer, newOwner, repo)
@@ -502,7 +517,7 @@ func StartRepositoryTransfer(ctx context.Context, doer, newOwner *user_model.Use
 // thus cancel the transfer process.
 // The accepter can reject the transfer.
 func RejectRepositoryTransfer(ctx context.Context, repo *repo_model.Repository, doer *user_model.User) error {
-	return db.WithTx(ctx, func(ctx context.Context) error {
+	if err := db.WithTx(ctx, func(ctx context.Context) error {
 		repoTransfer, err := repo_model.GetPendingRepositoryTransfer(ctx, repo)
 		if err != nil {
 			return err
@@ -525,7 +540,13 @@ func RejectRepositoryTransfer(ctx context.Context, repo *repo_model.Repository, 
 		}
 
 		return repo_model.DeleteRepositoryTransfer(ctx, repo.ID)
-	})
+	}); err != nil {
+		return err
+	}
+
+	audit.Record(ctx, audit_model.RepositoryTransferCancel, repo)
+
+	return nil
 }
 
 func removeTransferRecipientCollaboration(ctx context.Context, repoTransfer *repo_model.RepoTransfer) error {
@@ -565,7 +586,7 @@ func canUserCancelTransfer(ctx context.Context, r *repo_model.RepoTransfer, u *u
 // CancelRepositoryTransfer cancels the repository transfer process. The sender or
 // the users who have admin permission of the original repository can cancel the transfer
 func CancelRepositoryTransfer(ctx context.Context, repoTransfer *repo_model.RepoTransfer, doer *user_model.User) error {
-	return db.WithTx(ctx, func(ctx context.Context) error {
+	if err := db.WithTx(ctx, func(ctx context.Context) error {
 		if err := repoTransfer.LoadAttributes(ctx); err != nil {
 			return err
 		}
@@ -583,5 +604,11 @@ func CancelRepositoryTransfer(ctx context.Context, repoTransfer *repo_model.Repo
 		}
 
 		return repo_model.DeleteRepositoryTransfer(ctx, repoTransfer.RepoID)
-	})
+	}); err != nil {
+		return err
+	}
+
+	audit.Record(ctx, audit_model.RepositoryTransferCancel, repoTransfer.Repo)
+
+	return nil
 }

@@ -38,6 +38,7 @@ func prepareLinkAccountPageData(ctx *context.Context) {
 	ctx.Data["ShowRegistrationButton"] = false
 	ctx.Data["DisableRegistration"] = setting.Service.DisableRegistration
 
+	// FIXME: this logic is not right: captcha is enabled, but LinkAccountPostSignIn never checks for captcha
 	prepareCommonAuthPageData(ctx, CommonAuthOptions{
 		EnableCaptcha: setting.Service.EnableCaptcha && setting.Service.RequireExternalRegistrationCaptcha,
 	})
@@ -198,8 +199,7 @@ func LinkAccountPostRegister(ctx *context.Context) {
 	}
 
 	if setting.Service.EnableCaptcha && setting.Service.RequireExternalRegistrationCaptcha {
-		context.VerifyCaptcha(ctx, tplLinkAccount, form)
-		if ctx.Written() {
+		if !context.VerifyCaptcha(ctx, tplLinkAccount, form) {
 			return
 		}
 	}
@@ -263,15 +263,10 @@ func LinkAccountPostRegister(ctx *context.Context) {
 }
 
 func completePendingLinks(ctx *context.Context, user *user_model.User) error {
-	if ctx.Session.Get("linkAccount") != nil {
-		if err := linkAccountFromContext(ctx, user); err != nil {
-			return err
-		}
+	if ctx.Session.Get("linkAccount") == nil {
+		return nil
 	}
-	return openIDConnectFromContext(ctx, user)
-}
 
-func linkAccountFromContext(ctx *context.Context, user *user_model.User) error {
 	linkAccountData := oauth2GetLinkAccountData(ctx)
 	if linkAccountData == nil {
 		return errors.New("not in LinkAccount session")

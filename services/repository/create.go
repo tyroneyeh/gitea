@@ -144,15 +144,16 @@ func prepareRepoCommit(ctx context.Context, repo *repo_model.Repository, tmpDir 
 
 // InitRepository initializes README and .gitignore if needed.
 func initRepository(ctx context.Context, u *user_model.User, repo *repo_model.Repository, opts CreateRepoOptions) (err error) {
+	repo.DefaultBranch = util.IfZero(opts.DefaultBranch, setting.Repository.DefaultBranch)
+	repo.DefaultWikiBranch = setting.Repository.DefaultBranch
+
 	// Init git bare new repository.
-	if err = git.InitRepository(ctx, repo, repo.ObjectFormatName); err != nil {
+	if err = git.InitRepository(ctx, repo, repo.ObjectFormatName, repo.DefaultBranch); err != nil {
 		return fmt.Errorf("git.InitRepository: %w", err)
 	} else if err = git.CreateDelegateHooks(ctx, repo); err != nil {
 		return fmt.Errorf("createDelegateHooks: %w", err)
 	}
 
-	repo.DefaultBranch = util.IfZero(opts.DefaultBranch, setting.Repository.DefaultBranch)
-	repo.DefaultWikiBranch = setting.Repository.DefaultBranch
 	if !opts.AutoInit {
 		repo.IsEmpty = true
 	}
@@ -177,10 +178,6 @@ func initRepository(ctx context.Context, u *user_model.User, repo *repo_model.Re
 		if err = initRepoCommit(ctx, tmpDir, repo, u); err != nil {
 			return fmt.Errorf("initRepoCommit: %w", err)
 		}
-	}
-
-	if err = git.SetDefaultBranch(ctx, repo, repo.DefaultBranch); err != nil {
-		return fmt.Errorf("setDefaultBranch: %w", err)
 	}
 
 	// Re-fetch the repository from database before updating it (keep changes that were done earlier with SQL)
@@ -281,7 +278,7 @@ func CreateRepositoryDirectly(ctx context.Context, doer, owner *user_model.User,
 		return nil, err
 	}
 	if isExist {
-		log.Error("Files already exist in %s and we are not going to adopt or delete.", repo.FullName())
+		log.Error("Files already exist in %s", repo.FullName())
 		// Don't return directly, we need err in defer to cleanupRepository
 		err = repo_model.ErrRepoFilesAlreadyExist{
 			Uname: repo.OwnerName,
@@ -373,11 +370,7 @@ func createRepositoryInDB(ctx context.Context, doer, u *user_model.User, repo *r
 			units = append(units, repo_model.RepoUnit{
 				RepoID: repo.ID,
 				Type:   tp,
-				Config: &repo_model.IssuesConfig{
-					EnableTimetracker:                setting.Service.DefaultEnableTimetracking,
-					AllowOnlyContributorsToTrackTime: setting.Service.DefaultAllowOnlyContributorsToTrackTime,
-					EnableDependencies:               setting.Service.DefaultEnableDependencies,
-				},
+				Config: repo_model.DefaultIssuesConfig(),
 			})
 		case unit.TypePullRequests:
 			units = append(units, repo_model.DefaultPullRequestsUnit(repo.ID))

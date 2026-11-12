@@ -10,6 +10,7 @@ import (
 
 	"gitea.dev/models/auth"
 	"gitea.dev/modules/util"
+	auth_service "gitea.dev/services/auth"
 	"gitea.dev/services/auth/source/ldap"
 
 	"github.com/urfave/cli/v3"
@@ -48,11 +49,11 @@ func commonLdapCLIFlags() []cli.Flag {
 		},
 		&cli.StringFlag{
 			Name:  "host",
-			Usage: "The address where the LDAP server can be reached.",
+			Usage: "Comma-separated LDAP hosts or ldap://, ldaps:// or ldap+starttls:// URLs, tried in order.",
 		},
 		&cli.IntFlag{
 			Name:  "port",
-			Usage: "The port to use when connecting to the LDAP server.",
+			Usage: "The port to use when connecting to hosts given without a URL.",
 		},
 		&cli.StringFlag{
 			Name:  "user-search-base",
@@ -221,8 +222,8 @@ func microcmdAuthUpdateLdapSimpleAuth() *cli.Command {
 func newAuthService() *authService {
 	return &authService{
 		initDB:            initDB,
-		createAuthSource:  auth.CreateSource,
-		updateAuthSource:  auth.UpdateSource,
+		createAuthSource:  auth_service.CreateSource,
+		updateAuthSource:  auth_service.UpdateSource,
 		getAuthSourceByID: auth.GetSourceByID,
 	}
 }

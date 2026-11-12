@@ -151,6 +151,7 @@ type comparePageInfoType struct {
 	compareInfo      *git_service.CompareInfo
 	nothingToCompare bool
 	allowCreatePull  bool
+	allowEmptyPull   bool
 }
 
 func newComparePageInfo() *comparePageInfoType {
@@ -207,10 +208,12 @@ func (cpi *comparePageInfoType) parseCompareInfo(ctx *context.Context, comparePa
 		return err
 	}
 
+	// for the dropdown links ("{base} ... {head}") in the compare page "compare.tmpl"
 	ctx.Data["BaseName"] = baseRepo.OwnerName
-	ctx.Data["BaseBranch"] = baseRef.ShortName() // for legacy templates
 	ctx.Data["HeadUser"] = headOwner
-	ctx.Data["HeadBranch"] = headRef.ShortName() // for legacy templates
+	ctx.Data["BaseBranch"] = baseRef.ShortName() // also for "commits_table.tmpl"'s "no_commits" message
+	ctx.Data["HeadBranch"] = headRef.ShortName()
+
 	ctx.Data["IsPull"] = true
 
 	context.InitRepoPullRequestCtx(ctx, baseRepo, headRepo)
@@ -294,7 +297,14 @@ func (cpi *comparePageInfoType) parseCompareInfo(ctx *context.Context, comparePa
 		}
 	}
 
-	compareInfo, err := git_service.GetCompareInfo(ctx, baseRepo, headRepo, headGitRepo, baseRef, headRef, compareReq.DirectComparison(), fileOnly)
+	compareInfo, err := git_service.GetCompareInfo(ctx, git_service.CompareBaseHead{
+		BaseRepo:    baseRepo,
+		BaseGitRepo: ctx.Repo.GitRepo,
+		BaseRef:     baseRef,
+		HeadRepo:    headRepo,
+		HeadGitRepo: headGitRepo,
+		HeadRef:     headRef,
+	}, compareReq.DirectComparison(), fileOnly)
 	if err != nil {
 		return err
 	}
@@ -382,19 +392,22 @@ func (cpi *comparePageInfoType) prepareCompareDiff(ctx *context.Context, whitesp
 	ctx.Data["BeforeCommitID"] = ci.CompareBase
 	ctx.Data["AfterCommitID"] = headCommitID
 
-	// follow GitHub's behavior: autofill the form and expand
 	newPrFormTitle := ctx.FormTrim("title")
 	newPrFormBody := ctx.FormTrim("body")
-	ctx.Data["ExpandNewPrForm"] = ctx.FormBool("expand") || ctx.FormBool("quick_pull") || newPrFormTitle != "" || newPrFormBody != ""
 	ctx.Data["TitleQuery"] = newPrFormTitle
 	ctx.Data["BodyQuery"] = newPrFormBody
+
+	// follow GitHub's behavior: autofill the form and expand
+	prefillParams := issuePrefillQuery(ctx)
+	ctx.Data["ExpandNewPrForm"] = ctx.FormBool("expand") || ctx.FormBool("quick_pull") ||
+		newPrFormTitle != "" || newPrFormBody != "" || prefillParams != ""
 
 	if headCommitID == ci.CompareBase {
 		config := repo.MustGetUnit(ctx, unit.TypePullRequests).PullRequestsConfig()
 		// if auto-detect manual merge, an empty PR will be closed immediately because it is already on base branch
 		supportEmptyPr := !config.AutodetectManualMerge
 		acrossRepoPr := !ci.IsSameRef()
-		ctx.Data["AllowEmptyPr"] = supportEmptyPr && acrossRepoPr
+		cpi.allowEmptyPull = supportEmptyPr && acrossRepoPr
 
 		cpi.nothingToCompare = true
 		return
@@ -409,23 +422,24 @@ func (cpi *comparePageInfoType) prepareCompareDiff(ctx *context.Context, whitesp
 	}
 
 	fileOnly := ctx.FormBool("file-only")
-
+	diffCommonOptions := gitdiff.DiffCommonOptions{
+		BeforeCommitID:     beforeCommitID,
+		AfterCommitID:      headCommitID,
+		WhitespaceBehavior: whitespaceBehavior,
+	}
 	diff, err := gitdiff.GetDiffForRender(ctx, ci.HeadRepo.Link(), ci.HeadGitRepo,
 		&gitdiff.DiffOptions{
-			BeforeCommitID:     beforeCommitID,
-			AfterCommitID:      headCommitID,
-			SkipTo:             ctx.FormString("skip-to"),
-			MaxLines:           maxLines,
-			MaxLineCharacters:  setting.Git.MaxGitDiffLineCharacters,
-			MaxFiles:           maxFiles,
-			WhitespaceBehavior: whitespaceBehavior,
-			DirectComparison:   ci.DirectComparison(),
+			DiffCommonOptions: diffCommonOptions,
+			SkipTo:            ctx.FormString("skip-to"),
+			MaxLines:          maxLines,
+			MaxLineCharacters: setting.Git.MaxGitDiffLineCharacters,
+			MaxFiles:          maxFiles,
 		}, ctx.FormStrings("files")...)
 	if err != nil {
 		ctx.ServerError("GetDiff", err)
 		return
 	}
-	diffShortStat, err := gitdiff.GetDiffShortStat(ctx, ci.HeadGitRepo, beforeCommitID, headCommitID)
+	diffShortStat, err := gitdiff.GetDiffShortStat(ctx, ci.HeadGitRepo, &diffCommonOptions)
 	if err != nil {
 		ctx.ServerError("GetDiffShortStat", err)
 		return
@@ -438,6 +452,7 @@ func (cpi *comparePageInfoType) prepareCompareDiff(ctx *context.Context, whitesp
 		AfterCommitID: headCommitID,
 	}
 	ctx.Data["DiffNotAvailable"] = diffShortStat.NumFiles == 0
+	ctx.Data["ShowDiffSummaryInToolbar"] = diffShortStat.NumFiles != 0
 
 	if !fileOnly {
 		diffTree, err := gitdiff.GetDiffTree(ctx, ci.HeadGitRepo, false, beforeCommitID, headCommitID)
@@ -556,6 +571,9 @@ func CompareDiff(ctx *context.Context) {
 	}
 	ctx.Data["PageIsComparePull"] = comparePageInfo.allowCreatePull
 	ctx.Data["IsNothingToCompare"] = comparePageInfo.nothingToCompare
+	ctx.Data["CanCreatePullRequest"] = comparePageInfo.allowCreatePull && !ci.DirectComparison() &&
+		(comparePageInfo.allowEmptyPull || !comparePageInfo.nothingToCompare) &&
+		ctx.Repo.PullRequestCtx.CanCreateNewPull()
 	ctx.HTML(http.StatusOK, tplCompare)
 }
 
@@ -619,7 +637,7 @@ func (cpi *comparePageInfoType) prepareCreatePullRequestPage(ctx *context.Contex
 
 		if !cpi.nothingToCompare {
 			// Setup information for new form.
-			pageMetaData := retrieveRepoIssueMetaData(ctx, ctx.Repo.Repository, nil, true)
+			pageMetaData := retrieveRepoIssueMetaDataWithPrefill(ctx, ctx.Repo.Repository, true)
 			if ctx.Written() {
 				return
 			}
@@ -662,7 +680,6 @@ func (cpi *comparePageInfoType) prepareCreatePullRequestPage(ctx *context.Contex
 	}
 
 	ctx.Data["IsProjectsEnabled"] = ctx.Repo.Permission.CanWrite(unit.TypeProjects)
-	ctx.Data["IsAttachmentEnabled"] = setting.Attachment.Enabled
 	upload.AddUploadContext(ctx, "comment")
 
 	ctx.Data["HasIssuesOrPullsWritePermission"] = ctx.Repo.Permission.CanWrite(unit.TypePullRequests)
@@ -730,7 +747,7 @@ func ExcerptBlob(ctx *context.Context) {
 		ctx.ServerError("GetCommit", err)
 		return
 	}
-	blob, err := commit.GetBlobByPath(ctx, ctx.Repo.GitRepo, filePath)
+	blob, err := commit.GetBlobByPath(ctx, gitRepo, filePath)
 	if err != nil {
 		ctx.ServerError("GetBlobByPath", err)
 		return

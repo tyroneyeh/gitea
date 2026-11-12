@@ -4,11 +4,13 @@
 package actions
 
 import (
+	"context"
 	"fmt"
 
 	"gitea.dev/actionslib/pkg/exprparser"
 	"gitea.dev/actionslib/pkg/model"
 	actions_model "gitea.dev/models/actions"
+	audit_model "gitea.dev/models/audit"
 	"gitea.dev/models/perm"
 	access_model "gitea.dev/models/perm/access"
 	repo_model "gitea.dev/models/repo"
@@ -20,11 +22,13 @@ import (
 	"gitea.dev/modules/reqctx"
 	api "gitea.dev/modules/structs"
 	"gitea.dev/modules/util"
-	"gitea.dev/services/context"
+	webhook_module "gitea.dev/modules/webhook"
+	"gitea.dev/services/audit"
+	gitea_context "gitea.dev/services/context"
 	"gitea.dev/services/convert"
 )
 
-func EnableOrDisableWorkflow(ctx *context.APIContext, workflowID string, isEnable bool) error {
+func EnableOrDisableWorkflow(ctx *gitea_context.APIContext, workflowID string, isEnable bool) error {
 	workflow, err := convert.GetActionWorkflow(ctx, ctx.Repo.GitRepo, ctx.Repo.Repository, workflowID)
 	if err != nil {
 		return err
@@ -39,7 +43,21 @@ func EnableOrDisableWorkflow(ctx *context.APIContext, workflowID string, isEnabl
 		cfg.DisableWorkflow(workflow.ID)
 	}
 
-	return repo_model.UpdateRepoUnitConfig(ctx, cfgUnit)
+	if err := repo_model.UpdateRepoUnitConfig(ctx, cfgUnit); err != nil {
+		return err
+	}
+
+	RecordWorkflowToggle(ctx, ctx.Repo.Repository, workflow.ID, isEnable)
+	return nil
+}
+
+// RecordWorkflowToggle writes the enable/disable audit event for a workflow.
+func RecordWorkflowToggle(ctx context.Context, repo *repo_model.Repository, workflowID string, isEnable bool) {
+	action := audit_model.ActionsWorkflowDisable
+	if isEnable {
+		action = audit_model.ActionsWorkflowEnable
+	}
+	audit.Record(ctx, action, repo, "workflow", workflowID)
 }
 
 // DispatchActionWorkflow manually triggers a workflow_dispatch run.
@@ -91,6 +109,9 @@ func DispatchActionWorkflow(ctx reqctx.RequestContext, doer *user_model.User, re
 		refName = git.RefNameFromBranch(ref)
 		runTargetCommit, err = gitRepo.GetBranchCommit(ctx, ref)
 	}
+	if err == nil && !git.IsReferenceExist(ctx, repo, refName.String()) { // the lookups also resolve a tag named like a missing branch
+		err = util.ErrNotExist
+	}
 	if err != nil {
 		return 0, util.ErrorWrapTranslatable(
 			util.NewNotExistErrorf("ref %q doesn't exist", ref),
@@ -109,7 +130,7 @@ func DispatchActionWorkflow(ctx reqctx.RequestContext, doer *user_model.User, re
 		Ref:               string(refName),
 		CommitSHA:         runTargetCommit.ID.String(),
 		IsForkPullRequest: false,
-		Event:             "workflow_dispatch",
+		Event:             webhook_module.HookEventWorkflowDispatch,
 		TriggerEvent:      "workflow_dispatch",
 		Status:            actions_model.StatusWaiting,
 		// local dispatch: own repo at the target commit; the scoped path overrides these below
@@ -123,9 +144,15 @@ func DispatchActionWorkflow(ctx reqctx.RequestContext, doer *user_model.User, re
 		return 0, err
 	}
 
+	if _, err = jobparser.ValidateWorkflowStatic(content); err == nil {
+		err = validateCalledWorkflows(ctx, run, content)
+	}
+	if err != nil {
+		return 0, util.ErrorWrapTranslatable(util.NewInvalidArgumentErrorf("invalid workflow %q: %v", workflowID, err), "actions.runs.invalid_workflow_helper", err.Error())
+	}
 	workflow, err := jobparser.ReadWorkflow(content)
 	if err != nil {
-		return 0, fmt.Errorf("failed to unmarshal workflow content: %w", err)
+		return 0, util.ErrorWrapTranslatable(util.NewInvalidArgumentErrorf("invalid workflow %q: %v", workflowID, err), "actions.runs.invalid_workflow_helper", err.Error())
 	}
 	// get inputs from post
 	workflowDispatch := workflow.WorkflowDispatchConfig()
@@ -163,6 +190,8 @@ func DispatchActionWorkflow(ctx reqctx.RequestContext, doer *user_model.User, re
 	if err := PrepareRunAndInsert(ctx, content, run, inputsWithDefaults); err != nil {
 		return 0, fmt.Errorf("PrepareRun: %w", err)
 	}
+	audit.RecordAs(ctx, doer, audit_model.ActionsWorkflowDispatch, repo,
+		"workflow", workflowID, "ref", ref, "run_id", run.ID)
 	return run.ID, nil
 }
 

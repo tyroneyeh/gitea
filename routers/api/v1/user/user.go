@@ -74,7 +74,6 @@ func Search(ctx *context.APIContext) {
 			SearchByEmail: true,
 			ListOptions:   listOptions,
 		}
-		opts.ApplyPublicOnly(ctx.PublicOnly)
 		var err error
 		users, maxResults, err = user_model.SearchUsers(ctx, opts)
 		if err != nil {
@@ -111,8 +110,8 @@ func GetInfo(ctx *context.APIContext) {
 	// responses:
 	//   "200":
 	//     "$ref": "#/responses/User"
-	//   "404":
-	//     "$ref": "#/responses/notFound"
+	//   default:
+	//     "$ref": "#/responses/error"
 
 	if !user_model.IsUserVisibleToViewer(ctx, ctx.ContextUser, ctx.Doer) {
 		// fake ErrUserNotExist error message to not leak information about existence
@@ -186,8 +185,8 @@ func GetUserHeatmapData(ctx *context.APIContext) {
 	// responses:
 	//   "200":
 	//     "$ref": "#/responses/UserHeatmapData"
-	//   "404":
-	//     "$ref": "#/responses/notFound"
+	//   default:
+	//     "$ref": "#/responses/error"
 
 	heatmap, err := activities_model.GetUserHeatmapDataByUser(ctx, ctx.ContextUser, ctx.Doer)
 	if err != nil {
@@ -229,8 +228,8 @@ func ListUserActivityFeeds(ctx *context.APIContext) {
 	// responses:
 	//   "200":
 	//     "$ref": "#/responses/ActivityFeedsList"
-	//   "404":
-	//     "$ref": "#/responses/notFound"
+	//   default:
+	//     "$ref": "#/responses/error"
 
 	includePrivate := ctx.IsSigned && (ctx.Doer.IsAdmin || ctx.Doer.ID == ctx.ContextUser.ID)
 	listOptions := utils.GetListOptions(ctx)
@@ -243,7 +242,6 @@ func ListUserActivityFeeds(ctx *context.APIContext) {
 		Date:            ctx.FormString("date"),
 		ListOptions:     listOptions,
 	}
-	opts.ApplyPublicOnly(ctx.PublicOnly)
 
 	feeds, count, err := feed_service.GetFeeds(ctx, opts)
 	if err != nil {

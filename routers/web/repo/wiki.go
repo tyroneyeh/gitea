@@ -8,7 +8,6 @@ import (
 	"bytes"
 	gocontext "context"
 	"html/template"
-	"io"
 	"net/http"
 	"net/url"
 	"path"
@@ -251,22 +250,8 @@ func renderViewPage(ctx *context.Context) (*git.Repository, *git.TreeEntry) {
 
 	rctx := renderhelper.NewRenderContextRepoWiki(ctx, ctx.Repo.Repository)
 
-	renderFn := func(data []byte) (escaped *charset.EscapeStatus, output template.HTML, err error) {
-		buf := &strings.Builder{}
-		markupRd, markupWr := io.Pipe()
-		defer markupWr.Close()
-		done := make(chan struct{})
-		go func() {
-			escaped, _ = charset.EscapeControlReader(markupRd, buf, ctx.Locale, charset.EscapeOptionsForView())
-			output = template.HTML(buf.String())
-			buf.Reset()
-			close(done)
-		}()
-
-		err = markdown.Render(rctx, bytes.NewReader(data), markupWr)
-		_ = markupWr.CloseWithError(err)
-		<-done
-		return escaped, output, err
+	renderFn := func(data []byte) (*charset.EscapeStatus, template.HTML, error) {
+		return markupRenderToHTML(ctx, rctx, markdown.Renderer{}, bytes.NewReader(data))
 	}
 
 	ctx.Data["EscapeStatus"], ctx.Data["WikiContentHTML"], err = renderFn(data)
@@ -366,8 +351,7 @@ func renderRevisionPage(ctx *context.Context) (*git.Repository, *git.TreeEntry) 
 		return nil, nil
 	}
 
-	pager := context.NewPagination(commitsCount, setting.Git.CommitsRangeSize, page, 5)
-	pager.AddParamFromRequest(ctx.Req)
+	pager := context.NewPagerBuilder(ctx).TotalCount(commitsCount).PerPageLimit(setting.Git.CommitsRangeSize).CurPage(page).Build()
 	ctx.Data["Page"] = pager
 
 	return wikiGitRepo, entry

@@ -75,6 +75,7 @@ import (
 	"gitea.dev/modules/httplib"
 	"gitea.dev/modules/json"
 	"gitea.dev/modules/log"
+	"gitea.dev/modules/optional"
 	"gitea.dev/modules/reqctx"
 	"gitea.dev/modules/setting"
 	"gitea.dev/modules/storage"
@@ -129,13 +130,18 @@ func ArtifactsRoutes(prefix string) *web.Router {
 	return m
 }
 
+func newArtifactContext(resp http.ResponseWriter, req *http.Request) *ArtifactContext {
+	base := context.NewBaseContext(resp, req)
+	ctx := &ArtifactContext{Base: base}
+	ctx.SetContextValue(artifactContextKey, ctx)
+	httplib.MarkRequestSupportPublicURL(ctx)
+	return ctx
+}
+
 func ArtifactContexter() func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(resp http.ResponseWriter, req *http.Request) {
-			base := context.NewBaseContext(resp, req)
-
-			ctx := &ArtifactContext{Base: base}
-			ctx.SetContextValue(artifactContextKey, ctx)
+			ctx := newArtifactContext(resp, req)
 
 			// action task call server api with Bearer ACTIONS_RUNTIME_TOKEN
 			// we should verify the ACTIONS_RUNTIME_TOKEN
@@ -275,7 +281,7 @@ func (ar artifactRoutes) uploadArtifact(ctx *ArtifactContext) {
 		artifact.FileCompressedSize != chunksTotalSize {
 		artifact.FileSize = fileRealTotalSize
 		artifact.FileCompressedSize = chunksTotalSize
-		artifact.ContentEncodingOrType = ctx.Req.Header.Get("Content-Encoding")
+		artifact.ContentEncodingOrType = util.Iif(ctx.Req.Header.Get("Content-Encoding") == actions.ContentEncodingV3Gzip, actions.ContentEncodingV3Gzip, "") // other values could be served as a v4 Content-Type
 		if err := actions.UpdateArtifact(ctx, artifact, "file_size", "file_compressed_size", "content_encoding"); err != nil {
 			log.Error("Error update artifact: %v", err)
 			ctx.HTTPError(http.StatusInternalServerError, "Error update artifact")

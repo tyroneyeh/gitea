@@ -67,7 +67,7 @@ func prepareEditorPageFormOptions(ctx *context.Context, editorAction string) *co
 		return nil
 	}
 
-	if commitFormOptions.WillSubmitToFork && !commitFormOptions.TargetRepo.CanEnableEditor() {
+	if commitFormOptions.WillSubmitToFork && !commitFormOptions.TargetRepo.CanContentChange() {
 		ctx.Data["NotFoundPrompt"] = ctx.Locale.Tr("repo.editor.fork_not_editable")
 		ctx.NotFound(nil)
 	}
@@ -134,6 +134,10 @@ func prepareEditorCommitSubmittedForm[T forms.CommitCommonFormInterface](ctx *co
 
 	// check commit behavior
 	fromBaseBranch := ctx.FormString("from_base_branch")
+	if fromBaseBranch != "" && ctx.Repo.Repository.BaseRepo == nil {
+		ctx.NotFound(nil)
+		return nil
+	}
 	commitToNewBranch := commonForm.CommitChoice == editorCommitChoiceNewBranch || fromBaseBranch != ""
 	targetBranchName := util.Iif(commitToNewBranch, commonForm.NewBranchName, ctx.Repo.BranchName)
 	if targetBranchName == ctx.Repo.BranchName && !commitFormOptions.CanCommitToBranch {
@@ -405,7 +409,7 @@ func DeleteFilePost(ctx *context.Context) {
 	// Check if the path is a directory
 	entry, err := ctx.Repo.Commit.GetTreeEntryByPath(ctx, ctx.Repo.GitRepo, treePath)
 	if err != nil {
-		ctx.NotFoundOrServerError("GetTreeEntryByPath", git.IsErrNotExist, err)
+		ctx.ServerError("GetTreeEntryByPath", err)
 		return
 	}
 

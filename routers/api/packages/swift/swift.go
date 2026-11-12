@@ -8,9 +8,11 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"regexp"
 	"sort"
 	"strings"
+	"sync"
 
 	packages_model "gitea.dev/models/packages"
 	"gitea.dev/modules/json"
@@ -34,12 +36,17 @@ const (
 	AcceptZip   = "application/vnd.swift.registry.v1+zip"
 )
 
-var (
+var globalVars = sync.OnceValue(func() (ret struct {
+	scopePattern *regexp.Regexp
+	namePattern  *regexp.Regexp
+},
+) {
 	// https://github.com/swiftlang/swift-package-manager/blob/main/Documentation/PackageRegistry/Registry.md#361-package-scope
-	scopePattern = regexp.MustCompile(`\A[a-zA-Z0-9][a-zA-Z0-9-]{0,38}\z`)
+	ret.scopePattern = regexp.MustCompile(`\A[a-zA-Z0-9][a-zA-Z0-9-]{0,38}\z`)
 	// https://github.com/swiftlang/swift-package-manager/blob/main/Documentation/PackageRegistry/Registry.md#362-package-name
-	namePattern = regexp.MustCompile(`\A[a-zA-Z0-9][a-zA-Z0-9-_]{0,99}\z`)
-)
+	ret.namePattern = regexp.MustCompile(`\A[a-zA-Z0-9][a-zA-Z0-9-_]{0,99}\z`)
+	return ret
+})
 
 type headers struct {
 	Status      int
@@ -145,7 +152,7 @@ func EnumeratePackageVersions(ctx *context.Context) {
 		return pds[i].SemVer.LessThan(pds[j].SemVer)
 	})
 
-	baseURL := fmt.Sprintf("%sapi/packages/%s/swift/%s/%s/", setting.AppURL, ctx.Package.Owner.LowerName, packageScope, packageName)
+	baseURL := fmt.Sprintf("%sapi/packages/%s/swift/%s/%s/", setting.AppURL, url.PathEscape(ctx.Package.Owner.LowerName), url.PathEscape(packageScope), url.PathEscape(packageName))
 
 	releases := make(map[string]Release)
 	for _, pd := range pds {
@@ -156,7 +163,7 @@ func EnumeratePackageVersions(ctx *context.Context) {
 	}
 
 	setResponseHeaders(ctx.Resp, &headers{
-		Link: fmt.Sprintf(`<%s%s>; rel="latest-version"`, baseURL, pds[len(pds)-1].Version.Version),
+		Link: fmt.Sprintf(`<%s%s>; rel="latest-version"`, baseURL, url.PathEscape(pds[len(pds)-1].Version.Version)),
 	})
 
 	ctx.JSON(http.StatusOK, EnumeratePackageVersionsResponse{
@@ -322,15 +329,14 @@ func formFileOptionalReadCloser(ctx *context.Context, formKey string) (io.ReadCl
 func UploadPackageFile(ctx *context.Context) {
 	packageScope := ctx.PathParam("scope")
 	packageName := ctx.PathParam("name")
+	packageVersion := ctx.PathParam("version")
 
-	v, err := version.NewVersion(ctx.PathParam("version"))
+	_, err := version.NewSemver(packageVersion)
 
-	if !scopePattern.MatchString(packageScope) || !namePattern.MatchString(packageName) || err != nil {
+	if err != nil || !globalVars().scopePattern.MatchString(packageScope) || !globalVars().namePattern.MatchString(packageName) {
 		apiError(ctx, http.StatusBadRequest, err)
 		return
 	}
-
-	packageVersion := v.Core().String()
 
 	file, err := formFileOptionalReadCloser(ctx, "source-archive")
 	if file == nil || err != nil {

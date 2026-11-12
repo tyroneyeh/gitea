@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"math"
 	"regexp"
+	"sync"
 
 	"gitea.dev/models/db"
 	"gitea.dev/modules/setting"
@@ -36,10 +37,12 @@ const (
 )
 
 // ColumnColorPattern is a regexp witch can validate ColumnColor
-var ColumnColorPattern = regexp.MustCompile("^#[0-9a-fA-F]{6}$")
+var ColumnColorPattern = sync.OnceValue(func() *regexp.Regexp {
+	return regexp.MustCompile("^#[0-9a-fA-F]{6}$")
+})
 
 func validateColumnColor(color string) error {
-	if len(color) != 0 && !ColumnColorPattern.MatchString(color) {
+	if len(color) != 0 && !ColumnColorPattern().MatchString(color) {
 		return util.ErrorWrap(util.ErrUnprocessableContent, "invalid column color %q, expected a 6-digit hex string like #FF0000", color)
 	}
 	return nil
@@ -138,7 +141,7 @@ func createDefaultColumnsForProject(ctx context.Context, project *Project) error
 
 // maxProjectColumns max columns allowed in a project, this should not bigger than 127
 // because sorting is int8 in database
-const maxProjectColumns = 20
+const maxProjectColumns = 127
 
 // NewColumn adds a new project column to a given project
 func NewColumn(ctx context.Context, column *Column) error {
@@ -189,7 +192,7 @@ func deleteColumnByID(ctx context.Context, columnID int64) error {
 		return errColumnIsDefault
 	}
 
-	// move all issues to the default column
+	// move all issues to the default column, bulk moves intentionally don't trigger project workflows
 	project, err := GetProjectByID(ctx, column.ProjectID)
 	if err != nil {
 		return err

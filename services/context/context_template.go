@@ -5,6 +5,7 @@ package context
 
 import (
 	"context"
+	"encoding/base64"
 	"html"
 	"html/template"
 	"net/http"
@@ -13,11 +14,12 @@ import (
 	"time"
 
 	user_model "gitea.dev/models/user"
-	"gitea.dev/modules/htmlutil"
 	"gitea.dev/modules/httplib"
+	"gitea.dev/modules/json"
 	"gitea.dev/modules/public"
 	"gitea.dev/modules/reqctx"
 	"gitea.dev/modules/setting"
+	"gitea.dev/modules/translation"
 	"gitea.dev/modules/web/middleware"
 	"gitea.dev/services/webtheme"
 )
@@ -69,7 +71,7 @@ func (c TemplateContext) CurrentWebTheme() *webtheme.ThemeMetaInfo {
 
 func (c TemplateContext) ImpersonatedUser() *user_model.User {
 	webCtx := GetWebContext(c)
-	if webCtx == nil || webCtx.Doer == nil || !webCtx.DoerIsImpersonated() {
+	if webCtx == nil || webCtx.Doer == nil || !IsDoerSessionImpersonated(webCtx.Session) {
 		return nil
 	}
 	return webCtx.Doer
@@ -97,6 +99,21 @@ func (c TemplateContext) AppFullLink(link ...string) template.URL {
 		return template.URL(s)
 	}
 	return template.URL(s + "/" + strings.TrimPrefix(link[0], "/"))
+}
+
+func (c TemplateContext) SiteManifestURL() template.URL {
+	ctx := c.parentContext()
+	absoluteAssetURL := strings.TrimSuffix(httplib.MakeAbsoluteURL(ctx, setting.StaticURLPrefix), "/")
+	manifest, _ := json.Marshal(map[string]any{
+		"name":       setting.AppName,
+		"short_name": setting.AppName,
+		"start_url":  httplib.GuessCurrentAppURL(ctx),
+		"icons": []map[string]string{
+			{"src": absoluteAssetURL + "/assets/img/logo.png", "type": "image/png", "sizes": "512x512"},
+			{"src": absoluteAssetURL + "/assets/img/logo.svg", "type": "image/svg+xml", "sizes": "512x512"},
+		},
+	})
+	return template.URL("data:application/manifest+json;base64," + base64.StdEncoding.EncodeToString(manifest))
 }
 
 func (c TemplateContext) ScriptImport(path string, typ ...string) template.HTML {
@@ -148,5 +165,40 @@ func (c TemplateContext) HeadMetaContentSecurityPolicy() template.HTML {
 	if csp == "" {
 		return ""
 	}
-	return htmlutil.HTMLFormat(`<meta http-equiv="Content-Security-Policy" content="%s">`, csp)
+	return template.HTML(`<meta http-equiv="Content-Security-Policy" content="` + csp + `">`)
+}
+
+func (c TemplateContext) WindowConfig() map[string]any {
+	locale := c["Locale"].(translation.Locale) //nolint:forcetypeassert // must exist
+	return map[string]any{
+		"appUrl":                     c.AppFullLink("/"),
+		"appSubUrl":                  setting.AppSubURL,
+		"assetUrlPrefix":             setting.StaticURLPrefix + "/assets",
+		"runModeIsProd":              setting.IsProd,
+		"customEmojis":               setting.UI.CustomEmojisMap,
+		"pageData":                   c.parentContext().GetData()["PageData"],
+		"mermaidMaxSourceCharacters": setting.MermaidMaxSourceCharacters,
+		"sharedWorkerUri":            public.AssetURI("web_src/js/user-events.sharedworker.ts"),
+		"notificationSettings": map[string]any{
+			"MinTimeout":  int(setting.UI.Notification.MinTimeout / time.Millisecond),
+			"TimeoutStep": int(setting.UI.Notification.TimeoutStep / time.Millisecond),
+			"MaxTimeout":  int(setting.UI.Notification.MaxTimeout / time.Millisecond),
+		},
+		// This global i18n object should only contain general texts.
+		// for specialized texts, it should be provided inside the related modules by:
+		// (1) API response (2) HTML data-attribute (3) PageData
+		//
+		// Maybe (if really needed) in the future we can introduce versioned frontend i18n data,
+		// make frontend cache i18n data in local storage and only update when the version is changed,
+		// then we can fill more keys here.
+		"i18n": map[string]any{
+			"error_occurred":   locale.Tr("error.occurred"),
+			"remove_label_str": locale.Tr("remove_label_str"),
+			"modal_confirm":    locale.Tr("modal.confirm"),
+			"modal_cancel":     locale.Tr("modal.cancel"),
+			"more_items":       locale.Tr("more_items"),
+			"copy_success":     locale.Tr("copy_success"),
+			"copy_error":       locale.Tr("copy_error"),
+		},
+	}
 }

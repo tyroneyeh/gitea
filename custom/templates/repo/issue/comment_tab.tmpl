@@ -22,6 +22,6 @@
 
 {{if .IsAttachmentEnabled}}
 	<div class="field">
-		{{template "repo/upload" .}}
+		{{template "repo/upload" dict "UploadOptions" $.UploadOptions}}
 	</div>
 {{end}}

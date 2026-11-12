@@ -14,15 +14,16 @@ import (
 	"strings"
 	"time"
 
-	"gitea.com/go-chi/session"
-	repo_model "gitea.dev/models/repo"
 	"gitea.dev/models/unit"
 	user_model "gitea.dev/models/user"
 	"gitea.dev/modules/cache"
 	"gitea.dev/modules/git"
 	"gitea.dev/modules/httpcache"
+	"gitea.dev/modules/httplib"
 	"gitea.dev/modules/log"
+	"gitea.dev/modules/paginator"
 	"gitea.dev/modules/reqctx"
+	"gitea.dev/modules/session"
 	"gitea.dev/modules/setting"
 	"gitea.dev/modules/util"
 	"gitea.dev/modules/web"
@@ -51,13 +52,6 @@ type APIContext struct {
 	Session    session.Store
 }
 
-// TokenCanAccessRepo reports whether the current API token is allowed to access the repository.
-// A public-only token cannot reach a private repo or a repo owned by a non-public (limited or
-// private) owner; any other token is unrestricted by this check.
-func (ctx *APIContext) TokenCanAccessRepo(repo *repo_model.Repository) bool {
-	return !ctx.PublicOnly || !publicOnlyTokenDeniedRepo(ctx, repo)
-}
-
 func init() {
 	web.RegisterResponseStatusProvider[*APIContext](func(req *http.Request) web_types.ResponseStatusProvider {
 		return GetAPIContext(req)
@@ -76,53 +70,13 @@ type APIError struct {
 	URL     string `json:"url"`
 }
 
-// APIValidationError is error format response related to input validation
-// swagger:response validationError
-type APIValidationError struct {
-	Message string `json:"message"`
-	URL     string `json:"url"`
-}
-
-// APIInvalidTopicsError is error format response to invalid topics
-// swagger:response invalidTopicsError
-type APIInvalidTopicsError struct {
-	Message       string   `json:"message"`
-	InvalidTopics []string `json:"invalidTopics"`
-}
-
 // APIEmpty is an empty response
 // swagger:response empty
 type APIEmpty struct{}
 
-// APIForbiddenError is a forbidden error response
-// swagger:response forbidden
-type APIForbiddenError struct {
-	APIError
-}
-
-// APIUnauthorizedError is an unauthorized error response
-// swagger:response unauthorized
-type APIUnauthorizedError struct {
-	APIError
-}
-
-// APINotFound is a not found empty response
-// swagger:response notFound
-type APINotFound struct{}
-
-// APIConflict is a conflict empty response
-// swagger:response conflict
-type APIConflict struct{}
-
 // APIString is a string response
 // swagger:response string
 type APIString string
-
-// APIRepoArchivedError is an error that is raised when an archived repo should be modified
-// swagger:response repoArchivedError
-type APIRepoArchivedError struct {
-	APIError
-}
 
 // APIErrorInternal responds with error message, status is 500
 func (ctx *APIContext) APIErrorInternal(err error) {
@@ -171,22 +125,11 @@ func (ctx *APIContext) APIError(status int, msg string) {
 
 // APIErrorAuto use error check function to determine the response code
 func (ctx *APIContext) APIErrorAuto(err error) {
-	switch {
-	case errors.Is(err, util.ErrInvalidArgument):
-		ctx.APIError(http.StatusBadRequest, err.Error())
-	case errors.Is(err, util.ErrPermissionDenied):
-		ctx.APIError(http.StatusForbidden, err.Error())
-	case errors.Is(err, util.ErrNotExist):
-		ctx.APIError(http.StatusNotFound, err.Error())
-	case errors.Is(err, util.ErrAlreadyExist):
-		ctx.APIError(http.StatusConflict, err.Error())
-	case errors.Is(err, util.ErrContentTooLarge):
-		ctx.APIError(http.StatusRequestEntityTooLarge, err.Error())
-	case errors.Is(err, util.ErrUnprocessableContent):
-		ctx.APIError(http.StatusUnprocessableEntity, err.Error())
-	default:
-		ctx.apiErrorInternal(1, err)
+	if errMsg, code := util.ErrorUnwrapForUser(err, ctx.Locale); errMsg != "" {
+		ctx.APIError(code, errMsg)
+		return
 	}
+	ctx.apiErrorInternal(1, err)
 }
 
 type apiContextKeyType struct{}
@@ -199,27 +142,26 @@ func GetAPIContext(req *http.Request) *APIContext {
 }
 
 func genAPILinks(curURL *url.URL, total int64, pageSize, curPage int) []string {
-	page := NewPagination(total, pageSize, curPage, 0)
-	paginater := page.Paginater
+	p := paginator.New(int(total), pageSize, curPage, 0)
 	links := make([]string, 0, 4)
 
-	if paginater.HasNext() {
+	if p.HasNext() {
 		u := *curURL
 		queries := u.Query()
-		queries.Set("page", strconv.Itoa(paginater.Next()))
+		queries.Set("page", strconv.Itoa(p.Next()))
 		u.RawQuery = queries.Encode()
 
 		links = append(links, fmt.Sprintf("<%s%s>; rel=\"next\"", setting.AppURL, u.RequestURI()[1:]))
 	}
-	if !paginater.IsLast() {
+	if !p.IsLast() {
 		u := *curURL
 		queries := u.Query()
-		queries.Set("page", strconv.Itoa(paginater.TotalPages()))
+		queries.Set("page", strconv.Itoa(p.TotalPages()))
 		u.RawQuery = queries.Encode()
 
 		links = append(links, fmt.Sprintf("<%s%s>; rel=\"last\"", setting.AppURL, u.RequestURI()[1:]))
 	}
-	if !paginater.IsFirst() {
+	if !p.IsFirst() {
 		u := *curURL
 		queries := u.Query()
 		queries.Set("page", "1")
@@ -227,10 +169,10 @@ func genAPILinks(curURL *url.URL, total int64, pageSize, curPage int) []string {
 
 		links = append(links, fmt.Sprintf("<%s%s>; rel=\"first\"", setting.AppURL, u.RequestURI()[1:]))
 	}
-	if paginater.HasPrevious() {
+	if p.HasPrevious() {
 		u := *curURL
 		queries := u.Query()
-		queries.Set("page", strconv.Itoa(paginater.Previous()))
+		queries.Set("page", strconv.Itoa(p.Previous()))
 		u.RawQuery = queries.Encode()
 
 		links = append(links, fmt.Sprintf("<%s%s>; rel=\"prev\"", setting.AppURL, u.RequestURI()[1:]))
@@ -259,10 +201,10 @@ func APIContexter() func(http.Handler) http.Handler {
 				Cache:   cache.GetCache(),
 				Repo:    &Repository{},
 				Org:     &APIOrganization{},
-				Session: session.GetSession(req),
+				Session: session.GetContextSession(req),
 			}
-
 			ctx.SetContextValue(apiContextKey, ctx)
+			httplib.MarkRequestSupportPublicURL(ctx)
 
 			// FIXME: GLOBAL-PARSE-FORM: see more details in another FIXME comment
 			if ctx.Req.Method == http.MethodPost && strings.Contains(ctx.Req.Header.Get("Content-Type"), "multipart/form-data") {

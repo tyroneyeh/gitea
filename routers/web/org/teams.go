@@ -105,8 +105,7 @@ func Teams(ctx *context.Context) {
 
 	ctx.Data["OrgListTeams"] = teams
 	ctx.Data["Keyword"] = keyword
-	pager := context.NewPagination(count, setting.UI.MembersPagingNum, page, 5)
-	pager.AddParamFromRequest(ctx.Req)
+	pager := context.NewPagerBuilder(ctx).TotalCount(count).PerPageLimit(setting.UI.MembersPagingNum).CurPage(page).Build()
 	ctx.Data["Page"] = pager
 
 	ctx.HTML(http.StatusOK, tplTeams)
@@ -576,7 +575,7 @@ func EditTeamPost(ctx *context.Context) {
 		return
 	}
 
-	system_model.CreateNotice(ctx, system_model.NoticePermission, "%s adjust team %s/%s permissions %v", ctx.Doer.GetDisplayName(), ctx.Org.Organization.Name, ctx.Org.Team.Name, unitPerms)
+	system_model.CreateNotice(ctx, system_model.NoticePermission, "%s adjust team %s/%s permissions %v", ctx.Doer.GetDisplayName(), ctx.Org.Organization.Name, ctx.Org.Team.Name)
 
 	ctx.Redirect(ctx.Org.OrgLink + "/teams/" + url.PathEscape(t.LowerName))
 }

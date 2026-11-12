@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
+	"mime"
 	"net/http"
 	"path"
 	"strconv"
@@ -39,9 +40,9 @@ type ServeHeaderOptions struct {
 
 const (
 	// Disable JS execution on the same origin, since we serve the file from the same origin as Gitea server.
-	// This rule can be relaxed in the future as long as it is properly sandboxed.
-	// "style-src" is for SVG inline styles (from Display SVG files as images instead of text #14101)
-	serveHeaderCspDefault = "default-src 'none'; style-src 'unsafe-inline'; sandbox"
+	// 'unsafe-inline' is needed by inline script and SVG inline styles (from Display SVG files as images instead of text #14101),
+	// So we don't set any "*-src" rule here, just use sandbox.
+	serveHeaderCspDefault = "sandbox allow-scripts allow-modals allow-popups allow-downloads"
 
 	// No sandbox attribute for PDF as it breaks rendering in at least Safari.
 	// This should generally be safe as scripts inside PDF can not escape the PDF document.
@@ -59,12 +60,14 @@ func serveSetHeaderContentRelated(w http.ResponseWriter, contentType string) {
 	header.Set("Content-Type", contentType)
 	header.Set("X-Content-Type-Options", "nosniff")
 
-	csp := ""
-	if strings.HasPrefix(contentType, "application/pdf") {
-		csp = serveHeaderCspPdf
-	}
-	if strings.HasPrefix(contentType, "video/") || strings.HasPrefix(contentType, "audio/") {
-		csp = serveHeaderCspAudioVideo
+	csp := serveHeaderCspDefault
+	if mediaType, _, err := mime.ParseMediaType(contentType); err == nil { // browsers may parse malformed types differently
+		if mediaType == "application/pdf" {
+			csp = serveHeaderCspPdf
+		}
+		if strings.HasPrefix(mediaType, "video/") || strings.HasPrefix(mediaType, "audio/") {
+			csp = serveHeaderCspAudioVideo
+		}
 	}
 	if strings.HasPrefix(contentType, "image/svg+xml") {
 		csp = serveHeaderCspDefault
@@ -80,7 +83,7 @@ func serveSetHeaderContentRelated(w http.ResponseWriter, contentType string) {
 func ServeSetHeaders(w http.ResponseWriter, opts ServeHeaderOptions) {
 	header := w.Header()
 
-	skipCompressionExts := container.SetOf(".gz", ".bz2", ".zip", ".xz", ".zst", ".deb", ".apk", ".jar", ".png", ".jpg", ".webp")
+	skipCompressionExts := container.SetOf(".gz", ".bz2", ".zip", ".xz", ".zst", ".deb", ".apk", ".jar", ".avif", ".png", ".jpeg", ".jpg", ".jxl", ".webp")
 	if skipCompressionExts.Contains(strings.ToLower(path.Ext(opts.Filename))) {
 		w.Header().Add(gzhttp.HeaderNoCompression, "1")
 	}
