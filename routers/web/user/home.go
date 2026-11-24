@@ -501,7 +501,7 @@ func buildIssueOverview(ctx *context.Context, unitType unit.Type) {
 			},
 		))
 		if err != nil {
-			ctx.ServerError("getUserIssueStats", err)
+			ctx.ServerErrorAuto(err)
 			return
 		}
 		if issueStatsForReview.ReviewRequestedCount > 0 {
