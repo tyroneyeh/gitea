@@ -2,7 +2,7 @@ import {svgRaw} from '../svg.ts';
 import {html} from '../utils/html.ts';
 import {GET, POST} from '../modules/fetch.ts';
 import {showErrorToast} from '../modules/toast.ts';
-import {createElementFromHTML, createElementFromAttrs} from '../utils/dom.ts';
+import {createElementFromAttrs, queryElems, showElem} from '../utils/dom.ts';
 import {isImageFile, isVideoFile, isCompressedFile, isPDFFile, compressFileToZip} from '../utils.ts';
 import {errorMessage} from '../modules/errors.ts';
 import type Dropzone from '@deltablot/dropzone';
@@ -135,7 +135,6 @@ export async function initDropzone(dropzoneEl: HTMLElement) {
     fileUuidDict[file.uuid] = {submitted: false};
     const input = createElementFromAttrs('input', {name: 'files', type: 'hidden', id: `dropzone-file-${resp.uuid}`, value: resp.uuid});
     dropzoneEl.querySelector('.files')!.append(input);
-    addCopyLink(file);
     const form = dropzoneEl.closest('form');
     if (localStorage.getItem('markdown-editor-comment') === 'easymde') {
       const easyMDEElement = (form?.querySelector('.combo-markdown-editor') as HTMLTextAreaElement & {_giteaComboMarkdownEditor: any})?._giteaComboMarkdownEditor?.easyMDE;
