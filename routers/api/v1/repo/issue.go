@@ -606,6 +606,8 @@ func CreateIssue(ctx *context.APIContext) {
 		form.Projects = nil
 	}
 
+	issue.OriginalAuthorID = ctx.Doer.ID
+
 	if err := issue_service.NewIssue(ctx, ctx.Repo.Repository, ctx.Repo.Permission, issue, form.Labels, nil, assigneeIDs, form.Projects); err != nil {
 		ctx.APIErrorAuto(err)
 		return

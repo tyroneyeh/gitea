@@ -46,7 +46,7 @@
 									</a>
 								{{end}}
 								<span class="comment-text-line">
-									{{template "shared/user/authorlink" .Poster}}
+									{{template "shared/user/authorlink" .Poster}}{{if and (gt .OriginalAuthorID 0) (not .Poster.IsTypeBot)}} <span class="ui basic label tw-py-0 tw-align-baseline">{{ctx.Locale.Tr "concept_user_bot"}}</span>{{end}}
 									{{ctx.Locale.Tr "repo.issues.commented_at" .HashTag $createdStr}}
 								</span>
 							{{end}}
