@@ -299,6 +299,7 @@ export function initRepoIssueReferenceIssue() {
   const form = elDropdown.closest('form')!;
   fomanticQuery(elDropdown).dropdown({
     fullTextSearch: true,
+    filterRemoteData: true,
     apiSettings: {
       url: `${appSubUrl}/repo/search?limit=500`,
       onResponse(response: {data: Array<{repository: {full_name: string}}>}) {
