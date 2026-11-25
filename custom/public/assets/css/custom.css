@@ -52,11 +52,21 @@ input.gridjs-input {
     display: flex !important;
     flex-direction: column-reverse !important;
 }
-.timeline-item {
+.timeline-reverse > * {
     order: 1;
 }
-.timeline-item.first {
+.timeline-reverse > .issue-content-comment {
+    order: 3;
+}
+.timeline-reverse > .top-related {
     order: 2;
+}
+.timeline-reverse > .pull-merge-box {
+    order: 0;
+}
+.timeline-reverse > .form,
+.timeline-reverse > .ui.warning.message:not(.flash-message) {
+    order: -1;
 }
 .close-btn::before {
     content: '×';
