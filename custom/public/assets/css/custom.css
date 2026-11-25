@@ -138,3 +138,6 @@ td.ellipsis-start {
 .avatar-stack-names {
     width: 18em;
 }
+.cursor-wait, .cursor-wait * {
+    cursor: wait !important;
+}
