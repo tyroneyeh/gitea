@@ -64,6 +64,11 @@ func CreateRefComment(ctx context.Context, doer *user_model.User, issue *issues_
 
 // CreateIssueComment creates a plain issue comment.
 func CreateIssueComment(ctx context.Context, doer *user_model.User, repo *repo_model.Repository, issue *issues_model.Issue, content string, attachments []string) (*issues_model.Comment, error) {
+	return CreateIssueCommentWithOriginalAuthorID(ctx, doer, repo, issue, content, attachments, 0)
+}
+
+// CreateIssueCommentWithOriginalAuthorID creates a plain issue comment with an explicit OriginalAuthorID.
+func CreateIssueCommentWithOriginalAuthorID(ctx context.Context, doer *user_model.User, repo *repo_model.Repository, issue *issues_model.Issue, content string, attachments []string, originalAuthorID int64) (*issues_model.Comment, error) {
 	if user_model.IsUserBlockedBy(ctx, doer, issue.PosterID, repo.OwnerID) {
 		if !access_model.IsUserRepoAdmin(ctx, repo, doer) {
 			return nil, user_model.ErrBlockedUser
@@ -71,12 +76,13 @@ func CreateIssueComment(ctx context.Context, doer *user_model.User, repo *repo_m
 	}
 
 	comment, err := issues_model.CreateComment(ctx, &issues_model.CreateCommentOptions{
-		Type:        issues_model.CommentTypeComment,
-		Doer:        doer,
-		Repo:        repo,
-		Issue:       issue,
-		Content:     content,
-		Attachments: attachments,
+		Type:             issues_model.CommentTypeComment,
+		Doer:             doer,
+		Repo:             repo,
+		Issue:            issue,
+		Content:          content,
+		Attachments:      attachments,
+		OriginalAuthorID: originalAuthorID,
 	})
 	if err != nil {
 		return nil, err

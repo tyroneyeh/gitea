@@ -358,9 +358,7 @@ func CreateIssueComment(ctx *context.APIContext) {
 		return
 	}
 
-	issue.OriginalAuthorID = ctx.Doer.ID
-
-	comment, err := issue_service.CreateIssueComment(ctx, ctx.Doer, ctx.Repo.Repository, issue, form.Body, nil)
+	comment, err := issue_service.CreateIssueCommentWithOriginalAuthorID(ctx, ctx.Doer, ctx.Repo.Repository, issue, form.Body, nil, ctx.Doer.ID)
 	if err != nil {
 		if errors.Is(err, user_model.ErrBlockedUser) {
 			ctx.APIError(http.StatusForbidden, err.Error())
