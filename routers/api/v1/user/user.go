@@ -231,7 +231,7 @@ func ListUserActivityFeeds(ctx *context.APIContext) {
 	//   default:
 	//     "$ref": "#/responses/error"
 
-	includePrivate := ctx.IsSigned && (ctx.Doer.IsAdmin || ctx.Doer.ID == ctx.ContextUser.ID)
+	includePrivate := ctx.IsSigned
 	listOptions := utils.GetListOptions(ctx)
 
 	opts := activities_model.GetFeedsOptions{
